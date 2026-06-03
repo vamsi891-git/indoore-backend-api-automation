@@ -1,0 +1,186 @@
+# Indoore Backend API Automation
+
+Backend API test automation with [Playwright Test](https://playwright.dev/) and TypeScript. Tests use a shared authenticated API fixture; login runs once in global setup and writes tokens under `playwright/.auth/` (gitignored).
+
+## Prerequisites
+
+- Node.js (LTS recommended)
+- npm
+
+## Setup
+
+1. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Create your environment file:
+
+   ```bash
+   copy .env.example .env
+   ```
+
+   | Variable   | Required | Description |
+   |------------|----------|-------------|
+   | `BASE_URL` | Yes      | API base URL (used by Playwright config, global setup, and tests). |
+   | `EMAIL`    | Yes      | Login email for `POST /indore/auth/login`. |
+   | `PASSWORD` | Yes      | Login password for global setup. |
+
+3. Run tests (global setup runs first and creates `playwright/.auth/token.json`):
+
+   ```bash
+   npm test
+   ```
+
+Do not commit `.env` or anything under `playwright/.auth/`.
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm test` | Run all tests |
+| `npm run test:smoke` | Run tests tagged `@smoke` |
+| `npm run test:ui` | Playwright UI mode |
+| `npm run report` | Open the last HTML report |
+| `npm run typecheck` | TypeScript check (`tsc --noEmit`) |
+
+### Run by tag or path
+
+```bash
+npx playwright test --grep @dashboard
+npx playwright test src/modules/REPORTS
+```
+
+## Authentication
+
+- **Global setup:** `src/Global.Setup.ts` (configured in `playwright.config.ts`)
+- **Flow:** API login via `POST /indore/auth/login` using `BASE_URL`, `EMAIL`, and `PASSWORD`
+- **Output:** `playwright/.auth/token.json` (`token`, `refreshToken`, `jwtToken`)
+- **Tests:** `src/fixtures/api.fixture.ts` provides `authenticatedApi` with a Bearer token from that file
+
+## Project layout
+
+```
+src/
+  core/                 # Shared client, assertion/validation engines, models
+  fixtures/             # Playwright test extensions (authenticated API)
+  Global.Setup.ts       # One-time API login before tests
+  modules/
+    MASTER-DATA/        # Master data APIs
+    UTILS-LOOKUP/       # Lookup / search / hierarchy APIs
+    DASHBOARD/          # Dashboard metrics
+    MIS DASHBOARD/      # MIS reports (includes Data/ for query params)
+    REPORTS/            # Event reports (includes Data/)
+    COLLECTION REPORT/  # Collection reports (includes Data/)
+    COMMERICIAL ANALYSIS/  # Commercial analysis reports (includes Data/)
+```
+
+Typical module folders:
+
+- `Api/` — HTTP calls, timing, typed responses (no assertions)
+- `Mapper/` — Response types and normalization
+- `Validator/` — Business rules and field checks
+- `Data/` — Query/body payloads (report modules)
+- `tests/` — `*.spec.ts` files
+
+## Framework flow
+
+```
+Spec (test)
+  → API layer
+  → Mapper
+  → Validator
+  → ValidationEngine / AssertionEngine
+  → Summary (console)
+```
+
+## Naming convention
+
+| Layer     | Example |
+|-----------|---------|
+| API       | `consumer-search.api.ts` |
+| Mapper    | `consumer-search.mapper.ts` |
+| Validator | `consumer-search.validator.ts` |
+| Test      | `consumer-search.spec.ts` |
+
+## Tags
+
+Tests use Playwright tags on individual cases. Common patterns:
+
+| Tag | Usage |
+|-----|--------|
+| `@smoke` | Included in `npm run test:smoke` |
+| `@dashboard`, `@event-report`, `@consumer-master`, … | Feature-specific filters via `--grep` |
+
+Example:
+
+```bash
+npm run test:smoke
+npx playwright test --grep "@event-report"
+```
+
+## Validation rules
+
+**Validate:**
+
+- Backend behavior and response structure
+- Hierarchy, aggregation, and pagination where applicable
+
+**Avoid:**
+
+- Duplicating backend logic unnecessarily
+- Hardcoded row counts unless required
+- Reimplementing SQL sort/filter in JavaScript
+- Frontend-only expectations
+
+## CI (GitHub Actions)
+
+Workflow: [`.github/workflows/playwright.yml`](.github/workflows/playwright.yml)
+
+| Trigger | When |
+|---------|------|
+| `push` / `pull_request` | Branches `main` or `master` |
+| `workflow_dispatch` | Manual run from the Actions tab |
+
+The job runs `npm test` (full suite, same as local). HTML report and JSON results are uploaded as artifacts when the run finishes (pass or fail).
+
+### Repository secrets
+
+In GitHub: **Settings → Secrets and variables → Actions → New repository secret**
+
+| Secret | Required | Description |
+|--------|----------|-------------|
+| `BASE_URL` | Yes | API base URL (e.g. `https://api.bestinfra.app`) |
+| `PASSWORD` | Yes | Login password |
+| `EMAIL` | Yes* | Login email |
+| `USERNAME` | Yes* | Alternative to `EMAIL` if your env uses `USERNAME` |
+| `DEVICE_ID` | No | Only if login requires device selection |
+
+\* At least one of `EMAIL` or `USERNAME` must be set (same as `src/global.setup.ts`).
+
+### Create the GitHub repository
+
+From the project root (first time only):
+
+```bash
+git init
+git add .
+git commit -m "Add Indoore backend API automation and CI workflow"
+git branch -M main
+git remote add origin https://github.com/YOUR_ORG/indoore_backend_testing.git
+git push -u origin main
+```
+
+Or create an empty repo on GitHub, then push the local branch as above.
+
+**Note:** Failures with HTTP `500` or `INTERNAL_ERROR` come from the API environment, not from the workflow. Fix the backend or test data; the workflow only runs the same commands as locally.
+
+## Configuration files
+
+| File | Purpose |
+|------|---------|
+| `playwright.config.ts` | Test runner, retries, HTML reporter, `globalSetup` |
+| `tsconfig.json` | TypeScript compiler options |
+| `.env.example` | Environment template (safe to commit) |
+| `.gitignore` | Ignored artifacts and secrets |

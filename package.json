@@ -1,0 +1,32 @@
+{
+  "name": "indoore_backend_testing",
+  "version": "1.0.0",
+  "description": "API automation with [Playwright Test](https://playwright.dev/) and TypeScript. Tests call HTTP APIs using a shared authenticated fixture; login runs once in global setup and saves storage state under `playwright/.auth/` (gitignored).",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:ui": "playwright test --ui",
+    "report": "playwright show-report",
+    "report:defects": "explorer reports\\defects",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^25.8.0",
+    "eslint": "^10.3.0",
+    "playwright-html-reporter": "^0.1.11",
+    "prettier": "^3.8.3",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "axios": "^1.16.0",
+    "dotenv": "^17.4.2",
+    "zod": "^4.4.3"
+  }
+}
