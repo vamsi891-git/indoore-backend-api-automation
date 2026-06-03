@@ -145,19 +145,25 @@ Workflow: [`.github/workflows/playwright.yml`](.github/workflows/playwright.yml)
 
 The job runs `npm test` (full suite, same as local). HTML report and JSON results are uploaded as artifacts when the run finishes (pass or fail).
 
-### Repository secrets
+### Repository secrets (required for CI)
 
-In GitHub: **Settings → Secrets and variables → Actions → New repository secret**
+CI does **not** use your local `.env` file. You must add secrets on GitHub:
 
-| Secret | Required | Description |
-|--------|----------|-------------|
-| `BASE_URL` | Yes | API base URL (e.g. `https://api.bestinfra.app`) |
-| `PASSWORD` | Yes | Login password |
-| `EMAIL` | Yes* | Login email |
-| `USERNAME` | Yes* | Alternative to `EMAIL` if your env uses `USERNAME` |
+**Repository → Settings → Secrets and variables → Actions → Repository secrets → New repository secret**
+
+| Secret name | Required | Example value |
+|-------------|----------|----------------|
+| `BASE_URL` | **Yes** | `https://api.bestinfra.app` (no trailing slash) |
+| `PASSWORD` | **Yes** | Same as local `.env` |
+| `EMAIL` | Yes* | Same as local `.env` |
+| `USERNAME` | Yes* | Use instead of `EMAIL` if that is what you use locally |
 | `DEVICE_ID` | No | Only if login requires device selection |
 
 \* At least one of `EMAIL` or `USERNAME` must be set (same as `src/global.setup.ts`).
+
+Secret names are **case-sensitive** — use `BASE_URL`, not `base_url`.
+
+If `BASE_URL` is missing, the workflow fails with: `Missing required environment variable: BASE_URL`.
 
 ### Create the GitHub repository
 

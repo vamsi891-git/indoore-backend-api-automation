@@ -19,10 +19,29 @@ jobs:
 
     env:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+      BASE_URL: ${{ secrets.BASE_URL }}
+      EMAIL: ${{ secrets.EMAIL }}
+      USERNAME: ${{ secrets.USERNAME }}
+      PASSWORD: ${{ secrets.PASSWORD }}
+      DEVICE_ID: ${{ secrets.DEVICE_ID }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Validate repository secrets
+        run: |
+          missing=""
+          [ -z "$BASE_URL" ] && missing="$missing BASE_URL"
+          [ -z "$PASSWORD" ] && missing="$missing PASSWORD"
+          if [ -z "$EMAIL" ] && [ -z "$USERNAME" ]; then
+            missing="$missing EMAIL (or USERNAME)"
+          fi
+          if [ -n "$missing" ]; then
+            echo "::error title=Missing GitHub Actions secrets::Configure these under Settings → Secrets and variables → Actions → Repository secrets:$missing"
+            echo "See README.md → CI (GitHub Actions) for details."
+            exit 1
+          fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -39,12 +58,6 @@ jobs:
 
       - name: Run Playwright tests
         run: npm test
-        env:
-          BASE_URL: ${{ secrets.BASE_URL }}
-          EMAIL: ${{ secrets.EMAIL }}
-          USERNAME: ${{ secrets.USERNAME }}
-          PASSWORD: ${{ secrets.PASSWORD }}
-          DEVICE_ID: ${{ secrets.DEVICE_ID }}
 
       - name: Upload Playwright report
         if: always()
