@@ -119,13 +119,21 @@ test.describe("Role Permission CRUD Flow",() => {
                 // STEP 5
                 // ASSIGN PERMISSIONS
                 // =====================================
+                const assignPermissionPayload =
+                    RolePermissionMapper.buildAssignPermissionPayload(
+                        rolePermissions.modules
+                    );
                 const assignPermissionResponse =
                     await roleApi.assignPermissions(
                         RolePermissionData.roleId,
-                        RolePermissionData.assignPermissionPayload
+                        assignPermissionPayload
                     );
                 validation.execute("Assign Permissions Status",() =>
-                        assert.validateStatusCode(assignPermissionResponse.rawResponse,200)
+                        assert.validateStatusCode(
+                            assignPermissionResponse.rawResponse,
+                            200,
+                            assignPermissionResponse.responseBody
+                        )
                 );
                 // =====================================
                 // STEP 6
@@ -143,7 +151,10 @@ test.describe("Role Permission CRUD Flow",() => {
                         validator.validatePermissionCatalogPresent(verifyPermissions.modules)
                 );
                 validation.execute("Validate Assigned Permissions",() =>
-                        validator.validateAssignedPermissions(verifyPermissions.modules,RolePermissionData.assignPermissionPayload.permissionKeys)
+                        validator.validateAssignedPermissions(
+                            verifyPermissions.modules,
+                            assignPermissionPayload.permissionKeys
+                        )
                 );
                 validation.execute("Validate Module Enable Logic",() =>
                         validator.validateModuleEnableLogic(verifyPermissions.modules)

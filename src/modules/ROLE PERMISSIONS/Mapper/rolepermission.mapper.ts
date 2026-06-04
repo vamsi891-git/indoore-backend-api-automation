@@ -77,4 +77,37 @@ export class RolePermissionMapper {
             skippedUltimateRoleId:response.data.skippedUltimateRoleId
         };
     }
+
+    /** Picks real permission keys from the role catalog (avoids 400 on unknown keys). */
+    static buildAssignPermissionPayload(
+        modules: Module[],
+        count: number = 3
+    ): { permissionKeys: string[] } {
+        const preferred =
+            modules.find((m) => m.moduleKey === "user_management") ??
+            modules[0];
+
+        let keys =
+            preferred?.permissions
+                .map((p) => p.permissionKey)
+                .filter((key) => Boolean(key?.trim()))
+                .slice(0, count) ?? [];
+
+        if (keys.length < count) {
+            const allKeys = modules.flatMap((m) =>
+                m.permissions.map((p) => p.permissionKey)
+            );
+            keys = [...new Set(allKeys)]
+                .filter((key) => Boolean(key?.trim()))
+                .slice(0, count);
+        }
+
+        if (keys.length === 0) {
+            throw new Error(
+                "Role permission catalog has no permission keys to assign"
+            );
+        }
+
+        return { permissionKeys: keys };
+    }
 }

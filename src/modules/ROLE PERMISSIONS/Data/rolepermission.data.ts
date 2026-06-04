@@ -10,13 +10,7 @@ export const RolePermissionData = {
         allowsHierarchyScope:true
     },
 
-    assignPermissionPayload: {
-        permissionKeys: [
-            "user_management.view",
-            "user_management.create",
-            "user_management.view_audit_logs"
-        ]
-    },
+    /** Built at runtime from GET role permissions catalog — see RolePermissionMapper.buildAssignPermissionPayload */
     toggle2FAPayload: {
          enabled: true
     },
