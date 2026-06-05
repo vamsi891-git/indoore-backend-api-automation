@@ -10,34 +10,19 @@ export interface FeederElectricalParametersResponse {
     data: {
         lastCommunication: string | null;
         meterSerialNumber: string | null;
-
         "R-Phase": PhaseData;
         "Y-Phase": PhaseData;
         "B-Phase": PhaseData;
     };
 }
-
 export class FeederElectricalParametersMapper {
-
-    static map(
-        response: FeederElectricalParametersResponse
-    ) {
-
+    static map(response: FeederElectricalParametersResponse) {
         return {
-            lastCommunication:
-                response.data.lastCommunication,
-
-            meterSerialNumber:
-                response.data.meterSerialNumber,
-
-            rPhase:
-                response.data["R-Phase"],
-
-            yPhase:
-                response.data["Y-Phase"],
-
-            bPhase:
-                response.data["B-Phase"]
-        };
+            lastCommunication:response.data.lastCommunication,
+            meterSerialNumber:response.data.meterSerialNumber,
+            rPhase:response.data["R-Phase"],
+            yPhase:response.data["Y-Phase"],
+            bPhase:response.data["B-Phase"]
+        }
     }
 }

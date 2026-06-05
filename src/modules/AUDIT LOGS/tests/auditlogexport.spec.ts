@@ -20,7 +20,7 @@ test.describe(
         test.describe.configure({
             mode: "serial",
             retries: 0,
-            timeout: 480_000,
+            timeout: 900_000,
         });
 
         test(
@@ -262,13 +262,6 @@ test.describe(
             },
 
             async ({ authenticatedApi }) => {
-
-                await new Promise((resolve) =>
-                    setTimeout(
-                        resolve,
-                        AuditLogExportTestData.exportCooldownMs,
-                    ),
-                );
 
                 const api =
                     new AuditLogExportApi(

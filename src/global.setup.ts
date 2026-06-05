@@ -36,6 +36,18 @@ async function globalSetup(): Promise<void> {
   ensureDirectory(path.join("playwright", ".auth"));
   TokenManager.clearStaleLock();
 
+  const cachedSession = TokenManager.loadValidSession();
+  if (cachedSession) {
+    TokenManager.seed(
+      cachedSession.accessToken,
+      cachedSession.expiresInSeconds,
+      cachedSession.csrfToken,
+    );
+    LoggerEngine.info("Global setup reused valid cached auth token");
+    LoggerEngine.info("Global setup completed");
+    return;
+  }
+
   const login = await AuthApi.login();
   if (!login.accessToken) {
     throw new Error("Auth warmup failed: missing access token");

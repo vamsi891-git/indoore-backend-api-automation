@@ -1,51 +1,60 @@
-export interface EventReport {
-  circle: string;
+export interface EventReportAppliedFilters {
+    organisationLookupId: number | null;
+    networkLookupId: number | null;
+    servicePointMeterPhaseTblRefId: number | null;
+    categoryTblRefId: number | null;
+    priorityTblRefId: number | null;
+    eventClassificationTblRefId: number | null;
+    eventTblRefId: number | null;
+}
 
-  eventId: number;
-
-  eventName: string;
-
-  meterCount: number;
-
-  eventCount: number;
-
-  durationHhMm: string;
-
-  slNo: number;
+export interface EventReportItem {
+    circle: string;
+    eventId: number;
+    eventName: string;
+    meterCount: number;
+    eventCount: number;
+    durationHhMm: string;
+    slNo: number;
 }
 
 export interface EventReportData {
-  fromDate: string;
-
-  toDate: string;
-
-  scopedMeterCount: number;
-
-  items: EventReport[];
+    fromDate: string;
+    toDate: string;
+    scopedMeterCount: number;
+    appliedFilters: EventReportAppliedFilters;
+    items: EventReportItem[];
 }
 
 export interface EventReportResponse {
-  success: boolean;
-
-  data: EventReportData;
+    success: boolean;
+    data: EventReportData;
 }
 
-export function mapEventReportResponse(
-  response: EventReportResponse,
-): EventReport[] {
-  return response.data.items.map((row) => ({
-    circle: row.circle?.trim(),
+export class EventReportMapper {
+    static map(response: any): EventReportResponse {
+        const data = response.data ?? {};
+        const filters = data.appliedFilters ?? {};
 
-    eventId: row.eventId,
-
-    eventName: row.eventName?.trim(),
-
-    meterCount: row.meterCount,
-
-    eventCount: row.eventCount,
-
-    durationHhMm: row.durationHhMm,
-
-    slNo: row.slNo,
-  }));
+        return {
+            success: response.success,
+            data: {
+                fromDate: data.fromDate,
+                toDate: data.toDate,
+                scopedMeterCount: data.scopedMeterCount,
+                appliedFilters: {
+                    organisationLookupId: filters.organisationLookupId ?? null,
+                    networkLookupId: filters.networkLookupId ?? null,
+                    servicePointMeterPhaseTblRefId:
+                        filters.servicePointMeterPhaseTblRefId ?? null,
+                    categoryTblRefId: filters.categoryTblRefId ?? null,
+                    priorityTblRefId: filters.priorityTblRefId ?? null,
+                    eventClassificationTblRefId:
+                        filters.eventClassificationTblRefId ?? null,
+                    eventTblRefId: filters.eventTblRefId ?? null,
+                },
+                items: data.items ?? [],
+            },
+        };
+    }
 }

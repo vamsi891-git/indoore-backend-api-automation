@@ -96,6 +96,32 @@ export class TokenManager {
     }
   }
 
+  /** Reuse a still-valid token from disk to avoid flaky login during global setup. */
+  static loadValidSession(): {
+    accessToken: string;
+    expiresInSeconds: number;
+    csrfToken?: string;
+  } | null {
+    const stored = this.readStoredToken();
+    if (!stored) {
+      return null;
+    }
+
+    const remainingMs = stored.expiresAt - Date.now();
+    if (remainingMs <= this.refreshBufferMs) {
+      return null;
+    }
+
+    return {
+      accessToken: stored.accessToken,
+      expiresInSeconds: Math.max(
+        60,
+        Math.floor((remainingMs - this.refreshBufferMs) / 1000),
+      ),
+      csrfToken: stored.csrfToken,
+    };
+  }
+
   private static shouldRefresh(): boolean {
     return !this.token || Date.now() >= this.refreshAtEpochMs;
   }

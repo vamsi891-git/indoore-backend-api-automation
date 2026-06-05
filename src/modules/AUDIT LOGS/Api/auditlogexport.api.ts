@@ -1,5 +1,6 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
 import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
+import { AuditLogExportTestData } from "../Data/auditlogexport.data";
 
 export interface AuditLogExportApiResponse {
     rawResponse: APIResponse;
@@ -8,11 +9,26 @@ export interface AuditLogExportApiResponse {
 }
 
 const EXPORT_PATH = "/indore/users/audit-logs/export";
-/** One long wait before a single 429 retry — avoids hammering the export quota */
-const RATE_LIMIT_BACKOFF_MS = [0, 180_000];
+const MAX_429_ATTEMPTS = 2;
 
 export class AuditLogExportApi {
+    private static lastExportRequestAt = 0;
+
     constructor(private readonly authenticatedApi: APIRequestContext) {}
+
+    private static async waitForExportSlot(): Promise<void> {
+        if (AuditLogExportApi.lastExportRequestAt === 0) {
+            return;
+        }
+
+        const elapsed = Date.now() - AuditLogExportApi.lastExportRequestAt;
+        const remaining =
+            AuditLogExportTestData.minExportIntervalMs - elapsed;
+
+        if (remaining > 0) {
+            await new Promise((resolve) => setTimeout(resolve, remaining));
+        }
+    }
 
     async exportAuditLogs(
         limit: number,
@@ -22,11 +38,9 @@ export class AuditLogExportApi {
         let csvContent = "";
         let responseTime = 0;
 
-        for (let attempt = 0; attempt < RATE_LIMIT_BACKOFF_MS.length; attempt++) {
-            const waitMs = RATE_LIMIT_BACKOFF_MS[attempt];
-            if (waitMs > 0) {
-                await new Promise((resolve) => setTimeout(resolve, waitMs));
-            }
+        for (let attempt = 0; attempt < MAX_429_ATTEMPTS; attempt++) {
+            await AuditLogExportApi.waitForExportSlot();
+            AuditLogExportApi.lastExportRequestAt = Date.now();
 
             const requestStart = Date.now();
             rawResponse = await getWithAutoRefresh(
@@ -49,7 +63,8 @@ export class AuditLogExportApi {
 
         if (rawResponse.status() === 429) {
             throw new Error(
-                `Audit log export rate-limited (429) after ${RATE_LIMIT_BACKOFF_MS.length} attempts. ` +
+                `Audit log export rate-limited (429) after ${MAX_429_ATTEMPTS} attempts ` +
+                    `(min ${AuditLogExportTestData.minExportIntervalMs / 1000}s between export calls). ` +
                     `Wait a few minutes before re-running export tests. Body: ${csvContent.slice(0, 200)}`,
             );
         }

@@ -1,10 +1,7 @@
-export const eventReportData = {
-
-  fromDate: "2025-12-20",
-
-  toDate: "2025-12-20",
-
-  page: 1,
-
-  limit: 100
+export const EventReportData = {
+    fromDate: "2025-12-20",
+    toDate: "2025-12-20",
+    organisationLookupId: 1,
+    limit: 5000,
+    maxResponseTime: 180_000,
 };
