@@ -1,26 +1,22 @@
 export interface GraphPoint {
     label: string;
-    consumptionKwh:number | null;
+    consumptionKwh: number | null;
 }
-export interface GraphGroup {
-    title: string;
-    points: GraphPoint[];
-}
+
 export interface EnergyConsumptionGraphResponse {
     success: boolean;
     data: {
-        weekly: GraphGroup;
-        monthly: GraphGroup;
-        yearly: GraphGroup;
-    }
+        period: string;
+        points: GraphPoint[];
+    };
 }
+
 export class EnergyConsumptionGraphMapper {
-    static map(response:EnergyConsumptionGraphResponse) {
+    static map(response: EnergyConsumptionGraphResponse) {
         return {
             success: response.success,
-            weekly: response.data.weekly,
-            monthly: response.data.monthly,
-            yearly: response.data.yearly
+            period: response.data.period,
+            points: response.data.points ?? [],
         };
     }
 }

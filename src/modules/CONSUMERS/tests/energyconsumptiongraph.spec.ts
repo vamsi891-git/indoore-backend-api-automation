@@ -45,7 +45,7 @@ test.describe("Energy Consumption Graph API",() => {
                     assert.validateSensitiveData(responseBody)
                 );
                 validation.execute("Required Fields",() => 
-                    assert.validateRequiredFields(responseBody.data,["weekly","monthly","yearly"])
+                    assert.validateRequiredFields(responseBody.data,["period","points"])
                 );
 
                 const data =EnergyConsumptionGraphMapper.map(responseBody);
@@ -57,42 +57,20 @@ test.describe("Energy Consumption Graph API",() => {
                 validation.execute("Structure",() => 
                     validator.validateStructure(data)
                 );
-                validation.execute("Titles",() => 
-                    validator.validateTitles(data)
+                validation.execute("Period",() =>
+                    validator.validatePeriod(data)
                 );
-                validation.execute("Weekly Count",() => 
-                    validator.validateWeeklyCount(data)
+                validation.execute("Points Count",() =>
+                    validator.validatePointsCount(data)
                 );
-                validation.execute("Monthly Count",() => 
-                    validator.validateMonthlyCount(data)
+                validation.execute("Point Structure",() => 
+                    validator.validatePointStructure(data.points)
                 );
-                validation.execute("Yearly Count",() => 
-                    validator.validateYearlyCount(data)
+                validation.execute("Label Format",() =>
+                    validator.validateLabelFormat(data.points)
                 );
-                validation.execute("Weekly Shape",() => 
-                    validator.validatePointStructure(data.weekly.points)
-                );
-                validation.execute("Monthly Shape",() => 
-                    validator.validatePointStructure(data.monthly.points)
-                );
-                validation.execute("Yearly Shape",() => 
-                    validator.validatePointStructure(data.yearly.points)
-                );
-                validation.execute("Weekly Consumption",() => 
-                    validator.validateConsumptionValues(data.weekly.points)
-                );
-
-                validation.execute("Monthly Consumption",() => 
-                    validator.validateConsumptionValues(data.monthly.points)
-                );
-                validation.execute("Yearly Consumption",() => 
-                    validator.validateConsumptionValues(data.yearly.points)
-                );
-                validation.execute("Day Labels",() => 
-                    validator.validateDayLabels(data.weekly.points)
-                );
-                validation.execute("Month Labels",() => 
-                    validator.validateYearLabels(data.yearly.points)
+                validation.execute("Consumption Values",() => 
+                    validator.validateConsumptionValues(data.points)
                 );
                 validation.execute("Business Rules",() => 
                     validator.validateBusinessRules(data)

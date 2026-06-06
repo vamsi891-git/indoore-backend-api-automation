@@ -41,8 +41,8 @@ export class ConsumerMasterValidator {
       if (item.zone) {
         expect(item.zone.trim()).not.toEqual("");
       }
-      if (item.subStation) {
-        expect(item.subStation.trim()).not.toEqual("");
+      if (item.feeder) {
+        expect(item.feeder.trim()).not.toEqual("");
       }
     });
   }

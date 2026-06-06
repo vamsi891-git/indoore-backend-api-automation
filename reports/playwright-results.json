@@ -1,0 +1,247 @@
+{
+  "config": {
+    "configFile": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\playwright.config.ts",
+    "rootDir": "C:/Users/Best Infra/AUTOMATION TESTING/Indoore_backend_testing/src",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\global.setup.ts",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Users/Best Infra/AUTOMATION TESTING/Indoore_backend_testing/test-results",
+        "repeatEach": 1,
+        "retries": 1,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Users/Best Infra/AUTOMATION TESTING/Indoore_backend_testing/src",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 240000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "reports/playwright-results.json"
+        }
+      ],
+      [
+        "list",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.60.0",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "modules\\REPORTS\\tests\\eventdetail.spec.ts",
+      "file": "modules/REPORTS/tests/eventdetail.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Event Detail Report API",
+          "file": "modules/REPORTS/tests/eventdetail.spec.ts",
+          "line": 12,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Validate Event Detail Report API",
+              "ok": false,
+              "tags": [
+                "smoke",
+                "reports",
+                "event-detail"
+              ],
+              "tests": [
+                {
+                  "timeout": 240000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 21326,
+                      "error": {
+                        "message": "Error: Expected status 200 but received 500\nResponse body: {\"success\":false,\"error\":{\"code\":\"INTERNAL_ERROR\",\"message\":\"An unexpected error occurred\"}}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m500\u001b[39m",
+                        "stack": "Error: Expected status 200 but received 500\nResponse body: {\"success\":false,\"error\":{\"code\":\"INTERNAL_ERROR\",\"message\":\"An unexpected error occurred\"}}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m500\u001b[39m\n    at AssertionEngine.validateStatusCode (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\assertion.engine.ts:20:7)\n    at validationFn (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\REPORTS\\tests\\eventdetail.spec.ts:68:28)\n    at ValidationEngine.execute (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts:32:7)\n    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\REPORTS\\tests\\eventdetail.spec.ts:67:28",
+                        "location": {
+                          "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\assertion.engine.ts",
+                          "column": 7,
+                          "line": 20
+                        },
+                        "snippet": "\u001b[90m   at \u001b[39mcore\\engine\\assertion.engine.ts:20\n\n\u001b[0m \u001b[90m 18 |\u001b[39m       actual\u001b[33m,\u001b[39m\n \u001b[90m 19 |\u001b[39m       \u001b[32m`Expected status ${expectedStatus} but received ${actual}${bodyDetail}`\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 20 |\u001b[39m     )\u001b[33m.\u001b[39mtoBe(expectedStatus)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 21 |\u001b[39m   }\n \u001b[90m 22 |\u001b[39m   \u001b[90m// =====================================\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[90m// CONTENT TYPE\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\assertion.engine.ts",
+                            "column": 7,
+                            "line": 20
+                          },
+                          "message": "Error: Expected status 200 but received 500\nResponse body: {\"success\":false,\"error\":{\"code\":\"INTERNAL_ERROR\",\"message\":\"An unexpected error occurred\"}}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m500\u001b[39m\n\n\u001b[90m   at \u001b[39mcore\\engine\\assertion.engine.ts:20\n\n\u001b[0m \u001b[90m 18 |\u001b[39m       actual\u001b[33m,\u001b[39m\n \u001b[90m 19 |\u001b[39m       \u001b[32m`Expected status ${expectedStatus} but received ${actual}${bodyDetail}`\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 20 |\u001b[39m     )\u001b[33m.\u001b[39mtoBe(expectedStatus)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 21 |\u001b[39m   }\n \u001b[90m 22 |\u001b[39m   \u001b[90m// =====================================\u001b[39m\n \u001b[90m 23 |\u001b[39m   \u001b[90m// CONTENT TYPE\u001b[39m\u001b[0m\n\u001b[2m    at AssertionEngine.validateStatusCode (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\assertion.engine.ts:20:7)\u001b[22m\n\u001b[2m    at validationFn (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\REPORTS\\tests\\eventdetail.spec.ts:68:28)\u001b[22m\n\u001b[2m    at ValidationEngine.execute (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts:32:7)\u001b[22m\n\u001b[2m    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\REPORTS\\tests\\eventdetail.spec.ts:67:28\u001b[22m"
+                        }
+                      ],
+                      "stdout": [
+                        {
+                          "text": "\n==================================\nAPI : Event Detail Report API\nDNS : 35.83 ms\nConnection : 22.26 ms\nServer Processing : 20916.91 ms\nDownload : 100 ms\nTotal : 21075 ms\n===================================\n\n"
+                        },
+                        {
+                          "text": "BACKEND FINDING: Event Detail Report API — 500 {\"success\":false,\"error\":{\"code\":\"INTERNAL_ERROR\",\"message\":\"An unexpected error occurred\"}}\n"
+                        },
+                        {
+                          "text": "\n==================================================\n"
+                        },
+                        {
+                          "text": "API TEST SUMMARY — Event Detail Report API\n"
+                        },
+                        {
+                          "text": "==================================================\n"
+                        },
+                        {
+                          "text": "RESPONSE TIME   : 21075 ms\n"
+                        },
+                        {
+                          "text": "TOTAL CHECKS    : 1\n"
+                        },
+                        {
+                          "text": "PASSED          : 0\n"
+                        },
+                        {
+                          "text": "FAILED          : 1\n"
+                        },
+                        {
+                          "text": "FINAL STATUS    : FAIL\n"
+                        },
+                        {
+                          "text": "==================================================\n"
+                        },
+                        {
+                          "text": "FAILED VALIDATIONS:\n"
+                        },
+                        {
+                          "text": "  1. Status Code\n"
+                        },
+                        {
+                          "text": "     Reason: Expected status 200 but received 500\nResponse body: {\"success\":false,\"error\":{\"code\":\"INTERNAL_ERROR\",\"message\":\"An unexpected error occurred\"}}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m500\u001b[39m\n"
+                        },
+                        {
+                          "text": "==================================================\n"
+                        },
+                        {
+                          "text": "\nDEVELOPER DEFECT REPORT: C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\reports\\defects\\Event-Detail-Report-API-2026-06-06T11-36-49-838Z.md\n"
+                        },
+                        {
+                          "text": "Share this file with the backend team (Jira / Azure DevOps / GitHub).\n\n"
+                        },
+                        {
+                          "text": "VALIDATION CHECKS (Event Detail Report API):\n"
+                        },
+                        {
+                          "text": "  0. Status Code — FAIL\n"
+                        },
+                        {
+                          "text": "==================================================\n\n"
+                        }
+                      ],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-06T11:36:28.448Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "developer-defect-report.md",
+                          "contentType": "text/markdown",
+                          "body": "IyBBUEkgZGVmZWN0IHJlcG9ydCAoZm9yIGJhY2tlbmQgZGV2ZWxvcGVyKQoKPiBBdXRvbWF0aW9uIGZhaWxlZCBvbiBhICoqYnVzaW5lc3MvQVBJIGNvbnRyYWN0KiogY2hlY2suIFRoaXMgdXN1YWxseSBpbmRpY2F0ZXMgYSBiYWNrZW5kLCBTUUwsIG9yIHJlc3BvbnNlLW1hcHBpbmcgaXNzdWUg4oCUIG5vdCBhIHRlc3Qtc2NyaXB0IHR5cG8uCgojIyBBdCBhIGdsYW5jZQoKfCBGaWVsZCB8IFZhbHVlIHwKfC0tLS0tLS18LS0tLS0tLXwKfCAqKkFQSSoqIHwgRXZlbnQgRGV0YWlsIFJlcG9ydCBBUEkgfAp8ICoqVGVzdCoqIHwgVmFsaWRhdGUgRXZlbnQgRGV0YWlsIFJlcG9ydCBBUEkgfAp8ICoqRW5kcG9pbnQqKiB8IEdFVCAvaW5kb3JlL3JlcG9ydHMvZXZlbnQtZGV0YWlsP2Zyb21EYXRlPTIwMjUtMTItMjAmdG9EYXRlPTIwMjUtMTItMjAmbGltaXQ9MzAmb3JnYW5pc2F0aW9uTG9va3VwSWQ9MzAgfAp8ICoqQmFzZSBVUkwqKiB8IGh0dHBzOi8vYXBpLmJlc3RpbmZyYS5hcHAgfAp8ICoqUmVzcG9uc2UgdGltZSoqIHwgMjEwNzUgbXMgfAp8ICoqSFRUUCBzdGF0dXMqKiB8IDUwMCB8CnwgKipGYWlsZWQgY2hlY2tzKiogfCAxIC8gMSB8CnwgKipGaXJzdCBmYWlsdXJlKiogfCBTdGF0dXMgQ29kZSB8CnwgKipSdW4gYXQqKiB8IDIwMjYtMDYtMDZUMTE6MzY6NDkuODM3WiB8CgojIyBGYWlsdXJlIGRldGFpbAoKYGBgCkV4cGVjdGVkIHN0YXR1cyAyMDAgYnV0IHJlY2VpdmVkIDUwMApSZXNwb25zZSBib2R5OiB7InN1Y2Nlc3MiOmZhbHNlLCJlcnJvciI6eyJjb2RlIjoiSU5URVJOQUxfRVJST1IiLCJtZXNzYWdlIjoiQW4gdW5leHBlY3RlZCBlcnJvciBvY2N1cnJlZCJ9fQoKG1sybWV4cGVjdCgbWzIybRtbMzFtcmVjZWl2ZWQbWzM5bRtbMm0pLhtbMjJtdG9CZRtbMm0oG1syMm0bWzMybWV4cGVjdGVkG1szOW0bWzJtKSAvLyBPYmplY3QuaXMgZXF1YWxpdHkbWzIybQoKRXhwZWN0ZWQ6IBtbMzJtMjAwG1szOW0KUmVjZWl2ZWQ6IBtbMzFtNTAwG1szOW0KYGBgCgojIyBFeHBlY3RlZCBiZWhhdmlvciAoZnJvbSBiYWNrZW5kIC8gY29udHJhY3QpCgpHRVQgL2luZG9yZS9yZXBvcnRzL2V2ZW50LWRldGFpbCBzaG91bGQgcmV0dXJuIDIwMCB3aXRoIHN1Y2Nlc3M9dHJ1ZSwgcm93c1tdLCBhcHBsaWVkRmlsdGVycywgcHJldmlld05vdGUsIGFuZCBwYWdpbmF0aW9uIG1ldGFkYXRhIGZvciB0aGUgcmVxdWVzdGVkIGRhdGUgcmFuZ2UgYW5kIG9yZ2FuaXNhdGlvbkxvb2t1cElkLgoKCiMjIFJlcXVlc3Qgc2VudCBieSBhdXRvbWF0aW9uCgpgYGBqc29uCnsKICAiZnJvbURhdGUiOiAiMjAyNS0xMi0yMCIsCiAgInRvRGF0ZSI6ICIyMDI1LTEyLTIwIiwKICAib3JnYW5pc2F0aW9uTG9va3VwSWQiOiAzMCwKICAibGltaXQiOiAzMAp9CmBgYAoKIyMgQVBJIHJlc3BvbnNlIChleGNlcnB0KQoKYGBganNvbgp7CiAgInN1Y2Nlc3MiOiBmYWxzZSwKICAiZXJyb3IiOiB7CiAgICAiY29kZSI6ICJJTlRFUk5BTF9FUlJPUiIsCiAgICAibWVzc2FnZSI6ICJBbiB1bmV4cGVjdGVkIGVycm9yIG9jY3VycmVkIgogIH0KfQpgYGAKCiMjIEFsbCBmYWlsZWQgdmFsaWRhdGlvbnMKCjEuICoqU3RhdHVzIENvZGUqKiDigJQgRXhwZWN0ZWQgc3RhdHVzIDIwMCBidXQgcmVjZWl2ZWQgNTAwClJlc3BvbnNlIGJvZHk6IHsic3VjY2VzcyI6ZmFsc2UsImVycm9yIjp7ImNvZGUiOiJJTlRFUk5BTF9FUlJPUiIsIm1lc3NhZ2UiOiJBbiB1bmV4cGVjdGVkIGVycm9yIG9jY3VycmVkIn19CgobWzJtZXhwZWN0KBtbMjJtG1szMW1yZWNlaXZlZBtbMzltG1sybSkuG1syMm10b0JlG1sybSgbWzIybRtbMzJtZXhwZWN0ZWQbWzM5bRtbMm0pIC8vIE9iamVjdC5pcyBlcXVhbGl0eRtbMjJtCgpFeHBlY3RlZDogG1szMm0yMDAbWzM5bQpSZWNlaXZlZDogG1szMW01MDAbWzM5bQoKIyMgUGFzc2VkIGNoZWNrcyBiZWZvcmUgZmFpbHVyZQoKX05vbmVfCgojIyBTdWdnZXN0ZWQgc3RlcHMgZm9yIGRldmVsb3BlcgoKMS4gUmVwcm9kdWNlIHdpdGggdGhlIHNhbWUgcXVlcnkgcGFyYW1zIChQb3N0bWFuL2N1cmwpIGFnYWluc3QgYGh0dHBzOi8vYXBpLmJlc3RpbmZyYS5hcHAvaW5kb3JlL3JlcG9ydHMvZXZlbnQtZGV0YWlsP2Zyb21EYXRlPTIwMjUtMTItMjAmdG9EYXRlPTIwMjUtMTItMjAmbGltaXQ9MzAmb3JnYW5pc2F0aW9uTG9va3VwSWQ9MzBgLgoyLiBDb21wYXJlIHJlc3BvbnNlIHdpdGggdGhlICoqRXhwZWN0ZWQgYmVoYXZpb3IqKiBzZWN0aW9uIGFib3ZlLgozLiBUcmFjZSB0aGUgcmVwb3NpdG9yeS9zZXJ2aWNlIG1ldGhvZCBmb3IgdGhpcyByZXBvcnQgYW5kIGNvbmZpcm0gU1FMIGZpbHRlcnMgKyBEVE8gZmllbGQgbmFtZXMuCjQuIEZpeCBiYWNrZW5kIGxvZ2ljIG9yIEFQSSBzZXJpYWxpemF0aW9uOyByZS1ydW46IGBucHggcGxheXdyaWdodCB0ZXN0IC0tZ3JlcCAiRXZlbnQgRGV0YWlsIFJlcG9ydCBBUEkiYC4KCi0tLQoqR2VuZXJhdGVkIGJ5IEluZG9vcmUgQVBJIGF1dG9tYXRpb24g4oCUIHNoYXJlIHRoaXMgZmlsZSBpbiBKaXJhL0F6dXJlIERldk9wcy9HaXRIdWIgaXNzdWUuKgo="
+                        },
+                        {
+                          "name": "developer-defect-report.json",
+                          "contentType": "application/json",
+                          "body": "ewogICJyZXBvcnRGaWxlIjogIkM6XFxVc2Vyc1xcQmVzdCBJbmZyYVxcQVVUT01BVElPTiBURVNUSU5HXFxJbmRvb3JlX2JhY2tlbmRfdGVzdGluZ1xccmVwb3J0c1xcZGVmZWN0c1xcRXZlbnQtRGV0YWlsLVJlcG9ydC1BUEktMjAyNi0wNi0wNlQxMS0zNi00OS04MzhaLm1kIiwKICAiaGludCI6ICJTaGFyZSBkZXZlbG9wZXItZGVmZWN0LXJlcG9ydC5tZCB3aXRoIHRoZSBiYWNrZW5kIHRlYW0iCn0="
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\test-results\\modules-REPORTS-tests-even-dc511-ate-Event-Detail-Report-API\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\assertion.engine.ts",
+                        "column": 7,
+                        "line": 20
+                      }
+                    },
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "interrupted",
+                      "duration": 11794,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 1,
+                      "startTime": "2026-06-06T11:36:51.956Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "0b335a6fc7b68905f2e6-076e817849b3153ce01d",
+              "file": "modules/REPORTS/tests/eventdetail.spec.ts",
+              "line": 13,
+              "column": 9
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-06-06T11:36:26.840Z",
+    "duration": 37076.655,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

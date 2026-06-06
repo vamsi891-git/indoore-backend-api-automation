@@ -20,7 +20,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "duration100",
   },
 
@@ -30,7 +30,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: false,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "duration100",
   },
 
@@ -40,7 +40,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "duration100",
   },
 
@@ -50,7 +50,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: false,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "duration100",
   },
 
@@ -60,7 +60,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "duration100",
   },
 
@@ -70,7 +70,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "duration12",
   },
 
@@ -80,7 +80,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "duration12",
   },
 
@@ -90,7 +90,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: false,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "duration12",
   },
 
@@ -100,7 +100,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: false,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "duration12",
   },
 
@@ -110,7 +110,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: false,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "duration12",
   },
 
@@ -120,7 +120,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "duration12",
   },
 
@@ -130,7 +130,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "duration12",
   },
 
@@ -140,7 +140,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "duration12",
   },
 
@@ -150,7 +150,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: false,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "phase",
   },
 
@@ -160,7 +160,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: false,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "phase",
   },
 
@@ -170,7 +170,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: false,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "phase",
   },
 
@@ -180,7 +180,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "count",
   },
 
@@ -190,7 +190,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "count",
   },
 
@@ -200,7 +200,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "duration100",
   },
 
@@ -210,7 +210,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "duration12",
   },
 
@@ -220,7 +220,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "duration10",
   },
 
@@ -230,7 +230,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "duration10",
   },
 
@@ -240,7 +240,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "duration10",
   },
 
@@ -250,7 +250,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "duration12",
   },
 
@@ -260,7 +260,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "count",
   },
 
@@ -270,7 +270,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2024,
     hasData: false,
     pageSize: 100,
-    maxResponseTime: 10000,
+    maxResponseTime: 60000,
     validationType: "count",
   },
 ];

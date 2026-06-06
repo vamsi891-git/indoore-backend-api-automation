@@ -1,6 +1,22 @@
 export interface SearchConsumerResponse {
     success: boolean;
-    data: SearchConsumerData;
+    data: SearchConsumerRawData;
+}
+
+export interface SearchConsumerRawData {
+    columns?: Array<{ key: string; header: string }>;
+    rows?: ConsumerItem[];
+    items?: ConsumerItem[];
+    pagination?: {
+        page: number;
+        limit: number;
+        total: number;
+        totalPages: number;
+    };
+    total?: number;
+    page?: number;
+    limit?: number;
+    totalPages?: number;
 }
 
 export interface SearchConsumerData {
@@ -50,15 +66,16 @@ export interface ConsumerItem {
 }
 
 export class SearchConsumerMapper {
-    static mapData(
-        data: SearchConsumerData
-    ): SearchConsumerData {
+    static mapData(data: SearchConsumerRawData): SearchConsumerData {
+        const items = data.rows ?? data.items ?? [];
+        const pagination = data.pagination;
+
         return {
-            items: data.items ?? [],
-            total: data.total,
-            page: data.page,
-            limit: data.limit,
-            totalPages: data.totalPages,
+            items,
+            total: pagination?.total ?? data.total ?? items.length,
+            page: pagination?.page ?? data.page ?? 1,
+            limit: pagination?.limit ?? data.limit ?? 20,
+            totalPages: pagination?.totalPages ?? data.totalPages ?? 1,
         };
     }
 }

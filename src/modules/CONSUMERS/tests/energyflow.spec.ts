@@ -44,6 +44,9 @@ test.describe("Energy Flow API",() => {
                 validation.execute("Sensitive Data",() => 
                     assert.validateSensitiveData(responseBody)
                 );
+                validation.execute("Required Fields",() =>
+                    assert.validateRequiredFields(responseBody.data, ["period", "points"])
+                );
                 const data =EnergyFlowMapper.map(responseBody);
                 const validator = new EnergyFlowValidator();
                 validation.execute("Success",() => 
@@ -52,11 +55,8 @@ test.describe("Energy Flow API",() => {
                 validation.execute("Structure",() => 
                     validator.validateStructure(data)
                 );
-                validation.execute("Titles",() => 
-                    validator.validateTitles(data)
-                );
-                validation.execute("Source",() => 
-                    validator.validateSource(data)
+                validation.execute("Period",() =>
+                    validator.validatePeriod(data)
                 );
                 validation.execute("Points Count",() => 
                     validator.validatePointsCount(data)
@@ -64,25 +64,12 @@ test.describe("Energy Flow API",() => {
                 validation.execute("Point Structure",() => 
                     validator.validatePointStructure(data.points)
                 );
-                validation.execute("Week Labels",() => 
-                    validator.validateWeekdayLabels(data.points)
-                );
-                validation.execute("Date Format",() => 
-                    validator.validateDateFormat(data.points)
+                validation.execute("Label Format",() =>
+                    validator.validateLabelFormat(data.points)
                 );
                 validation.execute("Energy Values",() => 
                     validator.validateEnergyValues(data.points)
                 );
-                validation.execute("Date Sequence",() => 
-                    validator.validateDateSequence(data.points)
-                );
-                validation.execute("Unique Dates",() => 
-                    validator.validateUniqueDates(data.points)
-                );
-                validation.execute("Day Date Match",() => 
-                    validator.validateDayDateMapping(data.points)
-                );
-
                 validation.execute("Business Rules",() => 
                     validator.validateBusinessLogic(data)
                 );
