@@ -29,7 +29,9 @@ test-results/
 playwright-report/
 blob-report/
 playwright/.cache/
-reports/
+/playwright-report/
+/blob-report/
+/test-results/
 auth.json
 test-run-output*.txt
 
