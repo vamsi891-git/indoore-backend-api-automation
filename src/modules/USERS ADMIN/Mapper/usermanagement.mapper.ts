@@ -100,11 +100,14 @@ export class UserManagementMapper {
     static mapUser(response: any): User {
         return response?.data?.user;
     }
-    static mapDevices(response: any) {
+    static mapDevices(response: any): {
+        devices: Device[];
+        unlinkedSessions: DeviceSession[];
+    } {
         const data = response?.data ?? {};
         return {
-            devices:data.devices ?? [],
-            unlinkedSessions:data.unlinkedSessions ?? []
+            devices: (data.devices ?? []) as Device[],
+            unlinkedSessions: (data.unlinkedSessions ?? []) as DeviceSession[],
         };
     }
     static mapForceLogout(response: any) {

@@ -1,20 +1,36 @@
+export type ConsumerActivationStatus = "active" | "inactive";
+
+export interface ActivationConsumer {
+    cid: string;
+    tblRefId: number;
+    name: string;
+    status: ConsumerActivationStatus | string;
+}
+
+export interface ActivationData {
+    consumer: ActivationConsumer;
+    previousStatus: ConsumerActivationStatus | string;
+}
+
 export interface ConsumerActivationResponse {
     success: boolean;
-    data: {
-        consumer: {
-            cid: string;
-            tblRefId: number;
-            name: string;
-            status: string;
-        };
-        previousStatus: string;
-    };
+    data: ActivationData;
 }
+
 export class ActivationMapper {
-    static map(response: ConsumerActivationResponse) {
+    static map(response: ConsumerActivationResponse): ActivationData & {
+        success: boolean;
+    } {
+        const data = response.data ?? ({} as ActivationData);
         return {
-            consumer: response.data.consumer,
-            previousStatus: response.data.previousStatus
+            success: response.success,
+            consumer: data.consumer ?? {
+                cid: "",
+                tblRefId: 0,
+                name: "",
+                status: "",
+            },
+            previousStatus: data.previousStatus ?? "",
         };
     }
 }

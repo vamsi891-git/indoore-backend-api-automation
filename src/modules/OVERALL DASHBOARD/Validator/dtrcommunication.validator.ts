@@ -1,52 +1,67 @@
 import { expect } from "@playwright/test";
 import {
-  RawDtrCommunicationData,
+  DtrCommunicationModel,
   dtrCommunicationResponse,
 } from "../Mapper/dtrcommunication.mapper";
+
 export class DtrCommunicationValidator {
   validateResponse(response: dtrCommunicationResponse) {
     expect(response.success).toBeTruthy();
   }
-  validateNonNegative(data: RawDtrCommunicationData) {
-    expect(data.totalActiveDtrMeters).toBeGreaterThanOrEqual(0);
-    expect(data.communicatingMeters).toBeGreaterThanOrEqual(0);
-    expect(data.nonCommunicatingMeters).toBeGreaterThanOrEqual(0);
+
+  validatePeriod(data: DtrCommunicationModel) {
+    expect(["daily", "weekly", "monthly", "yearly"]).toContain(data.period);
   }
-  validateAggregation(data: RawDtrCommunicationData) {
-    expect(data.communicatingMeters + data.nonCommunicatingMeters).toBe(
-      data.totalActiveDtrMeters,
+
+  validatePointCount(data: DtrCommunicationModel) {
+    if (data.period === "daily") {
+      expect(data.points.length).toBe(30);
+    }
+
+    if (data.period === "monthly") {
+      expect(data.points.length).toBe(24);
+    }
+
+    expect(data.points.length).toBeGreaterThan(0);
+  }
+
+  validatePoints(data: DtrCommunicationModel) {
+    data.points.forEach((point) => {
+      expect(point.label).toBeTruthy();
+      expect(point.communicatingMeters).toBeGreaterThanOrEqual(0);
+      expect(point.nonCommunicatingMeters).toBeGreaterThanOrEqual(0);
+      expect(Number.isInteger(point.communicatingMeters)).toBeTruthy();
+      expect(Number.isInteger(point.nonCommunicatingMeters)).toBeTruthy();
+    });
+  }
+
+  validateUniqueLabels(data: DtrCommunicationModel) {
+    const labels = data.points.map((point) => point.label);
+    const duplicates = labels.filter(
+      (label, index) => labels.indexOf(label) !== index,
     );
-  }
-  validateRowsCount(data: RawDtrCommunicationData) {
-    expect(data.rows.length).toBeLessThanOrEqual(data.pagination.pageSize);
-  }
-  validateStatusValues(data: RawDtrCommunicationData) {
-    const allowed = ["communicating", "non-communicating"];
-
-    for (const row of data.rows) {
-      expect(allowed.includes(row.status)).toBeTruthy();
-    }
+    expect(duplicates.length).toBe(0);
   }
 
-  validateMeterUniqueness(data: RawDtrCommunicationData) {
-    const ids = data.rows.map((x) => x.meterId);
+  validateTotals(data: DtrCommunicationModel) {
+    const communicatingTotal = data.points.reduce(
+      (sum, point) => sum + point.communicatingMeters,
+      0,
+    );
+    const nonCommunicatingTotal = data.points.reduce(
+      (sum, point) => sum + point.nonCommunicatingMeters,
+      0,
+    );
 
-    expect(new Set(ids).size).toBe(ids.length);
+    expect(communicatingTotal).toBeGreaterThanOrEqual(0);
+    expect(nonCommunicatingTotal).toBeGreaterThanOrEqual(0);
   }
 
-  validateDayTrend(data: RawDtrCommunicationData) {
-    for (const row of data.day) {
-      expect(row.communicatingMeters + row.nonCommunicatingMeters).toBe(
-        data.totalActiveDtrMeters,
-      );
-    }
-  }
-
-  validateMonthTrend(data: RawDtrCommunicationData) {
-    for (const row of data.month) {
-      expect(row.communicatingMeters + row.nonCommunicatingMeters).toBe(
-        data.totalActiveDtrMeters,
-      );
-    }
+  validateCommunicationStatus(data: DtrCommunicationModel) {
+    data.points.forEach((point) => {
+      expect(
+        point.communicatingMeters + point.nonCommunicatingMeters,
+      ).toBeGreaterThanOrEqual(0);
+    });
   }
 }

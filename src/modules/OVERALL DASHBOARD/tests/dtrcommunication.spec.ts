@@ -37,32 +37,28 @@ test.describe("DTR Communication Status API", () => {
         "Security Validation",
         () => assert.validateSensitiveData(responseBody),
       );
-      const data = DtrCommunicationMapper.mapData(responseBody.data);
+      const data = DtrCommunicationMapper.mapData(responseBody);
       const validator = new DtrCommunicationValidator();
       validation.execute("Response Validation", () =>
         validator.validateResponse(responseBody),
       );
-      validation.execute("Non Negative", () =>
-        validator.validateNonNegative(data),
+      validation.execute("Period", () => validator.validatePeriod(data));
+      validation.execute("Point Count", () =>
+        validator.validatePointCount(data),
       );
-      validation.execute("Aggregation", () =>
-        validator.validateAggregation(data),
+      validation.execute("Points Validation", () =>
+        validator.validatePoints(data),
       );
-      validation.execute("Row Count", () => validator.validateRowsCount(data));
-      validation.execute("Allowed Status", () =>
-        validator.validateStatusValues(data),
+      validation.execute("Unique Labels", () =>
+        validator.validateUniqueLabels(data),
       );
-      validation.execute("Unique Meter", () =>
-        validator.validateMeterUniqueness(data),
+      validation.execute("Totals Validation", () =>
+        validator.validateTotals(data),
       );
-      validation.execute("Day Trend", () => validator.validateDayTrend(data));
-      validation.execute("Month Trend", () =>
-        validator.validateMonthTrend(data),
+      validation.execute("Communication Status", () =>
+        validator.validateCommunicationStatus(data),
       );
-      validation.printSummary(
-        "DTR Communication API",
-        responseTime,
-      );
+      validation.printSummary("DTR Communication API", responseTime);
     },
   );
 });

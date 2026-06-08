@@ -1,8 +1,6 @@
 export const activationData = {
     consumerId: "3543025952",
-    maxResponseTime: 60000,
-    allowedStatuses: [
-        "active",
-        "inactive"
-    ]
+    requestStatus: "active",
+    maxResponseTime: 60_000,
+    allowedStatuses: ["active", "inactive"] as const,
 };

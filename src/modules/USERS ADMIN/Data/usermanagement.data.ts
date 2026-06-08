@@ -67,3 +67,8 @@ export const UserManagementData = {
 
     maxResponseTime: 60000
 };
+
+export const UserDevicesTestConfig = {
+    pageSize: 50,
+    deviceTestUserId: String(process.env.DEVICE_TEST_USER_ID ?? "").trim(),
+};

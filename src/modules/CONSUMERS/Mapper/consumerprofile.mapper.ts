@@ -1,6 +1,10 @@
 export interface ConsumerProfileResponse {
     success: boolean;
-    data: any;
+    data?: any;
+    error?: {
+        code: string;
+        message: string;
+    };
 }
 export class ConsumerProfileMapper {
     static map(response:ConsumerProfileResponse) {

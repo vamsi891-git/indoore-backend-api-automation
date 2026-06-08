@@ -1,41 +1,36 @@
-export interface TrendRow{
-    label:string;
-    communicatingMeters:number;
-    nonCommunicatingMeters:number;
+export interface DtrCommunicationPoint {
+  label: string;
+  communicatingMeters: number;
+  nonCommunicatingMeters: number;
 }
-export interface MeterRow{
-    meterId:number;
-    lastseen:string|null;
-    communicating:boolean;
-    status:string;
+
+export interface DtrCommunicationModel {
+  period: string;
+  points: DtrCommunicationPoint[];
 }
-export interface Pagination {
-    page:number;
-    pageSize:number;
-    totalCount:number;
-    totalPages:number;
-}
-export interface RawDtrCommunicationData {
-    totalActiveDtrMeters:number;
-    communicatingMeters:number;
-    nonCommunicatingMeters:number;
-    day:TrendRow[];
-    month :TrendRow[];
-    rows:MeterRow[];
-    pagination:Pagination;
-}
+
 export interface dtrCommunicationResponse {
-    success:boolean;
-    data:RawDtrCommunicationData;
-    message:string
+  success: boolean;
+  data: {
+    period: string;
+    points: Array<{
+      label: string;
+      communicating: number;
+      nonCommunicating: number;
+    }>;
+  };
+  message: string;
 }
-export class DtrCommunicationMapper{
-    static mapData(data:RawDtrCommunicationData){
-        return {
-            ...data,
-            totalActiveDtrMeters:Number(data.totalActiveDtrMeters),
-            communicatingMeters:Number(data.communicatingMeters),
-            nonCommunicatingMeters:Number(data.nonCommunicatingMeters),
-        };
-    }
+
+export class DtrCommunicationMapper {
+  static mapData(response: dtrCommunicationResponse): DtrCommunicationModel {
+    return {
+      period: response.data.period,
+      points: (response.data.points ?? []).map((point) => ({
+        label: point.label,
+        communicatingMeters: Number(point.communicating ?? 0),
+        nonCommunicatingMeters: Number(point.nonCommunicating ?? 0),
+      })),
+    };
+  }
 }
