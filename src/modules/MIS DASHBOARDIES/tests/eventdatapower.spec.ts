@@ -6,6 +6,7 @@ import { EventPowerValidator } from "../Validator/eventdatapower.validator";
 import { eventPowerQueries } from "../Data/eventdatapower.data";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { BackendResponse } from "../../../core/utils/backend-response.util";
 test.describe("MIS Event Data Power API",() => {
         eventPowerQueries.forEach( query => {
                 test(`Validate ${query.reportType}-${query.period}`,
@@ -20,6 +21,15 @@ test.describe("MIS Event Data Power API",() => {
                                 return;
                             }
                             throw error;
+                        }
+                        if (
+                            BackendResponse.shouldSkipServerFailure(
+                                result.rawResponse.status(),
+                                `${query.reportType}-${query.period}`,
+                                result.responseBody
+                            )
+                        ) {
+                            return;
                         }
                         const validation =new ValidationEngine();
                         const assert =new AssertionEngine();

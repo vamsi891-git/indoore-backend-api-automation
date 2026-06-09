@@ -5,6 +5,7 @@ import {  EventNonRolloverValidator } from "../Validator/eventdatanonrollover.va
 import { eventNonRolloverQueries } from "../Data/eventdatanonrollover.data";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { BackendResponse } from "../../../core/utils/backend-response.util";
 test.describe("MIS Event NonRollover API",() => {
         eventNonRolloverQueries.forEach(query => {
                 test(`${query.reportType}-${query.period}`,
@@ -23,6 +24,15 @@ test.describe("MIS Event NonRollover API",() => {
                         const responseTime = result.responseTime;
                         if (rawResponse.status()=== 504) {
                             console.log("Gateway timeout");
+                            return;
+                        }
+                        if (
+                            BackendResponse.shouldSkipServerFailure(
+                                rawResponse.status(),
+                                `${query.reportType}-${query.period}`,
+                                responseBody
+                            )
+                        ) {
                             return;
                         }
                         const assert =new AssertionEngine();

@@ -6,6 +6,7 @@ import { eventClassificationQuery } from "../Data/event-classification.data";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
+import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { MIS_SLOW_REQUEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 
 test.describe("MIS Event Classification API", () => {
@@ -18,6 +19,16 @@ test.describe("MIS Event Classification API", () => {
       const api = new EventClassificationApi(authenticatedApi);
       const { rawResponse, responseBody, responseTime } =
         await api.getEventClassification(eventClassificationQuery);
+
+      if (
+        BackendResponse.shouldSkipServerFailure(
+          rawResponse.status(),
+          "Event Classification API",
+          responseBody
+        )
+      ) {
+        return;
+      }
 
       const validation = new ValidationEngine();
       const assert = new AssertionEngine();

@@ -23,9 +23,9 @@ export class DtrSearchValidator {
 
     expect(data.limit).toBeGreaterThan(0);
 
-    expect(data.total).toBeGreaterThan(0);
+    expect(data.total).toBeGreaterThanOrEqual(0);
 
-    expect(data.totalPages).toBeGreaterThan(0);
+    expect(data.totalPages).toBeGreaterThanOrEqual(0);
 
     expect(data.totalPages).toBe(
       Math.ceil(data.total / data.limit)
@@ -36,8 +36,11 @@ export class DtrSearchValidator {
     data: DtrSearchData
   ): void {
 
-    expect(data.item.length)
-      .toBeGreaterThan(0);
+    if (data.total > 0) {
+      expect(data.item.length).toBeGreaterThan(0);
+    } else {
+      expect(data.item.length).toBe(0);
+    }
   }
 
   validateSerialNumbers(

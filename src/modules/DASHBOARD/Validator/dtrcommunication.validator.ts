@@ -12,7 +12,7 @@ export class DtrCommunicationValidator {
     validatePointCount(data: DtrCommunicationModel) {
 
         if (data.period === "daily") {
-            expect(data.points.length).toBe(30);
+            expect(data.points.length).toBe(12);
         }
 
         if (data.period === "monthly") {

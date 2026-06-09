@@ -5,6 +5,11 @@ export const commercialSummaryData = {
     maxResponseTime: 120_000,
     expectedReportCount: 24,
     expectedCategory: "commercial",
+    /** Backend hardcodes night/day-night counts to zero until load-profile integration */
+    reportsExpectedAllZero: [
+        "night_zero_consumption",
+        "night_lte_threshold",
+    ] as const,
     expectedAnalysisTypes: [
         "pf_violation",
         "md_gt_cd_last_three_months",
@@ -61,5 +66,32 @@ export const commercialSummaryData = {
         improper_md: "Improper MD",
         night_zero_consumption: "Night Zero Consumption",
         night_lte_threshold: "Night consumption <= 10% of Day consumption",
+    } as const,
+    reportGroups: {
+        loadFactor: ["lf_lt_5", "lf_gt_100", "lf_lt_5_last_3m", "lf_lt_5_last_6m"],
+        mdAnalysis: [
+            "md_gt_cd_last_three_months",
+            "sanction_load_violation",
+            "improper_md",
+        ],
+        consumptionCompare: [
+            "consumption_compare_prev_month",
+            "consumption_compare_same_month_last_year",
+            "abnormal_high",
+            "abnormal_low",
+        ],
+        zeroConsumption: [
+            "zero_consumption_1m",
+            "zero_consumption_3m",
+            "zero_consumption_6m",
+            "zero_consumption_9m",
+            "zero_consumption_12m",
+            "zero_consumption_gt_12m",
+        ],
+        lowConsumption: [
+            "low_consumption_100_units_3m",
+            "low_consumption_100_units_6m",
+            "low_consumption_100_units_9m",
+        ],
     } as const,
 };

@@ -1,10 +1,5 @@
 import { expect } from "@playwright/test";
-import {
-    FeederProfileData,
-    FeederProfileResponse,
-    OverviewItem
-} from "../Mapper/feederprofile.mapper";
-
+import { FeederProfileData, FeederProfileResponse, OverviewItem} from "../Mapper/feederprofile.mapper";
 export class FeederProfileValidator {
     validateSuccess(response: FeederProfileResponse): void {
         expect(response.success).toBe(true);

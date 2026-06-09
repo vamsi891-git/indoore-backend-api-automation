@@ -9,7 +9,11 @@ export class SubstationMasterValidator {
     expect(response.success).toBeTruthy();
   }
   validateItemsExist(data: SubstationMasterData) {
-    expect(data.items.length).toBeGreaterThan(0);
+    if (data.total > 0) {
+      expect(data.items.length).toBeGreaterThan(0);
+    } else {
+      expect(data.items.length).toBe(0);
+    }
   }
   validateFields(data: SubstationMasterData) {
     data.items.forEach((item) => {

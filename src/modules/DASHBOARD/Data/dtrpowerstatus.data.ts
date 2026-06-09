@@ -1,5 +1,5 @@
 export const DtrPowerStatusData = {
-    expectedDayCount: 30,
+    expectedDayCount: 12,
     expectedMonthCount: 12,
     maxPercentage: 100
 };

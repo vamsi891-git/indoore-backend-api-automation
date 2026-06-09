@@ -6,6 +6,8 @@
   "scripts": {
     "test": "playwright test",
     "test:smoke": "playwright test --grep @smoke",
+    "test:hes": "playwright test --grep @hes",
+    "test:commands": "playwright test --grep @commands",
     "test:ui": "playwright test --ui",
     "report": "playwright show-report",
     "report:defects": "explorer reports\\defects",

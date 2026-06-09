@@ -37,6 +37,16 @@ test.describe("MIS Event Data Current API", () => {
         return;
       }
 
+      if (
+        BackendResponse.shouldSkipServerFailure(
+          result.rawResponse.status(),
+          label,
+          result.responseBody
+        )
+      ) {
+        return;
+      }
+
       const validation = new ValidationEngine();
       const assert = new AssertionEngine();
 

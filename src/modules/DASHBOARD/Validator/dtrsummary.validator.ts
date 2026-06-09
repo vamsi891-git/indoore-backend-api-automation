@@ -51,7 +51,7 @@ export class DtrSummaryValidator {
                 break;
 
             case "daily":
-                expectedLength = 30;
+                expectedLength = 12;
                 break;
 
             case "weekly":

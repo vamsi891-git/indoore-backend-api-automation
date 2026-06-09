@@ -26,6 +26,8 @@ test.describe("Commercial Summary API", () => {
                 expectedCategory,
                 expectedAnalysisTypes,
                 expectedReportNames,
+                reportsExpectedAllZero,
+                reportGroups,
             } = commercialSummaryData;
 
             const { rawResponse, responseBody, responseTime } =
@@ -61,7 +63,6 @@ test.describe("Commercial Summary API", () => {
                     "reports",
                 ]),
             );
-
             const mapped = CommercialSummaryMapper.map(responseBody);
             const { reports } = mapped;
 
@@ -91,8 +92,26 @@ test.describe("Commercial Summary API", () => {
                     expectedAnalysisTypes,
                 ),
             );
+            validation.execute("Reports Order", () =>
+                validator.validateReportsOrder(reports, expectedAnalysisTypes),
+            );
+            validation.execute("Report Groups", () =>
+                validator.validateReportGroupsPresent(reports, reportGroups),
+            );
             validation.execute("Commercial Category", () =>
                 validator.validateCommercialCategory(reports, expectedCategory),
+            );
+            validation.execute("Night Reports Placeholder", () =>
+                validator.validateNightReportsPlaceholder(
+                    reports,
+                    reportsExpectedAllZero,
+                ),
+            );
+            validation.execute("Aggregate Totals", () =>
+                validator.validateAggregateTotals(reports),
+            );
+            validation.execute("Likely Data Presence", () =>
+                validator.validateLikelyDataPresence(reports),
             );
             validation.execute("Business Rules", () =>
                 validator.validateBusinessRules(mapped),
@@ -104,8 +123,14 @@ test.describe("Commercial Summary API", () => {
                 validation.execute(`${label} Required Fields`, () =>
                     validator.validateReportRequiredFields(report),
                 );
+                validation.execute(`${label} Field Whitelist`, () =>
+                    validator.validateReportFieldWhitelist(report),
+                );
                 validation.execute(`${label} Structure`, () =>
                     validator.validateReportStructure(report),
+                );
+                validation.execute(`${label} Integer Counts`, () =>
+                    validator.validateIntegerCounts(report),
                 );
                 validation.execute(`${label} Counts`, () =>
                     validator.validateReportCounts(report),
@@ -121,6 +146,9 @@ test.describe("Commercial Summary API", () => {
                 );
                 validation.execute(`${label} No NaN`, () =>
                     validator.validateNoNaN(report),
+                );
+                validation.execute(`${label} No Nullish Counts`, () =>
+                    validator.validateNoNullishCounts(report),
                 );
                 validation.execute(`${label} Dom/Non-Dom Split`, () =>
                     validator.validateDomesticNonDomesticSplit(report),
