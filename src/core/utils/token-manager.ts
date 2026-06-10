@@ -48,9 +48,6 @@ export class TokenManager {
     if (this.token && this.token !== currentToken) {
       return this.token;
     }
-    if (Date.now() < this.refreshAtEpochMs) {
-      return currentToken;
-    }
     await this.refreshToken(true);
     if (!this.token) {
       throw new Error("Token unavailable after unauthorized recovery");

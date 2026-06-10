@@ -8,6 +8,7 @@
     "test:smoke": "playwright test --grep @smoke",
     "test:hes": "playwright test --grep @hes",
     "test:commands": "playwright test --grep @commands",
+    "test:auth": "node --max-old-space-size=4096 ./node_modules/@playwright/test/cli.js test --grep @auth",
     "test:ui": "playwright test --ui",
     "report": "playwright show-report",
     "report:defects": "explorer reports\\defects",
