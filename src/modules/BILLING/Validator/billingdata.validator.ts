@@ -1,6 +1,29 @@
 import { expect } from "@playwright/test";
-import { BillingData, BillingItem} from "../Mapper/billingdata.mapper";
+import { BillingData } from "../Mapper/billingdata.mapper";
+import {
+    BillingDataResponseSchema,
+    type ParsedBillingDataResponse,
+} from "../schemas/billing.schemas";
+
+/** API dates are `YYYY-MM-DD HH:mm:ss` — parse calendar parts to avoid TZ drift. */
+function billingCalendarParts(billingDate: string): { month: number; year: number } {
+    const datePart = billingDate.trim().slice(0, 10);
+    const [year, month] = datePart.split("-").map(Number);
+    return { year, month };
+}
+
 export class BillingDataValidator {
+    validateZodResponseSchema(body: unknown): ParsedBillingDataResponse {
+        const result = BillingDataResponseSchema.safeParse(body);
+        expect(
+            result.success,
+            result.success
+                ? "Zod validation passed"
+                : `Zod contract mismatch:\n${JSON.stringify(result.error.format(), null, 2)}`,
+        ).toBe(true);
+        return result.data!;
+    }
+
     validateBillingDataExists(data: BillingData) {
         expect(data).toBeTruthy();
         expect(data.items).toBeDefined();
@@ -40,20 +63,32 @@ export class BillingDataValidator {
     }
     validateEnergyCalculation(data: BillingData) {
         data.items.forEach(item => {
-            const totalKwh = item.kwhT1 + item.kwhT2 + item.kwhT3 + item.kwhT4;
-            expect(Math.abs(item.kwhC - totalKwh)).toBeLessThanOrEqual(10);
+            const totalKwh =
+                (item.kwhT1 ?? 0) +
+                (item.kwhT2 ?? 0) +
+                (item.kwhT3 ?? 0) +
+                (item.kwhT4 ?? 0);
+            expect(Math.abs((item.kwhC ?? 0) - totalKwh)).toBeLessThanOrEqual(10);
         });
     }
     validateKvahCalculation(data: BillingData) {
         data.items.forEach(item => {
-            const totalKvah = item.kvahT1 + item.kvahT2 + item.kvahT3 + item.kvahT4;
-            expect(Math.abs(item.kvahC - totalKvah)).toBeLessThanOrEqual(10);
+            const totalKvah =
+                (item.kvahT1 ?? 0) +
+                (item.kvahT2 ?? 0) +
+                (item.kvahT3 ?? 0) +
+                (item.kvahT4 ?? 0);
+            expect(Math.abs((item.kvahC ?? 0) - totalKvah)).toBeLessThanOrEqual(10);
         });
     }
     validateElectricalBusinessRules(data: BillingData) {
         data.items.forEach(item => {
-            expect(item.kvahC).toBeGreaterThanOrEqual(item.kwhC);
-            expect(item.mdKva).toBeGreaterThanOrEqual(item.mdKw);
+            if (item.kvahC != null && item.kwhC != null) {
+                expect(item.kvahC).toBeGreaterThanOrEqual(item.kwhC);
+            }
+            if (item.mdKva != null && item.mdKw != null) {
+                expect(item.mdKva).toBeGreaterThanOrEqual(item.mdKw);
+            }
         });
     }
     validateExportEnergy(data: BillingData) {
@@ -65,10 +100,11 @@ export class BillingDataValidator {
     validateBillingMonthYear(data: BillingData,expectedMonth: number,expectedYear: number) {
         expect(data.month).toBe(expectedMonth);
         expect(data.year).toBe(expectedYear);
-        data.items.forEach(item => {
-            const billingDate = new Date(item.billingDate);
-            expect(billingDate.getMonth() + 1).toBe(expectedMonth);
-            expect(billingDate.getFullYear()).toBe(expectedYear);
+        data.items.forEach((item) => {
+            expect(item.billingDate).toBeTruthy();
+            const { month, year } = billingCalendarParts(item.billingDate!);
+            expect(month).toBe(expectedMonth);
+            expect(year).toBe(expectedYear);
         });
     }
     validateDuplicateSlNos(data: BillingData) {

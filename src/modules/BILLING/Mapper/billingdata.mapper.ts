@@ -1,3 +1,13 @@
+import {
+    BillingDataResponseSchema,
+    isBillingGridPayload,
+    type BillingDataPayload,
+    type BillingItem,
+    type ParsedBillingDataResponse,
+} from "../schemas/billing.schemas";
+
+export type { BillingItem };
+
 export interface BillingDataResponse {
     success: boolean;
     data: BillingData;
@@ -13,54 +23,42 @@ export interface BillingData {
     items: BillingItem[];
 }
 
-export interface BillingItem {
-    slNo: number;
-    circle: string | null;
-    division: string | null;
-    zone: string | null;
-    substation: string | null;
-    feeder: string | null;
-    dtr: string | null;
-    sanctionedLoadKw: number | null;
-    consumerName: string | null;
-    consumerAddress: string | null;
-    ivrsNumber: string | null;
-    tariff: string | null;
-    meterNumber: string;
-    phase: string;
-    mf: number;
-    billingDate: string;
-    entryDateTime: string;
-    pf: number;
-    kwhC: number;
-    kwhT1: number;
-    kwhT2: number;
-    kwhT3: number;
-    kwhT4: number;
-    kvahC: number;
-    kvahT1: number;
-    kvahT2: number;
-    kvahT3: number;
-    kvahT4: number;
-    mdKw: number;
-    mdKwOt: string;
-    mdKva: number;
-    mdKvaOt: string;
-    billOnMin: number;
-    kwhExpC: number;
-    kvahExpC: number;
+export interface BillingDataQuery {
+    month: number;
+    year: number;
+    page: number;
+    limit: number;
 }
 
 export class BillingDataMapper {
-    static mapData(data: BillingData): BillingData {
+    /** Validates API contract before business-rule validators run. */
+    static parseResponse(body: unknown): ParsedBillingDataResponse {
+        return BillingDataResponseSchema.parse(body);
+    }
+
+    /** Normalizes grid `{ rows, pagination }` or legacy flat `{ items, total }` shape. */
+    static mapData(data: BillingDataPayload, query: BillingDataQuery): BillingData {
+        if (isBillingGridPayload(data)) {
+            const { pagination, rows } = data;
+            return {
+                month: query.month,
+                year: query.year,
+                page: pagination.page,
+                limit: pagination.limit,
+                total: pagination.total,
+                totalPages: pagination.totalPages,
+                items: rows,
+            };
+        }
+
         return {
-            month: data.month ?? 0,
-            year: data.year ?? 0,
-            page: data.page ?? 1,
-            limit: data.limit ?? 10,
+            month: data.month ?? query.month,
+            year: data.year ?? query.year,
+            page: data.page ?? query.page,
+            limit: data.limit ?? query.limit,
             total: data.total ?? 0,
             totalPages: data.totalPages ?? 0,
-            items: data.items ?? []
+            items: data.items ?? [],
         };
     }
 }

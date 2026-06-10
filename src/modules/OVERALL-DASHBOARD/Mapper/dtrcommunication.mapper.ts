@@ -25,8 +25,8 @@ export interface dtrCommunicationResponse {
 export class DtrCommunicationMapper {
   static mapData(response: dtrCommunicationResponse): DtrCommunicationModel {
     return {
-      period: response.data.period,
-      points: (response.data.points ?? []).map((point) => ({
+      period: response.data?.period ?? "",
+      points: (response.data?.points ?? []).map((point) => ({
         label: point.label,
         communicatingMeters: Number(point.communicating ?? 0),
         nonCommunicatingMeters: Number(point.nonCommunicating ?? 0),

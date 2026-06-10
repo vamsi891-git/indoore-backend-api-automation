@@ -6,11 +6,8 @@ import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker} from "../../../../src/core/utils/performancetracker";
 import { DtrDetailTestData } from "../Data/DtrId.data";
-test.describe(
-    "DTR Detail API",
-    () => {
-        test(
-            "Validate DTR Detail API",
+test.describe("DTR Detail API",() => {
+        test("Validate DTR Detail API",
             {
                 tag: [
                     "@smoke",

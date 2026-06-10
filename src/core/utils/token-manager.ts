@@ -25,71 +25,52 @@ export class TokenManager {
 
   static async getToken(): Promise<string> {
     this.syncFromDisk();
-
     if (this.shouldRefresh()) {
       await this.refreshToken(false);
     }
-
     if (!this.token) {
       throw new Error("Token unavailable after refresh");
     }
-
     return this.token;
   }
-
   static async getCsrf(): Promise<string> {
     this.syncFromDisk();
-
     if (this.shouldRefresh()) {
       await this.refreshToken(false);
     }
-
     if (!this.csrfToken) {
       throw new Error("CSRF token unavailable after refresh");
     }
-
     return this.csrfToken;
   }
-
   static async handleUnauthorized(currentToken: string): Promise<string> {
     this.syncFromDisk();
-
     if (this.token && this.token !== currentToken) {
       return this.token;
     }
-
     if (Date.now() < this.refreshAtEpochMs) {
       return currentToken;
     }
-
     await this.refreshToken(true);
-
     if (!this.token) {
       throw new Error("Token unavailable after unauthorized recovery");
     }
-
     return this.token;
   }
 
-  static seed(
-    accessToken: string,
-    expiresInSeconds = this.defaultExpirySeconds,
-    csrfToken?: string
-  ): void {
+  static seed(accessToken: string,expiresInSeconds = this.defaultExpirySeconds,csrfToken?: string): void {
     this.applyToken(accessToken, expiresInSeconds);
     if (csrfToken) {
       this.csrfToken = csrfToken;
     }
     this.persistToken(this.token!, this.expiresAtEpochMs());
   }
-
   static reset(): void {
     this.token = null;
     this.csrfToken = null;
     this.refreshAtEpochMs = 0;
     this.refreshPromise = null;
   }
-
   static clearStaleLock(): void {
     if (fs.existsSync(this.lockFilePath)) {
       fs.unlinkSync(this.lockFilePath);
@@ -97,21 +78,15 @@ export class TokenManager {
   }
 
   /** Reuse a still-valid token from disk to avoid flaky login during global setup. */
-  static loadValidSession(): {
-    accessToken: string;
-    expiresInSeconds: number;
-    csrfToken?: string;
-  } | null {
+  static loadValidSession(): {accessToken: string;expiresInSeconds: number;csrfToken?: string;} | null {
     const stored = this.readStoredToken();
     if (!stored) {
       return null;
     }
-
     const remainingMs = stored.expiresAt - Date.now();
     if (remainingMs <= this.refreshBufferMs) {
       return null;
     }
-
     return {
       accessToken: stored.accessToken,
       expiresInSeconds: Math.max(
@@ -134,61 +109,45 @@ export class TokenManager {
     this.token = accessToken;
     this.refreshAtEpochMs = Date.now() + expiresInSeconds * 1000 - this.refreshBufferMs;
   }
-
-  private static applySession(session: {
-    accessToken: string;
-    expiresIn?: number;
-    csrfToken: string;
-  }): void {
+  private static applySession(session: {accessToken: string;expiresIn?: number;csrfToken: string;}): void {
     this.applyToken(session.accessToken, session.expiresIn ?? this.defaultExpirySeconds);
     this.csrfToken = session.csrfToken;
   }
-
   private static syncFromDisk(): void {
     const stored = this.readStoredToken();
     if (!stored) {
       return;
     }
-
     const storedRefreshAt = stored.expiresAt - this.refreshBufferMs;
     const memoryExpiresAt = this.token ? this.expiresAtEpochMs() : 0;
-
     if (!this.token || stored.expiresAt > memoryExpiresAt) {
       this.token = stored.accessToken;
       this.refreshAtEpochMs = storedRefreshAt;
     }
-
     if (stored.csrfToken) {
       this.csrfToken = stored.csrfToken;
     }
   }
-
   private static async refreshToken(force: boolean): Promise<void> {
     if (this.refreshPromise) {
       await this.refreshPromise;
       return;
     }
-
     this.refreshPromise = this.runRefresh(force);
-
     try {
       await this.refreshPromise;
     } finally {
       this.refreshPromise = null;
     }
   }
-
   private static async runRefresh(force: boolean): Promise<void> {
     await this.withRefreshLock(async () => {
       this.syncFromDisk();
-
       if (!force && this.token && Date.now() < this.refreshAtEpochMs) {
         return;
       }
-
       const previousToken = this.token;
       LoggerEngine.info(force ? "Token force refresh started" : "Token refresh started");
-
       try {
         if (previousToken) {
           const refreshed = await AuthApi.refresh(previousToken);
@@ -207,11 +166,9 @@ export class TokenManager {
       );
     });
   }
-
   private static async withRefreshLock<T>(task: () => Promise<T>): Promise<T> {
     this.ensureAuthDir();
     const deadline = Date.now() + this.lockWaitMs;
-
     while (Date.now() < deadline) {
       try {
         fs.writeFileSync(this.lockFilePath, `${process.pid}:${Date.now()}`, { flag: "wx" });
@@ -228,10 +185,8 @@ export class TokenManager {
         await this.sleep(this.lockPollMs);
       }
     }
-
     throw new Error("Timed out waiting for token refresh lock");
   }
-
   private static releaseLock(): void {
     try {
       if (fs.existsSync(this.lockFilePath)) {
@@ -241,12 +196,10 @@ export class TokenManager {
       // Ignore stale lock cleanup races between workers.
     }
   }
-
   private static readStoredToken(): StoredToken | null {
     if (!fs.existsSync(this.tokenFilePath)) {
       return null;
     }
-
     try {
       const parsed = JSON.parse(fs.readFileSync(this.tokenFilePath, "utf-8")) as StoredToken;
       if (!parsed.accessToken || !parsed.expiresAt || parsed.expiresAt <= Date.now()) {
@@ -257,7 +210,6 @@ export class TokenManager {
       return null;
     }
   }
-
   private static persistToken(accessToken: string, expiresAt: number): void {
     this.ensureAuthDir();
     fs.writeFileSync(
@@ -273,13 +225,11 @@ export class TokenManager {
       )
     );
   }
-
   private static ensureAuthDir(): void {
     if (!fs.existsSync(this.authDir)) {
       fs.mkdirSync(this.authDir, { recursive: true });
     }
   }
-
   private static sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }

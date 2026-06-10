@@ -1,6 +1,22 @@
 import { expect } from "@playwright/test";
-import { DaywiseBillingData} from "../Mapper/daywisebilling.mapper";
+import { DaywiseBillingData } from "../Mapper/daywisebilling.mapper";
+import {
+    DaywiseBillingResponseSchema,
+    type ParsedDaywiseBillingResponse,
+} from "../schemas/billing.schemas";
+
 export class DaywiseBillingValidator {
+    validateZodResponseSchema(body: unknown): ParsedDaywiseBillingResponse {
+        const result = DaywiseBillingResponseSchema.safeParse(body);
+        expect(
+            result.success,
+            result.success
+                ? "Zod validation passed"
+                : `Zod contract mismatch:\n${JSON.stringify(result.error.format(), null, 2)}`,
+        ).toBe(true);
+        return result.data!;
+    }
+
     validateDataExists(data: DaywiseBillingData) {
         expect(data).toBeTruthy();
         expect(data.items).toBeDefined();

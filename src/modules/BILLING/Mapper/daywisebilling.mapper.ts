@@ -1,3 +1,10 @@
+import {
+    DaywiseBillingResponseSchema,
+    isDaywiseGridPayload,
+    type DaywiseBillingDataPayload,
+    type ParsedDaywiseBillingResponse,
+} from "../schemas/billing.schemas";
+
 export interface DaywiseBillingResponse {
     success: boolean;
     data: DaywiseBillingData;
@@ -65,22 +72,49 @@ export interface DaywiseBillingItem {
 
 }
 
-export class DaywiseBillingMapper {
+export interface DaywiseBillingQuery {
+    month: number;
+    year: number;
+    page: number;
+    limit: number;
+}
 
-    static mapData(data: DaywiseBillingData): DaywiseBillingData {
+export class DaywiseBillingMapper {
+    /** Validates API contract before business-rule validators run. */
+    static parseResponse(body: unknown): ParsedDaywiseBillingResponse {
+        return DaywiseBillingResponseSchema.parse(body);
+    }
+
+    /** Normalizes grid `{ rows, pagination }` or legacy flat `{ items, total }` shape. */
+    static mapData(
+        data: DaywiseBillingDataPayload,
+        query: DaywiseBillingQuery,
+    ): DaywiseBillingData {
+        if (isDaywiseGridPayload(data)) {
+            const { pagination, rows } = data;
+            return {
+                month: query.month,
+                year: query.year,
+                page: pagination.page,
+                limit: pagination.limit,
+                total: pagination.total,
+                totalPages: pagination.totalPages,
+                hasMore: pagination.page < pagination.totalPages,
+                totalExact: true,
+                items: rows,
+            };
+        }
+
         return {
-            month: data.month ?? 0,
-            year: data.year ?? 0,
-            page: data.page ?? 1,
-            limit: data.limit ?? 10,
+            month: data.month ?? query.month,
+            year: data.year ?? query.year,
+            page: data.page ?? query.page,
+            limit: data.limit ?? query.limit,
             total: data.total ?? 0,
             totalPages: data.totalPages ?? 0,
             hasMore: data.hasMore ?? false,
             totalExact: data.totalExact ?? false,
-            items: data.items ?? []
-
+            items: data.items ?? [],
         };
-
     }
-
 }

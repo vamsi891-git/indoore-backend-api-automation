@@ -5,11 +5,8 @@ import { OrganisationHierarchyValidator} from "../Validator/organizationhierarch
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import {ValidationEngine} from "../../../core/engine/validation.engine";
 import { PerformanceTracker} from "../../../../src/core/utils/performancetracker";
-test.describe(
-    "Organisation Hierarchy API",
-    () => {
-        test(
-            "Validate Organisation Hierarchy API",
+test.describe("Organisation Hierarchy API",() => {
+        test("Validate Organisation Hierarchy API",
             {
                 tag: [
                     "@smoke",
