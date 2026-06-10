@@ -66,15 +66,15 @@
   },
   "suites": [
     {
-      "title": "modules\\COMMERICIAL ANALYSIS\\tests\\commercial-summary.spec.ts",
-      "file": "modules/COMMERICIAL ANALYSIS/tests/commercial-summary.spec.ts",
+      "title": "modules\\COMMERICIAL-ANALYSIS\\tests\\commercial-summary.spec.ts",
+      "file": "modules/COMMERICIAL-ANALYSIS/tests/commercial-summary.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
           "title": "Commercial Summary API",
-          "file": "modules/COMMERICIAL ANALYSIS/tests/commercial-summary.spec.ts",
+          "file": "modules/COMMERICIAL-ANALYSIS/tests/commercial-summary.spec.ts",
           "line": 10,
           "column": 6,
           "specs": [
@@ -98,11 +98,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 5069,
+                      "duration": 4343,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Commercial Summary API\nDNS : 32.76 ms\nConnection : 22.9 ms\nServer Processing : 3515.3399999999997 ms\nDownload : 100 ms\nTotal : 3671 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Commercial Summary API\nDNS : 1.6 ms\nConnection : 25.92 ms\nServer Processing : 2561.48 ms\nDownload : 100 ms\nTotal : 2689 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -114,13 +114,13 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 3671 ms\n"
+                          "text": "RESPONSE TIME   : 2689 ms\n"
                         },
                         {
-                          "text": "TOTAL CHECKS    : 184\n"
+                          "text": "TOTAL CHECKS    : 261\n"
                         },
                         {
-                          "text": "PASSED          : 184\n"
+                          "text": "PASSED          : 261\n"
                         },
                         {
                           "text": "FAILED          : 0\n"
@@ -177,514 +177,745 @@
                           "text": "  13. Expected Analysis Types — PASS\n"
                         },
                         {
-                          "text": "  14. Commercial Category — PASS\n"
+                          "text": "  14. Reports Order — PASS\n"
                         },
                         {
-                          "text": "  15. Business Rules — PASS\n"
+                          "text": "  15. Report Groups — PASS\n"
                         },
                         {
-                          "text": "  16. pf_violation Required Fields — PASS\n"
+                          "text": "  16. Commercial Category — PASS\n"
                         },
                         {
-                          "text": "  17. pf_violation Structure — PASS\n"
+                          "text": "  17. Night Reports Placeholder — PASS\n"
                         },
                         {
-                          "text": "  18. pf_violation Counts — PASS\n"
+                          "text": "  18. Aggregate Totals — PASS\n"
                         },
                         {
-                          "text": "  19. pf_violation Zero Count Logic — PASS\n"
+                          "text": "  19. Likely Data Presence — PASS\n"
                         },
                         {
-                          "text": "  20. pf_violation Report Name — PASS\n"
+                          "text": "  20. Business Rules — PASS\n"
                         },
                         {
-                          "text": "  21. pf_violation No NaN — PASS\n"
+                          "text": "  21. pf_violation Required Fields — PASS\n"
                         },
                         {
-                          "text": "  22. pf_violation Dom/Non-Dom Split — PASS\n"
+                          "text": "  22. pf_violation Field Whitelist — PASS\n"
                         },
                         {
-                          "text": "  23. md_gt_cd_last_three_months Required Fields — PASS\n"
+                          "text": "  23. pf_violation Structure — PASS\n"
                         },
                         {
-                          "text": "  24. md_gt_cd_last_three_months Structure — PASS\n"
+                          "text": "  24. pf_violation Integer Counts — PASS\n"
                         },
                         {
-                          "text": "  25. md_gt_cd_last_three_months Counts — PASS\n"
+                          "text": "  25. pf_violation Counts — PASS\n"
                         },
                         {
-                          "text": "  26. md_gt_cd_last_three_months Zero Count Logic — PASS\n"
+                          "text": "  26. pf_violation Zero Count Logic — PASS\n"
                         },
                         {
-                          "text": "  27. md_gt_cd_last_three_months Report Name — PASS\n"
+                          "text": "  27. pf_violation Report Name — PASS\n"
                         },
                         {
-                          "text": "  28. md_gt_cd_last_three_months No NaN — PASS\n"
+                          "text": "  28. pf_violation No NaN — PASS\n"
                         },
                         {
-                          "text": "  29. md_gt_cd_last_three_months Dom/Non-Dom Split — PASS\n"
+                          "text": "  29. pf_violation No Nullish Counts — PASS\n"
                         },
                         {
-                          "text": "  30. sanction_load_violation Required Fields — PASS\n"
+                          "text": "  30. pf_violation Dom/Non-Dom Split — PASS\n"
                         },
                         {
-                          "text": "  31. sanction_load_violation Structure — PASS\n"
+                          "text": "  31. md_gt_cd_last_three_months Required Fields — PASS\n"
                         },
                         {
-                          "text": "  32. sanction_load_violation Counts — PASS\n"
+                          "text": "  32. md_gt_cd_last_three_months Field Whitelist — PASS\n"
                         },
                         {
-                          "text": "  33. sanction_load_violation Zero Count Logic — PASS\n"
+                          "text": "  33. md_gt_cd_last_three_months Structure — PASS\n"
                         },
                         {
-                          "text": "  34. sanction_load_violation Report Name — PASS\n"
+                          "text": "  34. md_gt_cd_last_three_months Integer Counts — PASS\n"
                         },
                         {
-                          "text": "  35. sanction_load_violation No NaN — PASS\n"
+                          "text": "  35. md_gt_cd_last_three_months Counts — PASS\n"
                         },
                         {
-                          "text": "  36. sanction_load_violation Dom/Non-Dom Split — PASS\n"
+                          "text": "  36. md_gt_cd_last_three_months Zero Count Logic — PASS\n"
                         },
                         {
-                          "text": "  37. lf_lt_5 Required Fields — PASS\n"
+                          "text": "  37. md_gt_cd_last_three_months Report Name — PASS\n"
                         },
                         {
-                          "text": "  38. lf_lt_5 Structure — PASS\n"
+                          "text": "  38. md_gt_cd_last_three_months No NaN — PASS\n"
                         },
                         {
-                          "text": "  39. lf_lt_5 Counts — PASS\n"
+                          "text": "  39. md_gt_cd_last_three_months No Nullish Counts — PASS\n"
                         },
                         {
-                          "text": "  40. lf_lt_5 Zero Count Logic — PASS\n"
+                          "text": "  40. md_gt_cd_last_three_months Dom/Non-Dom Split — PASS\n"
                         },
                         {
-                          "text": "  41. lf_lt_5 Report Name — PASS\n"
+                          "text": "  41. sanction_load_violation Required Fields — PASS\n"
                         },
                         {
-                          "text": "  42. lf_lt_5 No NaN — PASS\n"
+                          "text": "  42. sanction_load_violation Field Whitelist — PASS\n"
                         },
                         {
-                          "text": "  43. lf_lt_5 Dom/Non-Dom Split — PASS\n"
+                          "text": "  43. sanction_load_violation Structure — PASS\n"
                         },
                         {
-                          "text": "  44. lf_gt_100 Required Fields — PASS\n"
+                          "text": "  44. sanction_load_violation Integer Counts — PASS\n"
                         },
                         {
-                          "text": "  45. lf_gt_100 Structure — PASS\n"
+                          "text": "  45. sanction_load_violation Counts — PASS\n"
                         },
                         {
-                          "text": "  46. lf_gt_100 Counts — PASS\n"
+                          "text": "  46. sanction_load_violation Zero Count Logic — PASS\n"
                         },
                         {
-                          "text": "  47. lf_gt_100 Zero Count Logic — PASS\n"
+                          "text": "  47. sanction_load_violation Report Name — PASS\n"
                         },
                         {
-                          "text": "  48. lf_gt_100 Report Name — PASS\n"
+                          "text": "  48. sanction_load_violation No NaN — PASS\n"
                         },
                         {
-                          "text": "  49. lf_gt_100 No NaN — PASS\n"
+                          "text": "  49. sanction_load_violation No Nullish Counts — PASS\n"
                         },
                         {
-                          "text": "  50. lf_gt_100 Dom/Non-Dom Split — PASS\n"
+                          "text": "  50. sanction_load_violation Dom/Non-Dom Split — PASS\n"
                         },
                         {
-                          "text": "  51. consumption_compare_prev_month Required Fields — PASS\n"
+                          "text": "  51. lf_lt_5 Required Fields — PASS\n"
                         },
                         {
-                          "text": "  52. consumption_compare_prev_month Structure — PASS\n"
+                          "text": "  52. lf_lt_5 Field Whitelist — PASS\n"
                         },
                         {
-                          "text": "  53. consumption_compare_prev_month Counts — PASS\n"
+                          "text": "  53. lf_lt_5 Structure — PASS\n"
                         },
                         {
-                          "text": "  54. consumption_compare_prev_month Zero Count Logic — PASS\n"
+                          "text": "  54. lf_lt_5 Integer Counts — PASS\n"
                         },
                         {
-                          "text": "  55. consumption_compare_prev_month Report Name — PASS\n"
+                          "text": "  55. lf_lt_5 Counts — PASS\n"
                         },
                         {
-                          "text": "  56. consumption_compare_prev_month No NaN — PASS\n"
+                          "text": "  56. lf_lt_5 Zero Count Logic — PASS\n"
                         },
                         {
-                          "text": "  57. consumption_compare_prev_month Dom/Non-Dom Split — PASS\n"
+                          "text": "  57. lf_lt_5 Report Name — PASS\n"
                         },
                         {
-                          "text": "  58. consumption_compare_same_month_last_year Required Fields — PASS\n"
+                          "text": "  58. lf_lt_5 No NaN — PASS\n"
                         },
                         {
-                          "text": "  59. consumption_compare_same_month_last_year Structure — PASS\n"
+                          "text": "  59. lf_lt_5 No Nullish Counts — PASS\n"
                         },
                         {
-                          "text": "  60. consumption_compare_same_month_last_year Counts — PASS\n"
+                          "text": "  60. lf_lt_5 Dom/Non-Dom Split — PASS\n"
                         },
                         {
-                          "text": "  61. consumption_compare_same_month_last_year Zero Count Logic — PASS\n"
+                          "text": "  61. lf_gt_100 Required Fields — PASS\n"
                         },
                         {
-                          "text": "  62. consumption_compare_same_month_last_year Report Name — PASS\n"
+                          "text": "  62. lf_gt_100 Field Whitelist — PASS\n"
                         },
                         {
-                          "text": "  63. consumption_compare_same_month_last_year No NaN — PASS\n"
+                          "text": "  63. lf_gt_100 Structure — PASS\n"
                         },
                         {
-                          "text": "  64. consumption_compare_same_month_last_year Dom/Non-Dom Split — PASS\n"
+                          "text": "  64. lf_gt_100 Integer Counts — PASS\n"
                         },
                         {
-                          "text": "  65. abnormal_high Required Fields — PASS\n"
+                          "text": "  65. lf_gt_100 Counts — PASS\n"
                         },
                         {
-                          "text": "  66. abnormal_high Structure — PASS\n"
+                          "text": "  66. lf_gt_100 Zero Count Logic — PASS\n"
                         },
                         {
-                          "text": "  67. abnormal_high Counts — PASS\n"
+                          "text": "  67. lf_gt_100 Report Name — PASS\n"
                         },
                         {
-                          "text": "  68. abnormal_high Zero Count Logic — PASS\n"
+                          "text": "  68. lf_gt_100 No NaN — PASS\n"
                         },
                         {
-                          "text": "  69. abnormal_high Report Name — PASS\n"
+                          "text": "  69. lf_gt_100 No Nullish Counts — PASS\n"
                         },
                         {
-                          "text": "  70. abnormal_high No NaN — PASS\n"
+                          "text": "  70. lf_gt_100 Dom/Non-Dom Split — PASS\n"
                         },
                         {
-                          "text": "  71. abnormal_high Dom/Non-Dom Split — PASS\n"
+                          "text": "  71. consumption_compare_prev_month Required Fields — PASS\n"
                         },
                         {
-                          "text": "  72. abnormal_low Required Fields — PASS\n"
+                          "text": "  72. consumption_compare_prev_month Field Whitelist — PASS\n"
                         },
                         {
-                          "text": "  73. abnormal_low Structure — PASS\n"
+                          "text": "  73. consumption_compare_prev_month Structure — PASS\n"
                         },
                         {
-                          "text": "  74. abnormal_low Counts — PASS\n"
+                          "text": "  74. consumption_compare_prev_month Integer Counts — PASS\n"
                         },
                         {
-                          "text": "  75. abnormal_low Zero Count Logic — PASS\n"
+                          "text": "  75. consumption_compare_prev_month Counts — PASS\n"
                         },
                         {
-                          "text": "  76. abnormal_low Report Name — PASS\n"
+                          "text": "  76. consumption_compare_prev_month Zero Count Logic — PASS\n"
                         },
                         {
-                          "text": "  77. abnormal_low No NaN — PASS\n"
+                          "text": "  77. consumption_compare_prev_month Report Name — PASS\n"
                         },
                         {
-                          "text": "  78. abnormal_low Dom/Non-Dom Split — PASS\n"
+                          "text": "  78. consumption_compare_prev_month No NaN — PASS\n"
                         },
                         {
-                          "text": "  79. zero_consumption_1m Required Fields — PASS\n"
+                          "text": "  79. consumption_compare_prev_month No Nullish Counts — PASS\n"
                         },
                         {
-                          "text": "  80. zero_consumption_1m Structure — PASS\n"
+                          "text": "  80. consumption_compare_prev_month Dom/Non-Dom Split — PASS\n"
                         },
                         {
-                          "text": "  81. zero_consumption_1m Counts — PASS\n"
+                          "text": "  81. consumption_compare_same_month_last_year Required Fields — PASS\n"
                         },
                         {
-                          "text": "  82. zero_consumption_1m Zero Count Logic — PASS\n"
+                          "text": "  82. consumption_compare_same_month_last_year Field Whitelist — PASS\n"
                         },
                         {
-                          "text": "  83. zero_consumption_1m Report Name — PASS\n"
+                          "text": "  83. consumption_compare_same_month_last_year Structure — PASS\n"
                         },
                         {
-                          "text": "  84. zero_consumption_1m No NaN — PASS\n"
+                          "text": "  84. consumption_compare_same_month_last_year Integer Counts — PASS\n"
                         },
                         {
-                          "text": "  85. zero_consumption_1m Dom/Non-Dom Split — PASS\n"
+                          "text": "  85. consumption_compare_same_month_last_year Counts — PASS\n"
                         },
                         {
-                          "text": "  86. zero_consumption_3m Required Fields — PASS\n"
+                          "text": "  86. consumption_compare_same_month_last_year Zero Count Logic — PASS\n"
                         },
                         {
-                          "text": "  87. zero_consumption_3m Structure — PASS\n"
+                          "text": "  87. consumption_compare_same_month_last_year Report Name — PASS\n"
                         },
                         {
-                          "text": "  88. zero_consumption_3m Counts — PASS\n"
+                          "text": "  88. consumption_compare_same_month_last_year No NaN — PASS\n"
                         },
                         {
-                          "text": "  89. zero_consumption_3m Zero Count Logic — PASS\n"
+                          "text": "  89. consumption_compare_same_month_last_year No Nullish Counts — PASS\n"
                         },
                         {
-                          "text": "  90. zero_consumption_3m Report Name — PASS\n"
+                          "text": "  90. consumption_compare_same_month_last_year Dom/Non-Dom Split — PASS\n"
                         },
                         {
-                          "text": "  91. zero_consumption_3m No NaN — PASS\n"
+                          "text": "  91. abnormal_high Required Fields — PASS\n"
                         },
                         {
-                          "text": "  92. zero_consumption_3m Dom/Non-Dom Split — PASS\n"
+                          "text": "  92. abnormal_high Field Whitelist — PASS\n"
                         },
                         {
-                          "text": "  93. zero_consumption_6m Required Fields — PASS\n"
+                          "text": "  93. abnormal_high Structure — PASS\n"
                         },
                         {
-                          "text": "  94. zero_consumption_6m Structure — PASS\n"
+                          "text": "  94. abnormal_high Integer Counts — PASS\n"
                         },
                         {
-                          "text": "  95. zero_consumption_6m Counts — PASS\n"
+                          "text": "  95. abnormal_high Counts — PASS\n"
                         },
                         {
-                          "text": "  96. zero_consumption_6m Zero Count Logic — PASS\n"
+                          "text": "  96. abnormal_high Zero Count Logic — PASS\n"
                         },
                         {
-                          "text": "  97. zero_consumption_6m Report Name — PASS\n"
+                          "text": "  97. abnormal_high Report Name — PASS\n"
                         },
                         {
-                          "text": "  98. zero_consumption_6m No NaN — PASS\n"
+                          "text": "  98. abnormal_high No NaN — PASS\n"
                         },
                         {
-                          "text": "  99. zero_consumption_6m Dom/Non-Dom Split — PASS\n"
+                          "text": "  99. abnormal_high No Nullish Counts — PASS\n"
                         },
                         {
-                          "text": "  100. zero_consumption_9m Required Fields — PASS\n"
+                          "text": "  100. abnormal_high Dom/Non-Dom Split — PASS\n"
                         },
                         {
-                          "text": "  101. zero_consumption_9m Structure — PASS\n"
+                          "text": "  101. abnormal_low Required Fields — PASS\n"
                         },
                         {
-                          "text": "  102. zero_consumption_9m Counts — PASS\n"
+                          "text": "  102. abnormal_low Field Whitelist — PASS\n"
                         },
                         {
-                          "text": "  103. zero_consumption_9m Zero Count Logic — PASS\n"
+                          "text": "  103. abnormal_low Structure — PASS\n"
                         },
                         {
-                          "text": "  104. zero_consumption_9m Report Name — PASS\n"
+                          "text": "  104. abnormal_low Integer Counts — PASS\n"
                         },
                         {
-                          "text": "  105. zero_consumption_9m No NaN — PASS\n"
+                          "text": "  105. abnormal_low Counts — PASS\n"
                         },
                         {
-                          "text": "  106. zero_consumption_9m Dom/Non-Dom Split — PASS\n"
+                          "text": "  106. abnormal_low Zero Count Logic — PASS\n"
                         },
                         {
-                          "text": "  107. zero_consumption_12m Required Fields — PASS\n"
+                          "text": "  107. abnormal_low Report Name — PASS\n"
                         },
                         {
-                          "text": "  108. zero_consumption_12m Structure — PASS\n"
+                          "text": "  108. abnormal_low No NaN — PASS\n"
                         },
                         {
-                          "text": "  109. zero_consumption_12m Counts — PASS\n"
+                          "text": "  109. abnormal_low No Nullish Counts — PASS\n"
                         },
                         {
-                          "text": "  110. zero_consumption_12m Zero Count Logic — PASS\n"
+                          "text": "  110. abnormal_low Dom/Non-Dom Split — PASS\n"
                         },
                         {
-                          "text": "  111. zero_consumption_12m Report Name — PASS\n"
+                          "text": "  111. zero_consumption_1m Required Fields — PASS\n"
                         },
                         {
-                          "text": "  112. zero_consumption_12m No NaN — PASS\n"
+                          "text": "  112. zero_consumption_1m Field Whitelist — PASS\n"
                         },
                         {
-                          "text": "  113. zero_consumption_12m Dom/Non-Dom Split — PASS\n"
+                          "text": "  113. zero_consumption_1m Structure — PASS\n"
                         },
                         {
-                          "text": "  114. zero_consumption_gt_12m Required Fields — PASS\n"
+                          "text": "  114. zero_consumption_1m Integer Counts — PASS\n"
                         },
                         {
-                          "text": "  115. zero_consumption_gt_12m Structure — PASS\n"
+                          "text": "  115. zero_consumption_1m Counts — PASS\n"
                         },
                         {
-                          "text": "  116. zero_consumption_gt_12m Counts — PASS\n"
+                          "text": "  116. zero_consumption_1m Zero Count Logic — PASS\n"
                         },
                         {
-                          "text": "  117. zero_consumption_gt_12m Zero Count Logic — PASS\n"
+                          "text": "  117. zero_consumption_1m Report Name — PASS\n"
                         },
                         {
-                          "text": "  118. zero_consumption_gt_12m Report Name — PASS\n"
+                          "text": "  118. zero_consumption_1m No NaN — PASS\n"
                         },
                         {
-                          "text": "  119. zero_consumption_gt_12m No NaN — PASS\n"
+                          "text": "  119. zero_consumption_1m No Nullish Counts — PASS\n"
                         },
                         {
-                          "text": "  120. zero_consumption_gt_12m Dom/Non-Dom Split — PASS\n"
+                          "text": "  120. zero_consumption_1m Dom/Non-Dom Split — PASS\n"
                         },
                         {
-                          "text": "  121. low_consumption_100_units_3m Required Fields — PASS\n"
+                          "text": "  121. zero_consumption_3m Required Fields — PASS\n"
                         },
                         {
-                          "text": "  122. low_consumption_100_units_3m Structure — PASS\n"
+                          "text": "  122. zero_consumption_3m Field Whitelist — PASS\n"
                         },
                         {
-                          "text": "  123. low_consumption_100_units_3m Counts — PASS\n"
+                          "text": "  123. zero_consumption_3m Structure — PASS\n"
                         },
                         {
-                          "text": "  124. low_consumption_100_units_3m Zero Count Logic — PASS\n"
+                          "text": "  124. zero_consumption_3m Integer Counts — PASS\n"
                         },
                         {
-                          "text": "  125. low_consumption_100_units_3m Report Name — PASS\n"
+                          "text": "  125. zero_consumption_3m Counts — PASS\n"
                         },
                         {
-                          "text": "  126. low_consumption_100_units_3m No NaN — PASS\n"
+                          "text": "  126. zero_consumption_3m Zero Count Logic — PASS\n"
                         },
                         {
-                          "text": "  127. low_consumption_100_units_3m Dom/Non-Dom Split — PASS\n"
+                          "text": "  127. zero_consumption_3m Report Name — PASS\n"
                         },
                         {
-                          "text": "  128. low_consumption_100_units_6m Required Fields — PASS\n"
+                          "text": "  128. zero_consumption_3m No NaN — PASS\n"
                         },
                         {
-                          "text": "  129. low_consumption_100_units_6m Structure — PASS\n"
+                          "text": "  129. zero_consumption_3m No Nullish Counts — PASS\n"
                         },
                         {
-                          "text": "  130. low_consumption_100_units_6m Counts — PASS\n"
+                          "text": "  130. zero_consumption_3m Dom/Non-Dom Split — PASS\n"
                         },
                         {
-                          "text": "  131. low_consumption_100_units_6m Zero Count Logic — PASS\n"
+                          "text": "  131. zero_consumption_6m Required Fields — PASS\n"
                         },
                         {
-                          "text": "  132. low_consumption_100_units_6m Report Name — PASS\n"
+                          "text": "  132. zero_consumption_6m Field Whitelist — PASS\n"
                         },
                         {
-                          "text": "  133. low_consumption_100_units_6m No NaN — PASS\n"
+                          "text": "  133. zero_consumption_6m Structure — PASS\n"
                         },
                         {
-                          "text": "  134. low_consumption_100_units_6m Dom/Non-Dom Split — PASS\n"
+                          "text": "  134. zero_consumption_6m Integer Counts — PASS\n"
                         },
                         {
-                          "text": "  135. low_consumption_100_units_9m Required Fields — PASS\n"
+                          "text": "  135. zero_consumption_6m Counts — PASS\n"
                         },
                         {
-                          "text": "  136. low_consumption_100_units_9m Structure — PASS\n"
+                          "text": "  136. zero_consumption_6m Zero Count Logic — PASS\n"
                         },
                         {
-                          "text": "  137. low_consumption_100_units_9m Counts — PASS\n"
+                          "text": "  137. zero_consumption_6m Report Name — PASS\n"
                         },
                         {
-                          "text": "  138. low_consumption_100_units_9m Zero Count Logic — PASS\n"
+                          "text": "  138. zero_consumption_6m No NaN — PASS\n"
                         },
                         {
-                          "text": "  139. low_consumption_100_units_9m Report Name — PASS\n"
+                          "text": "  139. zero_consumption_6m No Nullish Counts — PASS\n"
                         },
                         {
-                          "text": "  140. low_consumption_100_units_9m No NaN — PASS\n"
+                          "text": "  140. zero_consumption_6m Dom/Non-Dom Split — PASS\n"
                         },
                         {
-                          "text": "  141. low_consumption_100_units_9m Dom/Non-Dom Split — PASS\n"
+                          "text": "  141. zero_consumption_9m Required Fields — PASS\n"
                         },
                         {
-                          "text": "  142. avg_less_than_initial_6m Required Fields — PASS\n"
+                          "text": "  142. zero_consumption_9m Field Whitelist — PASS\n"
                         },
                         {
-                          "text": "  143. avg_less_than_initial_6m Structure — PASS\n"
+                          "text": "  143. zero_consumption_9m Structure — PASS\n"
                         },
                         {
-                          "text": "  144. avg_less_than_initial_6m Counts — PASS\n"
+                          "text": "  144. zero_consumption_9m Integer Counts — PASS\n"
                         },
                         {
-                          "text": "  145. avg_less_than_initial_6m Zero Count Logic — PASS\n"
+                          "text": "  145. zero_consumption_9m Counts — PASS\n"
                         },
                         {
-                          "text": "  146. avg_less_than_initial_6m Report Name — PASS\n"
+                          "text": "  146. zero_consumption_9m Zero Count Logic — PASS\n"
                         },
                         {
-                          "text": "  147. avg_less_than_initial_6m No NaN — PASS\n"
+                          "text": "  147. zero_consumption_9m Report Name — PASS\n"
                         },
                         {
-                          "text": "  148. avg_less_than_initial_6m Dom/Non-Dom Split — PASS\n"
+                          "text": "  148. zero_consumption_9m No NaN — PASS\n"
                         },
                         {
-                          "text": "  149. lf_lt_5_last_3m Required Fields — PASS\n"
+                          "text": "  149. zero_consumption_9m No Nullish Counts — PASS\n"
                         },
                         {
-                          "text": "  150. lf_lt_5_last_3m Structure — PASS\n"
+                          "text": "  150. zero_consumption_9m Dom/Non-Dom Split — PASS\n"
                         },
                         {
-                          "text": "  151. lf_lt_5_last_3m Counts — PASS\n"
+                          "text": "  151. zero_consumption_12m Required Fields — PASS\n"
                         },
                         {
-                          "text": "  152. lf_lt_5_last_3m Zero Count Logic — PASS\n"
+                          "text": "  152. zero_consumption_12m Field Whitelist — PASS\n"
                         },
                         {
-                          "text": "  153. lf_lt_5_last_3m Report Name — PASS\n"
+                          "text": "  153. zero_consumption_12m Structure — PASS\n"
                         },
                         {
-                          "text": "  154. lf_lt_5_last_3m No NaN — PASS\n"
+                          "text": "  154. zero_consumption_12m Integer Counts — PASS\n"
                         },
                         {
-                          "text": "  155. lf_lt_5_last_3m Dom/Non-Dom Split — PASS\n"
+                          "text": "  155. zero_consumption_12m Counts — PASS\n"
                         },
                         {
-                          "text": "  156. lf_lt_5_last_6m Required Fields — PASS\n"
+                          "text": "  156. zero_consumption_12m Zero Count Logic — PASS\n"
                         },
                         {
-                          "text": "  157. lf_lt_5_last_6m Structure — PASS\n"
+                          "text": "  157. zero_consumption_12m Report Name — PASS\n"
                         },
                         {
-                          "text": "  158. lf_lt_5_last_6m Counts — PASS\n"
+                          "text": "  158. zero_consumption_12m No NaN — PASS\n"
                         },
                         {
-                          "text": "  159. lf_lt_5_last_6m Zero Count Logic — PASS\n"
+                          "text": "  159. zero_consumption_12m No Nullish Counts — PASS\n"
                         },
                         {
-                          "text": "  160. lf_lt_5_last_6m Report Name — PASS\n"
+                          "text": "  160. zero_consumption_12m Dom/Non-Dom Split — PASS\n"
                         },
                         {
-                          "text": "  161. lf_lt_5_last_6m No NaN — PASS\n"
+                          "text": "  161. zero_consumption_gt_12m Required Fields — PASS\n"
                         },
                         {
-                          "text": "  162. lf_lt_5_last_6m Dom/Non-Dom Split — PASS\n"
+                          "text": "  162. zero_consumption_gt_12m Field Whitelist — PASS\n"
                         },
                         {
-                          "text": "  163. improper_md Required Fields — PASS\n"
+                          "text": "  163. zero_consumption_gt_12m Structure — PASS\n"
                         },
                         {
-                          "text": "  164. improper_md Structure — PASS\n"
+                          "text": "  164. zero_consumption_gt_12m Integer Counts — PASS\n"
                         },
                         {
-                          "text": "  165. improper_md Counts — PASS\n"
+                          "text": "  165. zero_consumption_gt_12m Counts — PASS\n"
                         },
                         {
-                          "text": "  166. improper_md Zero Count Logic — PASS\n"
+                          "text": "  166. zero_consumption_gt_12m Zero Count Logic — PASS\n"
                         },
                         {
-                          "text": "  167. improper_md Report Name — PASS\n"
+                          "text": "  167. zero_consumption_gt_12m Report Name — PASS\n"
                         },
                         {
-                          "text": "  168. improper_md No NaN — PASS\n"
+                          "text": "  168. zero_consumption_gt_12m No NaN — PASS\n"
                         },
                         {
-                          "text": "  169. improper_md Dom/Non-Dom Split — PASS\n"
+                          "text": "  169. zero_consumption_gt_12m No Nullish Counts — PASS\n"
                         },
                         {
-                          "text": "  170. night_zero_consumption Required Fields — PASS\n"
+                          "text": "  170. zero_consumption_gt_12m Dom/Non-Dom Split — PASS\n"
                         },
                         {
-                          "text": "  171. night_zero_consumption Structure — PASS\n"
+                          "text": "  171. low_consumption_100_units_3m Required Fields — PASS\n"
                         },
                         {
-                          "text": "  172. night_zero_consumption Counts — PASS\n"
+                          "text": "  172. low_consumption_100_units_3m Field Whitelist — PASS\n"
                         },
                         {
-                          "text": "  173. night_zero_consumption Zero Count Logic — PASS\n"
+                          "text": "  173. low_consumption_100_units_3m Structure — PASS\n"
                         },
                         {
-                          "text": "  174. night_zero_consumption Report Name — PASS\n"
+                          "text": "  174. low_consumption_100_units_3m Integer Counts — PASS\n"
                         },
                         {
-                          "text": "  175. night_zero_consumption No NaN — PASS\n"
+                          "text": "  175. low_consumption_100_units_3m Counts — PASS\n"
                         },
                         {
-                          "text": "  176. night_zero_consumption Dom/Non-Dom Split — PASS\n"
+                          "text": "  176. low_consumption_100_units_3m Zero Count Logic — PASS\n"
                         },
                         {
-                          "text": "  177. night_lte_threshold Required Fields — PASS\n"
+                          "text": "  177. low_consumption_100_units_3m Report Name — PASS\n"
                         },
                         {
-                          "text": "  178. night_lte_threshold Structure — PASS\n"
+                          "text": "  178. low_consumption_100_units_3m No NaN — PASS\n"
                         },
                         {
-                          "text": "  179. night_lte_threshold Counts — PASS\n"
+                          "text": "  179. low_consumption_100_units_3m No Nullish Counts — PASS\n"
                         },
                         {
-                          "text": "  180. night_lte_threshold Zero Count Logic — PASS\n"
+                          "text": "  180. low_consumption_100_units_3m Dom/Non-Dom Split — PASS\n"
                         },
                         {
-                          "text": "  181. night_lte_threshold Report Name — PASS\n"
+                          "text": "  181. low_consumption_100_units_6m Required Fields — PASS\n"
                         },
                         {
-                          "text": "  182. night_lte_threshold No NaN — PASS\n"
+                          "text": "  182. low_consumption_100_units_6m Field Whitelist — PASS\n"
                         },
                         {
-                          "text": "  183. night_lte_threshold Dom/Non-Dom Split — PASS\n"
+                          "text": "  183. low_consumption_100_units_6m Structure — PASS\n"
+                        },
+                        {
+                          "text": "  184. low_consumption_100_units_6m Integer Counts — PASS\n"
+                        },
+                        {
+                          "text": "  185. low_consumption_100_units_6m Counts — PASS\n"
+                        },
+                        {
+                          "text": "  186. low_consumption_100_units_6m Zero Count Logic — PASS\n"
+                        },
+                        {
+                          "text": "  187. low_consumption_100_units_6m Report Name — PASS\n"
+                        },
+                        {
+                          "text": "  188. low_consumption_100_units_6m No NaN — PASS\n"
+                        },
+                        {
+                          "text": "  189. low_consumption_100_units_6m No Nullish Counts — PASS\n"
+                        },
+                        {
+                          "text": "  190. low_consumption_100_units_6m Dom/Non-Dom Split — PASS\n"
+                        },
+                        {
+                          "text": "  191. low_consumption_100_units_9m Required Fields — PASS\n"
+                        },
+                        {
+                          "text": "  192. low_consumption_100_units_9m Field Whitelist — PASS\n"
+                        },
+                        {
+                          "text": "  193. low_consumption_100_units_9m Structure — PASS\n"
+                        },
+                        {
+                          "text": "  194. low_consumption_100_units_9m Integer Counts — PASS\n"
+                        },
+                        {
+                          "text": "  195. low_consumption_100_units_9m Counts — PASS\n"
+                        },
+                        {
+                          "text": "  196. low_consumption_100_units_9m Zero Count Logic — PASS\n"
+                        },
+                        {
+                          "text": "  197. low_consumption_100_units_9m Report Name — PASS\n"
+                        },
+                        {
+                          "text": "  198. low_consumption_100_units_9m No NaN — PASS\n"
+                        },
+                        {
+                          "text": "  199. low_consumption_100_units_9m No Nullish Counts — PASS\n"
+                        },
+                        {
+                          "text": "  200. low_consumption_100_units_9m Dom/Non-Dom Split — PASS\n"
+                        },
+                        {
+                          "text": "  201. avg_less_than_initial_6m Required Fields — PASS\n"
+                        },
+                        {
+                          "text": "  202. avg_less_than_initial_6m Field Whitelist — PASS\n"
+                        },
+                        {
+                          "text": "  203. avg_less_than_initial_6m Structure — PASS\n"
+                        },
+                        {
+                          "text": "  204. avg_less_than_initial_6m Integer Counts — PASS\n"
+                        },
+                        {
+                          "text": "  205. avg_less_than_initial_6m Counts — PASS\n"
+                        },
+                        {
+                          "text": "  206. avg_less_than_initial_6m Zero Count Logic — PASS\n"
+                        },
+                        {
+                          "text": "  207. avg_less_than_initial_6m Report Name — PASS\n"
+                        },
+                        {
+                          "text": "  208. avg_less_than_initial_6m No NaN — PASS\n"
+                        },
+                        {
+                          "text": "  209. avg_less_than_initial_6m No Nullish Counts — PASS\n"
+                        },
+                        {
+                          "text": "  210. avg_less_than_initial_6m Dom/Non-Dom Split — PASS\n"
+                        },
+                        {
+                          "text": "  211. lf_lt_5_last_3m Required Fields — PASS\n"
+                        },
+                        {
+                          "text": "  212. lf_lt_5_last_3m Field Whitelist — PASS\n"
+                        },
+                        {
+                          "text": "  213. lf_lt_5_last_3m Structure — PASS\n"
+                        },
+                        {
+                          "text": "  214. lf_lt_5_last_3m Integer Counts — PASS\n"
+                        },
+                        {
+                          "text": "  215. lf_lt_5_last_3m Counts — PASS\n"
+                        },
+                        {
+                          "text": "  216. lf_lt_5_last_3m Zero Count Logic — PASS\n"
+                        },
+                        {
+                          "text": "  217. lf_lt_5_last_3m Report Name — PASS\n"
+                        },
+                        {
+                          "text": "  218. lf_lt_5_last_3m No NaN — PASS\n"
+                        },
+                        {
+                          "text": "  219. lf_lt_5_last_3m No Nullish Counts — PASS\n"
+                        },
+                        {
+                          "text": "  220. lf_lt_5_last_3m Dom/Non-Dom Split — PASS\n"
+                        },
+                        {
+                          "text": "  221. lf_lt_5_last_6m Required Fields — PASS\n"
+                        },
+                        {
+                          "text": "  222. lf_lt_5_last_6m Field Whitelist — PASS\n"
+                        },
+                        {
+                          "text": "  223. lf_lt_5_last_6m Structure — PASS\n"
+                        },
+                        {
+                          "text": "  224. lf_lt_5_last_6m Integer Counts — PASS\n"
+                        },
+                        {
+                          "text": "  225. lf_lt_5_last_6m Counts — PASS\n"
+                        },
+                        {
+                          "text": "  226. lf_lt_5_last_6m Zero Count Logic — PASS\n"
+                        },
+                        {
+                          "text": "  227. lf_lt_5_last_6m Report Name — PASS\n"
+                        },
+                        {
+                          "text": "  228. lf_lt_5_last_6m No NaN — PASS\n"
+                        },
+                        {
+                          "text": "  229. lf_lt_5_last_6m No Nullish Counts — PASS\n"
+                        },
+                        {
+                          "text": "  230. lf_lt_5_last_6m Dom/Non-Dom Split — PASS\n"
+                        },
+                        {
+                          "text": "  231. improper_md Required Fields — PASS\n"
+                        },
+                        {
+                          "text": "  232. improper_md Field Whitelist — PASS\n"
+                        },
+                        {
+                          "text": "  233. improper_md Structure — PASS\n"
+                        },
+                        {
+                          "text": "  234. improper_md Integer Counts — PASS\n"
+                        },
+                        {
+                          "text": "  235. improper_md Counts — PASS\n"
+                        },
+                        {
+                          "text": "  236. improper_md Zero Count Logic — PASS\n"
+                        },
+                        {
+                          "text": "  237. improper_md Report Name — PASS\n"
+                        },
+                        {
+                          "text": "  238. improper_md No NaN — PASS\n"
+                        },
+                        {
+                          "text": "  239. improper_md No Nullish Counts — PASS\n"
+                        },
+                        {
+                          "text": "  240. improper_md Dom/Non-Dom Split — PASS\n"
+                        },
+                        {
+                          "text": "  241. night_zero_consumption Required Fields — PASS\n"
+                        },
+                        {
+                          "text": "  242. night_zero_consumption Field Whitelist — PASS\n"
+                        },
+                        {
+                          "text": "  243. night_zero_consumption Structure — PASS\n"
+                        },
+                        {
+                          "text": "  244. night_zero_consumption Integer Counts — PASS\n"
+                        },
+                        {
+                          "text": "  245. night_zero_consumption Counts — PASS\n"
+                        },
+                        {
+                          "text": "  246. night_zero_consumption Zero Count Logic — PASS\n"
+                        },
+                        {
+                          "text": "  247. night_zero_consumption Report Name — PASS\n"
+                        },
+                        {
+                          "text": "  248. night_zero_consumption No NaN — PASS\n"
+                        },
+                        {
+                          "text": "  249. night_zero_consumption No Nullish Counts — PASS\n"
+                        },
+                        {
+                          "text": "  250. night_zero_consumption Dom/Non-Dom Split — PASS\n"
+                        },
+                        {
+                          "text": "  251. night_lte_threshold Required Fields — PASS\n"
+                        },
+                        {
+                          "text": "  252. night_lte_threshold Field Whitelist — PASS\n"
+                        },
+                        {
+                          "text": "  253. night_lte_threshold Structure — PASS\n"
+                        },
+                        {
+                          "text": "  254. night_lte_threshold Integer Counts — PASS\n"
+                        },
+                        {
+                          "text": "  255. night_lte_threshold Counts — PASS\n"
+                        },
+                        {
+                          "text": "  256. night_lte_threshold Zero Count Logic — PASS\n"
+                        },
+                        {
+                          "text": "  257. night_lte_threshold Report Name — PASS\n"
+                        },
+                        {
+                          "text": "  258. night_lte_threshold No NaN — PASS\n"
+                        },
+                        {
+                          "text": "  259. night_lte_threshold No Nullish Counts — PASS\n"
+                        },
+                        {
+                          "text": "  260. night_lte_threshold Dom/Non-Dom Split — PASS\n"
                         },
                         {
                           "text": "==================================================\n\n"
@@ -692,7 +923,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T10:59:32.754Z",
+                      "startTime": "2026-06-10T12:44:47.905Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -700,8 +931,8 @@
                   "status": "expected"
                 }
               ],
-              "id": "a5485a4b81c734363545-04c8051e770bab61433a",
-              "file": "modules/COMMERICIAL ANALYSIS/tests/commercial-summary.spec.ts",
+              "id": "788d419405250a2c157f-01121e56c4a394b06e20",
+              "file": "modules/COMMERICIAL-ANALYSIS/tests/commercial-summary.spec.ts",
               "line": 13,
               "column": 9
             }
@@ -710,15 +941,15 @@
       ]
     },
     {
-      "title": "modules\\COMMERICIAL ANALYSIS\\tests\\consumptioncompare.spec.ts",
-      "file": "modules/COMMERICIAL ANALYSIS/tests/consumptioncompare.spec.ts",
+      "title": "modules\\COMMERICIAL-ANALYSIS\\tests\\consumptioncompare.spec.ts",
+      "file": "modules/COMMERICIAL-ANALYSIS/tests/consumptioncompare.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
           "title": "Consumption Compare API",
-          "file": "modules/COMMERICIAL ANALYSIS/tests/consumptioncompare.spec.ts",
+          "file": "modules/COMMERICIAL-ANALYSIS/tests/consumptioncompare.spec.ts",
           "line": 10,
           "column": 6,
           "specs": [
@@ -741,7 +972,7 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 10473,
+                      "duration": 12428,
                       "errors": [],
                       "stdout": [
                         {
@@ -754,7 +985,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 10259 ms\n"
+                          "text": "RESPONSE TIME   : 12250 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 13\n"
@@ -819,7 +1050,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T10:59:38.073Z",
+                      "startTime": "2026-06-10T12:44:52.404Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -827,8 +1058,8 @@
                   "status": "expected"
                 }
               ],
-              "id": "ccf9af8c2cd25c90401f-9852a2a609b8ea8f0411",
-              "file": "modules/COMMERICIAL ANALYSIS/tests/consumptioncompare.spec.ts",
+              "id": "f95508303f3416770b00-fa6b538557e73d2b6436",
+              "file": "modules/COMMERICIAL-ANALYSIS/tests/consumptioncompare.spec.ts",
               "line": 13,
               "column": 7
             }
@@ -837,15 +1068,15 @@
       ]
     },
     {
-      "title": "modules\\COMMERICIAL ANALYSIS\\tests\\consumptionpattern.spec.ts",
-      "file": "modules/COMMERICIAL ANALYSIS/tests/consumptionpattern.spec.ts",
+      "title": "modules\\COMMERICIAL-ANALYSIS\\tests\\consumptionpattern.spec.ts",
+      "file": "modules/COMMERICIAL-ANALYSIS/tests/consumptionpattern.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
           "title": "Consumption Pattern API",
-          "file": "modules/COMMERICIAL ANALYSIS/tests/consumptionpattern.spec.ts",
+          "file": "modules/COMMERICIAL-ANALYSIS/tests/consumptionpattern.spec.ts",
           "line": 18,
           "column": 6,
           "specs": [
@@ -868,7 +1099,7 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 4117,
+                      "duration": 9053,
                       "errors": [],
                       "stdout": [
                         {
@@ -881,7 +1112,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 4010 ms\n"
+                          "text": "RESPONSE TIME   : 8973 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 12\n"
@@ -943,7 +1174,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T10:59:48.626Z",
+                      "startTime": "2026-06-10T12:45:04.898Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -951,8 +1182,8 @@
                   "status": "expected"
                 }
               ],
-              "id": "625868d1f5fb15974a26-2f1054d4d1fab70cdf7e",
-              "file": "modules/COMMERICIAL ANALYSIS/tests/consumptionpattern.spec.ts",
+              "id": "872051fc9378a07be1a1-3c1e41b8e162232b41d8",
+              "file": "modules/COMMERICIAL-ANALYSIS/tests/consumptionpattern.spec.ts",
               "line": 21,
               "column": 7
             }
@@ -961,15 +1192,15 @@
       ]
     },
     {
-      "title": "modules\\COMMERICIAL ANALYSIS\\tests\\loadfactor.spec.ts",
-      "file": "modules/COMMERICIAL ANALYSIS/tests/loadfactor.spec.ts",
+      "title": "modules\\COMMERICIAL-ANALYSIS\\tests\\loadfactor.spec.ts",
+      "file": "modules/COMMERICIAL-ANALYSIS/tests/loadfactor.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
           "title": "LF Analysis API",
-          "file": "modules/COMMERICIAL ANALYSIS/tests/loadfactor.spec.ts",
+          "file": "modules/COMMERICIAL-ANALYSIS/tests/loadfactor.spec.ts",
           "line": 9,
           "column": 6,
           "specs": [
@@ -992,7 +1223,7 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2233,
+                      "duration": 6626,
                       "errors": [],
                       "stdout": [
                         {
@@ -1005,7 +1236,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 2156 ms\n"
+                          "text": "RESPONSE TIME   : 6582 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 11\n"
@@ -1064,7 +1295,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T10:59:52.806Z",
+                      "startTime": "2026-06-10T12:45:14.010Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1072,8 +1303,8 @@
                   "status": "expected"
                 }
               ],
-              "id": "2a0d48883fa47be2c66b-be34951f553acb9f102d",
-              "file": "modules/COMMERICIAL ANALYSIS/tests/loadfactor.spec.ts",
+              "id": "a1cf4d712878f2575489-2f8cd3e58cabc4c16e2a",
+              "file": "modules/COMMERICIAL-ANALYSIS/tests/loadfactor.spec.ts",
               "line": 11,
               "column": 7
             }
@@ -1082,15 +1313,15 @@
       ]
     },
     {
-      "title": "modules\\COMMERICIAL ANALYSIS\\tests\\mdanalysis.spec.ts",
-      "file": "modules/COMMERICIAL ANALYSIS/tests/mdanalysis.spec.ts",
+      "title": "modules\\COMMERICIAL-ANALYSIS\\tests\\mdanalysis.spec.ts",
+      "file": "modules/COMMERICIAL-ANALYSIS/tests/mdanalysis.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
           "title": "MD Analysis API",
-          "file": "modules/COMMERICIAL ANALYSIS/tests/mdanalysis.spec.ts",
+          "file": "modules/COMMERICIAL-ANALYSIS/tests/mdanalysis.spec.ts",
           "line": 10,
           "column": 6,
           "specs": [
@@ -1113,7 +1344,7 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 10484,
+                      "duration": 13455,
                       "errors": [],
                       "stdout": [
                         {
@@ -1126,7 +1357,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 10306 ms\n"
+                          "text": "RESPONSE TIME   : 13276 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 13\n"
@@ -1191,7 +1422,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T10:59:55.122Z",
+                      "startTime": "2026-06-10T12:45:20.683Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1199,8 +1430,8 @@
                   "status": "expected"
                 }
               ],
-              "id": "1f61124c62b502a53669-1517d923f42ca9417bb4",
-              "file": "modules/COMMERICIAL ANALYSIS/tests/mdanalysis.spec.ts",
+              "id": "de6763f624e57a6db06d-09cd5b4c882153c8653a",
+              "file": "modules/COMMERICIAL-ANALYSIS/tests/mdanalysis.spec.ts",
               "line": 13,
               "column": 7
             }
@@ -1209,15 +1440,15 @@
       ]
     },
     {
-      "title": "modules\\COMMERICIAL ANALYSIS\\tests\\powerfactor.spec.ts",
-      "file": "modules/COMMERICIAL ANALYSIS/tests/powerfactor.spec.ts",
+      "title": "modules\\COMMERICIAL-ANALYSIS\\tests\\powerfactor.spec.ts",
+      "file": "modules/COMMERICIAL-ANALYSIS/tests/powerfactor.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
           "title": "Power Factor Analysis API",
-          "file": "modules/COMMERICIAL ANALYSIS/tests/powerfactor.spec.ts",
+          "file": "modules/COMMERICIAL-ANALYSIS/tests/powerfactor.spec.ts",
           "line": 10,
           "column": 6,
           "specs": [
@@ -1240,7 +1471,7 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 21874,
+                      "duration": 3103,
                       "errors": [],
                       "stdout": [
                         {
@@ -1253,7 +1484,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 21219 ms\n"
+                          "text": "RESPONSE TIME   : 2510 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 12\n"
@@ -1315,7 +1546,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:00:05.670Z",
+                      "startTime": "2026-06-10T12:45:34.192Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -1323,8 +1554,8 @@
                   "status": "expected"
                 }
               ],
-              "id": "945c7ade8ff5936d7d72-1f9cb3572d495ad490af",
-              "file": "modules/COMMERICIAL ANALYSIS/tests/powerfactor.spec.ts",
+              "id": "1e0bc7583fa689310d88-694f74b20c4c7fadb6e4",
+              "file": "modules/COMMERICIAL-ANALYSIS/tests/powerfactor.spec.ts",
               "line": 13,
               "column": 7
             }
@@ -1365,11 +1596,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 6235,
+                      "duration": 976,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Summary API\nDNS : 24.55 ms\nConnection : 31.92 ms\nServer Processing : 5063.53 ms\nDownload : 100 ms\nTotal : 5220 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Summary API\nDNS : 18.86 ms\nConnection : 19 ms\nServer Processing : -35.86 ms\nDownload : 100 ms\nTotal : 102 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -1381,7 +1612,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 5220 ms\n"
+                          "text": "RESPONSE TIME   : 102 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 218\n"
@@ -2061,7 +2292,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:00:27.633Z",
+                      "startTime": "2026-06-10T12:45:37.347Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2111,11 +2342,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 5111,
+                      "duration": 336,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - power_failure\nDNS : 0.27 ms\nConnection : 25.73 ms\nServer Processing : 4765 ms\nDownload : 100 ms\nTotal : 4891 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - power_failure\nDNS : 0.26 ms\nConnection : 21.18 ms\nServer Processing : -17.439999999999998 ms\nDownload : 100 ms\nTotal : 104 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -2127,7 +2358,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 4891 ms\n"
+                          "text": "RESPONSE TIME   : 104 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 25\n"
@@ -2228,7 +2459,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:00:33.944Z",
+                      "startTime": "2026-06-10T12:45:38.414Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2261,11 +2492,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 3135,
+                      "duration": 216,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - voltage_missing\nDNS : 0.32 ms\nConnection : 28.59 ms\nServer Processing : 2855.0899999999997 ms\nDownload : 100 ms\nTotal : 2984 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - voltage_missing\nDNS : 0.2 ms\nConnection : 19.66 ms\nServer Processing : -25.86 ms\nDownload : 100 ms\nTotal : 94 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -2277,7 +2508,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 2984 ms\n"
+                          "text": "RESPONSE TIME   : 94 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 13\n"
@@ -2342,7 +2573,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:00:39.101Z",
+                      "startTime": "2026-06-10T12:45:38.798Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2375,11 +2606,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 3280,
+                      "duration": 308,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - voltage_unbalance\nDNS : 30.21 ms\nConnection : 22.96 ms\nServer Processing : 2882.83 ms\nDownload : 100 ms\nTotal : 3036 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - voltage_unbalance\nDNS : 0.5 ms\nConnection : 20.71 ms\nServer Processing : -27.210000000000008 ms\nDownload : 100 ms\nTotal : 94 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -2391,7 +2622,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 3036 ms\n"
+                          "text": "RESPONSE TIME   : 94 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 25\n"
@@ -2492,7 +2723,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:00:42.288Z",
+                      "startTime": "2026-06-10T12:45:39.067Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2525,11 +2756,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 4040,
+                      "duration": 242,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - low_voltage\nDNS : 0.21 ms\nConnection : 25.64 ms\nServer Processing : 3755.15 ms\nDownload : 100 ms\nTotal : 3881 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - low_voltage\nDNS : 0.25 ms\nConnection : 18.04 ms\nServer Processing : -16.289999999999992 ms\nDownload : 100 ms\nTotal : 102 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -2541,7 +2772,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 3881 ms\n"
+                          "text": "RESPONSE TIME   : 102 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 13\n"
@@ -2606,7 +2837,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:00:45.630Z",
+                      "startTime": "2026-06-10T12:45:39.419Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2639,11 +2870,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2047,
+                      "duration": 292,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - over_voltage\nDNS : 0.41 ms\nConnection : 25.79 ms\nServer Processing : 1704.8 ms\nDownload : 100 ms\nTotal : 1831 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - over_voltage\nDNS : 0.24 ms\nConnection : 20.35 ms\nServer Processing : -27.590000000000003 ms\nDownload : 100 ms\nTotal : 93 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -2655,7 +2886,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 1831 ms\n"
+                          "text": "RESPONSE TIME   : 93 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 25\n"
@@ -2756,7 +2987,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:00:49.721Z",
+                      "startTime": "2026-06-10T12:45:39.708Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2789,11 +3020,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2178,
+                      "duration": 303,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - single_wire_operation\nDNS : 0.18 ms\nConnection : 27.26 ms\nServer Processing : 1819.56 ms\nDownload : 100 ms\nTotal : 1947 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - single_wire_operation\nDNS : 0.27 ms\nConnection : 19.43 ms\nServer Processing : -20.69999999999999 ms\nDownload : 100 ms\nTotal : 99 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -2805,7 +3036,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 1947 ms\n"
+                          "text": "RESPONSE TIME   : 99 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 25\n"
@@ -2906,7 +3137,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:00:51.810Z",
+                      "startTime": "2026-06-10T12:45:40.044Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -2939,11 +3170,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2180,
+                      "duration": 309,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - neutral_disturbance\nDNS : 0.32 ms\nConnection : 21.46 ms\nServer Processing : 1828.22 ms\nDownload : 100 ms\nTotal : 1950 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - neutral_disturbance\nDNS : 0.16 ms\nConnection : 21.42 ms\nServer Processing : -19.58 ms\nDownload : 100 ms\nTotal : 102 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -2955,7 +3186,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 1950 ms\n"
+                          "text": "RESPONSE TIME   : 102 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 25\n"
@@ -3056,7 +3287,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:00:54.038Z",
+                      "startTime": "2026-06-10T12:45:40.390Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3089,11 +3320,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 3616,
+                      "duration": 280,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - current_without_voltage\nDNS : 12.79 ms\nConnection : 20.88 ms\nServer Processing : 3323.33 ms\nDownload : 100 ms\nTotal : 3457 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - current_without_voltage\nDNS : 0.25 ms\nConnection : 31.65 ms\nServer Processing : -28.900000000000006 ms\nDownload : 100 ms\nTotal : 103 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -3105,7 +3336,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 3457 ms\n"
+                          "text": "RESPONSE TIME   : 103 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 13\n"
@@ -3170,7 +3401,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:00:56.279Z",
+                      "startTime": "2026-06-10T12:45:40.748Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3203,11 +3434,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 3897,
+                      "duration": 279,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - ct_open\nDNS : 0.52 ms\nConnection : 26.85 ms\nServer Processing : 3610.63 ms\nDownload : 100 ms\nTotal : 3738 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - ct_open\nDNS : 0.38 ms\nConnection : 20.72 ms\nServer Processing : -14.099999999999994 ms\nDownload : 100 ms\nTotal : 107 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -3219,7 +3450,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 3738 ms\n"
+                          "text": "RESPONSE TIME   : 107 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 13\n"
@@ -3284,7 +3515,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:00:59.945Z",
+                      "startTime": "2026-06-10T12:45:41.133Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3317,11 +3548,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 3202,
+                      "duration": 234,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - current_bypass\nDNS : 0.19 ms\nConnection : 27.63 ms\nServer Processing : 2901.18 ms\nDownload : 100 ms\nTotal : 3029 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - current_bypass\nDNS : 0.16 ms\nConnection : 19.48 ms\nServer Processing : -26.64 ms\nDownload : 100 ms\nTotal : 93 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -3333,7 +3564,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 3029 ms\n"
+                          "text": "RESPONSE TIME   : 93 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 13\n"
@@ -3398,7 +3629,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:01:03.886Z",
+                      "startTime": "2026-06-10T12:45:41.498Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -3431,11 +3662,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 8417,
+                      "duration": 5742,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - current_unbalance\nDNS : 0.23 ms\nConnection : 22.06 ms\nServer Processing : 2539.71 ms\nDownload : 100 ms\nTotal : 2662 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - current_unbalance\nDNS : 0.13 ms\nConnection : 18.02 ms\nServer Processing : -2.1499999999999915 ms\nDownload : 100 ms\nTotal : 116 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -3447,7 +3678,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 2662 ms\n"
+                          "text": "RESPONSE TIME   : 116 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 535\n"
@@ -5078,7 +5309,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:01:07.136Z",
+                      "startTime": "2026-06-10T12:45:41.778Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -5111,11 +5342,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 5089,
+                      "duration": 2538,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - earth_loading\nDNS : 0.16 ms\nConnection : 25.46 ms\nServer Processing : 2660.38 ms\nDownload : 100 ms\nTotal : 2786 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - earth_loading\nDNS : 0.22 ms\nConnection : 19.41 ms\nServer Processing : -5.6299999999999955 ms\nDownload : 100 ms\nTotal : 114 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -5127,7 +5358,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 2786 ms\n"
+                          "text": "RESPONSE TIME   : 114 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 253\n"
@@ -5912,7 +6143,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:01:15.680Z",
+                      "startTime": "2026-06-10T12:45:47.639Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -5945,11 +6176,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 3823,
+                      "duration": 291,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - low_power_factor\nDNS : 0.4 ms\nConnection : 19.83 ms\nServer Processing : 3507.77 ms\nDownload : 100 ms\nTotal : 3628 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - low_power_factor\nDNS : 0.54 ms\nConnection : 22.1 ms\nServer Processing : -23.640000000000015 ms\nDownload : 100 ms\nTotal : 99 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -5961,7 +6192,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 3628 ms\n"
+                          "text": "RESPONSE TIME   : 99 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 25\n"
@@ -6062,7 +6293,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:01:20.849Z",
+                      "startTime": "2026-06-10T12:45:50.247Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6095,11 +6326,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1404,
+                      "duration": 254,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - phase_neutral_mismatch\nDNS : 0.8 ms\nConnection : 24.86 ms\nServer Processing : 1120.3400000000001 ms\nDownload : 100 ms\nTotal : 1246 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - phase_neutral_mismatch\nDNS : 0.51 ms\nConnection : 20.73 ms\nServer Processing : -24.24000000000001 ms\nDownload : 100 ms\nTotal : 97 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -6111,7 +6342,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 1246 ms\n"
+                          "text": "RESPONSE TIME   : 97 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 13\n"
@@ -6176,7 +6407,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:01:24.711Z",
+                      "startTime": "2026-06-10T12:45:50.587Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6209,11 +6440,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1391,
+                      "duration": 235,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - phase_zero_neutral_nonzero\nDNS : 0.7 ms\nConnection : 24.35 ms\nServer Processing : 1112.95 ms\nDownload : 100 ms\nTotal : 1238 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - phase_zero_neutral_nonzero\nDNS : 0.15 ms\nConnection : 19.08 ms\nServer Processing : -12.230000000000004 ms\nDownload : 100 ms\nTotal : 107 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -6225,7 +6456,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 1238 ms\n"
+                          "text": "RESPONSE TIME   : 107 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 13\n"
@@ -6290,7 +6521,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:01:26.144Z",
+                      "startTime": "2026-06-10T12:45:50.884Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6323,11 +6554,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1396,
+                      "duration": 224,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - phase_nonzero_neutral_zero\nDNS : 0.18 ms\nConnection : 25.63 ms\nServer Processing : 1109.1899999999998 ms\nDownload : 100 ms\nTotal : 1235 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - phase_nonzero_neutral_zero\nDNS : 0.42 ms\nConnection : 18.13 ms\nServer Processing : -24.549999999999997 ms\nDownload : 100 ms\nTotal : 94 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -6339,7 +6570,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 1235 ms\n"
+                          "text": "RESPONSE TIME   : 94 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 13\n"
@@ -6404,7 +6635,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:01:27.579Z",
+                      "startTime": "2026-06-10T12:45:51.168Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6437,11 +6668,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 8690,
+                      "duration": 294,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - magnet_event\nDNS : 0.64 ms\nConnection : 22.83 ms\nServer Processing : 8367.53 ms\nDownload : 100 ms\nTotal : 8491 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - magnet_event\nDNS : 0.21 ms\nConnection : 19.32 ms\nServer Processing : -23.53 ms\nDownload : 100 ms\nTotal : 96 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -6453,7 +6684,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 8491 ms\n"
+                          "text": "RESPONSE TIME   : 96 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 24\n"
@@ -6551,7 +6782,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:01:29.023Z",
+                      "startTime": "2026-06-10T12:45:51.435Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6584,11 +6815,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2921,
+                      "duration": 288,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - cover_open\nDNS : 0.3 ms\nConnection : 20.19 ms\nServer Processing : 2617.5099999999998 ms\nDownload : 100 ms\nTotal : 2738 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - cover_open\nDNS : 0.38 ms\nConnection : 21.99 ms\nServer Processing : -27.36999999999999 ms\nDownload : 100 ms\nTotal : 95 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -6600,7 +6831,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 2738 ms\n"
+                          "text": "RESPONSE TIME   : 95 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 24\n"
@@ -6698,7 +6929,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:01:37.753Z",
+                      "startTime": "2026-06-10T12:45:51.771Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6731,11 +6962,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 3650,
+                      "duration": 279,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - ynr_over_voltage\nDNS : 40.49 ms\nConnection : 21.02 ms\nServer Processing : 3185.4900000000002 ms\nDownload : 100 ms\nTotal : 3347 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - ynr_over_voltage\nDNS : 0.19 ms\nConnection : 19.06 ms\nServer Processing : -23.25 ms\nDownload : 100 ms\nTotal : 96 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -6747,7 +6978,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 3347 ms\n"
+                          "text": "RESPONSE TIME   : 96 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 25\n"
@@ -6848,7 +7079,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:01:40.718Z",
+                      "startTime": "2026-06-10T12:45:52.094Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -6881,11 +7112,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2234,
+                      "duration": 289,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - ynr_neutral_disturbance\nDNS : 20.29 ms\nConnection : 23.61 ms\nServer Processing : 1843.1000000000001 ms\nDownload : 100 ms\nTotal : 1987 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - ynr_neutral_disturbance\nDNS : 0.45 ms\nConnection : 18.39 ms\nServer Processing : -24.840000000000003 ms\nDownload : 100 ms\nTotal : 94 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -6897,7 +7128,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 1987 ms\n"
+                          "text": "RESPONSE TIME   : 94 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 25\n"
@@ -6998,7 +7229,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:01:44.439Z",
+                      "startTime": "2026-06-10T12:45:52.410Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -7031,11 +7262,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 9847,
+                      "duration": 7820,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - ynr_ct_open_unbalance\nDNS : 0.54 ms\nConnection : 20.89 ms\nServer Processing : 1326.57 ms\nDownload : 100 ms\nTotal : 1448 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - ynr_ct_open_unbalance\nDNS : 0.22 ms\nConnection : 19.22 ms\nServer Processing : 15.560000000000002 ms\nDownload : 100 ms\nTotal : 135 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -7047,7 +7278,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 1448 ms\n"
+                          "text": "RESPONSE TIME   : 135 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 619\n"
@@ -8930,7 +9161,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:01:46.729Z",
+                      "startTime": "2026-06-10T12:45:52.737Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -8963,11 +9194,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2344,
+                      "duration": 464,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - ynr_ct_bypass\nDNS : 1.18 ms\nConnection : 24.77 ms\nServer Processing : 1924.0500000000002 ms\nDownload : 100 ms\nTotal : 2050 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - ynr_ct_bypass\nDNS : 0.56 ms\nConnection : 20.4 ms\nServer Processing : -15.960000000000008 ms\nDownload : 100 ms\nTotal : 105 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -8979,7 +9210,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 2050 ms\n"
+                          "text": "RESPONSE TIME   : 105 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 31\n"
@@ -9098,7 +9329,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:01:56.713Z",
+                      "startTime": "2026-06-10T12:46:00.710Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -9131,11 +9362,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 6839,
+                      "duration": 9447,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - ynr_earth_loading\nDNS : 0.73 ms\nConnection : 19.77 ms\nServer Processing : 1957.5 ms\nDownload : 100 ms\nTotal : 2078 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - ynr_earth_loading\nDNS : 0.32 ms\nConnection : 19.65 ms\nServer Processing : -3.969999999999999 ms\nDownload : 100 ms\nTotal : 116 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -9147,7 +9378,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 2078 ms\n"
+                          "text": "RESPONSE TIME   : 116 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 379\n"
@@ -10310,7 +10541,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:01:59.100Z",
+                      "startTime": "2026-06-10T12:46:01.230Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -10343,11 +10574,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 2300,
+                      "duration": 451,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - ynr_low_power_factor\nDNS : 1.11 ms\nConnection : 19.86 ms\nServer Processing : 1954.0299999999997 ms\nDownload : 100 ms\nTotal : 2075 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - ynr_low_power_factor\nDNS : 0.8 ms\nConnection : 81.95 ms\nServer Processing : 8.249999999999986 ms\nDownload : 100 ms\nTotal : 191 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -10359,7 +10590,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 2075 ms\n"
+                          "text": "RESPONSE TIME   : 191 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 25\n"
@@ -10460,7 +10691,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:02:06.035Z",
+                      "startTime": "2026-06-10T12:46:10.735Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -10493,11 +10724,11 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 31005,
+                      "duration": 1653,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Technical Analysis - ynr_magnet_event\nDNS : 0.81 ms\nConnection : 27.58 ms\nServer Processing : 30584.609999999997 ms\nDownload : 100 ms\nTotal : 30713 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Technical Analysis - ynr_magnet_event\nDNS : 0.46 ms\nConnection : 307.11 ms\nServer Processing : -263.57000000000005 ms\nDownload : 100 ms\nTotal : 144 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
@@ -10509,7 +10740,7 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 30713 ms\n"
+                          "text": "RESPONSE TIME   : 144 ms\n"
                         },
                         {
                           "text": "TOTAL CHECKS    : 24\n"
@@ -10607,7 +10838,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:02:08.384Z",
+                      "startTime": "2026-06-10T12:46:12.219Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -10622,7 +10853,7 @@
             },
             {
               "title": "ynr_cover_open Report Validation",
-              "ok": false,
+              "ok": true,
               "tags": [
                 "technical-analysis",
                 "report",
@@ -10639,91 +10870,94 @@
                     {
                       "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 31568,
-                      "error": {
-                        "message": "Error: \n        Status: 500\n        Body: {\"success\":false,\"error\":{\"code\":\"INTERNAL_ERROR\",\"message\":\"An unexpected error occurred\"}}\n      ",
-                        "stack": "Error: \n        Status: 500\n        Body: {\"success\":false,\"error\":{\"code\":\"INTERNAL_ERROR\",\"message\":\"An unexpected error occurred\"}}\n      \n    at TechnicalReportApi.getTechnicalReport (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\TECHNICAL ANALYSIS\\Api\\technicalanalysis.api.ts:39:13)\n    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\TECHNICAL ANALYSIS\\tests\\technicalanalysis.spec.ts:27:29",
-                        "location": {
-                          "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\TECHNICAL ANALYSIS\\Api\\technicalanalysis.api.ts",
-                          "column": 13,
-                          "line": 39
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mmodules\\TECHNICAL ANALYSIS\\Api\\technicalanalysis.api.ts:39\n\n\u001b[0m \u001b[90m 37 |\u001b[39m\n \u001b[90m 38 |\u001b[39m     \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mresponse\u001b[33m.\u001b[39mok()) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 39 |\u001b[39m       \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`\u001b[39m\n \u001b[90m    |\u001b[39m             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 40 |\u001b[39m \u001b[32m        Status: ${response.status()}\u001b[39m\n \u001b[90m 41 |\u001b[39m \u001b[32m        Body: ${await response.text()}\u001b[39m\n \u001b[90m 42 |\u001b[39m \u001b[32m      `\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
+                      "status": "passed",
+                      "duration": 395,
+                      "errors": [],
+                      "stdout": [
                         {
-                          "location": {
-                            "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\TECHNICAL ANALYSIS\\Api\\technicalanalysis.api.ts",
-                            "column": 13,
-                            "line": 39
-                          },
-                          "message": "Error: \n        Status: 500\n        Body: {\"success\":false,\"error\":{\"code\":\"INTERNAL_ERROR\",\"message\":\"An unexpected error occurred\"}}\n      \n\n\u001b[90m   at \u001b[39mmodules\\TECHNICAL ANALYSIS\\Api\\technicalanalysis.api.ts:39\n\n\u001b[0m \u001b[90m 37 |\u001b[39m\n \u001b[90m 38 |\u001b[39m     \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mresponse\u001b[33m.\u001b[39mok()) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 39 |\u001b[39m       \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`\u001b[39m\n \u001b[90m    |\u001b[39m             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 40 |\u001b[39m \u001b[32m        Status: ${response.status()}\u001b[39m\n \u001b[90m 41 |\u001b[39m \u001b[32m        Body: ${await response.text()}\u001b[39m\n \u001b[90m 42 |\u001b[39m \u001b[32m      `\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at TechnicalReportApi.getTechnicalReport (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\TECHNICAL ANALYSIS\\Api\\technicalanalysis.api.ts:39:13)\u001b[22m\n\u001b[2m    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\TECHNICAL ANALYSIS\\tests\\technicalanalysis.spec.ts:27:29\u001b[22m"
+                          "text": "\n==================================\nAPI : Technical Analysis - ynr_cover_open\nDNS : 0.59 ms\nConnection : 26.25 ms\nServer Processing : 17.159999999999997 ms\nDownload : 100 ms\nTotal : 144 ms\n===================================\n\n"
+                        },
+                        {
+                          "text": "\n==================================================\n"
+                        },
+                        {
+                          "text": "API TEST SUMMARY — ynr_cover_open Report API\n"
+                        },
+                        {
+                          "text": "==================================================\n"
+                        },
+                        {
+                          "text": "RESPONSE TIME   : 144 ms\n"
+                        },
+                        {
+                          "text": "TOTAL CHECKS    : 13\n"
+                        },
+                        {
+                          "text": "PASSED          : 13\n"
+                        },
+                        {
+                          "text": "FAILED          : 0\n"
+                        },
+                        {
+                          "text": "FINAL STATUS    : PASS\n"
+                        },
+                        {
+                          "text": "==================================================\n"
+                        },
+                        {
+                          "text": "VALIDATION CHECKS (ynr_cover_open Report API):\n"
+                        },
+                        {
+                          "text": "  0. Status Code Validation — PASS\n"
+                        },
+                        {
+                          "text": "  1. Content Type Validation — PASS\n"
+                        },
+                        {
+                          "text": "  2. Response Time Validation — PASS\n"
+                        },
+                        {
+                          "text": "  3. Sensitive Data Validation — PASS\n"
+                        },
+                        {
+                          "text": "  4. Success Validation — PASS\n"
+                        },
+                        {
+                          "text": "  5. Response Structure Validation — PASS\n"
+                        },
+                        {
+                          "text": "  6. Analysis Type Validation — PASS\n"
+                        },
+                        {
+                          "text": "  7. Month Validation — PASS\n"
+                        },
+                        {
+                          "text": "  8. Year Validation — PASS\n"
+                        },
+                        {
+                          "text": "  9. Pagination Validation — PASS\n"
+                        },
+                        {
+                          "text": "  10. Pagination Consistency Validation — PASS\n"
+                        },
+                        {
+                          "text": "  11. Cross Field Validation — PASS\n"
+                        },
+                        {
+                          "text": "  12. No Data Validation — PASS\n"
+                        },
+                        {
+                          "text": "==================================================\n\n"
                         }
                       ],
-                      "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-08T11:02:39.459Z",
+                      "startTime": "2026-06-10T12:46:13.921Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\test-results\\modules-TECHNICAL ANALYSIS-a00d9-over-open-Report-Validation\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\TECHNICAL ANALYSIS\\Api\\technicalanalysis.api.ts",
-                        "column": 13,
-                        "line": 39
-                      }
-                    },
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 31531,
-                      "error": {
-                        "message": "Error: \n        Status: 500\n        Body: {\"success\":false,\"error\":{\"code\":\"INTERNAL_ERROR\",\"message\":\"An unexpected error occurred\"}}\n      ",
-                        "stack": "Error: \n        Status: 500\n        Body: {\"success\":false,\"error\":{\"code\":\"INTERNAL_ERROR\",\"message\":\"An unexpected error occurred\"}}\n      \n    at TechnicalReportApi.getTechnicalReport (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\TECHNICAL ANALYSIS\\Api\\technicalanalysis.api.ts:39:13)\n    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\TECHNICAL ANALYSIS\\tests\\technicalanalysis.spec.ts:27:29",
-                        "location": {
-                          "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\TECHNICAL ANALYSIS\\Api\\technicalanalysis.api.ts",
-                          "column": 13,
-                          "line": 39
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mmodules\\TECHNICAL ANALYSIS\\Api\\technicalanalysis.api.ts:39\n\n\u001b[0m \u001b[90m 37 |\u001b[39m\n \u001b[90m 38 |\u001b[39m     \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mresponse\u001b[33m.\u001b[39mok()) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 39 |\u001b[39m       \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`\u001b[39m\n \u001b[90m    |\u001b[39m             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 40 |\u001b[39m \u001b[32m        Status: ${response.status()}\u001b[39m\n \u001b[90m 41 |\u001b[39m \u001b[32m        Body: ${await response.text()}\u001b[39m\n \u001b[90m 42 |\u001b[39m \u001b[32m      `\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\TECHNICAL ANALYSIS\\Api\\technicalanalysis.api.ts",
-                            "column": 13,
-                            "line": 39
-                          },
-                          "message": "Error: \n        Status: 500\n        Body: {\"success\":false,\"error\":{\"code\":\"INTERNAL_ERROR\",\"message\":\"An unexpected error occurred\"}}\n      \n\n\u001b[90m   at \u001b[39mmodules\\TECHNICAL ANALYSIS\\Api\\technicalanalysis.api.ts:39\n\n\u001b[0m \u001b[90m 37 |\u001b[39m\n \u001b[90m 38 |\u001b[39m     \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39mresponse\u001b[33m.\u001b[39mok()) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 39 |\u001b[39m       \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`\u001b[39m\n \u001b[90m    |\u001b[39m             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 40 |\u001b[39m \u001b[32m        Status: ${response.status()}\u001b[39m\n \u001b[90m 41 |\u001b[39m \u001b[32m        Body: ${await response.text()}\u001b[39m\n \u001b[90m 42 |\u001b[39m \u001b[32m      `\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at TechnicalReportApi.getTechnicalReport (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\TECHNICAL ANALYSIS\\Api\\technicalanalysis.api.ts:39:13)\u001b[22m\n\u001b[2m    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\TECHNICAL ANALYSIS\\tests\\technicalanalysis.spec.ts:27:29\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-06-08T11:03:12.420Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\test-results\\modules-TECHNICAL ANALYSIS-a00d9-over-open-Report-Validation-retry1\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\TECHNICAL ANALYSIS\\Api\\technicalanalysis.api.ts",
-                        "column": 13,
-                        "line": 39
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "201c40eff0e0eb54d773-f29ca9597e5ce5226317",
@@ -10738,11 +10972,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-08T10:59:30.638Z",
-    "duration": 253863.753,
-    "expected": 32,
+    "startTime": "2026-06-10T12:44:46.300Z",
+    "duration": 88137.58,
+    "expected": 33,
     "skipped": 0,
-    "unexpected": 1,
+    "unexpected": 0,
     "flaky": 0
   }
 }
