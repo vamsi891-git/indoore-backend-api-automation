@@ -46,11 +46,17 @@ const html = `<!DOCTYPE html>
     <tr><td><b>Flaky</b></td><td>${summary.flaky}</td></tr>
     <tr><td><b>Duration</b></td><td>${duration}</td></tr>
   </table>
-  <p>The <b>Allure HTML report</b> is attached as <code>allure-report.zip</code>.
-  Unzip and open <code>index.html</code> in a browser.</p>
+  <h3>Download Allure report</h3>
+  <ol>
+    <li>Open the GitHub Actions run (link below).</li>
+    <li>Scroll to <b>Artifacts</b> at the bottom of the run page.</li>
+    <li>Download <b>allure-report</b> (contains <code>allure-report.zip</code> and HTML).</li>
+    <li>Unzip and open <code>index.html</code> in your browser.</li>
+  </ol>
+  <p><i>Gmail SMTP blocks automated zip attachments (error 552). The report is hosted on GitHub Artifacts instead.</i></p>
   ${
     process.env.GITHUB_SERVER_URL && process.env.GITHUB_REPOSITORY && process.env.GITHUB_RUN_ID
-      ? `<p><a href="${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}">Open GitHub Actions run</a></p>`
+      ? `<p><a href="${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}"><b>Open GitHub Actions run → download allure-report artifact</b></a></p>`
       : ""
   }
 </body>

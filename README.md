@@ -197,6 +197,8 @@ Add these **SMTP secrets** on GitHub to enable sending:
 
 If SMTP secrets are missing, the workflow still uploads the `allure-report` artifact from the Actions run page.
 
+**Gmail note:** Gmail SMTP often blocks zip attachments from CI (error `552`). The email includes a **link to the GitHub Actions run**; download the **allure-report** artifact from the Artifacts section at the bottom of the run page.
+
 \* At least one of `EMAIL` or `USERNAME` must be set (same as `src/global.setup.ts`).
 
 Secret names are **case-sensitive** — use `BASE_URL`, not `base_url`.
