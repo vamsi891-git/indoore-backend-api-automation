@@ -16,9 +16,43 @@ import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { printInviteCrossVerification } from "../utils/invite-verification.reporter";
+import {
+  INVITE_PROVISION_TEST_TIMEOUT_MS,
+  inviteUserWithRetry,
+} from "../utils/invite-provision.helper";
 
 test.describe("Auth Invite User API", () => {
-  test.describe.configure({ mode: "serial" });
+  test.describe.configure({
+    mode: "serial",
+    timeout: INVITE_PROVISION_TEST_TIMEOUT_MS,
+  });
+
+  test(
+    "Reject unknown invite role",
+    { tag: ["@auth", "@invite"] },
+    async ({ authenticatedApi }) => {
+      const api = new InviteApi(authenticatedApi);
+      const validation = new ValidationEngine();
+      const validator = new InviteValidator();
+
+      try {
+        const response = await api.inviteUser({
+          email: buildUniqueInviteEmail("bad-role"),
+          role: InviteTestData.invalidRole,
+        });
+
+        validation.execute("Unknown Role Status", () =>
+          validator.validateUnknownRoleError(
+            response.rawResponse.status(),
+            response.responseBody,
+            InviteTestData.invalidRole,
+          ),
+        );
+      } finally {
+        validation.finalize("Auth Invite Unknown Role", 0);
+      }
+    },
+  );
 
   test(
     "Validate invite user, list, and cleanup",
@@ -48,7 +82,7 @@ test.describe("Auth Invite User API", () => {
           );
         });
 
-        const inviteResponse = await api.inviteUser(invitePayload);
+        const inviteResponse = await inviteUserWithRetry(api, invitePayload);
         responseTime = inviteResponse.responseTime;
 
         await PerformanceTracker.track(
@@ -180,33 +214,6 @@ test.describe("Auth Invite User API", () => {
           await api.deleteInvitation(invitationId);
         }
         validation.finalize("Auth Invite User API", responseTime);
-      }
-    },
-  );
-
-  test(
-    "Reject unknown invite role",
-    { tag: ["@auth", "@invite"] },
-    async ({ authenticatedApi }) => {
-      const api = new InviteApi(authenticatedApi);
-      const validation = new ValidationEngine();
-      const validator = new InviteValidator();
-
-      try {
-        const response = await api.inviteUser({
-          email: buildUniqueInviteEmail("bad-role"),
-          role: InviteTestData.invalidRole,
-        });
-
-        validation.execute("Unknown Role Status", () =>
-          validator.validateUnknownRoleError(
-            response.rawResponse.status(),
-            response.responseBody,
-            InviteTestData.invalidRole,
-          ),
-        );
-      } finally {
-        validation.finalize("Auth Invite Unknown Role", 0);
       }
     },
   );

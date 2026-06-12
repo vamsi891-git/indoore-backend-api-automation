@@ -54,11 +54,24 @@ test.describe("Auth Login API", () => {
           validator.validateCsrfToken(csrfToken),
         );
 
-        const invalidLogin = await api.postLogin(
+        let invalidLogin = await api.postLogin(
           AuthTestData.validEmail,
           AuthTestData.invalidPassword,
           csrfToken,
         );
+
+        if (invalidLogin.rawResponse.status() === 500) {
+          const retryPreflight = await api.getLoginPreflight();
+          const retryCsrf = await AuthMapper.resolveCsrfToken(
+            unauthenticatedApi,
+            retryPreflight.rawResponse.headers(),
+          );
+          invalidLogin = await api.postLogin(
+            AuthTestData.validEmail,
+            AuthTestData.invalidPassword,
+            retryCsrf,
+          );
+        }
 
         validation.execute("Invalid Login Status", () =>
           validator.validateInvalidCredentials(

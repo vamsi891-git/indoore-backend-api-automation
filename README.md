@@ -143,7 +143,24 @@ Workflow: [`.github/workflows/playwright.yml`](.github/workflows/playwright.yml)
 | `push` / `pull_request` | Branches `main` or `master` |
 | `workflow_dispatch` | Manual run from the Actions tab |
 
-The job runs `npm test` (full suite, same as local). HTML report and JSON results are uploaded as artifacts when the run finishes (pass or fail).
+The job runs `npm test` (full suite, same as local). When the run finishes (pass or fail), it generates an **Allure** report and uploads artifacts. If SMTP secrets are configured, the Allure report is emailed to the developer inbox as `allure-report.zip`.
+
+### Allure reports (local)
+
+```bash
+npm test
+npm run report:allure
+```
+
+`report:allure` generates `allure-report/` and opens it in the browser. Raw results are stored in `allure-results/` during the test run.
+
+| Script | Purpose |
+|--------|---------|
+| `npm run allure:generate` | Build HTML from `allure-results/` |
+| `npm run allure:open` | Open existing Allure report |
+| `npm run report:allure` | Generate + open |
+
+**Note:** Allure CLI requires **Java 17+** locally (`java -version`). GitHub Actions installs Java automatically.
 
 ### Repository secrets (required for CI)
 
@@ -158,6 +175,27 @@ CI does **not** use your local `.env` file. You must add secrets on GitHub:
 | `EMAIL` | Yes* | Same as local `.env` |
 | `USERNAME` | Yes* | Use instead of `EMAIL` if that is what you use locally |
 | `DEVICE_ID` | No | Only if login requires device selection |
+| `GMAIL_IMAP_USER` | No | Invite E2E auto-capture in CI |
+| `GMAIL_IMAP_APP_PASSWORD` | No | Gmail app password for invite tests |
+| `INVITE_INBOX_EMAIL` | No | Invite delivery inbox override |
+
+### Email report (Allure)
+
+After each workflow run, the **Allure report zip** is sent to:
+
+**`harikiran.vasupalli@bestinfra.tech`** (configured in `.github/workflows/playwright.yml`)
+
+Add these **SMTP secrets** on GitHub to enable sending:
+
+| Secret name | Required for email | Example |
+|-------------|-------------------|---------|
+| `SMTP_SERVER` | **Yes** | `smtp.gmail.com` |
+| `SMTP_PORT` | **Yes** | `465` |
+| `SMTP_USERNAME` | **Yes** | `automation@bestinfra.tech` |
+| `SMTP_PASSWORD` | **Yes** | SMTP / app password |
+| `REPORT_MAIL_FROM` | No | Defaults to `SMTP_USERNAME` |
+
+If SMTP secrets are missing, the workflow still uploads the `allure-report` artifact from the Actions run page.
 
 \* At least one of `EMAIL` or `USERNAME` must be set (same as `src/global.setup.ts`).
 
@@ -186,7 +224,7 @@ Or create an empty repo on GitHub, then push the local branch as above.
 
 | File | Purpose |
 |------|---------|
-| `playwright.config.ts` | Test runner, retries, HTML reporter, `globalSetup` |
+| `playwright.config.ts` | Test runner, retries, HTML + Allure reporters, `globalSetup` |
 | `tsconfig.json` | TypeScript compiler options |
 | `.env.example` | Environment template (safe to commit) |
 | `.gitignore` | Ignored artifacts and secrets |

@@ -1,6 +1,6 @@
 // tests/consumption-pattern.spec.ts
 
-import { test } from "../../../../src/fixtures/api.fixture";
+import { test } from "../../../fixtures/api.fixture";
 
 import { ConsumptionPatternApi } from "../Api/consumptionpattern.api";
 

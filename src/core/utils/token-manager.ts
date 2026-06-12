@@ -55,6 +55,14 @@ export class TokenManager {
     return this.token;
   }
 
+  /** Force login/refresh to obtain a fresh CSRF token (e.g. after CSRF_MISMATCH). */
+  static async forceSessionRefresh(): Promise<void> {
+    await this.refreshToken(true);
+    if (!this.token || !this.csrfToken) {
+      throw new Error("Session refresh did not return token + CSRF");
+    }
+  }
+
   static seed(accessToken: string,expiresInSeconds = this.defaultExpirySeconds,csrfToken?: string): void {
     this.applyToken(accessToken, expiresInSeconds);
     if (csrfToken) {

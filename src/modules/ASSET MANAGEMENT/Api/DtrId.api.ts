@@ -8,11 +8,7 @@ export interface DtrApiResponse {
 }
 export class DtrDetailApi {
     constructor(private authenticatedApi:APIRequestContext) { }
-    async getDtrDetails(
-        dtrId: number,
-        page: number,
-        limit: number
-    ):
+    async getDtrDetails(dtrId: number,page: number,limit: number):
      Promise<DtrApiResponse> {
         const start =Date.now();
         const rawResponse =await getWithAutoRefresh(this.authenticatedApi,

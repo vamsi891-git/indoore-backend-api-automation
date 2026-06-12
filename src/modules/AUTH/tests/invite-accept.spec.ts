@@ -1,7 +1,7 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/auth.fixture";
 import { InvitePublicApi } from "../Api/invite.api";
-import { InviteTestData } from "../Data/invite.data";
+import { InviteTestData, isRateLimitedResponse } from "../Data/invite.data";
 import { AuthMapper } from "../Mapper/auth.mapper";
 import { InviteValidator } from "../Validator/invite.validator";
 import {
@@ -43,6 +43,11 @@ test.describe("Auth Invite Accept API", () => {
         const accept = await publicApi.acceptInvitation(
           acceptPayload,
           csrfToken,
+        );
+
+        test.skip(
+          isRateLimitedResponse(accept.rawResponse.status(), accept.responseBody),
+          "Rate limited (TOO_MANY_REQUESTS) — retry invite accept negative test later",
         );
 
         validation.execute("Invalid Accept Contract", () =>

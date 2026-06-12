@@ -7,15 +7,11 @@ export interface AuditLogExportApiResponse {
     csvContent: string;
     responseTime: number;
 }
-
 const EXPORT_PATH = "/indore/users/audit-logs/export";
 const MAX_429_ATTEMPTS = 2;
-
 export class AuditLogExportApi {
     private static lastExportRequestAt = 0;
-
     constructor(private readonly authenticatedApi: APIRequestContext) {}
-
     private static async waitForExportSlot(): Promise<void> {
         if (AuditLogExportApi.lastExportRequestAt === 0) {
             return;

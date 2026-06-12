@@ -57,6 +57,20 @@ function isNonRetryableError(error: unknown): boolean {
   );
 }
 
+async function isCsrfMismatchResponse(response: APIResponse): Promise<boolean> {
+  if (response.status() !== 403) {
+    return false;
+  }
+  try {
+    const body = (await response.json()) as {
+      error?: { code?: string };
+    };
+    return body?.error?.code === "CSRF_MISMATCH";
+  } catch {
+    return false;
+  }
+}
+
 async function executeWithToken(
   request: APIRequestContext,
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
@@ -134,6 +148,13 @@ async function requestWithAutoRefresh(
   if (response.status() === 401) {
     LoggerEngine.info(`${method} ${url} received 401; reloading shared token`);
     token = await TokenManager.handleUnauthorized(token);
+    response = await executeWithToken(request, method, url, normalizedOptions, token);
+  }
+
+  if (await isCsrfMismatchResponse(response)) {
+    LoggerEngine.info(`${method} ${url} received CSRF_MISMATCH; refreshing session`);
+    await TokenManager.forceSessionRefresh();
+    token = await TokenManager.getToken();
     response = await executeWithToken(request, method, url, normalizedOptions, token);
   }
 

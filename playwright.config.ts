@@ -12,9 +12,17 @@ export default defineConfig({
   timeout: DEFAULT_TEST_TIMEOUT_MS,
   retries: 1,
   reporter: [
+    ["list"],
     ["html", { outputFolder: "playwright-report", open: "never" }],
     ["json", { outputFile: "reports/playwright-results.json" }],
-    ["list"],
+    [
+      "allure-playwright",
+      {
+        detail: true,
+        outputFolder: "allure-results",
+        suiteTitle: true,
+      },
+    ],
   ],
   use: {
     baseURL: process.env.BASE_URL

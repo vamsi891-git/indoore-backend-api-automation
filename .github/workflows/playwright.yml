@@ -24,6 +24,10 @@ jobs:
       USERNAME: ${{ secrets.USERNAME }}
       PASSWORD: ${{ secrets.PASSWORD }}
       DEVICE_ID: ${{ secrets.DEVICE_ID }}
+      GMAIL_IMAP_USER: ${{ secrets.GMAIL_IMAP_USER }}
+      GMAIL_IMAP_APP_PASSWORD: ${{ secrets.GMAIL_IMAP_APP_PASSWORD }}
+      INVITE_INBOX_EMAIL: ${{ secrets.INVITE_INBOX_EMAIL }}
+      REPORT_MAIL_TO: harikiran.vasupalli@bestinfra.tech
 
     steps:
       - name: Checkout
@@ -49,6 +53,12 @@ jobs:
           node-version: "20"
           cache: npm
 
+      - name: Setup Java (Allure CLI)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
       - name: Install dependencies
         run: npm ci
 
@@ -58,6 +68,29 @@ jobs:
 
       - name: Run Playwright tests
         run: npm test
+
+      - name: Write Allure environment
+        if: always()
+        run: node scripts/write-allure-environment.mjs
+
+      - name: Generate Allure report
+        if: always()
+        run: npm run allure:generate
+
+      - name: Build email summary
+        if: always()
+        env:
+          WORKFLOW_JOB_STATUS: ${{ job.status }}
+        run: node scripts/build-allure-email-body.mjs
+
+      - name: Zip Allure report for email
+        if: always()
+        run: |
+          if [ -d allure-report ]; then
+            zip -r allure-report.zip allure-report
+          else
+            echo "No allure-report folder — skipping zip"
+          fi
 
       - name: Upload Playwright report
         if: always()
@@ -69,3 +102,49 @@ jobs:
             reports/playwright-results.json
             test-results/
           retention-days: 14
+
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: |
+            allure-report/
+            allure-results/
+            allure-report.zip
+          retention-days: 14
+
+      - name: Check report email configuration
+        id: email_config
+        if: always()
+        env:
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+        run: |
+          if [ -n "$REPORT_MAIL_TO" ] && [ -n "$SMTP_SERVER" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Send Allure report email
+        if: always() && steps.email_config.outputs.enabled == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: >-
+            [${{ job.status }}] Playwright Allure Report —
+            ${{ github.repository }} (${{ github.ref_name }})
+          to: ${{ env.REPORT_MAIL_TO }}
+          from: ${{ secrets.REPORT_MAIL_FROM || secrets.SMTP_USERNAME }}
+          html_body: file://reports/allure-email-body.html
+          secure: true
+          attachments: allure-report.zip
+
+      - name: Email skipped notice
+        if: always() && steps.email_config.outputs.enabled != 'true'
+        run: |
+          echo "Report email not sent — configure SMTP_* repository secrets (recipient: $REPORT_MAIL_TO)."
+          echo "Allure report is still available as the allure-report workflow artifact."

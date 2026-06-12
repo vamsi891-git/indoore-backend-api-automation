@@ -27,6 +27,9 @@ playwright/.auth/
 
 test-results/
 playwright-report/
+allure-results/
+allure-report/
+reports/allure-email-body.html
 blob-report/
 playwright/.cache/
 /playwright-report/

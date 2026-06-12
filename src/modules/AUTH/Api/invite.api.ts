@@ -54,8 +54,42 @@ export class InviteApi extends TimedApiClient {
     return this.deleteJson(AuthPaths.invitationById(invitationId));
   }
 
+  /**
+   * Live API exposes DELETE on `/invitations/:id` but not GET.
+   * Resolve a sent invitation by scanning `invitations/mine`.
+   */
+  async findInvitationInMyList(
+    invitationId: string,
+    limit = 100,
+  ): Promise<ApiCallResult & { item: Record<string, unknown> | null }> {
+    const response = await this.listMyInvitations({
+      page: 1,
+      limit,
+      status: "all",
+    });
+
+    const invitations =
+      (response.responseBody as { data?: { invitations?: Array<{ id: string }> } })
+        ?.data?.invitations ?? [];
+    const item =
+      invitations.find((row) => row.id === invitationId) ?? null;
+
+    return { ...response, item };
+  }
+
   getRoles(): Promise<ApiCallResult> {
     return this.getJson(AuthPaths.roles);
+  }
+}
+
+function parseJsonResponseBody(text: string): unknown {
+  if (!text.trim()) {
+    return null;
+  }
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { success: false, error: { code: "NON_JSON_RESPONSE", message: text } };
   }
 }
 
@@ -68,7 +102,7 @@ export class InvitePublicApi {
       params: { token },
     });
     const text = await rawResponse.text();
-    const responseBody = text ? JSON.parse(text) : null;
+    const responseBody = parseJsonResponseBody(text);
     return {
       rawResponse,
       responseBody,
@@ -86,12 +120,11 @@ export class InvitePublicApi {
         Accept: "application/json",
         "Content-Type": "application/json",
         "x-csrf-token": csrfToken,
-        Cookie: `csrf_token=${csrfToken}`,
       },
       data: payload,
     });
     const text = await rawResponse.text();
-    const responseBody = text ? JSON.parse(text) : null;
+    const responseBody = parseJsonResponseBody(text);
     return {
       rawResponse,
       responseBody,
