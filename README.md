@@ -220,10 +220,18 @@ If SMTP secrets are missing, the workflow still uploads the `allure-report` arti
 
    `https://vamsi891-git.github.io/indoore-backend-api-automation/`
 
-**If you still see 404:**
-- Check **Actions** → job **Publish Allure to GitHub Pages** is green
-- Confirm a **`gh-pages`** branch exists on the repo (created by CI)
-- **Public repos** get free Pages; private repos need a paid GitHub plan for Pages
+**Before the first run — enable workflow write access (required to create `gh-pages`):**
+
+1. Repo **Settings** → **Actions** → **General**
+2. **Workflow permissions** → select **Read and write permissions**
+3. Click **Save**
+
+**If `gh-pages` is not in the Pages branch dropdown:**
+
+1. **Actions** → **Playwright API Tests** → **Run workflow** (do not push again while it runs)
+2. Wait for **Deploy Allure to gh-pages branch** step to finish green
+3. **Code** tab → branch dropdown → **`gh-pages`** should appear
+4. Return to **Settings** → **Pages** → branch **`gh-pages`** → **Save**
 
 The email **View Allure Report Online** button opens this URL. Do not double-click downloaded `index.html` (shows empty dashboard).
 
