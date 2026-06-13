@@ -13,6 +13,7 @@
     "report": "playwright show-report",
     "allure:generate": "node scripts/write-allure-environment.mjs && allure generate allure-results -o allure-report --clean",
     "allure:open": "allure open allure-report",
+    "allure:serve": "allure open allure-report",
     "report:allure": "npm run allure:generate && npm run allure:open",
     "report:defects": "explorer reports\\defects",
     "typecheck": "tsc --noEmit",

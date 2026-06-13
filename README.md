@@ -162,6 +162,18 @@ npm run report:allure
 
 **Note:** Allure CLI requires **Java 17+** locally (`java -version`). GitHub Actions installs Java automatically.
 
+**Do not double-click `index.html`** — browsers show `500 Failed to fetch` when opening Allure via `file://`. Serve it over HTTP instead:
+
+```bash
+# After unzip of CI artifact (open the folder that contains index.html + data/)
+cd path/to/allure-report
+npx allure open .
+# or from project root after local generate:
+npm run allure:open
+```
+
+This starts a local server (e.g. `http://127.0.0.1:xxxx`) and opens the report correctly.
+
 ### Repository secrets (required for CI)
 
 CI does **not** use your local `.env` file. You must add secrets on GitHub:
@@ -197,7 +209,19 @@ Add these **SMTP secrets** on GitHub to enable sending:
 
 If SMTP secrets are missing, the workflow still uploads the `allure-report` artifact from the Actions run page.
 
-**Gmail note:** Gmail SMTP often blocks zip attachments from CI (error `552`). The email includes a **link to the GitHub Actions run**; download the **allure-report** artifact from the Artifacts section at the bottom of the run page.
+**Gmail note:** Gmail SMTP often blocks zip attachments from CI (error `552`). The email includes a **live Allure URL on GitHub Pages** — open that link in the browser (do not double-click downloaded `index.html`).
+
+### One-time: enable GitHub Pages (for email report link)
+
+1. Repo **Settings** → **Pages**
+2. **Build and deployment** → Source: **GitHub Actions**
+3. After the next workflow run, the report is published at:
+
+   `https://vamsi891-git.github.io/indoore-backend-api-automation/`
+
+   (replace with your `https://<owner>.github.io/<repo>/` if the repo name differs)
+
+The email **View Allure Report Online** button opens this URL. Downloading the artifact and opening `index.html` directly shows an **empty dashboard** (`500 Failed to fetch`) — that is a browser limitation, not missing test data.
 
 \* At least one of `EMAIL` or `USERNAME` must be set (same as `src/global.setup.ts`).
 

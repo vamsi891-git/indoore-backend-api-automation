@@ -24,21 +24,50 @@ function readSummary() {
   }
 }
 
+function defaultPagesUrl() {
+  const repo = process.env.GITHUB_REPOSITORY;
+  if (!repo) {
+    return "";
+  }
+  const [owner, name] = repo.split("/");
+  return owner && name ? `https://${owner}.github.io/${name}/` : "";
+}
+
 const summary = readSummary();
 const duration =
   summary.durationMs != null
     ? `${Math.round(summary.durationMs / 1000)}s`
-  : "n/a";
+    : "n/a";
+
+const allureUrl =
+  process.env.ALLURE_REPORT_URL?.trim() || defaultPagesUrl();
+
+const runUrl =
+  process.env.GITHUB_SERVER_URL &&
+  process.env.GITHUB_REPOSITORY &&
+  process.env.GITHUB_RUN_ID
+    ? `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`
+    : "";
+
+const allureLinkBlock = allureUrl
+  ? `<p style="margin:20px 0;">
+      <a href="${allureUrl}" style="display:inline-block;padding:12px 24px;background:#2563eb;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;">
+        View Allure Report Online
+      </a>
+    </p>
+    <p><b>Report URL:</b> <a href="${allureUrl}">${allureUrl}</a></p>
+    <p><i>Open this link in Chrome/Edge — do not download and double-click index.html (shows empty dashboard).</i></p>`
+  : `<p><b>Allure online URL not available yet.</b> Enable GitHub Pages (Settings → Pages → Source: GitHub Actions), then re-run the workflow.</p>`;
 
 const html = `<!DOCTYPE html>
 <html>
-<body style="font-family:Segoe UI,Arial,sans-serif;color:#222;">
+<body style="font-family:Segoe UI,Arial,sans-serif;color:#222;max-width:720px;">
   <h2>Playwright API Test Report</h2>
-  <table cellpadding="6" cellspacing="0" border="1" style="border-collapse:collapse;">
+  <table cellpadding="6" cellspacing="0" border="1" style="border-collapse:collapse;width:100%;">
     <tr><td><b>Repository</b></td><td>${process.env.GITHUB_REPOSITORY ?? "local"}</td></tr>
     <tr><td><b>Branch</b></td><td>${process.env.GITHUB_REF_NAME ?? "local"}</td></tr>
-    <tr><td><b>Commit</b></td><td>${process.env.GITHUB_SHA ?? "local"}</td></tr>
-    <tr><td><b>Workflow status</b></td><td>${process.env.WORKFLOW_JOB_STATUS ?? "unknown"}</td></tr>
+    <tr><td><b>Commit</b></td><td>${(process.env.GITHUB_SHA ?? "local").slice(0, 7)}</td></tr>
+    <tr><td><b>Test run result</b></td><td>${process.env.WORKFLOW_JOB_STATUS ?? "unknown"}</td></tr>
     <tr><td><b>Total tests</b></td><td>${summary.total}</td></tr>
     <tr><td><b>Passed</b></td><td style="color:#0a7a2f;">${summary.passed}</td></tr>
     <tr><td><b>Failed</b></td><td style="color:#b00020;">${summary.failed}</td></tr>
@@ -46,19 +75,13 @@ const html = `<!DOCTYPE html>
     <tr><td><b>Flaky</b></td><td>${summary.flaky}</td></tr>
     <tr><td><b>Duration</b></td><td>${duration}</td></tr>
   </table>
-  <h3>Download Allure report</h3>
-  <ol>
-    <li>Open the GitHub Actions run (link below).</li>
-    <li>Scroll to <b>Artifacts</b> at the bottom of the run page.</li>
-    <li>Download <b>allure-report</b> (contains <code>allure-report.zip</code> and HTML).</li>
-    <li>Unzip and open <code>index.html</code> in your browser.</li>
-  </ol>
-  <p><i>Gmail SMTP blocks automated zip attachments (error 552). The report is hosted on GitHub Artifacts instead.</i></p>
-  ${
-    process.env.GITHUB_SERVER_URL && process.env.GITHUB_REPOSITORY && process.env.GITHUB_RUN_ID
-      ? `<p><a href="${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}"><b>Open GitHub Actions run → download allure-report artifact</b></a></p>`
-      : ""
-  }
+
+  <h3>Allure dashboard (recommended)</h3>
+  ${allureLinkBlock}
+
+  <h3>Backup: download from GitHub</h3>
+  <p>If the online link does not work, download the <b>allure-report</b> artifact from the Actions run and run <code>npx allure open .</code> (requires Java).</p>
+  ${runUrl ? `<p><a href="${runUrl}">Open GitHub Actions run</a></p>` : ""}
 </body>
 </html>`;
 
