@@ -160,6 +160,8 @@ npm run report:allure
 | `npm run allure:open` | Open existing Allure report |
 | `npm run report:allure` | Generate + open |
 
+**Module-wise report:** Open the **Behaviors** or **Suites** tab (not Overview). Tests are grouped as **Module → spec/describe → test case** (e.g. `AUTH` → `Auth Login API` → individual tests). The **Packages** tab also lists modules.
+
 **Note:** Allure CLI requires **Java 17+** locally (`java -version`). GitHub Actions installs Java automatically.
 
 **Do not double-click `index.html`** — browsers show `500 Failed to fetch` when opening Allure via `file://`. Serve it over HTTP instead:

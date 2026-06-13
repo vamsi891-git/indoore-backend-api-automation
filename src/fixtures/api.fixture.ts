@@ -1,4 +1,4 @@
-import { test as base, request, APIRequestContext } from "@playwright/test";
+import { test as base, request, APIRequestContext } from "./base.fixture";
 import { LoggerEngine } from "../core/engine/logger.engine";
 import { DEFAULT_REQUEST_TIMEOUT_MS } from "../core/constants/api-timeouts";
 import {

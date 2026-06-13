@@ -1,4 +1,4 @@
-import { test as base, request, APIRequestContext } from "@playwright/test";
+import { test as base, request, APIRequestContext } from "./base.fixture";
 import { LoggerEngine } from "../core/engine/logger.engine";
 
 type AuthFixtures = {

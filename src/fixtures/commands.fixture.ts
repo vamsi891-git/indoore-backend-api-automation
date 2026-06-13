@@ -1,4 +1,4 @@
-import { test as base, APIRequestContext } from "@playwright/test";
+import { test as base, APIRequestContext } from "./base.fixture";
 import { AuthApiClient } from "../commands/api/auth.api.client";
 import { CommandsApiClient } from "../commands/api/commands.api.client";
 import { isCommandsConfigured } from "../commands/config/env.config";
