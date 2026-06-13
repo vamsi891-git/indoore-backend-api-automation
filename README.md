@@ -211,17 +211,21 @@ If SMTP secrets are missing, the workflow still uploads the `allure-report` arti
 
 **Gmail note:** Gmail SMTP often blocks zip attachments from CI (error `552`). The email includes a **live Allure URL on GitHub Pages** — open that link in the browser (do not double-click downloaded `index.html`).
 
-### One-time: enable GitHub Pages (for email report link)
+### One-time: enable GitHub Pages (for live Allure link)
 
 1. Repo **Settings** → **Pages**
-2. **Build and deployment** → Source: **GitHub Actions**
-3. After the next workflow run, the report is published at:
+2. **Build and deployment** → Source: **Deploy from a branch**
+3. Branch: **`gh-pages`** → folder **`/ (root)`** → **Save**
+4. Wait 1–2 minutes after the next workflow run, then open:
 
    `https://vamsi891-git.github.io/indoore-backend-api-automation/`
 
-   (replace with your `https://<owner>.github.io/<repo>/` if the repo name differs)
+**If you still see 404:**
+- Check **Actions** → job **Publish Allure to GitHub Pages** is green
+- Confirm a **`gh-pages`** branch exists on the repo (created by CI)
+- **Public repos** get free Pages; private repos need a paid GitHub plan for Pages
 
-The email **View Allure Report Online** button opens this URL. Downloading the artifact and opening `index.html` directly shows an **empty dashboard** (`500 Failed to fetch`) — that is a browser limitation, not missing test data.
+The email **View Allure Report Online** button opens this URL. Do not double-click downloaded `index.html` (shows empty dashboard).
 
 \* At least one of `EMAIL` or `USERNAME` must be set (same as `src/global.setup.ts`).
 
