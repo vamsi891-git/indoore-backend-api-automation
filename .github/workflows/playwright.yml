@@ -123,6 +123,11 @@ jobs:
           force_orphan: true
           enable_jekyll: false
 
+      - name: GitHub Pages activation reminder
+        if: always()
+        run: |
+          echo "::notice title=Enable GitHub Pages (one-time)::Repo Settings → Pages → Deploy from branch → gh-pages → / (root) → Save. Then open https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
+
   send-report-email:
     name: Email Allure report link
     runs-on: ubuntu-latest

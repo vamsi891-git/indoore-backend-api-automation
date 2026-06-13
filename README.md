@@ -213,27 +213,25 @@ If SMTP secrets are missing, the workflow still uploads the `allure-report` arti
 
 **Gmail note:** Gmail SMTP often blocks zip attachments from CI (error `552`). The email includes a **live Allure URL on GitHub Pages** — open that link in the browser (do not double-click downloaded `index.html`).
 
-### One-time: enable GitHub Pages (for live Allure link)
+### One-time: enable GitHub Pages (fixes 404)
 
-1. Repo **Settings** → **Pages**
+The CI job already publishes Allure to the **`gh-pages`** branch (`index.html`, `data/`, `widgets/`).  
+A **404** at `https://vamsi891-git.github.io/indoore-backend-api-automation/` means **Pages is not enabled** in repo settings — not a missing report.
+
+1. Open: `https://github.com/vamsi891-git/indoore-backend-api-automation/settings/pages`
 2. **Build and deployment** → Source: **Deploy from a branch**
-3. Branch: **`gh-pages`** → folder **`/ (root)`** → **Save**
-4. Wait 1–2 minutes after the next workflow run, then open:
+3. Branch: **`gh-pages`** (should appear in the dropdown now)
+4. Folder: **`/ (root)`**
+5. Click **Save**
+6. Wait **2–5 minutes**, then open:
 
    `https://vamsi891-git.github.io/indoore-backend-api-automation/`
 
-**Before the first run — enable workflow write access (required to create `gh-pages`):**
+**Also required once:** **Settings** → **Actions** → **General** → **Workflow permissions** → **Read and write permissions** → **Save**
 
-1. Repo **Settings** → **Actions** → **General**
-2. **Workflow permissions** → select **Read and write permissions**
-3. Click **Save**
+**If `gh-pages` is missing from the dropdown:** run **Actions** → **Playwright API Tests** → **Run workflow**, wait for **Deploy Allure to gh-pages branch** to turn green, then repeat the steps above.
 
-**If `gh-pages` is not in the Pages branch dropdown:**
-
-1. **Actions** → **Playwright API Tests** → **Run workflow** (do not push again while it runs)
-2. Wait for **Deploy Allure to gh-pages branch** step to finish green
-3. **Code** tab → branch dropdown → **`gh-pages`** should appear
-4. Return to **Settings** → **Pages** → branch **`gh-pages`** → **Save**
+**Private repo:** GitHub Pages on private repos needs **GitHub Pro/Enterprise**. Use a **public** repo or download the **allure-report** artifact instead.
 
 The email **View Allure Report Online** button opens this URL. Do not double-click downloaded `index.html` (shows empty dashboard).
 
