@@ -27,7 +27,7 @@ jobs:
       GMAIL_IMAP_USER: ${{ secrets.GMAIL_IMAP_USER }}
       GMAIL_IMAP_APP_PASSWORD: ${{ secrets.GMAIL_IMAP_APP_PASSWORD }}
       INVITE_INBOX_EMAIL: ${{ secrets.INVITE_INBOX_EMAIL }}
-      REPORT_MAIL_TO: harikiran.vasupalli@bestinfra.tech
+      REPORT_MAIL_TO: vamsibst@gmail.com
 
     steps:
       - name: Checkout

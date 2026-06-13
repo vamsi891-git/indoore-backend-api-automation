@@ -183,7 +183,7 @@ CI does **not** use your local `.env` file. You must add secrets on GitHub:
 
 After each workflow run, the **Allure report zip** is sent to:
 
-**`harikiran.vasupalli@bestinfra.tech`** (configured in `.github/workflows/playwright.yml`)
+**`vamsibst@gmail.com`** (configured in `.github/workflows/playwright.yml`)
 
 Add these **SMTP secrets** on GitHub to enable sending:
 
