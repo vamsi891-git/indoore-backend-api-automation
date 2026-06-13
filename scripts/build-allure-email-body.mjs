@@ -11,12 +11,21 @@ function readSummary() {
   try {
     const data = JSON.parse(fs.readFileSync(resultsPath, "utf8"));
     const stats = data.stats ?? {};
+    const passed = stats.expected ?? stats.passed;
+    const failed = stats.unexpected ?? stats.failed;
+    const skipped = stats.skipped ?? 0;
+    const flaky = stats.flaky ?? 0;
+    const total =
+      stats.tests ??
+      (typeof passed === "number" && typeof failed === "number"
+        ? passed + failed + skipped + flaky
+        : "?");
     return {
-      total: stats.expected ?? stats.tests ?? "?",
-      passed: stats.passed ?? "?",
-      failed: stats.failed ?? stats.unexpected ?? "?",
-      skipped: stats.skipped ?? "?",
-      flaky: stats.flaky ?? 0,
+      total,
+      passed: passed ?? "?",
+      failed: failed ?? "?",
+      skipped,
+      flaky,
       durationMs: stats.duration ?? null,
     };
   } catch {
