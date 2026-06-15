@@ -1,15 +1,16 @@
 // Mapper/substation-master.mapper.ts
+import {
+  mapMasterDataList,
+  MasterDataList,
+  MasterDataListRaw,
+} from "./master-data-list.mapper";
+
 export interface SubstationMasterResponse {
   success: boolean;
-  data: SubstationMasterData;
+  data: MasterDataListRaw<SubstationMasterItem>;
 }
-export interface SubstationMasterData {
-  items: SubstationMasterItem[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
+
+export type SubstationMasterData = MasterDataList<SubstationMasterItem>;
 export interface SubstationMasterItem {
   slNo: number;
   discomName: string | null;
@@ -23,13 +24,7 @@ export interface SubstationMasterItem {
   consumerCount: number;
 }
 export class SubstationMasterMapper {
-  static mapData(data: SubstationMasterData): SubstationMasterData {
-    return {
-      items: data.items ?? [],
-      total: data.total ?? 0,
-      page: data.page ?? 1,
-      limit: data.limit ?? 20,
-      totalPages: data.totalPages ?? 0,
-    };
+  static mapData(data: MasterDataListRaw<SubstationMasterItem>): SubstationMasterData {
+    return mapMasterDataList(data);
   }
 }

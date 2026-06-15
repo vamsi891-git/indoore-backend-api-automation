@@ -12,7 +12,7 @@ import { AuthErrorResponseSchema } from "../schemas/auth.schemas";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
-import { ensureSharedInviteTokenForAuthSuite } from "../utils/invite-provision.helper";
+import { ensureSharedInviteInBeforeAll } from "../utils/invite-provision.helper";
 
 async function createPublicApiContext() {
   if (!process.env.BASE_URL) {
@@ -80,7 +80,7 @@ test.describe("Auth Invite Preview API", () => {
 
   test.describe("Valid preview from email token", () => {
     test.beforeAll(async ({ authenticatedApi }) => {
-      await ensureSharedInviteTokenForAuthSuite(authenticatedApi);
+      await ensureSharedInviteInBeforeAll(authenticatedApi);
     });
 
     test(

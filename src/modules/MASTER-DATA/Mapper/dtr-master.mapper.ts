@@ -1,14 +1,16 @@
+import {
+  mapMasterDataList,
+  MasterDataList,
+  MasterDataListRaw,
+} from "./master-data-list.mapper";
+
 export interface DtrMasterResponse {
   success: boolean;
-  data: DtrMasterData;
+  data: MasterDataListRaw<DtrMasterItem>;
 }
-export interface DtrMasterData {
-  items: DtrMasterItem[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
+
+export type DtrMasterData = MasterDataList<DtrMasterItem>;
+
 export interface DtrMasterItem {
   slNo: number;
   dtrCode: string;
@@ -17,14 +19,9 @@ export interface DtrMasterItem {
   latitude: string | null;
   longitude: string | null;
 }
+
 export class DtrMasterMapper {
-  static mapData(data: DtrMasterData): DtrMasterData {
-    return {
-      items: data.items ?? [],
-      total: data.total ?? 0,
-      page: data.page ?? 1,
-      limit: data.limit ?? 20,
-      totalPages: data.totalPages ?? 0,
-    };
+  static mapData(data: MasterDataListRaw<DtrMasterItem>): DtrMasterData {
+    return mapMasterDataList(data);
   }
 }

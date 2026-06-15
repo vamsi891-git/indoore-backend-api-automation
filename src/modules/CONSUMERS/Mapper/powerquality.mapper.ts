@@ -2,7 +2,8 @@ export interface Metric {
     title: string;
     value: number | null;
     unit: string;
-    subtitle: string;
+    /** Optional display label; backend may return null when UI derives subtitles locally */
+    subtitle: string | null;
 }
 export interface PowerQualityResponse {
     success: boolean;

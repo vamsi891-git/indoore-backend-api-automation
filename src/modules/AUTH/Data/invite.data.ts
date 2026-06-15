@@ -15,6 +15,7 @@ import {
   clearInviteTokenProcessEnv,
   clearStoredInviteTokenContext,
   getRuntimeInviteTokenContext,
+  loadSharedInviteTokenContext,
   loadStoredInviteTokenContext,
   publishCapturedInviteTokenContext,
 } from "../utils/invite-token.store";
@@ -47,6 +48,18 @@ export function isGmailInviteCaptureConfigured(): boolean {
     process.env.GMAIL_IMAP_USER?.trim() &&
       process.env.GMAIL_IMAP_APP_PASSWORD?.trim(),
   );
+}
+
+/**
+ * True when a pending invite token is available without Gmail IMAP —
+ * from gitignored `playwright/.auth/invite-token-shared.json`,
+ * `invite-token.json`, or INVITE_ACCEPT_TOKEN / INVITE_E2E_* in .env.
+ */
+export function hasGitignoredInviteTokenContext(): boolean {
+  if (loadSharedInviteTokenContext()) {
+    return true;
+  }
+  return hasInviteE2eContext();
 }
 
 /** Invites to @example.com are API-only smoke addresses (no real inbox). */

@@ -19,6 +19,7 @@ import { printInviteCrossVerification } from "../utils/invite-verification.repor
 import {
   INVITE_PROVISION_TEST_TIMEOUT_MS,
   inviteUserWithRetry,
+  isInviteTransientStatus,
 } from "../utils/invite-provision.helper";
 
 test.describe("Auth Invite User API", () => {
@@ -36,10 +37,19 @@ test.describe("Auth Invite User API", () => {
       const validator = new InviteValidator();
 
       try {
-        const response = await api.inviteUser({
+        const response = await inviteUserWithRetry(api, {
           email: buildUniqueInviteEmail("bad-role"),
           role: InviteTestData.invalidRole,
         });
+
+        const status = response.rawResponse.status();
+        if (isInviteTransientStatus(status)) {
+          test.skip(
+            true,
+            `Invite POST rate limited (${status}) — cannot validate unknown role rejection. Wait 30–60 minutes and re-run.`,
+          );
+          return;
+        }
 
         validation.execute("Unknown Role Status", () =>
           validator.validateUnknownRoleError(

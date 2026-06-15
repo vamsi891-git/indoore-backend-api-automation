@@ -1,9 +1,15 @@
 import { test } from "../../../fixtures/api.fixture";
 import {
   ensureSharedInviteTokenForAuthSuite,
+  hydrateProcessFromSharedInviteStore,
   INVITE_PROVISION_TEST_TIMEOUT_MS,
+  isInviteTransientErrorMessage,
 } from "../utils/invite-provision.helper";
-import { isGmailInviteCaptureConfigured } from "../Data/invite.data";
+import {
+  describeMissingInviteTokenSetup,
+  hasGitignoredInviteTokenContext,
+  isGmailInviteCaptureConfigured,
+} from "../Data/invite.data";
 import { clearSuiteAcceptSnapshot } from "../utils/invite-token.store";
 
 /**
@@ -22,14 +28,29 @@ test.describe("Auth Invite Suite Setup", () => {
     { tag: ["@auth", "@invite", "@e2e"] },
     async ({ authenticatedApi }) => {
       if (!isGmailInviteCaptureConfigured()) {
-        test.skip(
-          true,
-          "Gmail IMAP not configured — set GMAIL_IMAP_USER and GMAIL_IMAP_APP_PASSWORD",
-        );
+        if (hydrateProcessFromSharedInviteStore()) {
+          return;
+        }
+        if (hasGitignoredInviteTokenContext()) {
+          return;
+        }
+        test.skip(true, describeMissingInviteTokenSetup());
         return;
       }
 
-      await ensureSharedInviteTokenForAuthSuite(authenticatedApi);
+      try {
+        await ensureSharedInviteTokenForAuthSuite(authenticatedApi);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (isInviteTransientErrorMessage(message)) {
+          test.skip(
+            true,
+            `${message} — wait 30–60 minutes or fix backend SMTP, then re-run`,
+          );
+          return;
+        }
+        throw error;
+      }
     },
   );
 });

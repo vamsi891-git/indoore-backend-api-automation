@@ -58,6 +58,7 @@ test.describe("Substation Master API", () => {
       validation.execute("Consumer DTR Relation", () =>
         validator.validateConsumerDtrRelation(data),
       );
+
       validation.printSummary("Substation Master API", responseTime);
     },
   );

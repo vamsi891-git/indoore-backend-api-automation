@@ -117,6 +117,10 @@ export class NotificationsValidator {
             "user.updated",
             "user.status_changed",
             "user.deleted",
+            "ticket.created",
+            "ticket.updated",
+            "ticket.assigned",
+            "ticket.closed",
             "meter.connected",
             "meter.disconnected",
             "meter.command_failed",
@@ -232,7 +236,7 @@ export class NotificationsValidator {
     // DELETE RESPONSE
     // =====================================
     validateDeleteResponse(response: any) {
-        expect(response.success).toBeTruthy();
+        expect(response.success).toBeTruthy(); 
         expect(response.message).toBe("Notification deleted successfully.");
     }
     // =====================================

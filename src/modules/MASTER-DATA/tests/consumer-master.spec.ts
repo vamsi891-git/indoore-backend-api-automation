@@ -5,6 +5,7 @@ import { ConsumerMasterValidator } from "../Validator/consumer-master.validator"
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
+
 test.describe("Consumer Master API", () => {
   test(
     "Validate Consumer Master API",
@@ -76,6 +77,7 @@ test.describe("Consumer Master API", () => {
         "Hierarchy Validation",
         () => validator.validateHierarchyFields(data),
       );
+
       validation.printSummary(
         "Consumer Master API",
         responseTime,

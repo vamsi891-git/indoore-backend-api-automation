@@ -1,26 +1,17 @@
 // Mapper/feeder-master.mapper.ts
 
-export interface FeederMasterResponse{
+import {
+  mapMasterDataList,
+  MasterDataList,
+  MasterDataListRaw,
+} from "./master-data-list.mapper";
 
-success:boolean;
-
-data:FeederMasterData;
-
+export interface FeederMasterResponse {
+  success: boolean;
+  data: MasterDataListRaw<FeederMasterItem>;
 }
 
-export interface FeederMasterData{
-
-items:FeederMasterItem[];
-
-total:number;
-
-page:number;
-
-limit:number;
-
-totalPages:number;
-
-}
+export type FeederMasterData = MasterDataList<FeederMasterItem>;
 
 export interface FeederMasterItem{
 
@@ -46,26 +37,8 @@ consumerCount:number;
 
 }
 
-export class FeederMasterMapper{
-
-static mapData(
-    data:FeederMasterData
-):FeederMasterData{
-
-return{
-
-items:data.items??[],
-
-total:data.total??0,
-
-page:data.page??1,
-
-limit:data.limit??20,
-
-totalPages:data.totalPages??0
-
-};
-
-}
-
+export class FeederMasterMapper {
+  static mapData(data: MasterDataListRaw<FeederMasterItem>): FeederMasterData {
+    return mapMasterDataList(data);
+  }
 }

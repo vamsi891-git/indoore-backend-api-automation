@@ -17,7 +17,9 @@
     "report:allure": "npm run allure:generate && npm run allure:open",
     "report:defects": "explorer reports\\defects",
     "typecheck": "tsc --noEmit",
-    "test:inventory": "node scripts/test-inventory.mjs"
+    "test:inventory": "node scripts/test-inventory.mjs",
+    "db:ping": "node scripts/db-ping.mjs",
+    "db:list": "node scripts/list-databases.mjs"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +28,7 @@
   "devDependencies": {
     "@playwright/test": "^1.60.0",
     "@types/node": "^25.8.0",
+    "@types/pg": "^8.20.0",
     "allure-commandline": "^2.42.1",
     "allure-playwright": "^3.10.0",
     "eslint": "^10.3.0",
@@ -38,6 +41,7 @@
     "axios": "^1.16.0",
     "dotenv": "^17.4.2",
     "imapflow": "^1.4.0",
+    "pg": "^8.21.0",
     "zod": "^4.4.3"
   }
 }

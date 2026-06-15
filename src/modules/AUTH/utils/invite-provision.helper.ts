@@ -1,4 +1,4 @@
-import { APIRequestContext, request } from "@playwright/test";
+import { APIRequestContext, request, test } from "@playwright/test";
 import { InviteAcceptPayload, InviteApi, InvitePublicApi } from "../Api/invite.api";
 import { AuthenticationApi } from "../Api/auth.api";
 import { AuthMapper } from "../Mapper/auth.mapper";
@@ -9,6 +9,7 @@ import {
   buildUniqueInviteEmail,
   captureAndPublishInviteTokenFromGmail,
   describeMissingInviteTokenSetup,
+  hasGitignoredInviteTokenContext,
   InviteTestData,
   isAcceptSuccessStatus,
   isGmailInviteCaptureConfigured,
@@ -39,7 +40,7 @@ export interface ProvisionedPendingInvite {
 }
 
 const MIN_INVITE_POST_SPACING_MS =
-  Number(process.env.INVITE_POST_MIN_SPACING_MS) || 20_000;
+  Number(process.env.INVITE_POST_MIN_SPACING_MS) || 30_000;
 const INVITE_POST_MAX_RETRIES =
   Number(process.env.INVITE_POST_MAX_RETRIES) || 4;
 const INVITE_POST_RETRY_BACKOFF_MS = [0, 20_000, 40_000, 60_000];
@@ -80,6 +81,60 @@ function isAutomationInviteEmail(email: string): boolean {
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export function isInviteTransientStatus(status: number): boolean {
+  return status === 429 || status === 503;
+}
+
+export function isInviteTransientErrorMessage(message: string): boolean {
+  return message.includes("429") || message.includes("503");
+}
+
+function publishAdoptedAsShared(adopted: ProvisionedPendingInvite): void {
+  publishSharedInviteTokenContext({
+    token: adopted.token,
+    email: adopted.email,
+    invitationId: adopted.invitationId,
+    role: adopted.role,
+  });
+  hydrateProcessFromSharedInviteStore();
+}
+
+/** beforeAll helper — skips dependent specs when invite POST is rate-limited or SMTP fails. */
+export async function ensureSharedInviteInBeforeAll(
+  authenticatedApi: APIRequestContext,
+): Promise<void> {
+  if (!isGmailInviteCaptureConfigured()) {
+    if (hydrateProcessFromSharedInviteStore()) {
+      LoggerEngine.info(
+        "Invite token loaded from playwright/.auth/invite-token-shared.json (gitignored)",
+      );
+      return;
+    }
+    if (hasGitignoredInviteTokenContext()) {
+      LoggerEngine.info(
+        "Invite token loaded from .env or playwright/.auth/invite-token.json (gitignored)",
+      );
+      return;
+    }
+    test.skip(true, describeMissingInviteTokenSetup());
+    return;
+  }
+
+  try {
+    await ensureSharedInviteTokenForAuthSuite(authenticatedApi);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (isInviteTransientErrorMessage(message)) {
+      test.skip(
+        true,
+        `${message} — wait 30–60 minutes, re-run 00-invite-setup, or reuse invite-token-shared.json`,
+      );
+      return;
+    }
+    throw error;
+  }
 }
 
 async function runWithInvitePostLock<T>(fn: () => Promise<T>): Promise<T> {
@@ -398,6 +453,15 @@ async function sendInviteAndCaptureToken(
   const inviteResponse = await inviteUserWithRetry(api, { email, role });
   const status = inviteResponse.rawResponse.status();
   if (status !== 201) {
+    if (isInviteTransientStatus(status)) {
+      const adopted = await adoptInviteForE2eWhenRateLimited(api);
+      if (adopted) {
+        LoggerEngine.info(
+          `Invite POST ${status} — adopted pending invite ${adopted.invitationId} instead of new email`,
+        );
+        return adopted;
+      }
+    }
     throw new Error(
       `POST /indore/auth/invite failed with status ${status}: ${JSON.stringify(inviteResponse.responseBody)}`,
     );
@@ -466,14 +530,34 @@ async function isInvitationStillPending(
 export async function ensureSharedInviteTokenForAuthSuite(
   authenticatedApi: APIRequestContext,
 ): Promise<ProvisionedPendingInvite | null> {
+  const api = new InviteApi(authenticatedApi);
+
   if (!isGmailInviteCaptureConfigured()) {
+    const cached = loadSharedInviteTokenContext();
+    if (cached && (await isInvitationStillPending(api, cached.invitationId))) {
+      LoggerEngine.info(
+        `Reusing shared pending invite ${cached.invitationId} from invite-token-shared.json`,
+      );
+      hydrateProcessFromSharedInviteStore();
+      return {
+        email: cached.email,
+        invitationId: cached.invitationId,
+        role: cached.role,
+        token: cached.token,
+      };
+    }
+    if (hasGitignoredInviteTokenContext()) {
+      LoggerEngine.info(
+        "Gmail IMAP not configured — using gitignored invite token from .env or invite-token.json",
+      );
+      return null;
+    }
     LoggerEngine.info(
-      "Gmail IMAP not configured — preview/validate @e2e specs need manual INVITE_ACCEPT_TOKEN",
+      "Gmail IMAP not configured — set GMAIL_IMAP_* or add INVITE_ACCEPT_TOKEN / invite-token-shared.json",
     );
     return null;
   }
 
-  const api = new InviteApi(authenticatedApi);
   const cached = loadSharedInviteTokenContext();
 
   if (!shouldForceFreshSharedInvite() && cached) {
@@ -494,24 +578,28 @@ export async function ensureSharedInviteTokenForAuthSuite(
     );
   }
 
+  const adoptedBeforePost = await adoptInviteForE2eWhenRateLimited(api);
+  if (adoptedBeforePost) {
+    LoggerEngine.info(
+      `Reusing adopted pending invite ${adoptedBeforePost.invitationId} for shared setup (no new POST)`,
+    );
+    publishAdoptedAsShared(adoptedBeforePost);
+    return adoptedBeforePost;
+  }
+
   LoggerEngine.info("Provisioning shared pending invite for preview/validate specs");
   try {
     return await provisionSharedPendingInvite(authenticatedApi);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    if (!message.includes("429") && !message.includes("503")) {
+    if (!isInviteTransientErrorMessage(message)) {
       throw error;
     }
     const adopted = await adoptInviteForE2eWhenRateLimited(api);
     if (!adopted) {
       throw error;
     }
-    publishSharedInviteTokenContext({
-      token: adopted.token,
-      email: adopted.email,
-      invitationId: adopted.invitationId,
-      role: adopted.role,
-    });
+    publishAdoptedAsShared(adopted);
     return adopted;
   }
 }
@@ -523,6 +611,9 @@ export async function ensureSharedInviteTokenForAuthSuite(
 export async function prepareSharedInviteForAcceptValidate(
   authenticatedApi: APIRequestContext,
 ): Promise<ProvisionedPendingInvite> {
+  if (!loadSharedInviteTokenContext()) {
+    await ensureSharedInviteTokenForAuthSuite(authenticatedApi);
+  }
   requireSharedInviteFromSetup();
   const shared = loadSharedInviteTokenContext();
   if (!shared) {
@@ -552,6 +643,30 @@ export async function prepareSharedInviteForAcceptValidate(
     "Shared invite is no longer pending — provisioning dedicated accept-validate invite",
   );
   return provisionFreshPendingInvite(authenticatedApi, "accept-validate-invite");
+}
+
+/** beforeAll helper for accept-validate — skips when invite provisioning is blocked. */
+export async function prepareAcceptValidateInBeforeAll(
+  authenticatedApi: APIRequestContext,
+): Promise<void> {
+  if (!isGmailInviteCaptureConfigured() && !hasGitignoredInviteTokenContext()) {
+    test.skip(true, describeMissingInviteTokenSetup());
+    return;
+  }
+
+  try {
+    await prepareSharedInviteForAcceptValidate(authenticatedApi);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    if (isInviteTransientErrorMessage(message)) {
+      test.skip(
+        true,
+        `${message} — wait 30–60 minutes and re-run AUTH invite specs`,
+      );
+      return;
+    }
+    throw error;
+  }
 }
 
 /**
@@ -595,7 +710,7 @@ export async function provisionFreshPendingInvite(
     return provisioned;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    if (!message.includes("429") && !message.includes("503")) {
+    if (!isInviteTransientErrorMessage(message)) {
       throw error;
     }
     const fallback = await adoptInviteForE2eWhenRateLimited(api);

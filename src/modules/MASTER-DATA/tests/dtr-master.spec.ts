@@ -5,6 +5,7 @@ import { DtrMasterValidator } from "../Validator/dtr-master.validator";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
+
 test.describe("DTR Master API", () => {
   test(
     "Validate DTR Master API",
@@ -61,6 +62,7 @@ test.describe("DTR Master API", () => {
       validation.execute("Coordinates Validation", () =>
         validator.validateCoordinates(data),
       );
+
       validation.printSummary("DTR Master API", responseTime);
     },
   );

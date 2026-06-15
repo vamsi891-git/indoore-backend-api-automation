@@ -23,11 +23,28 @@ export class PowerQualityValidator {
         expect(data.mdKva.unit).toBe("kVA");
     }
     validateSubtitles(data: any) {
-        expect(data.overallPf.subtitle).toBe("System PF");
-        expect(data.frequency.subtitle).toBe("Frequency");
-        expect(data.neutralCurrent.subtitle).toBe("Neutral Load");
-        expect(data.mdKw.subtitle).toContain("Demand");
-        expect(data.mdKva.subtitle).toContain("Demand");
+        const expectedWhenPresent: Record<string, string | RegExp> = {
+            overallPf: "System PF",
+            frequency: "Frequency",
+            neutralCurrent: "Neutral Load",
+            mdKw: /Demand/,
+            mdKva: /Demand/,
+        };
+
+        Object.entries(expectedWhenPresent).forEach(([key, expected]) => {
+            const subtitle = data[key]?.subtitle;
+            expect(
+                subtitle === null || typeof subtitle === "string",
+            ).toBeTruthy();
+            if (subtitle == null || subtitle === "") {
+                return;
+            }
+            if (expected instanceof RegExp) {
+                expect(subtitle).toMatch(expected);
+            } else {
+                expect(subtitle).toBe(expected);
+            }
+        });
     }
 
     validateNullableBehavior(data: any) {

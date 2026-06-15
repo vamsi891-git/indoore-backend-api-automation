@@ -27,7 +27,7 @@ import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { printInviteAcceptSummary } from "../utils/invite-accept.reporter";
 import {
   INVITE_PROVISION_TEST_TIMEOUT_MS,
-  prepareSharedInviteForAcceptValidate,
+  prepareAcceptValidateInBeforeAll,
 } from "../utils/invite-provision.helper";
 
 async function createPublicApiContext() {
@@ -47,7 +47,7 @@ test.describe("Auth Invite Accept Validate Flow", () => {
   });
 
   test.beforeAll(async ({ authenticatedApi }) => {
-    await prepareSharedInviteForAcceptValidate(authenticatedApi);
+    await prepareAcceptValidateInBeforeAll(authenticatedApi);
   });
 
   test(

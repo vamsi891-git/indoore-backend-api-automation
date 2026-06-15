@@ -77,8 +77,26 @@ export class TokenManager {
     this.refreshPromise = null;
   }
   static clearStaleLock(): void {
-    if (fs.existsSync(this.lockFilePath)) {
-      fs.unlinkSync(this.lockFilePath);
+    this.tryBreakStaleLock(true);
+  }
+
+  /** Drop refresh.lock when it is missing a timestamp or older than lockWaitMs. */
+  private static tryBreakStaleLock(force = false): void {
+    if (!fs.existsSync(this.lockFilePath)) {
+      return;
+    }
+    if (force) {
+      this.releaseLock();
+      return;
+    }
+    try {
+      const raw = fs.readFileSync(this.lockFilePath, "utf-8");
+      const lockTime = Number(raw.split(":")[1]);
+      if (!Number.isFinite(lockTime) || Date.now() - lockTime > this.lockWaitMs) {
+        this.releaseLock();
+      }
+    } catch {
+      this.releaseLock();
     }
   }
 
@@ -175,6 +193,7 @@ export class TokenManager {
     this.ensureAuthDir();
     const deadline = Date.now() + this.lockWaitMs;
     while (Date.now() < deadline) {
+      this.tryBreakStaleLock();
       try {
         fs.writeFileSync(this.lockFilePath, `${process.pid}:${Date.now()}`, { flag: "wx" });
         try {

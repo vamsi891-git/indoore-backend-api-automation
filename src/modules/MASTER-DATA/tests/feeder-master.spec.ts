@@ -7,6 +7,7 @@ import { FeederMasterValidator } from "../Validator/feeder-master.validator";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
+
 test.describe("Feeder Master API", () => {
   test(
     "Validate Feeder Master API",
@@ -57,6 +58,7 @@ test.describe("Feeder Master API", () => {
       validation.execute("Consumer DTR Relation", () =>
         validator.validateConsumerDtrRelation(data),
       );
+
       validation.printSummary("Feeder Master API", responseTime);
     },
   );

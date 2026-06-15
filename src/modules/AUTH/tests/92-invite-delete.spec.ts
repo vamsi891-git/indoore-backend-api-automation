@@ -16,6 +16,7 @@ import {
   findReusablePendingInvitation,
   INVITE_PROVISION_TEST_TIMEOUT_MS,
   inviteUserWithRetry,
+  isInviteTransientStatus,
 } from "../utils/invite-provision.helper";
 
 test.describe("Auth Invite Delete API", () => {
@@ -51,15 +52,37 @@ test.describe("Auth Invite Delete API", () => {
           role,
         });
 
-        const parsed = InviteUserResponseSchema.parse(inviteResponse.responseBody);
-        invitationId = parsed.data.invitationId;
+        const createStatus = inviteResponse.rawResponse.status();
+        if (createStatus === 201) {
+          const parsed = InviteUserResponseSchema.parse(
+            inviteResponse.responseBody,
+          );
+          invitationId = parsed.data.invitationId;
+        } else {
+          const fallback = await findReusablePendingInvitation(api);
+          if (fallback?.invitationId) {
+            invitationId = fallback.invitationId;
+          } else if (isInviteTransientStatus(createStatus)) {
+            test.skip(
+              true,
+              `Invite POST rate limited (${createStatus}) — wait 30–60 minutes and re-run delete spec`,
+            );
+            return;
+          } else {
+            throw new Error(
+              `POST /indore/auth/invite failed with status ${createStatus}: ${JSON.stringify(inviteResponse.responseBody)}`,
+            );
+          }
+        }
 
-        await PerformanceTracker.track(
-          inviteResponse.rawResponse,
-          "Auth Invite Delete API — Create",
-          `${process.env.BASE_URL}/indore/auth/invite`,
-          inviteResponse.responseTime,
-        );
+        if (inviteResponse.rawResponse.status() === 201) {
+          await PerformanceTracker.track(
+            inviteResponse.rawResponse,
+            "Auth Invite Delete API — Create",
+            `${process.env.BASE_URL}/indore/auth/invite`,
+            inviteResponse.responseTime,
+          );
+        }
       }
 
       const deleteResponse = await api.deleteInvitation(invitationId);
