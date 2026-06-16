@@ -10,7 +10,10 @@ export class LiveLoadProfileApi {
     constructor(private readonly authenticatedApi:APIRequestContext) { }
     async getLiveLoadProfile(consumerNumber: string): Promise<LiveLoadProfileApiResult> {
         const start = Date.now();
-        const response =await getWithAutoRefresh(this.authenticatedApi,`/indore/consumers/${consumerNumber}/live-load-profile`);
+        let response =await getWithAutoRefresh(this.authenticatedApi,`/indore/consumers/${consumerNumber}/live-load-profile`);
+        if (response.status() === 504) {
+            response = await getWithAutoRefresh(this.authenticatedApi,`/indore/consumers/${consumerNumber}/live-load-profile`);
+        }
         return {
             rawResponse:response,
             responseBody:await response.json(),

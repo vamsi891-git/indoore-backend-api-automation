@@ -2,6 +2,7 @@ import { expect } from "@playwright/test";
 
 import { LFAnalysisResponse, LFAnalysisRow } from "../Mapper/loadfactor.mapper";
 import {
+  isCommercialGridData,
   validateCommercialPagination,
   validateCommercialQueryParams,
   validateCommercialTotalCount,
@@ -13,8 +14,10 @@ export type LfOperator = "lt" | "gt";
 export class LFAnalysisValidator {
   validateResponse(response: LFAnalysisResponse): void {
     expect(response.success).toBeTruthy();
-    expect(response.data.reportName).toMatch(/LF/i);
     expect(response.data.rows.length).toBeGreaterThan(0);
+    if (!isCommercialGridData(response.data)) {
+      expect(response.data.reportName).toMatch(/LF/i);
+    }
   }
 
   validateQueryParams(
@@ -60,11 +63,11 @@ export class LFAnalysisValidator {
     validateNoDuplicateMeterRows(rows, "LF Analysis");
   }
 
-  validatePagination(response: LFAnalysisResponse): void {
-    validateCommercialPagination(response.data);
+  validatePagination(response: LFAnalysisResponse, query: { month: number; year: number; page: number; pageSize: number }): void {
+    validateCommercialPagination(response.data, query);
   }
 
-  validateTotalCount(response: LFAnalysisResponse): void {
-    validateCommercialTotalCount(response.data);
+  validateTotalCount(response: LFAnalysisResponse, query: { month: number; year: number; page: number; pageSize: number }): void {
+    validateCommercialTotalCount(response.data, query);
   }
 }

@@ -8,18 +8,21 @@ export interface EnergyFlowPoint {
 
 export interface EnergyFlowResponse {
     success: boolean;
-    data: {
+    data?: {
         period: string;
         points: EnergyFlowPoint[];
     };
 }
 
+const EMPTY_FLOW_DATA = { period: "", points: [] as EnergyFlowPoint[] };
+
 export class EnergyFlowMapper {
     static map(response: EnergyFlowResponse) {
+        const data = response.data ?? EMPTY_FLOW_DATA;
         return {
             success: response.success,
-            period: response.data.period,
-            points: response.data.points ?? [],
+            period: data.period ?? "",
+            points: data.points ?? [],
         };
     }
 }

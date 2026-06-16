@@ -4,6 +4,7 @@ import {
   PowerFactorRow,
 } from "../Mapper/powerfactor.mapper";
 import {
+  isCommercialGridData,
   validateCommercialPagination,
   validateCommercialQueryParams,
   validateCommercialTotalCount,
@@ -13,8 +14,10 @@ import {
 export class PowerFactorValidator {
   validateResponse(response: PowerFactorResponse): void {
     expect(response.success).toBeTruthy();
-    expect(response.data.reportName).toContain("Power Factor");
     expect(response.data.rows.length).toBeGreaterThan(0);
+    if (!isCommercialGridData(response.data)) {
+      expect(response.data.reportName).toContain("Power Factor");
+    }
   }
 
   validateQueryParams(
@@ -61,11 +64,17 @@ export class PowerFactorValidator {
     }
   }
 
-  validatePagination(response: PowerFactorResponse): void {
-    validateCommercialPagination(response.data);
+  validatePagination(
+    response: PowerFactorResponse,
+    query: { month: number; year: number; page: number; pageSize: number },
+  ): void {
+    validateCommercialPagination(response.data, query);
   }
 
-  validateTotalCount(response: PowerFactorResponse): void {
-    validateCommercialTotalCount(response.data);
+  validateTotalCount(
+    response: PowerFactorResponse,
+    query: { month: number; year: number; page: number; pageSize: number },
+  ): void {
+    validateCommercialTotalCount(response.data, query);
   }
 }

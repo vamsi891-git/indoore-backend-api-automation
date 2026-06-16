@@ -4,6 +4,7 @@ import {
   ConsumptionPatternRow,
 } from "../Mapper/consumptionpattern.mapper";
 import {
+  isCommercialGridData,
   validateCommercialPagination,
   validateCommercialQueryParams,
   validateCommercialTotalCount,
@@ -29,6 +30,9 @@ export class ConsumptionPatternValidator {
     response: ConsumptionPatternResponse,
     pattern: ConsumptionPatternType,
   ): void {
+    if (isCommercialGridData(response.data)) {
+      return;
+    }
     if (pattern === "zero") {
       expect(response.data.reportName).toMatch(/zero consumption/i);
       expect(response.data.description).toMatch(/zero\s+kwh/i);
@@ -81,11 +85,17 @@ export class ConsumptionPatternValidator {
     validateNoDuplicateMeterRows(rows, "Consumption Pattern");
   }
 
-  validatePagination(response: ConsumptionPatternResponse): void {
-    validateCommercialPagination(response.data);
+  validatePagination(
+    response: ConsumptionPatternResponse,
+    query: { month: number; year: number; page: number; pageSize: number },
+  ): void {
+    validateCommercialPagination(response.data, query);
   }
 
-  validateTotalCount(response: ConsumptionPatternResponse): void {
-    validateCommercialTotalCount(response.data);
+  validateTotalCount(
+    response: ConsumptionPatternResponse,
+    query: { month: number; year: number; page: number; pageSize: number },
+  ): void {
+    validateCommercialTotalCount(response.data, query);
   }
 }

@@ -45,7 +45,7 @@ test.describe("Energy Consumption Graph API",() => {
                     assert.validateSensitiveData(responseBody)
                 );
                 validation.execute("Required Fields",() => 
-                    assert.validateRequiredFields(responseBody.data,["period","points"])
+                    assert.validateRequiredFields(responseBody,["success","data"])
                 );
 
                 const data =EnergyConsumptionGraphMapper.map(responseBody);

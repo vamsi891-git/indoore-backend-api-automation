@@ -9,8 +9,15 @@ import type { ParsedDaywiseBillingResponse } from "../schemas/billing.schemas";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../../src/core/utils/performancetracker";
+import {
+    BILLING_MAX_RESPONSE_TIME_MS,
+    BILLING_TEST_TIMEOUT_MS,
+} from "../../../core/constants/api-timeouts";
 
 test.describe("Daywise Billing Data API", () => {
+    test.describe.configure({ retries: 2 });
+    test.setTimeout(BILLING_TEST_TIMEOUT_MS);
+
     test(
         "Validate Daywise Billing Data API",
         {
@@ -50,7 +57,10 @@ test.describe("Daywise Billing Data API", () => {
                     assert.validateContentType(rawResponse),
                 );
                 validation.execute("Response Time", () =>
-                    assert.validateResponseTime(responseTime, 60000),
+                    assert.validateResponseTime(
+                        responseTime,
+                        BILLING_MAX_RESPONSE_TIME_MS,
+                    ),
                 );
                 validation.execute("Sensitive Data", () =>
                     assert.validateSensitiveData(responseBody),

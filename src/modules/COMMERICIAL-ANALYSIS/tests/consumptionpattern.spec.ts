@@ -108,11 +108,11 @@ test.describe("Consumption Pattern API", () => {
       );
 
       validation.execute("Pagination Validation", () =>
-        validator.validatePagination(responseBody),
+        validator.validatePagination(responseBody, consumptionPatternData),
       );
 
       validation.execute("Total Count Validation", () =>
-        validator.validateTotalCount(responseBody),
+        validator.validateTotalCount(responseBody, consumptionPatternData),
       );
       } finally {
         ApiValidationHelper.finalize(validation, {

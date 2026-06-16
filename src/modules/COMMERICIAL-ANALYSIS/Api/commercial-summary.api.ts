@@ -1,6 +1,6 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
 import { CommercialSummaryResponse } from "../Mapper/commercial-summary.mapper";
+import { getCommercialSummaryWithRetry } from "../utils/commercial-request.helper";
 
 export interface CommercialSummaryApiResult {
     rawResponse: APIResponse;
@@ -16,8 +16,7 @@ export class CommercialSummaryApi {
         year: number,
         pfThreshold: number,
     ): Promise<CommercialSummaryApiResult> {
-        const start = Date.now();
-        const response = await getWithAutoRefresh(
+        const { response, responseTime } = await getCommercialSummaryWithRetry(
             this.authenticatedApi,
             "/indore/analysis/commercial/summary",
             {
@@ -31,7 +30,7 @@ export class CommercialSummaryApi {
         return {
             rawResponse: response,
             responseBody: await response.json(),
-            responseTime: Date.now() - start,
+            responseTime,
         };
     }
 }

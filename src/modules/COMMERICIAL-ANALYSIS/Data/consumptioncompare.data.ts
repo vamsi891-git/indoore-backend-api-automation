@@ -6,11 +6,11 @@ export type ConsumptionCompareType =
   | "Abnormal Low Consumption";
 
 export const consumptionCompareLastMonthData = {
-  month: 12,
+  month: 7,
   year: 2025,
   type: "Consumption Compare Last Month" as ConsumptionCompareType,
   page: 1,
-  pageSize: 10,
+  pageSize: 100,
 } as const;
 
 export const consumptionCompareSameMonthLastYearData = {

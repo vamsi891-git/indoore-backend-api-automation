@@ -86,11 +86,11 @@ test.describe("LF Analysis API", () => {
       );
 
       validation.execute("Pagination Validation", () =>
-        validator.validatePagination(responseBody),
+        validator.validatePagination(responseBody, lfAnalysisData),
       );
 
       validation.execute("Total Count Validation", () =>
-        validator.validateTotalCount(responseBody),
+        validator.validateTotalCount(responseBody, lfAnalysisData),
       );
       } finally {
         ApiValidationHelper.finalize(validation, {

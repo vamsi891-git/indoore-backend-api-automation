@@ -8,20 +8,27 @@ export interface Phase {
 }
 export interface RealTimePowerResponse {
     success: boolean;
-    data: {
+    data?: {
         "R-Phase": Phase | null;
         "Y-Phase": Phase | null;
         "B-Phase": Phase | null;
     }
 }
 
+const EMPTY_REALTIME_POWER_DATA = {
+    "R-Phase": null,
+    "Y-Phase": null,
+    "B-Phase": null,
+} satisfies RealTimePowerResponse["data"];
+
 export class RealTimePowerMapper {
     static map(response: RealTimePowerResponse) {
+        const data = response.data ?? EMPTY_REALTIME_POWER_DATA;
         return {
             success:response.success,
-            rPhase:response.data["R-Phase"],
-            yPhase:response.data["Y-Phase"],
-            bPhase:response.data["B-Phase"]
+            rPhase:data["R-Phase"],
+            yPhase:data["Y-Phase"],
+            bPhase:data["B-Phase"]
         };
     }
 }

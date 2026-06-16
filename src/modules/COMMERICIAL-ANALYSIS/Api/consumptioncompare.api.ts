@@ -1,6 +1,6 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
 import { ConsumptionCompareResponse } from "../Mapper/consumptioncompare.mapper";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
+import { getCommercialWithRetry } from "../utils/commercial-request.helper";
 
 export interface ConsumptionCompareApiResult {
   rawResponse: APIResponse;
@@ -14,13 +14,11 @@ export class ConsumptionCompareApi {
   async getConsumptionCompare(
     params: Record<string, string | number | boolean>,
   ): Promise<ConsumptionCompareApiResult> {
-    const start = Date.now();
-    const response = await getWithAutoRefresh(
+    const { response, responseTime } = await getCommercialWithRetry(
       this.authenticatedApi,
       "/indore/analysis/commercial/consumption-compare",
       { params },
     );
-    const responseTime = Date.now() - start;
 
     if (!response.ok()) {
       throw new Error(`

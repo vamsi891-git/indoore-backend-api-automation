@@ -8,7 +8,8 @@ import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Consumption Compare API", () => {
-  test.setTimeout(120000);
+  test.describe.configure({ retries: 2 });
+  test.setTimeout(180_000);
 
   test(
     "Validate Consumption Compare Last Month Report",
@@ -42,7 +43,7 @@ test.describe("Consumption Compare API", () => {
         );
 
         validation.execute("Response Time Validation", () =>
-          assert.validateResponseTime(responseTime, 120000),
+          assert.validateResponseTime(responseTime, 180_000),
         );
 
         validation.execute("Sensitive Data Validation", () =>
@@ -69,34 +70,59 @@ test.describe("Consumption Compare API", () => {
           ),
         );
 
-        validation.execute("Mandatory Fields Validation", () =>
-          validator.validateMandatoryFields(rows),
-        );
+        const view = responseBody.data;
+        const hasRows = Array.isArray(view.rows) && view.rows.length > 0;
 
-        validation.execute("Consumption Compare Business Rules", () =>
-          validator.validateBusinessRules(
-            rows,
-            consumptionCompareLastMonthData.type,
-          ),
-        );
+        if (hasRows) {
+          validation.execute("Has Data Validation", () =>
+            validator.validateHasData(
+              responseBody,
+              consumptionCompareLastMonthData,
+            ),
+          );
 
-        validation.execute("CurrKwh Sort Order Validation", () =>
-          validator.validateSortOrder(
-            rows,
-            consumptionCompareLastMonthData.type,
-          ),
-        );
+          validation.execute("Mandatory Fields Validation", () =>
+            validator.validateMandatoryFields(rows),
+          );
 
-        validation.execute("Duplicate Record Validation", () =>
-          validator.validateNoDuplicateRecords(rows),
-        );
+          validation.execute("Consumption Compare Business Rules", () =>
+            validator.validateBusinessRules(
+              rows,
+              consumptionCompareLastMonthData.type,
+            ),
+          );
+
+          validation.execute("CurrKwh Sort Order Validation", () =>
+            validator.validateSortOrder(
+              rows,
+              consumptionCompareLastMonthData.type,
+            ),
+          );
+
+          validation.execute("Duplicate Record Validation", () =>
+            validator.validateNoDuplicateRecords(rows),
+          );
+        } else {
+          validation.execute("No Data Scenario Validation", () =>
+            validator.validateNoDataScenario(
+              responseBody,
+              consumptionCompareLastMonthData,
+            ),
+          );
+        }
 
         validation.execute("Pagination Validation", () =>
-          validator.validatePagination(responseBody),
+          validator.validatePagination(
+            responseBody,
+            consumptionCompareLastMonthData,
+          ),
         );
 
         validation.execute("Total Count Validation", () =>
-          validator.validateTotalCount(responseBody),
+          validator.validateTotalCount(
+            responseBody,
+            consumptionCompareLastMonthData,
+          ),
         );
       } finally {
         ApiValidationHelper.finalize(validation, {

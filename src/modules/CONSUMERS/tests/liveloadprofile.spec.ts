@@ -43,9 +43,17 @@ test.describe( "Live Load Profile API", () => {
                     assert.validateSensitiveData(responseBody)
                 );
                 validation.execute("Required Fields",() => 
-                    assert.validateRequiredFields(responseBody.data,["activePower","apparentPower","reactivePower","powerFactor"])
+                    assert.validateRequiredFields(responseBody,["success"])
                 );
+                validation.execute("Data Present When 200",() => {
+                    if (rawResponse.status() === 200) {
+                        assert.validateRequiredFields(responseBody,["data"]);
+                    }
+                });
                 const data =LiveLoadProfileMapper.map(responseBody);
+                validation.execute("Mapped Required Fields",() =>
+                    assert.validateRequiredFields(data,["activePower","apparentPower","reactivePower","powerFactor"])
+                );
                 const validator = new LiveLoadProfileValidator();
                 validation.execute("Success",() => 
                     validator.validateSuccess(data)

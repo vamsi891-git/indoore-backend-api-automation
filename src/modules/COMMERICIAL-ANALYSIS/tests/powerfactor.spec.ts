@@ -76,11 +76,11 @@ test.describe("Power Factor Analysis API", () => {
       );
 
       validation.execute("Pagination Validation", () =>
-        validator.validatePagination(responseBody),
+        validator.validatePagination(responseBody, pfAnalysisQuery),
       );
 
       validation.execute("Total Count Validation", () =>
-        validator.validateTotalCount(responseBody),
+        validator.validateTotalCount(responseBody, pfAnalysisQuery),
       );
       } finally {
         ApiValidationHelper.finalize(validation, {

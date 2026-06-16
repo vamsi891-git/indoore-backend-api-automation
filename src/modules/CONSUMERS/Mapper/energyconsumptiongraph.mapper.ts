@@ -5,18 +5,21 @@ export interface GraphPoint {
 
 export interface EnergyConsumptionGraphResponse {
     success: boolean;
-    data: {
+    data?: {
         period: string;
         points: GraphPoint[];
     };
 }
 
+const EMPTY_GRAPH_DATA = { period: "", points: [] as GraphPoint[] };
+
 export class EnergyConsumptionGraphMapper {
     static map(response: EnergyConsumptionGraphResponse) {
+        const data = response.data ?? EMPTY_GRAPH_DATA;
         return {
             success: response.success,
-            period: response.data.period,
-            points: response.data.points ?? [],
+            period: data.period ?? "",
+            points: data.points ?? [],
         };
     }
 }

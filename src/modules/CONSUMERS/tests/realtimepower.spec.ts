@@ -34,9 +34,12 @@ test.describe("Real Time Power API",() => {
                         assert.validateSensitiveData(responseBody)
                 );
                 validation.execute("Required Fields",() =>
-                        assert.validateRequiredFields(responseBody.data,["R-Phase","Y-Phase","B-Phase"])
+                        assert.validateRequiredFields(responseBody,["success","data"])
                 );
                 const data =RealTimePowerMapper.map(responseBody);
+                validation.execute("Mapped Required Fields",() =>
+                        assert.validateRequiredFields(data,["rPhase","yPhase","bPhase"])
+                );
                 const validator =new RealTimePowerValidator();
                 validation.execute("Success",() => 
                     validator.validateSuccess(data)

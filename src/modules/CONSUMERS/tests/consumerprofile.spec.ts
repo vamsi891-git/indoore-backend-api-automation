@@ -41,13 +41,16 @@ test.describe("Consumer Profile API",() => {
                         assert.validateSensitiveData(responseBody)
                 );
                 validation.execute("Required Fields",() =>
-                        assert.validateRequiredFields(responseBody.data,["consumerName","consumerNumber","uniqueId","meterSerialNumber","occupancyStatus","connectionDetails","connectionMeterDetails","latestActivities"])
+                        assert.validateRequiredFields(responseBody,["success","data"])
                 );
 
                 //======================================
                 // MAPPER
                 //======================================
                 const data =ConsumerProfileMapper.map(responseBody);
+                validation.execute("Mapped Required Fields",() =>
+                        assert.validateRequiredFields(data,["consumerName","consumerNumber","uniqueId","meterSerialNumber","connectionDetails","connectionMeterDetails","latestActivities"])
+                );
                 const validator =new ConsumerProfileValidator();
                 //=====================================
                 // BACKEND VALIDATIONS

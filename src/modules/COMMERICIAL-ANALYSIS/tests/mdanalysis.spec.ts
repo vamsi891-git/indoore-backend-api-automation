@@ -83,11 +83,11 @@ test.describe("MD Analysis API", () => {
         );
 
         validation.execute("Pagination Validation", () =>
-          validator.validatePagination(responseBody),
+          validator.validatePagination(responseBody, mdAnalysisCdCompareData),
         );
 
         validation.execute("Total Count Validation", () =>
-          validator.validateTotalCount(responseBody),
+          validator.validateTotalCount(responseBody, mdAnalysisCdCompareData),
         );
       } finally {
         ApiValidationHelper.finalize(validation, {

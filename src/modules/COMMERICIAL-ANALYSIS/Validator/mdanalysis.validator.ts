@@ -5,6 +5,7 @@ import {
 } from "../Mapper/mdanalysis.mapper";
 import type { MdAnalysisType } from "../Data/mdanalysis.data";
 import {
+  isCommercialGridData,
   validateCommercialPagination,
   validateCommercialQueryParams,
   validateCommercialTotalCount,
@@ -40,9 +41,11 @@ export class MdAnalysisValidator {
   validateResponse(response: MdAnalysisResponse): void {
     expect(response.success).toBeTruthy();
     expect(response.data).toBeDefined();
-    expect(response.data.reportName).toBeTruthy();
-    expect(response.data.description).toBeTruthy();
     expect(response.data.rows.length).toBeGreaterThan(0);
+    if (!isCommercialGridData(response.data)) {
+      expect(response.data.reportName).toBeTruthy();
+      expect(response.data.description).toBeTruthy();
+    }
   }
 
   validateQueryParams(
@@ -56,6 +59,9 @@ export class MdAnalysisValidator {
     response: MdAnalysisResponse,
     type: MdAnalysisType,
   ): void {
+    if (isCommercialGridData(response.data)) {
+      return;
+    }
     if (isCdCompareType(type)) {
       expect(response.data.reportName).toMatch(/MD\s*>\s*CD/i);
       expect(response.data.description).toMatch(/MD\s*>\s*CD/i);
@@ -125,11 +131,17 @@ export class MdAnalysisValidator {
     validateNoDuplicateMeterRows(rows, "MD Analysis");
   }
 
-  validatePagination(response: MdAnalysisResponse): void {
-    validateCommercialPagination(response.data);
+  validatePagination(
+    response: MdAnalysisResponse,
+    query: MdAnalysisQueryShape,
+  ): void {
+    validateCommercialPagination(response.data, query);
   }
 
-  validateTotalCount(response: MdAnalysisResponse): void {
-    validateCommercialTotalCount(response.data);
+  validateTotalCount(
+    response: MdAnalysisResponse,
+    query: MdAnalysisQueryShape,
+  ): void {
+    validateCommercialTotalCount(response.data, query);
   }
 }

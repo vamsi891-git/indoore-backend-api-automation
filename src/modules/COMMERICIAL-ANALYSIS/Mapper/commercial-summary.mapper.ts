@@ -15,7 +15,8 @@ export interface CommercialSummaryData {
 
 export interface CommercialSummaryResponse {
     success: boolean;
-    data: CommercialSummaryData;
+    data?: CommercialSummaryData;
+    error?: { code?: string; message?: string };
 }
 
 export class CommercialSummaryMapper {

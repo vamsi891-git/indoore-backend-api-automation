@@ -5,6 +5,8 @@ import {
 } from "../Mapper/consumptioncompare.mapper";
 import type { ConsumptionCompareType } from "../Data/consumptioncompare.data";
 import {
+  getCommercialPaginatedView,
+  isCommercialGridData,
   validateCommercialPagination,
   validateCommercialQueryParams,
   validateCommercialTotalCount,
@@ -43,9 +45,31 @@ export class ConsumptionCompareValidator {
   validateResponse(response: ConsumptionCompareResponse): void {
     expect(response.success).toBeTruthy();
     expect(response.data).toBeDefined();
-    expect(response.data.reportName).toBeTruthy();
-    expect(response.data.description).toBeTruthy();
-    expect(response.data.rows.length).toBeGreaterThan(0);
+    expect(Array.isArray(response.data.rows)).toBeTruthy();
+    if (!isCommercialGridData(response.data)) {
+      expect(response.data.reportName).toBeTruthy();
+      expect(response.data.description).toBeTruthy();
+    }
+  }
+
+  validateHasData(
+    response: ConsumptionCompareResponse,
+    query: ConsumptionCompareQueryShape,
+  ): void {
+    const view = getCommercialPaginatedView(response.data, query);
+    expect(view.totalCount).toBeGreaterThan(0);
+    expect(view.rows.length).toBeGreaterThan(0);
+  }
+
+  validateNoDataScenario(
+    response: ConsumptionCompareResponse,
+    query: ConsumptionCompareQueryShape,
+  ): void {
+    const view = getCommercialPaginatedView(response.data, query);
+    if (view.totalCount === 0) {
+      expect(view.rows.length).toBe(0);
+      expect(view.totalPages).toBe(0);
+    }
   }
 
   validateQueryParams(
@@ -59,6 +83,9 @@ export class ConsumptionCompareValidator {
     response: ConsumptionCompareResponse,
     type: ConsumptionCompareType,
   ): void {
+    if (isCommercialGridData(response.data)) {
+      return;
+    }
     if (isPrevMonthCompare(type)) {
       expect(response.data.reportName).toMatch(/Consumption Compare Last Month/i);
       expect(response.data.description).toMatch(/50%|previous month/i);
@@ -170,11 +197,17 @@ export class ConsumptionCompareValidator {
     validateNoDuplicateMeterRows(rows, "Consumption Compare");
   }
 
-  validatePagination(response: ConsumptionCompareResponse): void {
-    validateCommercialPagination(response.data);
+  validatePagination(
+    response: ConsumptionCompareResponse,
+    query: ConsumptionCompareQueryShape,
+  ): void {
+    validateCommercialPagination(response.data, query);
   }
 
-  validateTotalCount(response: ConsumptionCompareResponse): void {
-    validateCommercialTotalCount(response.data);
+  validateTotalCount(
+    response: ConsumptionCompareResponse,
+    query: ConsumptionCompareQueryShape,
+  ): void {
+    validateCommercialTotalCount(response.data, query);
   }
 }

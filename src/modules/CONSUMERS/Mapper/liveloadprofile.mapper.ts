@@ -9,27 +9,44 @@ export interface PowerFactor {
     value: number | null;
     unit: string;
 }
+export interface LiveLoadProfileData {
+    lastReadingIso?: string | null;
+    meterPhase?: "SP" | "TP" | null;
+    activePower?: PowerMetric;
+    apparentPower?: PowerMetric;
+    reactivePower?: PowerMetric;
+    powerFactor?: PowerFactor;
+    kw?: PowerMetric;
+    kva?: PowerMetric;
+    kvar?: PowerMetric;
+}
 export interface LiveLoadProfileResponse {
     success: boolean;
-    data: {
-        lastReadingIso:string | null;
-        meterPhase:"SP" | "TP" | null;
-        activePower:PowerMetric;
-        apparentPower:PowerMetric;
-        reactivePower:PowerMetric;
-        powerFactor:PowerFactor;
-    }
+    data?: LiveLoadProfileData;
 }
+const EMPTY_LIVE_LOAD_DATA: LiveLoadProfileData = {};
+
 export class LiveLoadProfileMapper {
     static map(response:LiveLoadProfileResponse) {
+        const data = response.data ?? EMPTY_LIVE_LOAD_DATA;
+        const metric = (input: any, title: string, unit: string) => ({
+            title: input?.title ?? title,
+            value: input?.value ?? null,
+            unit: input?.unit ?? unit,
+            sharePercent: input?.sharePercent ?? null
+        });
         return {
             success:response.success,
-            lastReadingIso:response.data.lastReadingIso,
-            meterPhase:response.data.meterPhase,
-            activePower:response.data.activePower,
-            apparentPower:response.data.apparentPower,
-            reactivePower:response.data.reactivePower,
-            powerFactor:response.data.powerFactor
+            lastReadingIso:data.lastReadingIso ?? null,
+            meterPhase:data.meterPhase ?? null,
+            activePower:metric(data.activePower ?? data.kw, "Active Power", "kW"),
+            apparentPower:metric(data.apparentPower ?? data.kva, "Apparent Power", "kVA"),
+            reactivePower:metric(data.reactivePower ?? data.kvar, "Reactive Power", "kVAr"),
+            powerFactor:{
+                title:data.powerFactor?.title ?? "Power Factor",
+                value:data.powerFactor?.value ?? null,
+                unit:data.powerFactor?.unit ?? "Power Factor"
+            }
         };
     }
 }

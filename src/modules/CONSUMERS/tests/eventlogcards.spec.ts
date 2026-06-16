@@ -46,12 +46,15 @@ test.describe("Event Log Cards API",() => {
                         assert.validateSensitiveData(responseBody)
                 );
                 validation.execute("Required Fields",() =>
-                        assert.validateRequiredFields(responseBody.data,["resolvedEvents","pendingEvents","avgResolutionTime"])
+                        assert.validateRequiredFields(responseBody,["success","data"])
                 );
                 // =====================================
                 // MAPPER
                 // =====================================
                 const data =EventLogCardsMapper.map(responseBody);
+                validation.execute("Mapped Required Fields",() =>
+                        assert.validateRequiredFields(data,["resolvedEvents","pendingEvents","avgResolutionTime"])
+                );
                 const validator = new EventLogCardsValidator();
                 // ====================================
                 // BACKEND VALIDATIONS

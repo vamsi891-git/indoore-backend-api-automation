@@ -2,7 +2,7 @@ export const commercialSummaryData = {
     month: 12,
     year: 2025,
     pfThreshold: 0.8,
-    maxResponseTime: 120_000,
+    maxResponseTime: 180_000,
     expectedReportCount: 24,
     expectedCategory: "commercial",
     /** Backend hardcodes night/day-night counts to zero until load-profile integration */

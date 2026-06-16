@@ -10,7 +10,10 @@ export class EnergyConsumptionGraphApi {
     constructor(private readonly authenticatedApi:APIRequestContext) { }
     async getEnergyConsumptionGraph(consumerNumber: string): Promise<EnergyConsumptionGraphApiResult> {
         const start = Date.now();
-        const response =await getWithAutoRefresh(this.authenticatedApi,`/indore/consumers/${consumerNumber}/energy-consumption-graph`);
+        let response =await getWithAutoRefresh(this.authenticatedApi,`/indore/consumers/${consumerNumber}/energy-consumption-graph`);
+        if (response.status() === 504) {
+            response = await getWithAutoRefresh(this.authenticatedApi,`/indore/consumers/${consumerNumber}/energy-consumption-graph`);
+        }
         return {
             rawResponse:response,
             responseBody:await response.json(),

@@ -10,7 +10,10 @@ export class PowerQualityApi {
     constructor(private readonly authenticatedApi:APIRequestContext) { }
     async getPowerQuality(consumerNumber: string): Promise<PowerQualityApiResult> {
         const start = Date.now();
-        const response =await getWithAutoRefresh(this.authenticatedApi,`/indore/consumers/${consumerNumber}/power-quality`);
+        let response =await getWithAutoRefresh(this.authenticatedApi,`/indore/consumers/${consumerNumber}/power-quality`);
+        if (response.status() === 504) {
+            response = await getWithAutoRefresh(this.authenticatedApi,`/indore/consumers/${consumerNumber}/power-quality`);
+        }
         return {
             rawResponse: response,
             responseBody:await response.json(),

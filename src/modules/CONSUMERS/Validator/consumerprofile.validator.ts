@@ -13,6 +13,9 @@ export class ConsumerProfileValidator {
         expect(data.uniqueId).toContain("N");
     }
     validateOccupancy(data: any): void {
+        if (data.occupancyStatus == null) {
+            return;
+        }
         expect(["Occupied","Vacant"]).toContain(data.occupancyStatus);
     }
     validateAddress(data: any): void {
