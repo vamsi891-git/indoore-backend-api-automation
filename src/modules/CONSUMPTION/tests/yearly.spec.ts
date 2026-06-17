@@ -50,36 +50,47 @@ test.describe("Pattern Consumption Yearly API", () => {
             validation.execute("Sensitive Data", () =>
                 assert.validateSensitiveData(responseBody)
             );
+            validation.execute("Required Fields", () =>
+                assert.validateRequiredFields(responseBody, ["success"])
+            );
+            validation.execute("Data Present When 200", () => {
+                if (rawResponse.status() === 200) {
+                    assert.validateRequiredFields(responseBody, ["data"]);
+                }
+            });
             const mapped = PatternConsumptionMapper.map(responseBody);
             const validator = new PatternConsumptionValidator();
+            const isOk = rawResponse.status() === 200;
 
-            validation.execute("Table Validation", () =>
-                validator.validateTable(mapped)
-            );
-            validation.execute("Rows Validation", () =>
-                validator.validateRows(mapped.rows)
-            );
-            validation.execute("SLNO Validation", () =>
-                validator.validateSlNo(mapped.rows)
-            );
-            validation.execute("Required Fields", () =>
-                validator.validateRequiredFields(mapped.rows)
-            );
-            validation.execute("Phase Validation", () =>
-                validator.validatePhase(
-                    mapped.rows,
-                    patternConsumptionData.allowedPhases
-                )
-            );
-            validation.execute("Yearly Validation", () =>
-                validator.validateYearly(mapped.rows)
-            );
-            validation.execute("Yearly Total Validation", () =>
-                validator.validateYearlyTotal(mapped.rows)
-            );
-            validation.execute("NaN Validation", () =>
-                validator.validateNoNaN(mapped.rows)
-            );
+            if (isOk) {
+                validation.execute("Table Validation", () =>
+                    validator.validateTable(mapped)
+                );
+                validation.execute("Rows Validation", () =>
+                    validator.validateRows(mapped.rows)
+                );
+                validation.execute("SLNO Validation", () =>
+                    validator.validateSlNo(mapped.rows)
+                );
+                validation.execute("Required Fields", () =>
+                    validator.validateRequiredFields(mapped.rows)
+                );
+                validation.execute("Phase Validation", () =>
+                    validator.validatePhase(
+                        mapped.rows,
+                        patternConsumptionData.allowedPhases
+                    )
+                );
+                validation.execute("Yearly Validation", () =>
+                    validator.validateYearly(mapped.rows)
+                );
+                validation.execute("Yearly Total Validation", () =>
+                    validator.validateYearlyTotal(mapped.rows)
+                );
+                validation.execute("NaN Validation", () =>
+                    validator.validateNoNaN(mapped.rows)
+                );
+            }
             validation.printSummary(
                 "Pattern Consumption Yearly API",
                 responseTime

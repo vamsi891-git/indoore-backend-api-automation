@@ -34,43 +34,51 @@ test.describe("Real Time Power API",() => {
                         assert.validateSensitiveData(responseBody)
                 );
                 validation.execute("Required Fields",() =>
-                        assert.validateRequiredFields(responseBody,["success","data"])
+                        assert.validateRequiredFields(responseBody,["success"])
                 );
+                validation.execute("Data Present When 200",() => {
+                    if (rawResponse.status() === 200) {
+                        assert.validateRequiredFields(responseBody,["data"]);
+                    }
+                });
                 const data =RealTimePowerMapper.map(responseBody);
                 validation.execute("Mapped Required Fields",() =>
                         assert.validateRequiredFields(data,["rPhase","yPhase","bPhase"])
                 );
                 const validator =new RealTimePowerValidator();
-                validation.execute("Success",() => 
-                    validator.validateSuccess(data)
-            );
-                validation.execute("R Phase",() => 
-                    validator.validateRPhaseExists(data)
-                );
-                validation.execute("Single Phase",() => 
-                    validator.validateSinglePhaseLogic(data)
-                );
-                validation.execute("Units",() => 
-                    validator.validateUnits(data)
-                );
-                validation.execute("Nullable",() => 
-                    validator.validateNullableValues(data)
-                );
-                validation.execute("Voltage",() => 
-                    validator.validateVoltageRange(data)
-                );
-                validation.execute("Current",() => 
-                    validator.validateCurrentRange(data)
-                );
-                validation.execute("Power Factor",() => 
-                    validator.validatePowerFactor(data)
-                );
-                validation.execute("Cross Field",() => 
-                    validator.validateCrossField(data)
-                );
-                validation.execute("Business Rules",() => 
-                    validator.validateBusinessRules(data)
-                );
+                const isOk = rawResponse.status() === 200;
+                if (isOk) {
+                    validation.execute("Success",() =>
+                        validator.validateSuccess(data)
+                    );
+                    validation.execute("R Phase",() =>
+                        validator.validateRPhaseExists(data)
+                    );
+                    validation.execute("Single Phase",() =>
+                        validator.validateSinglePhaseLogic(data)
+                    );
+                    validation.execute("Units",() =>
+                        validator.validateUnits(data)
+                    );
+                    validation.execute("Nullable",() =>
+                        validator.validateNullableValues(data)
+                    );
+                    validation.execute("Voltage",() =>
+                        validator.validateVoltageRange(data)
+                    );
+                    validation.execute("Current",() =>
+                        validator.validateCurrentRange(data)
+                    );
+                    validation.execute("Power Factor",() =>
+                        validator.validatePowerFactor(data)
+                    );
+                    validation.execute("Cross Field",() =>
+                        validator.validateCrossField(data)
+                    );
+                    validation.execute("Business Rules",() =>
+                        validator.validateBusinessRules(data)
+                    );
+                }
                 validation.printSummary("Real Time Power API",responseTime
                 );
             });

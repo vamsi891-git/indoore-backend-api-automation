@@ -56,6 +56,9 @@ test.describe("DTR Master API", () => {
       validation.execute("Duplicate DTR Names", () =>
         validator.validateDuplicateDtrNames(data),
       );
+      validation.execute("Unique Meter Serials", () =>
+        validator.validateUniqueMeterSerials(data),
+      );
       validation.execute("Ascending Order", () =>
         validator.validateAscendingOrder(data),
       );

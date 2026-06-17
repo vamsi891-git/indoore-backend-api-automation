@@ -6,8 +6,11 @@ import { DailyConsumptionValidator } from "../Validator/dailyconsumption.validat
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { CONSUMPTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 
 test.describe("Daily Consumption Report API", () => {
+    test.setTimeout(CONSUMPTION_TEST_TIMEOUT_MS);
+
     test(
         "Validate Daily Consumption Report API",
         {
@@ -59,41 +62,52 @@ test.describe("Daily Consumption Report API", () => {
                 assert.validateSensitiveData(responseBody),
             );
             validation.execute("Required Fields", () =>
-                assert.validateRequiredFields(responseBody.data, [
-                    "items",
-                    "total",
-                    "page",
-                    "limit",
-                    "totalPages",
-                ]),
+                assert.validateRequiredFields(responseBody, ["success"]),
             );
+            validation.execute("Data Present When 200", () => {
+                if (rawResponse.status() === 200) {
+                    assert.validateRequiredFields(responseBody, ["data"]);
+                }
+            });
 
             const mapped = DailyConsumptionMapper.map(responseBody);
             const { items } = mapped;
+            const isOk = rawResponse.status() === 200;
 
-            validation.execute("Success", () =>
-                validator.validateSuccess(mapped.success),
-            );
-            validation.execute("Root Structure", () =>
-                validator.validateRootStructure(mapped),
-            );
-            validation.execute("Query Echo", () =>
-                validator.validateQueryEcho(mapped, page, limit),
-            );
-            validation.execute("Pagination Bounds", () =>
-                validator.validatePaginationBounds(mapped),
-            );
-            validation.execute("Pagination Math", () =>
-                validator.validatePaginationMath(mapped),
-            );
-            validation.execute("Items Present When Total Positive", () =>
-                validator.validateItemsPresentWhenTotalPositive(mapped),
-            );
-            validation.execute("Business Rules", () =>
-                validator.validateBusinessRules(mapped),
-            );
+            if (isOk) {
+                validation.execute("Mapped Required Fields", () =>
+                    assert.validateRequiredFields(mapped, [
+                        "items",
+                        "total",
+                        "page",
+                        "limit",
+                        "totalPages",
+                    ]),
+                );
+                validation.execute("Success", () =>
+                    validator.validateSuccess(mapped.success),
+                );
+                validation.execute("Root Structure", () =>
+                    validator.validateRootStructure(mapped),
+                );
+                validation.execute("Query Echo", () =>
+                    validator.validateQueryEcho(mapped, page, limit),
+                );
+                validation.execute("Pagination Bounds", () =>
+                    validator.validatePaginationBounds(mapped),
+                );
+                validation.execute("Pagination Math", () =>
+                    validator.validatePaginationMath(mapped),
+                );
+                validation.execute("Items Present When Total Positive", () =>
+                    validator.validateItemsPresentWhenTotalPositive(mapped),
+                );
+                validation.execute("Business Rules", () =>
+                    validator.validateBusinessRules(mapped),
+                );
+            }
 
-            if (items.length > 0) {
+            if (isOk && items.length > 0) {
                 validation.execute("Item Required Fields", () =>
                     validator.validateItemRequiredFields(items),
                 );

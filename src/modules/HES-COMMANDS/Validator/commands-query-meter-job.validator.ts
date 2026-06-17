@@ -131,9 +131,20 @@ export class CommandsQueryMeterJobValidator {
       expect(row.hesResponse.message.trim().length).toBeGreaterThan(0);
     }
     if (row.hesResponse.status !== undefined) {
-      expect(Number.isInteger(row.hesResponse.status)).toBe(true);
-      expect(row.hesResponse.status!).toBeGreaterThanOrEqual(100);
-      expect(row.hesResponse.status!).toBeLessThan(600);
+      const status = row.hesResponse.status;
+      if (typeof status === "number") {
+        expect(Number.isInteger(status)).toBe(true);
+        expect(status).toBeGreaterThanOrEqual(100);
+        expect(status).toBeLessThan(600);
+      } else if (typeof status === "string") {
+        expect(status.trim().length).toBeGreaterThan(0);
+      }
+    }
+    if (row.hesResponse.meterId !== undefined) {
+      expect(String(row.hesResponse.meterId).trim().length).toBeGreaterThan(0);
+    }
+    if (row.hesResponse.response !== undefined && row.hesResponse.response !== null) {
+      expect(Array.isArray(row.hesResponse.response)).toBe(true);
     }
   }
 

@@ -7,19 +7,16 @@ export interface CommandsMeterLookupRow {
   feeder: string | null;
   dtr: string | null;
 }
-
 export interface CommandsMeterLookupResponse {
   success: boolean;
   data?: CommandsMeterLookupRow;
   error?: { code: string; message: string };
 }
-
 export class CommandsMeterMapper {
   static mapResponse(body: CommandsMeterLookupResponse): CommandsMeterLookupRow {
     if (!body.success || !body.data) {
       throw new Error("Cannot map unsuccessful meter lookup response");
     }
-
     const data = body.data;
     return {
       meterLookupId: data.meterLookupId,

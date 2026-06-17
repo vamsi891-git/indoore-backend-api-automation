@@ -1,6 +1,6 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
 import { DailyConsumptionResponse } from "../Mapper/dailyconsumption.mapper";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
+import { getConsumptionWithRetry } from "../utils/consumption-request.helper";
 
 export interface DailyConsumptionApiResult {
     rawResponse: APIResponse;
@@ -19,8 +19,7 @@ export class DailyConsumptionApi {
         month: number,
         year: number,
     ): Promise<DailyConsumptionApiResult> {
-        const start = Date.now();
-        const response = await getWithAutoRefresh(
+        const { response, responseTime } = await getConsumptionWithRetry(
             this.authenticatedApi,
             "/indore/consumption/report",
             {
@@ -38,7 +37,7 @@ export class DailyConsumptionApi {
         return {
             rawResponse: response,
             responseBody: await response.json(),
-            responseTime: Date.now() - start,
+            responseTime,
         };
     }
 }

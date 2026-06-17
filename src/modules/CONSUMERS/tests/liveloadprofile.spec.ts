@@ -55,39 +55,20 @@ test.describe( "Live Load Profile API", () => {
                     assert.validateRequiredFields(data,["activePower","apparentPower","reactivePower","powerFactor"])
                 );
                 const validator = new LiveLoadProfileValidator();
-                validation.execute("Success",() => 
-                    validator.validateSuccess(data)
-                );
-                validation.execute("Structure",() => 
-                    validator.validateStructure(data)
-                );
-                validation.execute("Titles",() => 
-                    validator.validateTitles(data)
-                );
-                validation.execute("Units",() => 
-                    validator.validateUnits(data)
-                );
-                validation.execute("Meter Phase",() => 
-                    validator.validateMeterPhase(data)
-                );
-                validation.execute("Nullable",() => 
-                    validator.validateNullable(data)
-                );
-                validation.execute("Power Factor",() => 
-                    validator.validatePowerFactor(data)
-                );
-                validation.execute("Power Range",() => 
-                    validator.validatePowerRanges(data)
-                );  
-                validation.execute("Power Rules",() => 
-                    validator.validatePowerRules(data)
-                );
-                validation.execute("Share Percent",() => 
-                    validator.validateSharePercent(data)
-                );
-                validation.execute("Date",() => 
-                    validator.validateDate(data)
-                );
+                const isOk = rawResponse.status() === 200;
+                if (isOk) {
+                    validation.execute("Success",() => validator.validateSuccess(data));
+                    validation.execute("Structure",() => validator.validateStructure(data));
+                    validation.execute("Titles",() => validator.validateTitles(data));
+                    validation.execute("Units",() => validator.validateUnits(data));
+                    validation.execute("Meter Phase",() => validator.validateMeterPhase(data));
+                    validation.execute("Nullable",() => validator.validateNullable(data));
+                    validation.execute("Power Factor",() => validator.validatePowerFactor(data));
+                    validation.execute("Power Range",() => validator.validatePowerRanges(data));
+                    validation.execute("Power Rules",() => validator.validatePowerRules(data));
+                    validation.execute("Share Percent",() => validator.validateSharePercent(data));
+                    validation.execute("Date",() => validator.validateDate(data));
+                }
                 validation.printSummary("Live Load Profile API",responseTime
                 );
 

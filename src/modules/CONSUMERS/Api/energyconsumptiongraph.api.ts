@@ -1,6 +1,6 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
 import { EnergyConsumptionGraphResponse } from "../Mapper/energyconsumptiongraph.mapper";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
+import { getConsumerWithRetry } from "../utils/consumer-request.helper";
 export interface EnergyConsumptionGraphApiResult {
     rawResponse: APIResponse;
     responseBody:EnergyConsumptionGraphResponse;
@@ -9,15 +9,14 @@ export interface EnergyConsumptionGraphApiResult {
 export class EnergyConsumptionGraphApi {
     constructor(private readonly authenticatedApi:APIRequestContext) { }
     async getEnergyConsumptionGraph(consumerNumber: string): Promise<EnergyConsumptionGraphApiResult> {
-        const start = Date.now();
-        let response =await getWithAutoRefresh(this.authenticatedApi,`/indore/consumers/${consumerNumber}/energy-consumption-graph`);
-        if (response.status() === 504) {
-            response = await getWithAutoRefresh(this.authenticatedApi,`/indore/consumers/${consumerNumber}/energy-consumption-graph`);
-        }
+        const { rawResponse, responseTime } = await getConsumerWithRetry(
+            this.authenticatedApi,
+            `/indore/consumers/${consumerNumber}/energy-consumption-graph`,
+        );
         return {
-            rawResponse:response,
-            responseBody:await response.json(),
-            responseTime:Date.now() - start
+            rawResponse,
+            responseBody: await rawResponse.json(),
+            responseTime,
         };
     }
 }

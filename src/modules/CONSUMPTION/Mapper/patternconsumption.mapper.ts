@@ -1,22 +1,31 @@
+export interface PatternConsumptionTable {
+    title: string;
+    columns: any[];
+    rows: any[];
+}
+
 export interface PatternConsumptionResponse {
     success: boolean;
-    data: {
-        table: {
-            title: string;
-            columns: any[];
-            rows: any[];
-        };
+    data?: {
+        table?: PatternConsumptionTable;
     };
 }
+
+const EMPTY_TABLE: PatternConsumptionTable = {
+    title: "",
+    columns: [],
+    rows: [],
+};
 
 export class PatternConsumptionMapper {
 
     static map(response: PatternConsumptionResponse) {
-
+        const table = response.data?.table ?? EMPTY_TABLE;
         return {
-            title: response.data.table.title,
-            columns: response.data.table.columns,
-            rows: response.data.table.rows
+            success: response.success,
+            title: table.title ?? "",
+            columns: table.columns ?? [],
+            rows: table.rows ?? [],
         };
     }
 }

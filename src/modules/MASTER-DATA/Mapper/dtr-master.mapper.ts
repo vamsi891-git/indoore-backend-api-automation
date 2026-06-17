@@ -12,12 +12,19 @@ export interface DtrMasterResponse {
 export type DtrMasterData = MasterDataList<DtrMasterItem>;
 
 export interface DtrMasterItem {
+  id: string;
   slNo: number;
-  dtrCode: string;
-  dtrName: string;
+  circle: string | null;
+  division: string | null;
+  zone: string | null;
+  subStation: string | null;
+  feeder: string | null;
+  dtr: string;
   meterSerialNumber: string | null;
+  mf: string | null;
   latitude: string | null;
   longitude: string | null;
+  serviceDate: string | null;
 }
 
 export class DtrMasterMapper {

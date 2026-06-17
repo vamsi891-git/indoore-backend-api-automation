@@ -1,6 +1,6 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
 import { LiveLoadProfileResponse } from "../Mapper/liveloadprofile.mapper";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
+import { getConsumerWithRetry } from "../utils/consumer-request.helper";
 export interface LiveLoadProfileApiResult {
     rawResponse: APIResponse;
     responseBody:LiveLoadProfileResponse;
@@ -9,15 +9,14 @@ export interface LiveLoadProfileApiResult {
 export class LiveLoadProfileApi {
     constructor(private readonly authenticatedApi:APIRequestContext) { }
     async getLiveLoadProfile(consumerNumber: string): Promise<LiveLoadProfileApiResult> {
-        const start = Date.now();
-        let response =await getWithAutoRefresh(this.authenticatedApi,`/indore/consumers/${consumerNumber}/live-load-profile`);
-        if (response.status() === 504) {
-            response = await getWithAutoRefresh(this.authenticatedApi,`/indore/consumers/${consumerNumber}/live-load-profile`);
-        }
+        const { rawResponse, responseTime } = await getConsumerWithRetry(
+            this.authenticatedApi,
+            `/indore/consumers/${consumerNumber}/live-load-profile`,
+        );
         return {
-            rawResponse:response,
-            responseBody:await response.json(),
-            responseTime:Date.now() - start
+            rawResponse,
+            responseBody: await rawResponse.json(),
+            responseTime,
         };
     }
 }

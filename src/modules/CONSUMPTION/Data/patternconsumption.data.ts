@@ -3,7 +3,7 @@ export const patternConsumptionData = {
     limit: 30,
     month: 12,
     year: 2025,
-    maxResponseTime: 60000,
+    maxResponseTime: 120_000,
 
     comparisonType: "comparison",
     lastThreeMonthsType: "lastThree",

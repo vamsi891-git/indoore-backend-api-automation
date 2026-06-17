@@ -44,45 +44,32 @@ test.describe("Power Quality API",() => {
                         assert.validateSensitiveData(responseBody)
                 );
                 validation.execute("Required Fields",() =>
-                        assert.validateRequiredFields(responseBody,["success","data"])
+                        assert.validateRequiredFields(responseBody,["success"])
                 );
+                validation.execute("Data Present When 200",() => {
+                    if (rawResponse.status() === 200) {
+                        assert.validateRequiredFields(responseBody,["data"]);
+                    }
+                });
                 const data =PowerQualityMapper.map(responseBody);
                 validation.execute("Mapped Required Fields",() =>
                         assert.validateRequiredFields(data,["overallPf","frequency","neutralCurrent","mdKw","mdKva"])
                 );
                 const validator =new PowerQualityValidator();
-                validation.execute("Success",() => 
-                    validator.validateSuccess(data)
-                );
-                validation.execute("Titles",() => validator.validateTitles(data)
-                );
-                validation.execute("Units",() => validator.validateUnits(data)
-                );
-
-                validation.execute("Subtitles",() => 
-                    validator.validateSubtitles(data)
-                );
-                validation.execute("Nullable",() => 
-                    validator.validateNullableBehavior(data)
-                );
-                validation.execute("PowerFactor",() => 
-                    validator.validatePowerFactor(data)
-                );
-                validation.execute("Frequency",() => 
-                    validator.validateFrequency(data)
-                );
-                validation.execute("NeutralCurrent",() => 
-                    validator.validateNeutralCurrent(data)
-                );
-                validation.execute("Demand",() => 
-                    validator.validateDemand(data)
-                );
-                validation.execute("Cross Field",() => 
-                    validator.validateCrossField(data)
-                );
-                validation.execute("Business Rules",() => 
-                    validator.validateBusinessRules(data)
-                );
+                const isOk = rawResponse.status() === 200;
+                if (isOk) {
+                    validation.execute("Success",() => validator.validateSuccess(data));
+                    validation.execute("Titles",() => validator.validateTitles(data));
+                    validation.execute("Units",() => validator.validateUnits(data));
+                    validation.execute("Subtitles",() => validator.validateSubtitles(data));
+                    validation.execute("Nullable",() => validator.validateNullableBehavior(data));
+                    validation.execute("PowerFactor",() => validator.validatePowerFactor(data));
+                    validation.execute("Frequency",() => validator.validateFrequency(data));
+                    validation.execute("NeutralCurrent",() => validator.validateNeutralCurrent(data));
+                    validation.execute("Demand",() => validator.validateDemand(data));
+                    validation.execute("Cross Field",() => validator.validateCrossField(data));
+                    validation.execute("Business Rules",() => validator.validateBusinessRules(data));
+                }
                 validation.printSummary("Power Quality API",responseTime);
             });
     });

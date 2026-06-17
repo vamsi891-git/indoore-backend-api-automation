@@ -1,6 +1,6 @@
 import { APIRequestContext,  APIResponse } from "@playwright/test";
 import { PowerQualityResponse } from "../Mapper/powerquality.mapper";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
+import { getConsumerWithRetry } from "../utils/consumer-request.helper";
 export interface PowerQualityApiResult {
     rawResponse: APIResponse;
     responseBody: PowerQualityResponse;
@@ -9,15 +9,14 @@ export interface PowerQualityApiResult {
 export class PowerQualityApi {
     constructor(private readonly authenticatedApi:APIRequestContext) { }
     async getPowerQuality(consumerNumber: string): Promise<PowerQualityApiResult> {
-        const start = Date.now();
-        let response =await getWithAutoRefresh(this.authenticatedApi,`/indore/consumers/${consumerNumber}/power-quality`);
-        if (response.status() === 504) {
-            response = await getWithAutoRefresh(this.authenticatedApi,`/indore/consumers/${consumerNumber}/power-quality`);
-        }
+        const { rawResponse, responseTime } = await getConsumerWithRetry(
+            this.authenticatedApi,
+            `/indore/consumers/${consumerNumber}/power-quality`,
+        );
         return {
-            rawResponse: response,
-            responseBody:await response.json(),
-            responseTime:Date.now() - start
+            rawResponse,
+            responseBody: await rawResponse.json(),
+            responseTime,
         };
     }
 }

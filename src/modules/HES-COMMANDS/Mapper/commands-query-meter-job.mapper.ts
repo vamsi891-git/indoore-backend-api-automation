@@ -8,7 +8,12 @@ export interface QueryMeterJobSummary {
 
 export interface QueryMeterJobHesResponse {
   message?: string;
-  status?: number;
+  /** HTTP status code (number) or HES operation status (e.g. "SUCCESS"). */
+  status?: number | string;
+  meterId?: string;
+  failureStep?: string;
+  progress?: unknown;
+  response?: unknown[];
   [key: string]: unknown;
 }
 

@@ -1,6 +1,6 @@
 import { APIRequestContext,  APIResponse }  from "@playwright/test";
 import {  EnergyFlowResponse}  from "../Mapper/energyflow.mapper";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
+import { getConsumerWithRetry } from "../utils/consumer-request.helper";
 export interface EnergyFlowApiResult {
     rawResponse: APIResponse;
     responseBody:EnergyFlowResponse;
@@ -9,15 +9,14 @@ export interface EnergyFlowApiResult {
 export class EnergyFlowApi {
     constructor(private readonly authenticatedApi:APIRequestContext) { }
     async getEnergyFlow(consumerNumber: string): Promise<EnergyFlowApiResult> {
-        const start = Date.now();
-        let response =await getWithAutoRefresh(this.authenticatedApi,`/indore/consumers/${consumerNumber}/energy-flow`);
-        if (response.status() === 504) {
-            response = await getWithAutoRefresh(this.authenticatedApi,`/indore/consumers/${consumerNumber}/energy-flow`);
-        }
+        const { rawResponse, responseTime } = await getConsumerWithRetry(
+            this.authenticatedApi,
+            `/indore/consumers/${consumerNumber}/energy-flow`,
+        );
         return {
-            rawResponse:response,
-            responseBody:await response.json(),
-            responseTime:Date.now() - start
+            rawResponse,
+            responseBody: await rawResponse.json(),
+            responseTime,
         };
     }
 }

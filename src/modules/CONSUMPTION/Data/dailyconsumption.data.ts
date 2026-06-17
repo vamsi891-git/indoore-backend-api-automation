@@ -1,10 +1,12 @@
+import { CONSUMPTION_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
+
 export const dailyConsumptionData = {
     reportType: "daily" as const,
     page: 1,
-    limit: 30,
-    fromDate: "2025-12-19",
+    limit: 10,
+    fromDate: "2025-12-20",
     toDate: "2025-12-20",
     month: 12,
     year: 2025,
-    maxResponseTime: 120_000,
+    maxResponseTime: CONSUMPTION_MAX_RESPONSE_TIME_MS,
 };

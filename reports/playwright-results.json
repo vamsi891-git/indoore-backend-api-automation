@@ -74,126 +74,24 @@
   },
   "suites": [
     {
-      "title": "modules\\AUTH\\tests\\00-invite-setup.spec.ts",
-      "file": "modules/AUTH/tests/00-invite-setup.spec.ts",
+      "title": "modules\\MASTER-DATA\\tests\\consumer-master.spec.ts",
+      "file": "modules/MASTER-DATA/tests/consumer-master.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Auth Invite Suite Setup",
-          "file": "modules/AUTH/tests/00-invite-setup.spec.ts",
-          "line": 19,
+          "title": "Consumer Master API",
+          "file": "modules/MASTER-DATA/tests/consumer-master.spec.ts",
+          "line": 9,
           "column": 6,
           "specs": [
             {
-              "title": "Provision shared invite token for read-only specs",
-              "ok": true,
-              "tags": [
-                "auth",
-                "invite",
-                "e2e"
-              ],
-              "tests": [
-                {
-                  "timeout": 360000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 41,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-15T11:16:19.921Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhcmVudFN1aXRlIiwidmFsdWUiOiJBVVRIIn1dfX0="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1aXRlIiwidmFsdWUiOiJtb2R1bGVzXFxBVVRIXFx0ZXN0c1xcMDAtaW52aXRlLXNldHVwLnNwZWMudHMifV19fQ=="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1YlN1aXRlIiwidmFsdWUiOiJBdXRoIEludml0ZSBTdWl0ZSBTZXR1cCDigLogUHJvdmlzaW9uIHNoYXJlZCBpbnZpdGUgdG9rZW4gZm9yIHJlYWQtb25seSBzcGVjcyJ9XX19"
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImVwaWMiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImZlYXR1cmUiLCJ2YWx1ZSI6Im1vZHVsZXNcXEFVVEhcXHRlc3RzXFwwMC1pbnZpdGUtc2V0dXAuc3BlYy50cyJ9XX19"
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN0b3J5IiwidmFsdWUiOiJBdXRoIEludml0ZSBTdWl0ZSBTZXR1cCDigLogUHJvdmlzaW9uIHNoYXJlZCBpbnZpdGUgdG9rZW4gZm9yIHJlYWQtb25seSBzcGVjcyJ9XX19"
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6Im1vZHVsZSIsInZhbHVlIjoiQVVUSCJ9XX19"
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhY2thZ2UiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InNwZWMiLCJ2YWx1ZSI6IjAwLWludml0ZS1zZXR1cCJ9XX19"
-                        }
-                      ]
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "abaeab11becf558a10b1-2a140215bfed0c42ce9f",
-              "file": "modules/AUTH/tests/00-invite-setup.spec.ts",
-              "line": 26,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "modules\\AUTH\\tests\\10-invite-preview.spec.ts",
-      "file": "modules/AUTH/tests/10-invite-preview.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Auth Invite Preview API",
-          "file": "modules/AUTH/tests/10-invite-preview.spec.ts",
-          "line": 27,
-          "column": 6,
-          "specs": [
-            {
-              "title": "Validate invalid invitation preview",
+              "title": "Validate Consumer Master API",
               "ok": true,
               "tags": [
                 "smoke",
-                "auth",
-                "invite"
+                "consumer-master"
               ],
               "tests": [
                 {
@@ -207,29 +105,29 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 1784,
+                      "duration": 8781,
                       "errors": [],
                       "stdout": [
                         {
-                          "text": "\n==================================\nAPI : Auth Invite Preview API\nDNS : 30.66 ms\nConnection : 21.31 ms\nServer Processing : 1477.03 ms\nDownload : 100 ms\nTotal : 1629 ms\n===================================\n\n"
+                          "text": "\n==================================\nAPI : Consumer Master API\nDNS : 37.51 ms\nConnection : 25.1 ms\nServer Processing : 8063.389999999999 ms\nDownload : 100 ms\nTotal : 8226 ms\n===================================\n\n"
                         },
                         {
                           "text": "\n==================================================\n"
                         },
                         {
-                          "text": "API TEST SUMMARY — Auth Invite Preview API (invalid)\n"
+                          "text": "API TEST SUMMARY — Consumer Master API\n"
                         },
                         {
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 1629 ms\n"
+                          "text": "RESPONSE TIME   : 8226 ms\n"
                         },
                         {
-                          "text": "TOTAL CHECKS    : 4\n"
+                          "text": "TOTAL CHECKS    : 11\n"
                         },
                         {
-                          "text": "PASSED          : 4\n"
+                          "text": "PASSED          : 11\n"
                         },
                         {
                           "text": "FAILED          : 0\n"
@@ -241,561 +139,40 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "VALIDATION CHECKS (Auth Invite Preview API (invalid)):\n"
+                          "text": "VALIDATION CHECKS (Consumer Master API):\n"
                         },
                         {
-                          "text": "  0. Preview Response Time — PASS\n"
+                          "text": "  0. Status Validation — PASS\n"
                         },
                         {
-                          "text": "  1. Preview Sensitive Data — PASS\n"
+                          "text": "  1. Content Validation — PASS\n"
                         },
                         {
-                          "text": "  2. Invalid Preview Contract — PASS\n"
+                          "text": "  2. Response Time — PASS\n"
                         },
                         {
-                          "text": "  3. Invalid Preview Zod — PASS\n"
+                          "text": "  3. Security Validation — PASS\n"
                         },
                         {
-                          "text": "==================================================\n\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-15T11:16:20.102Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "d0e2b52850dae9e9d7f4-a5f21cfc1862c8f73d3b",
-              "file": "modules/AUTH/tests/10-invite-preview.spec.ts",
-              "line": 28,
-              "column": 7
-            }
-          ],
-          "suites": [
-            {
-              "title": "Valid preview from email token",
-              "file": "modules/AUTH/tests/10-invite-preview.spec.ts",
-              "line": 81,
-              "column": 8,
-              "specs": [
-                {
-                  "title": "Validate valid invitation preview from email token",
-                  "ok": false,
-                  "tags": [
-                    "auth",
-                    "invite",
-                    "e2e"
-                  ],
-                  "tests": [
-                    {
-                      "timeout": 240000,
-                      "annotations": [],
-                      "expectedStatus": "passed",
-                      "projectId": "",
-                      "projectName": "",
-                      "results": [
-                        {
-                          "workerIndex": 0,
-                          "parallelIndex": 0,
-                          "status": "failed",
-                          "duration": 613,
-                          "error": {
-                            "message": "ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      true\n    ],\n    \"path\": [\n      \"success\"\n    ],\n    \"message\": \"Invalid input: expected true\"\n  },\n  {\n    \"expected\": \"object\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"data\"\n    ],\n    \"message\": \"Invalid input: expected object, received undefined\"\n  }\n]",
-                            "stack": "ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      true\n    ],\n    \"path\": [\n      \"success\"\n    ],\n    \"message\": \"Invalid input: expected true\"\n  },\n  {\n    \"expected\": \"object\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"data\"\n    ],\n    \"message\": \"Invalid input: expected object, received undefined\"\n  }\n]\n    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\10-invite-preview.spec.ts:122:54",
-                            "location": {
-                              "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\10-invite-preview.spec.ts",
-                              "column": 54,
-                              "line": 122
-                            },
-                            "snippet": "\u001b[0m \u001b[90m 120 |\u001b[39m           })\u001b[33m;\u001b[39m\n \u001b[90m 121 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 122 |\u001b[39m           \u001b[36mconst\u001b[39m parsed \u001b[33m=\u001b[39m \u001b[33mInvitePreviewResponseSchema\u001b[39m\u001b[33m.\u001b[39mparse(preview\u001b[33m.\u001b[39mresponseBody)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 123 |\u001b[39m\n \u001b[90m 124 |\u001b[39m           \u001b[36mif\u001b[39m (context) {\n \u001b[90m 125 |\u001b[39m             validation\u001b[33m.\u001b[39mexecute(\u001b[32m\"Valid Preview Email\"\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m\u001b[0m"
-                          },
-                          "errors": [
-                            {
-                              "location": {
-                                "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\10-invite-preview.spec.ts",
-                                "column": 54,
-                                "line": 122
-                              },
-                              "message": "ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      true\n    ],\n    \"path\": [\n      \"success\"\n    ],\n    \"message\": \"Invalid input: expected true\"\n  },\n  {\n    \"expected\": \"object\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"data\"\n    ],\n    \"message\": \"Invalid input: expected object, received undefined\"\n  }\n]\n\n\u001b[0m \u001b[90m 120 |\u001b[39m           })\u001b[33m;\u001b[39m\n \u001b[90m 121 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 122 |\u001b[39m           \u001b[36mconst\u001b[39m parsed \u001b[33m=\u001b[39m \u001b[33mInvitePreviewResponseSchema\u001b[39m\u001b[33m.\u001b[39mparse(preview\u001b[33m.\u001b[39mresponseBody)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 123 |\u001b[39m\n \u001b[90m 124 |\u001b[39m           \u001b[36mif\u001b[39m (context) {\n \u001b[90m 125 |\u001b[39m             validation\u001b[33m.\u001b[39mexecute(\u001b[32m\"Valid Preview Email\"\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m\u001b[0m\n\u001b[2m    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\10-invite-preview.spec.ts:122:54\u001b[22m"
-                            }
-                          ],
-                          "stdout": [
-                            {
-                              "text": "\n==================================\nAPI : Auth Invite Preview API (valid)\nDNS : 0.13 ms\nConnection : 20.76 ms\nServer Processing : 384.11 ms\nDownload : 100 ms\nTotal : 505 ms\n===================================\n\n"
-                            }
-                          ],
-                          "stderr": [],
-                          "retry": 0,
-                          "startTime": "2026-06-15T11:16:21.924Z",
-                          "annotations": [],
-                          "attachments": [
-                            {
-                              "name": "error-context",
-                              "contentType": "text/markdown",
-                              "path": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\test-results\\modules-AUTH-tests-10-invi-72583-on-preview-from-email-token\\error-context.md"
-                            }
-                          ],
-                          "errorLocation": {
-                            "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\10-invite-preview.spec.ts",
-                            "column": 54,
-                            "line": 122
-                          }
+                          "text": "  4. Response — PASS\n"
                         },
                         {
-                          "workerIndex": 1,
-                          "parallelIndex": 0,
-                          "status": "failed",
-                          "duration": 974,
-                          "error": {
-                            "message": "ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      true\n    ],\n    \"path\": [\n      \"success\"\n    ],\n    \"message\": \"Invalid input: expected true\"\n  },\n  {\n    \"expected\": \"object\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"data\"\n    ],\n    \"message\": \"Invalid input: expected object, received undefined\"\n  }\n]",
-                            "stack": "ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      true\n    ],\n    \"path\": [\n      \"success\"\n    ],\n    \"message\": \"Invalid input: expected true\"\n  },\n  {\n    \"expected\": \"object\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"data\"\n    ],\n    \"message\": \"Invalid input: expected object, received undefined\"\n  }\n]\n    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\10-invite-preview.spec.ts:122:54",
-                            "location": {
-                              "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\10-invite-preview.spec.ts",
-                              "column": 54,
-                              "line": 122
-                            },
-                            "snippet": "\u001b[0m \u001b[90m 120 |\u001b[39m           })\u001b[33m;\u001b[39m\n \u001b[90m 121 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 122 |\u001b[39m           \u001b[36mconst\u001b[39m parsed \u001b[33m=\u001b[39m \u001b[33mInvitePreviewResponseSchema\u001b[39m\u001b[33m.\u001b[39mparse(preview\u001b[33m.\u001b[39mresponseBody)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 123 |\u001b[39m\n \u001b[90m 124 |\u001b[39m           \u001b[36mif\u001b[39m (context) {\n \u001b[90m 125 |\u001b[39m             validation\u001b[33m.\u001b[39mexecute(\u001b[32m\"Valid Preview Email\"\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m\u001b[0m"
-                          },
-                          "errors": [
-                            {
-                              "location": {
-                                "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\10-invite-preview.spec.ts",
-                                "column": 54,
-                                "line": 122
-                              },
-                              "message": "ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      true\n    ],\n    \"path\": [\n      \"success\"\n    ],\n    \"message\": \"Invalid input: expected true\"\n  },\n  {\n    \"expected\": \"object\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"data\"\n    ],\n    \"message\": \"Invalid input: expected object, received undefined\"\n  }\n]\n\n\u001b[0m \u001b[90m 120 |\u001b[39m           })\u001b[33m;\u001b[39m\n \u001b[90m 121 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 122 |\u001b[39m           \u001b[36mconst\u001b[39m parsed \u001b[33m=\u001b[39m \u001b[33mInvitePreviewResponseSchema\u001b[39m\u001b[33m.\u001b[39mparse(preview\u001b[33m.\u001b[39mresponseBody)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                                                      \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 123 |\u001b[39m\n \u001b[90m 124 |\u001b[39m           \u001b[36mif\u001b[39m (context) {\n \u001b[90m 125 |\u001b[39m             validation\u001b[33m.\u001b[39mexecute(\u001b[32m\"Valid Preview Email\"\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m\u001b[0m\n\u001b[2m    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\10-invite-preview.spec.ts:122:54\u001b[22m"
-                            }
-                          ],
-                          "stdout": [
-                            {
-                              "text": "\n==================================\nAPI : Auth Invite Preview API (valid)\nDNS : 0.96 ms\nConnection : 18.95 ms\nServer Processing : 706.0899999999999 ms\nDownload : 100 ms\nTotal : 826 ms\n===================================\n\n"
-                            }
-                          ],
-                          "stderr": [],
-                          "retry": 1,
-                          "startTime": "2026-06-15T11:16:23.443Z",
-                          "annotations": [],
-                          "attachments": [
-                            {
-                              "name": "Allure Metadata (metadata)",
-                              "contentType": "application/vnd.allure.message+json",
-                              "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhcmVudFN1aXRlIiwidmFsdWUiOiJBVVRIIn1dfX0="
-                            },
-                            {
-                              "name": "Allure Metadata (metadata)",
-                              "contentType": "application/vnd.allure.message+json",
-                              "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1aXRlIiwidmFsdWUiOiJtb2R1bGVzXFxBVVRIXFx0ZXN0c1xcMTAtaW52aXRlLXByZXZpZXcuc3BlYy50cyJ9XX19"
-                            },
-                            {
-                              "name": "Allure Metadata (metadata)",
-                              "contentType": "application/vnd.allure.message+json",
-                              "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1YlN1aXRlIiwidmFsdWUiOiJBdXRoIEludml0ZSBQcmV2aWV3IEFQSSDigLogVmFsaWQgcHJldmlldyBmcm9tIGVtYWlsIHRva2VuIOKAuiBWYWxpZGF0ZSB2YWxpZCBpbnZpdGF0aW9uIHByZXZpZXcgZnJvbSBlbWFpbCB0b2tlbiJ9XX19"
-                            },
-                            {
-                              "name": "Allure Metadata (metadata)",
-                              "contentType": "application/vnd.allure.message+json",
-                              "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImVwaWMiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
-                            },
-                            {
-                              "name": "Allure Metadata (metadata)",
-                              "contentType": "application/vnd.allure.message+json",
-                              "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImZlYXR1cmUiLCJ2YWx1ZSI6Im1vZHVsZXNcXEFVVEhcXHRlc3RzXFwxMC1pbnZpdGUtcHJldmlldy5zcGVjLnRzIn1dfX0="
-                            },
-                            {
-                              "name": "Allure Metadata (metadata)",
-                              "contentType": "application/vnd.allure.message+json",
-                              "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN0b3J5IiwidmFsdWUiOiJBdXRoIEludml0ZSBQcmV2aWV3IEFQSSDigLogVmFsaWQgcHJldmlldyBmcm9tIGVtYWlsIHRva2VuIOKAuiBWYWxpZGF0ZSB2YWxpZCBpbnZpdGF0aW9uIHByZXZpZXcgZnJvbSBlbWFpbCB0b2tlbiJ9XX19"
-                            },
-                            {
-                              "name": "Allure Metadata (metadata)",
-                              "contentType": "application/vnd.allure.message+json",
-                              "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6Im1vZHVsZSIsInZhbHVlIjoiQVVUSCJ9XX19"
-                            },
-                            {
-                              "name": "Allure Metadata (metadata)",
-                              "contentType": "application/vnd.allure.message+json",
-                              "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhY2thZ2UiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
-                            },
-                            {
-                              "name": "Allure Metadata (metadata)",
-                              "contentType": "application/vnd.allure.message+json",
-                              "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InNwZWMiLCJ2YWx1ZSI6IjEwLWludml0ZS1wcmV2aWV3In1dfX0="
-                            },
-                            {
-                              "name": "error-context",
-                              "contentType": "text/markdown",
-                              "path": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\test-results\\modules-AUTH-tests-10-invi-72583-on-preview-from-email-token-retry1\\error-context.md"
-                            }
-                          ],
-                          "errorLocation": {
-                            "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\10-invite-preview.spec.ts",
-                            "column": 54,
-                            "line": 122
-                          }
-                        }
-                      ],
-                      "status": "unexpected"
-                    }
-                  ],
-                  "id": "d0e2b52850dae9e9d7f4-c9af8a8383eaa93f8550",
-                  "file": "modules/AUTH/tests/10-invite-preview.spec.ts",
-                  "line": 86,
-                  "column": 9
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "modules\\AUTH\\tests\\11-invite-validate.spec.ts",
-      "file": "modules/AUTH/tests/11-invite-validate.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Auth Invite Validate Flow",
-          "file": "modules/AUTH/tests/11-invite-validate.spec.ts",
-          "line": 34,
-          "column": 6,
-          "specs": [
-            {
-              "title": "Validate invite preview token from email",
-              "ok": false,
-              "tags": [
-                "auth",
-                "invite",
-                "e2e"
-              ],
-              "tests": [
-                {
-                  "timeout": 240000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 331,
-                      "error": {
-                        "message": "ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      true\n    ],\n    \"path\": [\n      \"success\"\n    ],\n    \"message\": \"Invalid input: expected true\"\n  },\n  {\n    \"expected\": \"object\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"data\"\n    ],\n    \"message\": \"Invalid input: expected object, received undefined\"\n  }\n]",
-                        "stack": "ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      true\n    ],\n    \"path\": [\n      \"success\"\n    ],\n    \"message\": \"Invalid input: expected true\"\n  },\n  {\n    \"expected\": \"object\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"data\"\n    ],\n    \"message\": \"Invalid input: expected object, received undefined\"\n  }\n]\n    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\11-invite-validate.spec.ts:85:52",
-                        "location": {
-                          "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\11-invite-validate.spec.ts",
-                          "column": 52,
-                          "line": 85
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 83 |\u001b[39m         })\u001b[33m;\u001b[39m\n \u001b[90m 84 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 85 |\u001b[39m         \u001b[36mconst\u001b[39m parsed \u001b[33m=\u001b[39m \u001b[33mInvitePreviewResponseSchema\u001b[39m\u001b[33m.\u001b[39mparse(preview\u001b[33m.\u001b[39mresponseBody)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                    \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 86 |\u001b[39m\n \u001b[90m 87 |\u001b[39m         validation\u001b[33m.\u001b[39mexecute(\u001b[32m\"Preview Email And Role\"\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m\n \u001b[90m 88 |\u001b[39m           validator\u001b[33m.\u001b[39mvalidatePreviewSuccess(\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\11-invite-validate.spec.ts",
-                            "column": 52,
-                            "line": 85
-                          },
-                          "message": "ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      true\n    ],\n    \"path\": [\n      \"success\"\n    ],\n    \"message\": \"Invalid input: expected true\"\n  },\n  {\n    \"expected\": \"object\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"data\"\n    ],\n    \"message\": \"Invalid input: expected object, received undefined\"\n  }\n]\n\n\u001b[0m \u001b[90m 83 |\u001b[39m         })\u001b[33m;\u001b[39m\n \u001b[90m 84 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 85 |\u001b[39m         \u001b[36mconst\u001b[39m parsed \u001b[33m=\u001b[39m \u001b[33mInvitePreviewResponseSchema\u001b[39m\u001b[33m.\u001b[39mparse(preview\u001b[33m.\u001b[39mresponseBody)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                    \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 86 |\u001b[39m\n \u001b[90m 87 |\u001b[39m         validation\u001b[33m.\u001b[39mexecute(\u001b[32m\"Preview Email And Role\"\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m\n \u001b[90m 88 |\u001b[39m           validator\u001b[33m.\u001b[39mvalidatePreviewSuccess(\u001b[0m\n\u001b[2m    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\11-invite-validate.spec.ts:85:52\u001b[22m"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "\n==================================\nAPI : Auth Invite Validate — Preview\nDNS : 0.81 ms\nConnection : 19.49 ms\nServer Processing : 54.69999999999999 ms\nDownload : 100 ms\nTotal : 175 ms\n===================================\n\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-15T11:16:25.418Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhcmVudFN1aXRlIiwidmFsdWUiOiJBVVRIIn1dfX0="
+                          "text": "  5. Items — PASS\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1aXRlIiwidmFsdWUiOiJtb2R1bGVzXFxBVVRIXFx0ZXN0c1xcMTEtaW52aXRlLXZhbGlkYXRlLnNwZWMudHMifV19fQ=="
+                          "text": "  6. Fields — PASS\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1YlN1aXRlIiwidmFsdWUiOiJBdXRoIEludml0ZSBWYWxpZGF0ZSBGbG93IOKAuiBWYWxpZGF0ZSBpbnZpdGUgcHJldmlldyB0b2tlbiBmcm9tIGVtYWlsIn1dfX0="
+                          "text": "  7. Duplicate Consumer RefId — PASS\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImVwaWMiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
+                          "text": "  8. Pagination Validation — PASS\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImZlYXR1cmUiLCJ2YWx1ZSI6Im1vZHVsZXNcXEFVVEhcXHRlc3RzXFwxMS1pbnZpdGUtdmFsaWRhdGUuc3BlYy50cyJ9XX19"
+                          "text": "  9. Meter Phase Validation — PASS\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN0b3J5IiwidmFsdWUiOiJBdXRoIEludml0ZSBWYWxpZGF0ZSBGbG93IOKAuiBWYWxpZGF0ZSBpbnZpdGUgcHJldmlldyB0b2tlbiBmcm9tIGVtYWlsIn1dfX0="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6Im1vZHVsZSIsInZhbHVlIjoiQVVUSCJ9XX19"
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhY2thZ2UiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InNwZWMiLCJ2YWx1ZSI6IjExLWludml0ZS12YWxpZGF0ZSJ9XX19"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\test-results\\modules-AUTH-tests-11-invi-e9b38-te-preview-token-from-email\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\11-invite-validate.spec.ts",
-                        "column": 52,
-                        "line": 85
-                      }
-                    },
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 370,
-                      "error": {
-                        "message": "ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      true\n    ],\n    \"path\": [\n      \"success\"\n    ],\n    \"message\": \"Invalid input: expected true\"\n  },\n  {\n    \"expected\": \"object\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"data\"\n    ],\n    \"message\": \"Invalid input: expected object, received undefined\"\n  }\n]",
-                        "stack": "ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      true\n    ],\n    \"path\": [\n      \"success\"\n    ],\n    \"message\": \"Invalid input: expected true\"\n  },\n  {\n    \"expected\": \"object\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"data\"\n    ],\n    \"message\": \"Invalid input: expected object, received undefined\"\n  }\n]\n    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\11-invite-validate.spec.ts:85:52",
-                        "location": {
-                          "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\11-invite-validate.spec.ts",
-                          "column": 52,
-                          "line": 85
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 83 |\u001b[39m         })\u001b[33m;\u001b[39m\n \u001b[90m 84 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 85 |\u001b[39m         \u001b[36mconst\u001b[39m parsed \u001b[33m=\u001b[39m \u001b[33mInvitePreviewResponseSchema\u001b[39m\u001b[33m.\u001b[39mparse(preview\u001b[33m.\u001b[39mresponseBody)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                    \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 86 |\u001b[39m\n \u001b[90m 87 |\u001b[39m         validation\u001b[33m.\u001b[39mexecute(\u001b[32m\"Preview Email And Role\"\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m\n \u001b[90m 88 |\u001b[39m           validator\u001b[33m.\u001b[39mvalidatePreviewSuccess(\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\11-invite-validate.spec.ts",
-                            "column": 52,
-                            "line": 85
-                          },
-                          "message": "ZodError: [\n  {\n    \"code\": \"invalid_value\",\n    \"values\": [\n      true\n    ],\n    \"path\": [\n      \"success\"\n    ],\n    \"message\": \"Invalid input: expected true\"\n  },\n  {\n    \"expected\": \"object\",\n    \"code\": \"invalid_type\",\n    \"path\": [\n      \"data\"\n    ],\n    \"message\": \"Invalid input: expected object, received undefined\"\n  }\n]\n\n\u001b[0m \u001b[90m 83 |\u001b[39m         })\u001b[33m;\u001b[39m\n \u001b[90m 84 |\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 85 |\u001b[39m         \u001b[36mconst\u001b[39m parsed \u001b[33m=\u001b[39m \u001b[33mInvitePreviewResponseSchema\u001b[39m\u001b[33m.\u001b[39mparse(preview\u001b[33m.\u001b[39mresponseBody)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                    \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 86 |\u001b[39m\n \u001b[90m 87 |\u001b[39m         validation\u001b[33m.\u001b[39mexecute(\u001b[32m\"Preview Email And Role\"\u001b[39m\u001b[33m,\u001b[39m () \u001b[33m=>\u001b[39m\n \u001b[90m 88 |\u001b[39m           validator\u001b[33m.\u001b[39mvalidatePreviewSuccess(\u001b[0m\n\u001b[2m    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\11-invite-validate.spec.ts:85:52\u001b[22m"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "\n==================================\nAPI : Auth Invite Validate — Preview\nDNS : 23 ms\nConnection : 20.12 ms\nServer Processing : 46.879999999999995 ms\nDownload : 100 ms\nTotal : 190 ms\n===================================\n\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-06-15T11:16:26.698Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhcmVudFN1aXRlIiwidmFsdWUiOiJBVVRIIn1dfX0="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1aXRlIiwidmFsdWUiOiJtb2R1bGVzXFxBVVRIXFx0ZXN0c1xcMTEtaW52aXRlLXZhbGlkYXRlLnNwZWMudHMifV19fQ=="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1YlN1aXRlIiwidmFsdWUiOiJBdXRoIEludml0ZSBWYWxpZGF0ZSBGbG93IOKAuiBWYWxpZGF0ZSBpbnZpdGUgcHJldmlldyB0b2tlbiBmcm9tIGVtYWlsIn1dfX0="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImVwaWMiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImZlYXR1cmUiLCJ2YWx1ZSI6Im1vZHVsZXNcXEFVVEhcXHRlc3RzXFwxMS1pbnZpdGUtdmFsaWRhdGUuc3BlYy50cyJ9XX19"
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN0b3J5IiwidmFsdWUiOiJBdXRoIEludml0ZSBWYWxpZGF0ZSBGbG93IOKAuiBWYWxpZGF0ZSBpbnZpdGUgcHJldmlldyB0b2tlbiBmcm9tIGVtYWlsIn1dfX0="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6Im1vZHVsZSIsInZhbHVlIjoiQVVUSCJ9XX19"
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhY2thZ2UiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InNwZWMiLCJ2YWx1ZSI6IjExLWludml0ZS12YWxpZGF0ZSJ9XX19"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\test-results\\modules-AUTH-tests-11-invi-e9b38-te-preview-token-from-email-retry1\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\11-invite-validate.spec.ts",
-                        "column": 52,
-                        "line": 85
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "2bbfea75b20c9a23fbcb-a48d5a1187eafbc02f15",
-              "file": "modules/AUTH/tests/11-invite-validate.spec.ts",
-              "line": 41,
-              "column": 7
-            },
-            {
-              "title": "Validate invitation in mine list matches preview",
-              "ok": true,
-              "tags": [
-                "auth",
-                "invite",
-                "e2e"
-              ],
-              "tests": [
-                {
-                  "timeout": 240000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-15T11:16:25.882Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-06-15T11:16:27.204Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "2bbfea75b20c9a23fbcb-e4e1e984ef0c5956f98b",
-              "file": "modules/AUTH/tests/11-invite-validate.spec.ts",
-              "line": 117,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "modules\\AUTH\\tests\\15-invite-user.spec.ts",
-      "file": "modules/AUTH/tests/15-invite-user.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Auth Invite User API",
-          "file": "modules/AUTH/tests/15-invite-user.spec.ts",
-          "line": 25,
-          "column": 6,
-          "specs": [
-            {
-              "title": "Reject unknown invite role",
-              "ok": true,
-              "tags": [
-                "auth",
-                "invite"
-              ],
-              "tests": [
-                {
-                  "timeout": 360000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 4,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 6637,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "\n==================================================\n"
-                        },
-                        {
-                          "text": "API TEST SUMMARY — Auth Invite Unknown Role\n"
-                        },
-                        {
-                          "text": "==================================================\n"
-                        },
-                        {
-                          "text": "RESPONSE TIME   : 0 ms\n"
-                        },
-                        {
-                          "text": "TOTAL CHECKS    : 1\n"
-                        },
-                        {
-                          "text": "PASSED          : 1\n"
-                        },
-                        {
-                          "text": "FAILED          : 0\n"
-                        },
-                        {
-                          "text": "FINAL STATUS    : PASS\n"
-                        },
-                        {
-                          "text": "==================================================\n"
-                        },
-                        {
-                          "text": "VALIDATION CHECKS (Auth Invite Unknown Role):\n"
-                        },
-                        {
-                          "text": "  0. Unknown Role Status — PASS\n"
+                          "text": "  10. Hierarchy Validation — PASS\n"
                         },
                         {
                           "text": "==================================================\n\n"
@@ -803,149 +180,53 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-15T11:16:28.033Z",
+                      "startTime": "2026-06-17T12:48:27.363Z",
                       "annotations": [],
                       "attachments": [
                         {
                           "name": "Allure Metadata (metadata)",
                           "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhcmVudFN1aXRlIiwidmFsdWUiOiJBVVRIIn1dfX0="
+                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhcmVudFN1aXRlIiwidmFsdWUiOiJNQVNURVItREFUQSJ9XX19"
                         },
                         {
                           "name": "Allure Metadata (metadata)",
                           "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1aXRlIiwidmFsdWUiOiJtb2R1bGVzXFxBVVRIXFx0ZXN0c1xcMTUtaW52aXRlLXVzZXIuc3BlYy50cyJ9XX19"
+                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1aXRlIiwidmFsdWUiOiJtb2R1bGVzXFxNQVNURVItREFUQVxcdGVzdHNcXGNvbnN1bWVyLW1hc3Rlci5zcGVjLnRzIn1dfX0="
                         },
                         {
                           "name": "Allure Metadata (metadata)",
                           "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1YlN1aXRlIiwidmFsdWUiOiJBdXRoIEludml0ZSBVc2VyIEFQSSDigLogUmVqZWN0IHVua25vd24gaW52aXRlIHJvbGUifV19fQ=="
+                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1YlN1aXRlIiwidmFsdWUiOiJDb25zdW1lciBNYXN0ZXIgQVBJIOKAuiBWYWxpZGF0ZSBDb25zdW1lciBNYXN0ZXIgQVBJIn1dfX0="
                         },
                         {
                           "name": "Allure Metadata (metadata)",
                           "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImVwaWMiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
+                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImVwaWMiLCJ2YWx1ZSI6Ik1BU1RFUi1EQVRBIn1dfX0="
                         },
                         {
                           "name": "Allure Metadata (metadata)",
                           "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImZlYXR1cmUiLCJ2YWx1ZSI6Im1vZHVsZXNcXEFVVEhcXHRlc3RzXFwxNS1pbnZpdGUtdXNlci5zcGVjLnRzIn1dfX0="
+                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImZlYXR1cmUiLCJ2YWx1ZSI6Im1vZHVsZXNcXE1BU1RFUi1EQVRBXFx0ZXN0c1xcY29uc3VtZXItbWFzdGVyLnNwZWMudHMifV19fQ=="
                         },
                         {
                           "name": "Allure Metadata (metadata)",
                           "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN0b3J5IiwidmFsdWUiOiJBdXRoIEludml0ZSBVc2VyIEFQSSDigLogUmVqZWN0IHVua25vd24gaW52aXRlIHJvbGUifV19fQ=="
+                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN0b3J5IiwidmFsdWUiOiJDb25zdW1lciBNYXN0ZXIgQVBJIOKAuiBWYWxpZGF0ZSBDb25zdW1lciBNYXN0ZXIgQVBJIn1dfX0="
                         },
                         {
                           "name": "Allure Metadata (metadata)",
                           "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6Im1vZHVsZSIsInZhbHVlIjoiQVVUSCJ9XX19"
+                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6Im1vZHVsZSIsInZhbHVlIjoiTUFTVEVSLURBVEEifV19fQ=="
                         },
                         {
                           "name": "Allure Metadata (metadata)",
                           "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhY2thZ2UiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
+                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhY2thZ2UiLCJ2YWx1ZSI6Ik1BU1RFUi1EQVRBIn1dfX0="
                         },
                         {
                           "name": "Allure Metadata (metadata)",
                           "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InNwZWMiLCJ2YWx1ZSI6IjE1LWludml0ZS11c2VyIn1dfX0="
-                        }
-                      ]
-                    },
-                    {
-                      "workerIndex": 5,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 435,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "\n==================================================\n"
-                        },
-                        {
-                          "text": "API TEST SUMMARY — Auth Invite Unknown Role\n"
-                        },
-                        {
-                          "text": "==================================================\n"
-                        },
-                        {
-                          "text": "RESPONSE TIME   : 0 ms\n"
-                        },
-                        {
-                          "text": "TOTAL CHECKS    : 1\n"
-                        },
-                        {
-                          "text": "PASSED          : 1\n"
-                        },
-                        {
-                          "text": "FAILED          : 0\n"
-                        },
-                        {
-                          "text": "FINAL STATUS    : PASS\n"
-                        },
-                        {
-                          "text": "==================================================\n"
-                        },
-                        {
-                          "text": "VALIDATION CHECKS (Auth Invite Unknown Role):\n"
-                        },
-                        {
-                          "text": "  0. Unknown Role Status — PASS\n"
-                        },
-                        {
-                          "text": "==================================================\n\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-06-15T11:20:24.133Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhcmVudFN1aXRlIiwidmFsdWUiOiJBVVRIIn1dfX0="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1aXRlIiwidmFsdWUiOiJtb2R1bGVzXFxBVVRIXFx0ZXN0c1xcMTUtaW52aXRlLXVzZXIuc3BlYy50cyJ9XX19"
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1YlN1aXRlIiwidmFsdWUiOiJBdXRoIEludml0ZSBVc2VyIEFQSSDigLogUmVqZWN0IHVua25vd24gaW52aXRlIHJvbGUifV19fQ=="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImVwaWMiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImZlYXR1cmUiLCJ2YWx1ZSI6Im1vZHVsZXNcXEFVVEhcXHRlc3RzXFwxNS1pbnZpdGUtdXNlci5zcGVjLnRzIn1dfX0="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN0b3J5IiwidmFsdWUiOiJBdXRoIEludml0ZSBVc2VyIEFQSSDigLogUmVqZWN0IHVua25vd24gaW52aXRlIHJvbGUifV19fQ=="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6Im1vZHVsZSIsInZhbHVlIjoiQVVUSCJ9XX19"
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhY2thZ2UiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InNwZWMiLCJ2YWx1ZSI6IjE1LWludml0ZS11c2VyIn1dfX0="
+                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InNwZWMiLCJ2YWx1ZSI6ImNvbnN1bWVyLW1hc3RlciJ9XX19"
                         }
                       ]
                     }
@@ -953,344 +234,9 @@
                   "status": "expected"
                 }
               ],
-              "id": "81036bb316a22117f74c-21e98dac88b2c1f215e7",
-              "file": "modules/AUTH/tests/15-invite-user.spec.ts",
-              "line": 31,
-              "column": 7
-            },
-            {
-              "title": "Validate invite user, list, and cleanup",
-              "ok": false,
-              "tags": [
-                "smoke",
-                "auth",
-                "invite"
-              ],
-              "tests": [
-                {
-                  "timeout": 360000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 4,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 228279,
-                      "error": {
-                        "message": "Error: 2 validation(s) failed:\n  1. Invite Status: Expected status 201 but received 503\nResponse body: {\"success\":false,\"error\":{\"code\":\"INVITE_EMAIL_SEND_FAILED\",\"message\":\"Invitation email could not be delivered\"}}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m201\u001b[39m\nReceived: \u001b[31m503\u001b[39m\n  2. Invite Response Time: Response exceeded 30000ms\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m30000\u001b[39m\nReceived:   \u001b[31m36755\u001b[39m",
-                        "stack": "Error: 2 validation(s) failed:\n  1. Invite Status: Expected status 201 but received 503\nResponse body: {\"success\":false,\"error\":{\"code\":\"INVITE_EMAIL_SEND_FAILED\",\"message\":\"Invitation email could not be delivered\"}}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m201\u001b[39m\nReceived: \u001b[31m503\u001b[39m\n  2. Invite Response Time: Response exceeded 30000ms\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m30000\u001b[39m\nReceived:   \u001b[31m36755\u001b[39m\n    at ValidationEngine.assertAllPassed (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts:52:11)\n    at ValidationEngine.printSummary (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts:159:10)\n    at ValidationEngine.finalize (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts:41:10)\n    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\15-invite-user.spec.ts:226:20",
-                        "location": {
-                          "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts",
-                          "column": 11,
-                          "line": 52
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mcore\\engine\\validation.engine.ts:52\n\n\u001b[0m \u001b[90m 50 |\u001b[39m       (f\u001b[33m,\u001b[39m i) \u001b[33m=>\u001b[39m \u001b[32m`  ${i + 1}. ${f.name}${f.message ? `: ${f.message}` : \"\"}`\u001b[39m\u001b[33m,\u001b[39m\n \u001b[90m 51 |\u001b[39m     )\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 52 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\n \u001b[90m    |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 53 |\u001b[39m       \u001b[32m`${failed.length} validation(s) failed:\\n${lines.join(\"\\n\")}`\u001b[39m\u001b[33m,\u001b[39m\n \u001b[90m 54 |\u001b[39m     )\u001b[33m;\u001b[39m\n \u001b[90m 55 |\u001b[39m   }\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts",
-                            "column": 11,
-                            "line": 52
-                          },
-                          "message": "Error: 2 validation(s) failed:\n  1. Invite Status: Expected status 201 but received 503\nResponse body: {\"success\":false,\"error\":{\"code\":\"INVITE_EMAIL_SEND_FAILED\",\"message\":\"Invitation email could not be delivered\"}}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m201\u001b[39m\nReceived: \u001b[31m503\u001b[39m\n  2. Invite Response Time: Response exceeded 30000ms\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m30000\u001b[39m\nReceived:   \u001b[31m36755\u001b[39m\n\n\u001b[90m   at \u001b[39mcore\\engine\\validation.engine.ts:52\n\n\u001b[0m \u001b[90m 50 |\u001b[39m       (f\u001b[33m,\u001b[39m i) \u001b[33m=>\u001b[39m \u001b[32m`  ${i + 1}. ${f.name}${f.message ? `: ${f.message}` : \"\"}`\u001b[39m\u001b[33m,\u001b[39m\n \u001b[90m 51 |\u001b[39m     )\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 52 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\n \u001b[90m    |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 53 |\u001b[39m       \u001b[32m`${failed.length} validation(s) failed:\\n${lines.join(\"\\n\")}`\u001b[39m\u001b[33m,\u001b[39m\n \u001b[90m 54 |\u001b[39m     )\u001b[33m;\u001b[39m\n \u001b[90m 55 |\u001b[39m   }\u001b[0m\n\u001b[2m    at ValidationEngine.assertAllPassed (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts:52:11)\u001b[22m\n\u001b[2m    at ValidationEngine.printSummary (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts:159:10)\u001b[22m\n\u001b[2m    at ValidationEngine.finalize (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts:41:10)\u001b[22m\n\u001b[2m    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\15-invite-user.spec.ts:226:20\u001b[22m"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "\n==================================\nAPI : Auth Invite User API\nDNS : 23.14 ms\nConnection : 19.78 ms\nServer Processing : 36612.08 ms\nDownload : 100 ms\nTotal : 36755 ms\n===================================\n\n"
-                        },
-                        {
-                          "text": "\n==================================================\n"
-                        },
-                        {
-                          "text": "API TEST SUMMARY — Auth Invite User API\n"
-                        },
-                        {
-                          "text": "==================================================\n"
-                        },
-                        {
-                          "text": "RESPONSE TIME   : 36755 ms\n"
-                        },
-                        {
-                          "text": "TOTAL CHECKS    : 5\n"
-                        },
-                        {
-                          "text": "PASSED          : 3\n"
-                        },
-                        {
-                          "text": "FAILED          : 2\n"
-                        },
-                        {
-                          "text": "FINAL STATUS    : FAIL\n"
-                        },
-                        {
-                          "text": "==================================================\n"
-                        },
-                        {
-                          "text": "FAILED VALIDATIONS:\n"
-                        },
-                        {
-                          "text": "  1. Invite Status\n"
-                        },
-                        {
-                          "text": "     Reason: Expected status 201 but received 503\nResponse body: {\"success\":false,\"error\":{\"code\":\"INVITE_EMAIL_SEND_FAILED\",\"message\":\"Invitation email could not be delivered\"}}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m201\u001b[39m\nReceived: \u001b[31m503\u001b[39m\n"
-                        },
-                        {
-                          "text": "  2. Invite Response Time\n"
-                        },
-                        {
-                          "text": "     Reason: Response exceeded 30000ms\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: < \u001b[32m30000\u001b[39m\nReceived:   \u001b[31m36755\u001b[39m\n"
-                        },
-                        {
-                          "text": "==================================================\n"
-                        },
-                        {
-                          "text": "VALIDATION CHECKS (Auth Invite User API):\n"
-                        },
-                        {
-                          "text": "  0. Invite Request Schema — PASS\n"
-                        },
-                        {
-                          "text": "  1. Invite Status — FAIL\n"
-                        },
-                        {
-                          "text": "  2. Invite Content Type — PASS\n"
-                        },
-                        {
-                          "text": "  3. Invite Response Time — FAIL\n"
-                        },
-                        {
-                          "text": "  4. Invite Sensitive Data — PASS\n"
-                        },
-                        {
-                          "text": "==================================================\n\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-15T11:16:34.736Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhcmVudFN1aXRlIiwidmFsdWUiOiJBVVRIIn1dfX0="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1aXRlIiwidmFsdWUiOiJtb2R1bGVzXFxBVVRIXFx0ZXN0c1xcMTUtaW52aXRlLXVzZXIuc3BlYy50cyJ9XX19"
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1YlN1aXRlIiwidmFsdWUiOiJBdXRoIEludml0ZSBVc2VyIEFQSSDigLogVmFsaWRhdGUgaW52aXRlIHVzZXIsIGxpc3QsIGFuZCBjbGVhbnVwIn1dfX0="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImVwaWMiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImZlYXR1cmUiLCJ2YWx1ZSI6Im1vZHVsZXNcXEFVVEhcXHRlc3RzXFwxNS1pbnZpdGUtdXNlci5zcGVjLnRzIn1dfX0="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN0b3J5IiwidmFsdWUiOiJBdXRoIEludml0ZSBVc2VyIEFQSSDigLogVmFsaWRhdGUgaW52aXRlIHVzZXIsIGxpc3QsIGFuZCBjbGVhbnVwIn1dfX0="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6Im1vZHVsZSIsInZhbHVlIjoiQVVUSCJ9XX19"
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhY2thZ2UiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InNwZWMiLCJ2YWx1ZSI6IjE1LWludml0ZS11c2VyIn1dfX0="
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\test-results\\modules-AUTH-tests-15-invi-b1834-nvite-user-list-and-cleanup\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts",
-                        "column": 11,
-                        "line": 52
-                      }
-                    },
-                    {
-                      "workerIndex": 5,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 210332,
-                      "error": {
-                        "message": "Error: 1 validation(s) failed:\n  1. Invite Status: Expected status 201 but received 503\nResponse body: {\"success\":false,\"error\":{\"code\":\"INVITE_EMAIL_SEND_FAILED\",\"message\":\"Invitation email could not be delivered\"}}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m201\u001b[39m\nReceived: \u001b[31m503\u001b[39m",
-                        "stack": "Error: 1 validation(s) failed:\n  1. Invite Status: Expected status 201 but received 503\nResponse body: {\"success\":false,\"error\":{\"code\":\"INVITE_EMAIL_SEND_FAILED\",\"message\":\"Invitation email could not be delivered\"}}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m201\u001b[39m\nReceived: \u001b[31m503\u001b[39m\n    at ValidationEngine.assertAllPassed (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts:52:11)\n    at ValidationEngine.printSummary (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts:159:10)\n    at ValidationEngine.finalize (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts:41:10)\n    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\15-invite-user.spec.ts:226:20",
-                        "location": {
-                          "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts",
-                          "column": 11,
-                          "line": 52
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mcore\\engine\\validation.engine.ts:52\n\n\u001b[0m \u001b[90m 50 |\u001b[39m       (f\u001b[33m,\u001b[39m i) \u001b[33m=>\u001b[39m \u001b[32m`  ${i + 1}. ${f.name}${f.message ? `: ${f.message}` : \"\"}`\u001b[39m\u001b[33m,\u001b[39m\n \u001b[90m 51 |\u001b[39m     )\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 52 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\n \u001b[90m    |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 53 |\u001b[39m       \u001b[32m`${failed.length} validation(s) failed:\\n${lines.join(\"\\n\")}`\u001b[39m\u001b[33m,\u001b[39m\n \u001b[90m 54 |\u001b[39m     )\u001b[33m;\u001b[39m\n \u001b[90m 55 |\u001b[39m   }\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts",
-                            "column": 11,
-                            "line": 52
-                          },
-                          "message": "Error: 1 validation(s) failed:\n  1. Invite Status: Expected status 201 but received 503\nResponse body: {\"success\":false,\"error\":{\"code\":\"INVITE_EMAIL_SEND_FAILED\",\"message\":\"Invitation email could not be delivered\"}}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m201\u001b[39m\nReceived: \u001b[31m503\u001b[39m\n\n\u001b[90m   at \u001b[39mcore\\engine\\validation.engine.ts:52\n\n\u001b[0m \u001b[90m 50 |\u001b[39m       (f\u001b[33m,\u001b[39m i) \u001b[33m=>\u001b[39m \u001b[32m`  ${i + 1}. ${f.name}${f.message ? `: ${f.message}` : \"\"}`\u001b[39m\u001b[33m,\u001b[39m\n \u001b[90m 51 |\u001b[39m     )\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 52 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\n \u001b[90m    |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 53 |\u001b[39m       \u001b[32m`${failed.length} validation(s) failed:\\n${lines.join(\"\\n\")}`\u001b[39m\u001b[33m,\u001b[39m\n \u001b[90m 54 |\u001b[39m     )\u001b[33m;\u001b[39m\n \u001b[90m 55 |\u001b[39m   }\u001b[0m\n\u001b[2m    at ValidationEngine.assertAllPassed (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts:52:11)\u001b[22m\n\u001b[2m    at ValidationEngine.printSummary (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts:159:10)\u001b[22m\n\u001b[2m    at ValidationEngine.finalize (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts:41:10)\u001b[22m\n\u001b[2m    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\tests\\15-invite-user.spec.ts:226:20\u001b[22m"
-                        }
-                      ],
-                      "stdout": [
-                        {
-                          "text": "\n==================================\nAPI : Auth Invite User API\nDNS : 22.53 ms\nConnection : 20.64 ms\nServer Processing : 13670.83 ms\nDownload : 100 ms\nTotal : 13814 ms\n===================================\n\n"
-                        },
-                        {
-                          "text": "\n==================================================\n"
-                        },
-                        {
-                          "text": "API TEST SUMMARY — Auth Invite User API\n"
-                        },
-                        {
-                          "text": "==================================================\n"
-                        },
-                        {
-                          "text": "RESPONSE TIME   : 13814 ms\n"
-                        },
-                        {
-                          "text": "TOTAL CHECKS    : 5\n"
-                        },
-                        {
-                          "text": "PASSED          : 4\n"
-                        },
-                        {
-                          "text": "FAILED          : 1\n"
-                        },
-                        {
-                          "text": "FINAL STATUS    : FAIL\n"
-                        },
-                        {
-                          "text": "==================================================\n"
-                        },
-                        {
-                          "text": "FAILED VALIDATIONS:\n"
-                        },
-                        {
-                          "text": "  1. Invite Status\n"
-                        },
-                        {
-                          "text": "     Reason: Expected status 201 but received 503\nResponse body: {\"success\":false,\"error\":{\"code\":\"INVITE_EMAIL_SEND_FAILED\",\"message\":\"Invitation email could not be delivered\"}}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m201\u001b[39m\nReceived: \u001b[31m503\u001b[39m\n"
-                        },
-                        {
-                          "text": "==================================================\n"
-                        },
-                        {
-                          "text": "VALIDATION CHECKS (Auth Invite User API):\n"
-                        },
-                        {
-                          "text": "  0. Invite Request Schema — PASS\n"
-                        },
-                        {
-                          "text": "  1. Invite Status — FAIL\n"
-                        },
-                        {
-                          "text": "  2. Invite Content Type — PASS\n"
-                        },
-                        {
-                          "text": "  3. Invite Response Time — PASS\n"
-                        },
-                        {
-                          "text": "  4. Invite Sensitive Data — PASS\n"
-                        },
-                        {
-                          "text": "==================================================\n\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-06-15T11:20:24.652Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhcmVudFN1aXRlIiwidmFsdWUiOiJBVVRIIn1dfX0="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1aXRlIiwidmFsdWUiOiJtb2R1bGVzXFxBVVRIXFx0ZXN0c1xcMTUtaW52aXRlLXVzZXIuc3BlYy50cyJ9XX19"
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1YlN1aXRlIiwidmFsdWUiOiJBdXRoIEludml0ZSBVc2VyIEFQSSDigLogVmFsaWRhdGUgaW52aXRlIHVzZXIsIGxpc3QsIGFuZCBjbGVhbnVwIn1dfX0="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImVwaWMiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImZlYXR1cmUiLCJ2YWx1ZSI6Im1vZHVsZXNcXEFVVEhcXHRlc3RzXFwxNS1pbnZpdGUtdXNlci5zcGVjLnRzIn1dfX0="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN0b3J5IiwidmFsdWUiOiJBdXRoIEludml0ZSBVc2VyIEFQSSDigLogVmFsaWRhdGUgaW52aXRlIHVzZXIsIGxpc3QsIGFuZCBjbGVhbnVwIn1dfX0="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6Im1vZHVsZSIsInZhbHVlIjoiQVVUSCJ9XX19"
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhY2thZ2UiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
-                        },
-                        {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InNwZWMiLCJ2YWx1ZSI6IjE1LWludml0ZS11c2VyIn1dfX0="
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\test-results\\modules-AUTH-tests-15-invi-b1834-nvite-user-list-and-cleanup-retry1\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\validation.engine.ts",
-                        "column": 11,
-                        "line": 52
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "81036bb316a22117f74c-9bfb7ba66815073ed617",
-              "file": "modules/AUTH/tests/15-invite-user.spec.ts",
-              "line": 67,
+              "id": "6de83312b24651bce992-101e22ce20eab1153610",
+              "file": "modules/MASTER-DATA/tests/consumer-master.spec.ts",
+              "line": 10,
               "column": 7
             }
           ]
@@ -1298,256 +244,63 @@
       ]
     },
     {
-      "title": "modules\\AUTH\\tests\\90-invite-accept-validate.spec.ts",
-      "file": "modules/AUTH/tests/90-invite-accept-validate.spec.ts",
+      "title": "modules\\MASTER-DATA\\tests\\dtr-master.spec.ts",
+      "file": "modules/MASTER-DATA/tests/dtr-master.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [],
       "suites": [
         {
-          "title": "Auth Invite Accept Validate Flow",
-          "file": "modules/AUTH/tests/90-invite-accept-validate.spec.ts",
-          "line": 43,
+          "title": "DTR Master API",
+          "file": "modules/MASTER-DATA/tests/dtr-master.spec.ts",
+          "line": 9,
           "column": 6,
           "specs": [
             {
-              "title": "Accept invitation and validate full response",
-              "ok": false,
-              "tags": [
-                "auth",
-                "invite",
-                "e2e"
-              ],
-              "tests": [
-                {
-                  "timeout": 360000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 6,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 1,
-                      "error": {
-                        "message": "Error: Add GMAIL_IMAP_USER + GMAIL_IMAP_APP_PASSWORD to .env for auto-capture, or set INVITE_ACCEPT_TOKEN from the invite email link",
-                        "stack": "Error: Add GMAIL_IMAP_USER + GMAIL_IMAP_APP_PASSWORD to .env for auto-capture, or set INVITE_ACCEPT_TOKEN from the invite email link\n    at sendInviteAndCaptureToken (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\utils\\invite-provision.helper.ts:440:11)\n    at provisionFreshPendingInvite (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\utils\\invite-provision.helper.ts:697:31)",
-                        "location": {
-                          "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\utils\\invite-provision.helper.ts",
-                          "column": 11,
-                          "line": 440
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mmodules\\AUTH\\utils\\invite-provision.helper.ts:440\n\n\u001b[0m \u001b[90m 438 |\u001b[39m )\u001b[33m:\u001b[39m \u001b[33mPromise\u001b[39m\u001b[33m<\u001b[39m\u001b[33mProvisionedPendingInvite\u001b[39m\u001b[33m>\u001b[39m {\n \u001b[90m 439 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39misGmailInviteCaptureConfigured()) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 440 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(describeMissingInviteTokenSetup())\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 441 |\u001b[39m   }\n \u001b[90m 442 |\u001b[39m\n \u001b[90m 443 |\u001b[39m   \u001b[36mconst\u001b[39m api \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mInviteApi\u001b[39m(authenticatedApi)\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\utils\\invite-provision.helper.ts",
-                            "column": 11,
-                            "line": 440
-                          },
-                          "message": "Error: Add GMAIL_IMAP_USER + GMAIL_IMAP_APP_PASSWORD to .env for auto-capture, or set INVITE_ACCEPT_TOKEN from the invite email link\n\n\u001b[90m   at \u001b[39mmodules\\AUTH\\utils\\invite-provision.helper.ts:440\n\n\u001b[0m \u001b[90m 438 |\u001b[39m )\u001b[33m:\u001b[39m \u001b[33mPromise\u001b[39m\u001b[33m<\u001b[39m\u001b[33mProvisionedPendingInvite\u001b[39m\u001b[33m>\u001b[39m {\n \u001b[90m 439 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39misGmailInviteCaptureConfigured()) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 440 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(describeMissingInviteTokenSetup())\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 441 |\u001b[39m   }\n \u001b[90m 442 |\u001b[39m\n \u001b[90m 443 |\u001b[39m   \u001b[36mconst\u001b[39m api \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mInviteApi\u001b[39m(authenticatedApi)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at sendInviteAndCaptureToken (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\utils\\invite-provision.helper.ts:440:11)\u001b[22m\n\u001b[2m    at provisionFreshPendingInvite (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\utils\\invite-provision.helper.ts:697:31)\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-15T11:23:55.868Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\test-results\\modules-AUTH-tests-90-invi-b1ac2--and-validate-full-response\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\utils\\invite-provision.helper.ts",
-                        "column": 11,
-                        "line": 440
-                      }
-                    },
-                    {
-                      "workerIndex": 7,
-                      "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 0,
-                      "error": {
-                        "message": "Error: Add GMAIL_IMAP_USER + GMAIL_IMAP_APP_PASSWORD to .env for auto-capture, or set INVITE_ACCEPT_TOKEN from the invite email link",
-                        "stack": "Error: Add GMAIL_IMAP_USER + GMAIL_IMAP_APP_PASSWORD to .env for auto-capture, or set INVITE_ACCEPT_TOKEN from the invite email link\n    at sendInviteAndCaptureToken (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\utils\\invite-provision.helper.ts:440:11)\n    at provisionFreshPendingInvite (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\utils\\invite-provision.helper.ts:697:31)",
-                        "location": {
-                          "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\utils\\invite-provision.helper.ts",
-                          "column": 11,
-                          "line": 440
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mmodules\\AUTH\\utils\\invite-provision.helper.ts:440\n\n\u001b[0m \u001b[90m 438 |\u001b[39m )\u001b[33m:\u001b[39m \u001b[33mPromise\u001b[39m\u001b[33m<\u001b[39m\u001b[33mProvisionedPendingInvite\u001b[39m\u001b[33m>\u001b[39m {\n \u001b[90m 439 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39misGmailInviteCaptureConfigured()) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 440 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(describeMissingInviteTokenSetup())\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 441 |\u001b[39m   }\n \u001b[90m 442 |\u001b[39m\n \u001b[90m 443 |\u001b[39m   \u001b[36mconst\u001b[39m api \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mInviteApi\u001b[39m(authenticatedApi)\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\utils\\invite-provision.helper.ts",
-                            "column": 11,
-                            "line": 440
-                          },
-                          "message": "Error: Add GMAIL_IMAP_USER + GMAIL_IMAP_APP_PASSWORD to .env for auto-capture, or set INVITE_ACCEPT_TOKEN from the invite email link\n\n\u001b[90m   at \u001b[39mmodules\\AUTH\\utils\\invite-provision.helper.ts:440\n\n\u001b[0m \u001b[90m 438 |\u001b[39m )\u001b[33m:\u001b[39m \u001b[33mPromise\u001b[39m\u001b[33m<\u001b[39m\u001b[33mProvisionedPendingInvite\u001b[39m\u001b[33m>\u001b[39m {\n \u001b[90m 439 |\u001b[39m   \u001b[36mif\u001b[39m (\u001b[33m!\u001b[39misGmailInviteCaptureConfigured()) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 440 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(describeMissingInviteTokenSetup())\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 441 |\u001b[39m   }\n \u001b[90m 442 |\u001b[39m\n \u001b[90m 443 |\u001b[39m   \u001b[36mconst\u001b[39m api \u001b[33m=\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mInviteApi\u001b[39m(authenticatedApi)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[2m    at sendInviteAndCaptureToken (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\utils\\invite-provision.helper.ts:440:11)\u001b[22m\n\u001b[2m    at provisionFreshPendingInvite (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\utils\\invite-provision.helper.ts:697:31)\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-06-15T11:24:00.298Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\test-results\\modules-AUTH-tests-90-invi-b1ac2--and-validate-full-response-retry1\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\modules\\AUTH\\utils\\invite-provision.helper.ts",
-                        "column": 11,
-                        "line": 440
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "453bdd70f252ad7d1391-6a05879e57a9945b9fec",
-              "file": "modules/AUTH/tests/90-invite-accept-validate.spec.ts",
-              "line": 53,
-              "column": 7
-            },
-            {
-              "title": "Verify accepted invitation appears in mine list by ID",
+              "title": "Validate DTR Master API",
               "ok": true,
               "tags": [
-                "auth",
-                "invite",
-                "e2e"
+                "smoke",
+                "dtr"
               ],
               "tests": [
                 {
-                  "timeout": 360000,
+                  "timeout": 240000,
                   "annotations": [],
                   "expectedStatus": "passed",
                   "projectId": "",
                   "projectName": "",
                   "results": [
                     {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-15T11:23:59.489Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-06-15T11:24:01.652Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "453bdd70f252ad7d1391-a063b3cc691d1d707a5a",
-              "file": "modules/AUTH/tests/90-invite-accept-validate.spec.ts",
-              "line": 176,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "modules\\AUTH\\tests\\91-invite-e2e.spec.ts",
-      "file": "modules/AUTH/tests/91-invite-e2e.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Auth Invite E2E Flow",
-          "file": "modules/AUTH/tests/91-invite-e2e.spec.ts",
-          "line": 77,
-          "column": 6,
-          "specs": [
-            {
-              "title": "Step 1 — Admin sends invitation email",
-              "ok": false,
-              "tags": [
-                "auth",
-                "invite",
-                "e2e"
-              ],
-              "tests": [
-                {
-                  "timeout": 360000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": 8,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 163123,
-                      "error": {
-                        "message": "Error: apiRequestContext.post: read ECONNRESET\nCall log:\n\u001b[2m  - → POST https://api.bestinfra.app/indore/auth/invite\u001b[22m\n\u001b[2m    - user-agent: Playwright/1.60.0 (x64; windows 10.0) node/20.20\u001b[22m\n\u001b[2m    - accept: application/json\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\u001b[2m    - Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic3VwZXIgYWRtaW4iLCJyaWQiOjEyLCJ0eXAiOiJhY2Nlc3MiLCJqdGkiOiJhNjY2OTlhNi1hNjM5LTRjZWEtYTM2NC0wZjkwMzdjNjIyNGQiLCJzaWQiOiI1ZmZlNDVkYy0wYjZlLTRhZjktOWUwMC01NjM5ODI5N2U1NTYiLCJpYXQiOjE3ODE1MjIxNzcsImV4cCI6MTc4MTUyMzA3NywiYXVkIjoibWRtcy1hY2Nlc3MiLCJpc3MiOiJtZG1zLWFwaSIsInN1YiI6IjNkOGVkMTFjLTdiZGYtNDY3Mi1iNjBmLWE1NjEyMzE5MmJlYSJ9.4ScZbEKW6uCn7mmpAGUzmkZOwV_mLmNZ4ju0LyyhR7o\u001b[22m\n\u001b[2m    - x-csrf-token: 16b3c5c1a3a87e86317fef38b6226b407e067eb0c0365c056970f89c31210877.34c569fd5f5729eef5044821a2a70b79f52a98cea273bbef7f814085206ca121\u001b[22m\n\u001b[2m    - Cookie: csrf_token=16b3c5c1a3a87e86317fef38b6226b407e067eb0c0365c056970f89c31210877.34c569fd5f5729eef5044821a2a70b79f52a98cea273bbef7f814085206ca121; csrf_token=16b3c5c1a3a87e86317fef38b6226b407e067eb0c0365c056970f89c31210877.34c569fd5f5729eef5044821a2a70b79f52a98cea273bbef7f814085206ca121\u001b[22m\n\u001b[2m    - content-type: application/json\u001b[22m\n\u001b[2m    - content-length: 65\u001b[22m\n",
-                        "stack": "Error: apiRequestContext.post: read ECONNRESET\nCall log:\n\u001b[2m  - → POST https://api.bestinfra.app/indore/auth/invite\u001b[22m\n\u001b[2m    - user-agent: Playwright/1.60.0 (x64; windows 10.0) node/20.20\u001b[22m\n\u001b[2m    - accept: application/json\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\u001b[2m    - Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic3VwZXIgYWRtaW4iLCJyaWQiOjEyLCJ0eXAiOiJhY2Nlc3MiLCJqdGkiOiJhNjY2OTlhNi1hNjM5LTRjZWEtYTM2NC0wZjkwMzdjNjIyNGQiLCJzaWQiOiI1ZmZlNDVkYy0wYjZlLTRhZjktOWUwMC01NjM5ODI5N2U1NTYiLCJpYXQiOjE3ODE1MjIxNzcsImV4cCI6MTc4MTUyMzA3NywiYXVkIjoibWRtcy1hY2Nlc3MiLCJpc3MiOiJtZG1zLWFwaSIsInN1YiI6IjNkOGVkMTFjLTdiZGYtNDY3Mi1iNjBmLWE1NjEyMzE5MmJlYSJ9.4ScZbEKW6uCn7mmpAGUzmkZOwV_mLmNZ4ju0LyyhR7o\u001b[22m\n\u001b[2m    - x-csrf-token: 16b3c5c1a3a87e86317fef38b6226b407e067eb0c0365c056970f89c31210877.34c569fd5f5729eef5044821a2a70b79f52a98cea273bbef7f814085206ca121\u001b[22m\n\u001b[2m    - Cookie: csrf_token=16b3c5c1a3a87e86317fef38b6226b407e067eb0c0365c056970f89c31210877.34c569fd5f5729eef5044821a2a70b79f52a98cea273bbef7f814085206ca121; csrf_token=16b3c5c1a3a87e86317fef38b6226b407e067eb0c0365c056970f89c31210877.34c569fd5f5729eef5044821a2a70b79f52a98cea273bbef7f814085206ca121\u001b[22m\n\u001b[2m    - content-type: application/json\u001b[22m\n\u001b[2m    - content-length: 65\u001b[22m\n\n    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\utils\\authenticated.request.ts:93:24\n    at executeWithToken (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\utils\\authenticated.request.ts:101:4)\n    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\utils\\authenticated.request.ts:124:26\n    at Function.execute (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\retry.engine.ts:16:24)",
-                        "location": {
-                          "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\utils\\authenticated.request.ts",
-                          "column": 24,
-                          "line": 93
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39mcore\\utils\\authenticated.request.ts:93\n\n\u001b[0m \u001b[90m 91 |\u001b[39m         \u001b[36mreturn\u001b[39m request\u001b[33m.\u001b[39m\u001b[36mget\u001b[39m(url\u001b[33m,\u001b[39m requestOptions)\u001b[33m;\u001b[39m\n \u001b[90m 92 |\u001b[39m       \u001b[36mcase\u001b[39m \u001b[32m\"POST\"\u001b[39m\u001b[33m:\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 93 |\u001b[39m         \u001b[36mreturn\u001b[39m request\u001b[33m.\u001b[39mpost(url\u001b[33m,\u001b[39m requestOptions)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 94 |\u001b[39m       \u001b[36mcase\u001b[39m \u001b[32m\"PUT\"\u001b[39m\u001b[33m:\u001b[39m\n \u001b[90m 95 |\u001b[39m         \u001b[36mreturn\u001b[39m request\u001b[33m.\u001b[39mput(url\u001b[33m,\u001b[39m requestOptions)\u001b[33m;\u001b[39m\n \u001b[90m 96 |\u001b[39m       \u001b[36mcase\u001b[39m \u001b[32m\"PATCH\"\u001b[39m\u001b[33m:\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\utils\\authenticated.request.ts",
-                            "column": 24,
-                            "line": 93
-                          },
-                          "message": "Error: apiRequestContext.post: read ECONNRESET\nCall log:\n\u001b[2m  - → POST https://api.bestinfra.app/indore/auth/invite\u001b[22m\n\u001b[2m    - user-agent: Playwright/1.60.0 (x64; windows 10.0) node/20.20\u001b[22m\n\u001b[2m    - accept: application/json\u001b[22m\n\u001b[2m    - accept-encoding: gzip,deflate,br\u001b[22m\n\u001b[2m    - Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic3VwZXIgYWRtaW4iLCJyaWQiOjEyLCJ0eXAiOiJhY2Nlc3MiLCJqdGkiOiJhNjY2OTlhNi1hNjM5LTRjZWEtYTM2NC0wZjkwMzdjNjIyNGQiLCJzaWQiOiI1ZmZlNDVkYy0wYjZlLTRhZjktOWUwMC01NjM5ODI5N2U1NTYiLCJpYXQiOjE3ODE1MjIxNzcsImV4cCI6MTc4MTUyMzA3NywiYXVkIjoibWRtcy1hY2Nlc3MiLCJpc3MiOiJtZG1zLWFwaSIsInN1YiI6IjNkOGVkMTFjLTdiZGYtNDY3Mi1iNjBmLWE1NjEyMzE5MmJlYSJ9.4ScZbEKW6uCn7mmpAGUzmkZOwV_mLmNZ4ju0LyyhR7o\u001b[22m\n\u001b[2m    - x-csrf-token: 16b3c5c1a3a87e86317fef38b6226b407e067eb0c0365c056970f89c31210877.34c569fd5f5729eef5044821a2a70b79f52a98cea273bbef7f814085206ca121\u001b[22m\n\u001b[2m    - Cookie: csrf_token=16b3c5c1a3a87e86317fef38b6226b407e067eb0c0365c056970f89c31210877.34c569fd5f5729eef5044821a2a70b79f52a98cea273bbef7f814085206ca121; csrf_token=16b3c5c1a3a87e86317fef38b6226b407e067eb0c0365c056970f89c31210877.34c569fd5f5729eef5044821a2a70b79f52a98cea273bbef7f814085206ca121\u001b[22m\n\u001b[2m    - content-type: application/json\u001b[22m\n\u001b[2m    - content-length: 65\u001b[22m\n\n\n\u001b[90m   at \u001b[39mcore\\utils\\authenticated.request.ts:93\n\n\u001b[0m \u001b[90m 91 |\u001b[39m         \u001b[36mreturn\u001b[39m request\u001b[33m.\u001b[39m\u001b[36mget\u001b[39m(url\u001b[33m,\u001b[39m requestOptions)\u001b[33m;\u001b[39m\n \u001b[90m 92 |\u001b[39m       \u001b[36mcase\u001b[39m \u001b[32m\"POST\"\u001b[39m\u001b[33m:\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 93 |\u001b[39m         \u001b[36mreturn\u001b[39m request\u001b[33m.\u001b[39mpost(url\u001b[33m,\u001b[39m requestOptions)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                        \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 94 |\u001b[39m       \u001b[36mcase\u001b[39m \u001b[32m\"PUT\"\u001b[39m\u001b[33m:\u001b[39m\n \u001b[90m 95 |\u001b[39m         \u001b[36mreturn\u001b[39m request\u001b[33m.\u001b[39mput(url\u001b[33m,\u001b[39m requestOptions)\u001b[33m;\u001b[39m\n \u001b[90m 96 |\u001b[39m       \u001b[36mcase\u001b[39m \u001b[32m\"PATCH\"\u001b[39m\u001b[33m:\u001b[39m\u001b[0m\n\u001b[2m    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\utils\\authenticated.request.ts:93:24\u001b[22m\n\u001b[2m    at executeWithToken (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\utils\\authenticated.request.ts:101:4)\u001b[22m\n\u001b[2m    at C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\utils\\authenticated.request.ts:124:26\u001b[22m\n\u001b[2m    at Function.execute (C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\engine\\retry.engine.ts:16:24)\u001b[22m"
-                        }
-                      ],
+                      "status": "passed",
+                      "duration": 3903,
+                      "errors": [],
                       "stdout": [
+                        {
+                          "text": "\n==================================\nAPI : DTR Master API\nDNS : 19.43 ms\nConnection : 25.39 ms\nServer Processing : 3135.1800000000003 ms\nDownload : 100 ms\nTotal : 3280 ms\n===================================\n\n"
+                        },
+                        {
+                          "text": "Duplicate DTR codes on page (multiple meters per DTR): \u001b[33m1\u001b[39m records [ \u001b[32m'11IW10'\u001b[39m ]\n"
+                        },
                         {
                           "text": "\n==================================================\n"
                         },
                         {
-                          "text": "API TEST SUMMARY — Auth Invite E2E — Admin Send\n"
+                          "text": "API TEST SUMMARY — DTR Master API\n"
                         },
                         {
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "RESPONSE TIME   : 0 ms\n"
+                          "text": "RESPONSE TIME   : 3280 ms\n"
                         },
                         {
-                          "text": "TOTAL CHECKS    : 0\n"
+                          "text": "TOTAL CHECKS    : 12\n"
                         },
                         {
-                          "text": "PASSED          : 0\n"
+                          "text": "PASSED          : 12\n"
                         },
                         {
                           "text": "FAILED          : 0\n"
@@ -1559,7 +312,43 @@
                           "text": "==================================================\n"
                         },
                         {
-                          "text": "VALIDATION CHECKS (Auth Invite E2E — Admin Send):\n"
+                          "text": "VALIDATION CHECKS (DTR Master API):\n"
+                        },
+                        {
+                          "text": "  0. Status Validation — PASS\n"
+                        },
+                        {
+                          "text": "  1. Content Validation — PASS\n"
+                        },
+                        {
+                          "text": "  2. Response Time — PASS\n"
+                        },
+                        {
+                          "text": "  3. Security Validation — PASS\n"
+                        },
+                        {
+                          "text": "  4. Response — PASS\n"
+                        },
+                        {
+                          "text": "  5. Items — PASS\n"
+                        },
+                        {
+                          "text": "  6. Fields — PASS\n"
+                        },
+                        {
+                          "text": "  7. Pagination — PASS\n"
+                        },
+                        {
+                          "text": "  8. Duplicate DTR Names — PASS\n"
+                        },
+                        {
+                          "text": "  9. Unique Meter Serials — PASS\n"
+                        },
+                        {
+                          "text": "  10. Ascending Order — PASS\n"
+                        },
+                        {
+                          "text": "  11. Coordinates Validation — PASS\n"
                         },
                         {
                           "text": "==================================================\n\n"
@@ -1567,725 +356,271 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-15T11:24:02.469Z",
+                      "startTime": "2026-06-17T12:48:36.412Z",
                       "annotations": [],
-                      "attachments": [
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "26370184ab6d01fbcb63-ca630ce43146016e39b3",
+              "file": "modules/MASTER-DATA/tests/dtr-master.spec.ts",
+              "line": 10,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "modules\\MASTER-DATA\\tests\\feeder-master.spec.ts",
+      "file": "modules/MASTER-DATA/tests/feeder-master.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Feeder Master API",
+          "file": "modules/MASTER-DATA/tests/feeder-master.spec.ts",
+          "line": 11,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Validate Feeder Master API",
+              "ok": true,
+              "tags": [
+                "smoke",
+                "feeder"
+              ],
+              "tests": [
+                {
+                  "timeout": 240000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1313,
+                      "errors": [],
+                      "stdout": [
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhcmVudFN1aXRlIiwidmFsdWUiOiJBVVRIIn1dfX0="
+                          "text": "\n==================================\nAPI : Feeder Master API\nDNS : 3.95 ms\nConnection : 23.23 ms\nServer Processing : 792.8199999999999 ms\nDownload : 100 ms\nTotal : 920 ms\n===================================\n\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1aXRlIiwidmFsdWUiOiJtb2R1bGVzXFxBVVRIXFx0ZXN0c1xcOTEtaW52aXRlLWUyZS5zcGVjLnRzIn1dfX0="
+                          "text": "\n==================================================\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1YlN1aXRlIiwidmFsdWUiOiJBdXRoIEludml0ZSBFMkUgRmxvdyDigLogU3RlcCAxIOKAlCBBZG1pbiBzZW5kcyBpbnZpdGF0aW9uIGVtYWlsIn1dfX0="
+                          "text": "API TEST SUMMARY — Feeder Master API\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImVwaWMiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
+                          "text": "==================================================\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImZlYXR1cmUiLCJ2YWx1ZSI6Im1vZHVsZXNcXEFVVEhcXHRlc3RzXFw5MS1pbnZpdGUtZTJlLnNwZWMudHMifV19fQ=="
+                          "text": "RESPONSE TIME   : 920 ms\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN0b3J5IiwidmFsdWUiOiJBdXRoIEludml0ZSBFMkUgRmxvdyDigLogU3RlcCAxIOKAlCBBZG1pbiBzZW5kcyBpbnZpdGF0aW9uIGVtYWlsIn1dfX0="
+                          "text": "TOTAL CHECKS    : 12\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6Im1vZHVsZSIsInZhbHVlIjoiQVVUSCJ9XX19"
+                          "text": "PASSED          : 12\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhY2thZ2UiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
+                          "text": "FAILED          : 0\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InNwZWMiLCJ2YWx1ZSI6IjkxLWludml0ZS1lMmUifV19fQ=="
+                          "text": "FINAL STATUS    : PASS\n"
                         },
                         {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\test-results\\modules-AUTH-tests-91-invi-c04fb-dmin-sends-invitation-email\\error-context.md"
+                          "text": "==================================================\n"
+                        },
+                        {
+                          "text": "VALIDATION CHECKS (Feeder Master API):\n"
+                        },
+                        {
+                          "text": "  0. Status Validation — PASS\n"
+                        },
+                        {
+                          "text": "  1. Content Validation — PASS\n"
+                        },
+                        {
+                          "text": "  2. Response Time — PASS\n"
+                        },
+                        {
+                          "text": "  3. Security Validation — PASS\n"
+                        },
+                        {
+                          "text": "  4. Response — PASS\n"
+                        },
+                        {
+                          "text": "  5. Items — PASS\n"
+                        },
+                        {
+                          "text": "  6. Fields — PASS\n"
+                        },
+                        {
+                          "text": "  7. Pagination — PASS\n"
+                        },
+                        {
+                          "text": "  8. Hierarchy — PASS\n"
+                        },
+                        {
+                          "text": "  9. Counts — PASS\n"
+                        },
+                        {
+                          "text": "  10. Serial Numbers — PASS\n"
+                        },
+                        {
+                          "text": "  11. Consumer DTR Relation — PASS\n"
+                        },
+                        {
+                          "text": "==================================================\n\n"
                         }
                       ],
-                      "errorLocation": {
-                        "file": "C:\\Users\\Best Infra\\AUTOMATION TESTING\\Indoore_backend_testing\\src\\core\\utils\\authenticated.request.ts",
-                        "column": 24,
-                        "line": 93
-                      }
-                    },
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-06-17T12:48:40.408Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "509c0f4ae0778e008614-ee0dc5e0bef763e8a4ac",
+              "file": "modules/MASTER-DATA/tests/feeder-master.spec.ts",
+              "line": 12,
+              "column": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "modules\\MASTER-DATA\\tests\\substation.-master.spec.ts",
+      "file": "modules/MASTER-DATA/tests/substation.-master.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Substation Master API",
+          "file": "modules/MASTER-DATA/tests/substation.-master.spec.ts",
+          "line": 11,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Validate Substation Master API",
+              "ok": true,
+              "tags": [
+                "smoke",
+                "substation"
+              ],
+              "tests": [
+                {
+                  "timeout": 240000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
                     {
-                      "workerIndex": 9,
+                      "workerIndex": 0,
                       "parallelIndex": 0,
-                      "status": "interrupted",
-                      "duration": 97235,
+                      "status": "passed",
+                      "duration": 3971,
                       "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-06-15T11:26:46.601Z",
-                      "annotations": [],
-                      "attachments": [
+                      "stdout": [
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhcmVudFN1aXRlIiwidmFsdWUiOiJBVVRIIn1dfX0="
+                          "text": "\n==================================\nAPI : Substation Master API\nDNS : 0.31 ms\nConnection : 32.54 ms\nServer Processing : 3458.15 ms\nDownload : 100 ms\nTotal : 3591 ms\n===================================\n\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1aXRlIiwidmFsdWUiOiJtb2R1bGVzXFxBVVRIXFx0ZXN0c1xcOTEtaW52aXRlLWUyZS5zcGVjLnRzIn1dfX0="
+                          "text": "\n==================================================\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN1YlN1aXRlIiwidmFsdWUiOiJBdXRoIEludml0ZSBFMkUgRmxvdyDigLogU3RlcCAxIOKAlCBBZG1pbiBzZW5kcyBpbnZpdGF0aW9uIGVtYWlsIn1dfX0="
+                          "text": "API TEST SUMMARY — Substation Master API\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImVwaWMiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
+                          "text": "==================================================\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6ImZlYXR1cmUiLCJ2YWx1ZSI6Im1vZHVsZXNcXEFVVEhcXHRlc3RzXFw5MS1pbnZpdGUtZTJlLnNwZWMudHMifV19fQ=="
+                          "text": "RESPONSE TIME   : 3591 ms\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InN0b3J5IiwidmFsdWUiOiJBdXRoIEludml0ZSBFMkUgRmxvdyDigLogU3RlcCAxIOKAlCBBZG1pbiBzZW5kcyBpbnZpdGF0aW9uIGVtYWlsIn1dfX0="
+                          "text": "TOTAL CHECKS    : 12\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6Im1vZHVsZSIsInZhbHVlIjoiQVVUSCJ9XX19"
+                          "text": "PASSED          : 12\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InBhY2thZ2UiLCJ2YWx1ZSI6IkFVVEgifV19fQ=="
+                          "text": "FAILED          : 0\n"
                         },
                         {
-                          "name": "Allure Metadata (metadata)",
-                          "contentType": "application/vnd.allure.message+json",
-                          "body": "eyJ0eXBlIjoibWV0YWRhdGEiLCJkYXRhIjp7ImxhYmVscyI6W3sibmFtZSI6InNwZWMiLCJ2YWx1ZSI6IjkxLWludml0ZS1lMmUifV19fQ=="
+                          "text": "FINAL STATUS    : PASS\n"
+                        },
+                        {
+                          "text": "==================================================\n"
+                        },
+                        {
+                          "text": "VALIDATION CHECKS (Substation Master API):\n"
+                        },
+                        {
+                          "text": "  0. Status Validation — PASS\n"
+                        },
+                        {
+                          "text": "  1. Content Validation — PASS\n"
+                        },
+                        {
+                          "text": "  2. Response Time — PASS\n"
+                        },
+                        {
+                          "text": "  3. Security Validation — PASS\n"
+                        },
+                        {
+                          "text": "  4. Response — PASS\n"
+                        },
+                        {
+                          "text": "  5. Items — PASS\n"
+                        },
+                        {
+                          "text": "  6. Fields — PASS\n"
+                        },
+                        {
+                          "text": "  7. Pagination — PASS\n"
+                        },
+                        {
+                          "text": "  8. Hierarchy — PASS\n"
+                        },
+                        {
+                          "text": "  9. Counts — PASS\n"
+                        },
+                        {
+                          "text": "  10. Serial Numbers — PASS\n"
+                        },
+                        {
+                          "text": "  11. Consumer DTR Relation — PASS\n"
+                        },
+                        {
+                          "text": "==================================================\n\n"
                         }
-                      ]
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "704375262bf5bd0b7a70-fe16d8387bd656a25cc0",
-              "file": "modules/AUTH/tests/91-invite-e2e.spec.ts",
-              "line": 94,
-              "column": 7
-            },
-            {
-              "title": "Step 2 — Verify pending invitation in mine list by ID",
-              "ok": true,
-              "tags": [
-                "auth",
-                "invite",
-                "e2e"
-              ],
-              "tests": [
-                {
-                  "timeout": 360000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
+                      ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-15T11:26:45.720Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-06-15T11:28:24.000Z",
+                      "startTime": "2026-06-17T12:48:41.810Z",
                       "annotations": [],
                       "attachments": []
                     }
                   ],
-                  "status": "skipped"
+                  "status": "expected"
                 }
               ],
-              "id": "704375262bf5bd0b7a70-b5725306dc7ca859fef4",
-              "file": "modules/AUTH/tests/91-invite-e2e.spec.ts",
-              "line": 258,
-              "column": 7
-            },
-            {
-              "title": "Step 3 — Preview invitation (public)",
-              "ok": true,
-              "tags": [
-                "auth",
-                "invite",
-                "e2e"
-              ],
-              "tests": [
-                {
-                  "timeout": 360000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-15T11:26:45.730Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-06-15T11:28:24.040Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "704375262bf5bd0b7a70-7fd357f6997984259e64",
-              "file": "modules/AUTH/tests/91-invite-e2e.spec.ts",
-              "line": 319,
-              "column": 7
-            },
-            {
-              "title": "Step 4 — Accept invitation and create user",
-              "ok": true,
-              "tags": [
-                "auth",
-                "invite",
-                "e2e"
-              ],
-              "tests": [
-                {
-                  "timeout": 360000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-15T11:26:45.743Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-06-15T11:28:24.067Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "704375262bf5bd0b7a70-e7731ac959717ea5da2d",
-              "file": "modules/AUTH/tests/91-invite-e2e.spec.ts",
-              "line": 375,
-              "column": 7
-            },
-            {
-              "title": "Step 5 — Verify accepted invitation in mine list by ID",
-              "ok": true,
-              "tags": [
-                "auth",
-                "invite",
-                "e2e"
-              ],
-              "tests": [
-                {
-                  "timeout": 360000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-15T11:26:45.753Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-06-15T11:28:24.099Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "704375262bf5bd0b7a70-9f4727a0a7e41032bb45",
-              "file": "modules/AUTH/tests/91-invite-e2e.spec.ts",
-              "line": 497,
-              "column": 7
-            },
-            {
-              "title": "Step 6 — Cleanup pending invitation when accept was skipped",
-              "ok": true,
-              "tags": [
-                "auth",
-                "invite",
-                "e2e"
-              ],
-              "tests": [
-                {
-                  "timeout": 360000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2026-06-15T11:26:45.767Z",
-                      "annotations": [],
-                      "attachments": []
-                    },
-                    {
-                      "workerIndex": -1,
-                      "parallelIndex": -1,
-                      "status": "skipped",
-                      "duration": 0,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2026-06-15T11:28:24.145Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "skipped"
-                }
-              ],
-              "id": "704375262bf5bd0b7a70-2f4b3cc13a5751e99d02",
-              "file": "modules/AUTH/tests/91-invite-e2e.spec.ts",
-              "line": 581,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "modules\\AUTH\\tests\\92-invite-delete.spec.ts",
-      "file": "modules/AUTH/tests/92-invite-delete.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Auth Invite Delete API",
-          "file": "modules/AUTH/tests/92-invite-delete.spec.ts",
-          "line": 22,
-          "column": 6,
-          "specs": [
-            {
-              "title": "Delete pending invitation by ID and verify removed from mine list",
-              "ok": true,
-              "tags": [
-                "auth",
-                "invite"
-              ],
-              "tests": [
-                {
-                  "timeout": 360000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "b46270e9df51550654e1-0440ab960ab1e15fdd6a",
-              "file": "modules/AUTH/tests/92-invite-delete.spec.ts",
-              "line": 28,
-              "column": 7
-            },
-            {
-              "title": "Reject delete for unknown invitation ID",
-              "ok": true,
-              "tags": [
-                "auth",
-                "invite"
-              ],
-              "tests": [
-                {
-                  "timeout": 360000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "b46270e9df51550654e1-7659d857cf1b69963265",
-              "file": "modules/AUTH/tests/92-invite-delete.spec.ts",
-              "line": 143,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "modules\\AUTH\\tests\\invite-accept.spec.ts",
-      "file": "modules/AUTH/tests/invite-accept.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Auth Invite Accept API",
-          "file": "modules/AUTH/tests/invite-accept.spec.ts",
-          "line": 15,
-          "column": 6,
-          "specs": [
-            {
-              "title": "Reject invalid invitation token on accept",
-              "ok": true,
-              "tags": [
-                "auth",
-                "invite"
-              ],
-              "tests": [
-                {
-                  "timeout": 240000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "06026d0fa73f7983548b-0db28259c71c89667565",
-              "file": "modules/AUTH/tests/invite-accept.spec.ts",
-              "line": 16,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "modules\\AUTH\\tests\\invite-list.spec.ts",
-      "file": "modules/AUTH/tests/invite-list.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Auth Sent Invitations List API",
-          "file": "modules/AUTH/tests/invite-list.spec.ts",
-          "line": 12,
-          "column": 6,
-          "specs": [
-            {
-              "title": "Validate sent invitations list — status=all",
-              "ok": true,
-              "tags": [
-                "auth",
-                "invite"
-              ],
-              "tests": [
-                {
-                  "timeout": 240000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "f6b46fcf5c8a35b5bd91-1edea2f285c8dae1db06",
-              "file": "modules/AUTH/tests/invite-list.spec.ts",
-              "line": 16,
-              "column": 9
-            },
-            {
-              "title": "Validate sent invitations list — status=pending",
-              "ok": true,
-              "tags": [
-                "auth",
-                "invite"
-              ],
-              "tests": [
-                {
-                  "timeout": 240000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "f6b46fcf5c8a35b5bd91-0258c51ad3324e49fd6b",
-              "file": "modules/AUTH/tests/invite-list.spec.ts",
-              "line": 16,
-              "column": 9
-            },
-            {
-              "title": "Validate sent invitations list — status=accepted",
-              "ok": true,
-              "tags": [
-                "auth",
-                "invite"
-              ],
-              "tests": [
-                {
-                  "timeout": 240000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "f6b46fcf5c8a35b5bd91-cf6de3160a0214a3aa6a",
-              "file": "modules/AUTH/tests/invite-list.spec.ts",
-              "line": 16,
-              "column": 9
-            },
-            {
-              "title": "Validate sent invitations list — status=expired",
-              "ok": true,
-              "tags": [
-                "auth",
-                "invite"
-              ],
-              "tests": [
-                {
-                  "timeout": 240000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "f6b46fcf5c8a35b5bd91-5546483e38ac6c34e04f",
-              "file": "modules/AUTH/tests/invite-list.spec.ts",
-              "line": 16,
-              "column": 9
-            },
-            {
-              "title": "Validate sent invitations list — role filter",
-              "ok": true,
-              "tags": [
-                "auth",
-                "invite"
-              ],
-              "tests": [
-                {
-                  "timeout": 240000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "f6b46fcf5c8a35b5bd91-70a920d1abc931414c7c",
-              "file": "modules/AUTH/tests/invite-list.spec.ts",
-              "line": 112,
-              "column": 7
-            },
-            {
-              "title": "Validate sent invitations list — email search",
-              "ok": true,
-              "tags": [
-                "auth",
-                "invite"
-              ],
-              "tests": [
-                {
-                  "timeout": 240000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "f6b46fcf5c8a35b5bd91-7f010aaf50a343a6156f",
-              "file": "modules/AUTH/tests/invite-list.spec.ts",
-              "line": 165,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "modules\\AUTH\\tests\\login.spec.ts",
-      "file": "modules/AUTH/tests/login.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Auth Login API",
-          "file": "modules/AUTH/tests/login.spec.ts",
-          "line": 15,
-          "column": 6,
-          "specs": [
-            {
-              "title": "Validate CSRF preflight and login flows",
-              "ok": true,
-              "tags": [
-                "smoke",
-                "auth"
-              ],
-              "tests": [
-                {
-                  "timeout": 240000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "c7f3adee56ac144f54aa-ef4893a347cb624687da",
-              "file": "modules/AUTH/tests/login.spec.ts",
-              "line": 18,
-              "column": 7
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "modules\\AUTH\\tests\\refresh.spec.ts",
-      "file": "modules/AUTH/tests/refresh.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Auth Refresh API",
-          "file": "modules/AUTH/tests/refresh.spec.ts",
-          "line": 13,
-          "column": 6,
-          "specs": [
-            {
-              "title": "Validate token refresh",
-              "ok": true,
-              "tags": [
-                "smoke",
-                "auth"
-              ],
-              "tests": [
-                {
-                  "timeout": 240000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "",
-                  "projectName": "",
-                  "results": [],
-                  "status": "skipped"
-                }
-              ],
-              "id": "4e22e071f6bdf8b189c5-8877e2b80467a689149b",
-              "file": "modules/AUTH/tests/refresh.spec.ts",
-              "line": 14,
+              "id": "4dc888223c7898f6bd61-67243f54a63485b10794",
+              "file": "modules/MASTER-DATA/tests/substation.-master.spec.ts",
+              "line": 12,
               "column": 7
             }
           ]
@@ -2295,11 +630,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-15T11:15:57.228Z",
-    "duration": 747000.8949999999,
-    "expected": 3,
-    "skipped": 18,
-    "unexpected": 5,
+    "startTime": "2026-06-17T12:48:25.791Z",
+    "duration": 20113.104000000003,
+    "expected": 4,
+    "skipped": 0,
+    "unexpected": 0,
     "flaky": 0
   }
 }

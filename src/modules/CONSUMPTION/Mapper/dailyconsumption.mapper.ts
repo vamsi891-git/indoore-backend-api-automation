@@ -27,7 +27,7 @@ export interface DailyConsumptionData {
 
 export interface DailyConsumptionResponse {
     success: boolean;
-    data: DailyConsumptionData;
+    data?: DailyConsumptionData;
 }
 
 export class DailyConsumptionMapper {
