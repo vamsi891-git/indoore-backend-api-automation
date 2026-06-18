@@ -1,0 +1,119 @@
+name: Playwright Module Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      module:
+        description: Module slug (energy-audits, auth, utils-lookup, hes-commands, …)
+        required: true
+        type: string
+        default: energy-audits
+      scope:
+        description: All tests in the module, or @smoke only
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - smoke
+
+concurrency:
+  group: module-${{ github.workflow }}-${{ github.event.inputs.module }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  module-test:
+    name: "${{ github.event.inputs.module }} (${{ github.event.inputs.scope }})"
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+
+    env:
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+      PLAYWRIGHT_WORKERS: 2
+      BASE_URL: ${{ secrets.BASE_URL }}
+      EMAIL: ${{ secrets.EMAIL }}
+      USERNAME: ${{ secrets.USERNAME }}
+      PASSWORD: ${{ secrets.PASSWORD }}
+      DEVICE_ID: ${{ secrets.DEVICE_ID }}
+      GMAIL_IMAP_USER: ${{ secrets.GMAIL_IMAP_USER }}
+      GMAIL_IMAP_APP_PASSWORD: ${{ secrets.GMAIL_IMAP_APP_PASSWORD }}
+      INVITE_INBOX_EMAIL: ${{ secrets.INVITE_INBOX_EMAIL }}
+      REPORT_MAIL_TO: vamsibst@gmail.com
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate repository secrets
+        run: |
+          missing=""
+          [ -z "$BASE_URL" ] && missing="$missing BASE_URL"
+          [ -z "$PASSWORD" ] && missing="$missing PASSWORD"
+          if [ -z "$EMAIL" ] && [ -z "$USERNAME" ]; then
+            missing="$missing EMAIL (or USERNAME)"
+          fi
+          if [ -n "$missing" ]; then
+            echo "::error title=Missing GitHub Actions secrets::Configure these under Settings → Secrets and variables → Actions → Repository secrets:$missing"
+            exit 1
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Setup Java (Allure CLI)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: List available modules
+        run: node scripts/run-module-tests.mjs list
+
+      - name: Run module tests
+        run: |
+          SCOPE="${{ github.event.inputs.scope }}"
+          MODULE="${{ github.event.inputs.module }}"
+          if [ "$SCOPE" = "smoke" ]; then
+            node scripts/run-module-tests.mjs "$MODULE" --smoke
+          else
+            node scripts/run-module-tests.mjs "$MODULE"
+          fi
+
+      - name: Write Allure environment
+        if: always()
+        run: node scripts/write-allure-environment.mjs
+
+      - name: Generate Allure report
+        if: always()
+        run: npm run allure:generate
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ github.event.inputs.module }}-${{ github.event.inputs.scope }}
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
+
+      - name: Upload Allure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report-${{ github.event.inputs.module }}-${{ github.event.inputs.scope }}
+          path: |
+            allure-report/
+            allure-results/
+          retention-days: 14

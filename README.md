@@ -41,11 +41,25 @@ Do not commit `.env` or anything under `playwright/.auth/`.
 |---------|-------------|
 | `npm test` | Run all tests |
 | `npm run test:smoke` | Run tests tagged `@smoke` |
-| `npm run test:smoke:energy-audit` | Smoke tests for ENERGY-AUDITS only |
-| `npm run test:energy-audit` | All ENERGY-AUDITS tests |
+| `npm run test:module -- <slug>` | Run **all** tests for one module |
+| `npm run test:module -- <slug> --smoke` | Run **@smoke** tests for one module |
+| `npm run test:modules:list` | List module slugs (for CI / local runs) |
 | `npm run test:ui` | Playwright UI mode |
 | `npm run report` | Open the last HTML report |
 | `npm run typecheck` | TypeScript check (`tsc --noEmit`) |
+
+### Run one module (full suite)
+
+When a developer finishes a module, run the **entire** test folder for that module:
+
+```bash
+npm run test:modules:list
+npm run test:module -- energy-audits
+npm run test:module -- utils-lookup
+npm run test:module -- hes-commands --smoke
+```
+
+Slug = folder name lowercased, spaces → hyphens (`ENERGY-AUDITS` → `energy-audits`, `UTILS-LOOKUP` → `utils-lookup`).
 
 ### Run by tag or path
 
@@ -138,14 +152,21 @@ npx playwright test --grep "@event-report"
 
 ## CI (GitHub Actions)
 
-Workflow: [`.github/workflows/playwright.yml`](.github/workflows/playwright.yml)
+Workflows:
 
-| Trigger | When |
-|---------|------|
-| `push` / `pull_request` | Branches `main` or `master` |
-| `workflow_dispatch` | Manual run from Actions tab — choose **smoke** or **full** |
+| Workflow | File | When |
+|----------|------|------|
+| **Playwright API Tests** | [playwright.yml](.github/workflows/playwright.yml) | Push (full), PR (smoke), manual smoke/full |
+| **Playwright Module Tests** | [playwright-module.yml](.github/workflows/playwright-module.yml) | Manual — pick **one module** + all or smoke |
 
-The job uses **2 parallel workers** (`PLAYWRIGHT_WORKERS=2`). On **pull requests** it runs `npm run test:smoke` only; on **push to main/master** it runs the full suite (`npm test`). When the run finishes (pass or fail), it generates an **Allure** report and uploads artifacts. If SMTP secrets are configured, the Allure report is emailed to the developer inbox as `allure-report.zip`.
+### Module workflow (per developer / per module)
+
+1. Open **[Actions → Playwright Module Tests](https://github.com/vamsi891-git/indoore-backend-api-automation/actions/workflows/playwright-module.yml)**
+2. **Run workflow**
+3. **module:** slug, e.g. `energy-audits`, `auth`, `hes-commands` (run `npm run test:modules:list` locally for the full list)
+4. **scope:** `all` = every test in that module’s `tests/` folder; `smoke` = `@smoke` only
+
+The job uses **2 parallel workers** (`PLAYWRIGHT_WORKERS=2`). On **pull requests**, the main workflow runs `npm run test:smoke` only; on **push to main/master** it runs the full suite (`npm test`). When the run finishes (pass or fail), it generates an **Allure** report and uploads artifacts. If SMTP secrets are configured, the Allure report is emailed to the developer inbox as `allure-report.zip`.
 
 Set `PLAYWRIGHT_WORKERS=1` in `.env` if you see token refresh races locally.
 
