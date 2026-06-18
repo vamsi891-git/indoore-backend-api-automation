@@ -30,6 +30,11 @@ playwright-report/
 allure-results/
 allure-report/
 reports/allure-email-body.html
+reports/defects/
+reports/performance/
+reports/playwright-results.json
+reports/ui-exploration.json
+reports/ui-login-*.png
 blob-report/
 playwright/.cache/
 /playwright-report/

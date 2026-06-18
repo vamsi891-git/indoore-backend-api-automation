@@ -41,6 +41,8 @@ Do not commit `.env` or anything under `playwright/.auth/`.
 |---------|-------------|
 | `npm test` | Run all tests |
 | `npm run test:smoke` | Run tests tagged `@smoke` |
+| `npm run test:smoke:energy-audit` | Smoke tests for ENERGY-AUDITS only |
+| `npm run test:energy-audit` | All ENERGY-AUDITS tests |
 | `npm run test:ui` | Playwright UI mode |
 | `npm run report` | Open the last HTML report |
 | `npm run typecheck` | TypeScript check (`tsc --noEmit`) |
@@ -141,9 +143,11 @@ Workflow: [`.github/workflows/playwright.yml`](.github/workflows/playwright.yml)
 | Trigger | When |
 |---------|------|
 | `push` / `pull_request` | Branches `main` or `master` |
-| `workflow_dispatch` | Manual run from the Actions tab |
+| `workflow_dispatch` | Manual run from Actions tab — choose **smoke** or **full** |
 
-The job runs `npm test` (full suite, same as local). When the run finishes (pass or fail), it generates an **Allure** report and uploads artifacts. If SMTP secrets are configured, the Allure report is emailed to the developer inbox as `allure-report.zip`.
+The job uses **2 parallel workers** (`PLAYWRIGHT_WORKERS=2`). On **pull requests** it runs `npm run test:smoke` only; on **push to main/master** it runs the full suite (`npm test`). When the run finishes (pass or fail), it generates an **Allure** report and uploads artifacts. If SMTP secrets are configured, the Allure report is emailed to the developer inbox as `allure-report.zip`.
+
+Set `PLAYWRIGHT_WORKERS=1` in `.env` if you see token refresh races locally.
 
 ### Allure reports (local)
 

@@ -6,6 +6,8 @@
   "scripts": {
     "test": "playwright test",
     "test:smoke": "playwright test --grep @smoke",
+    "test:smoke:energy-audit": "playwright test src/modules/ENERGY-AUDITS/tests --grep @smoke",
+    "test:energy-audit": "playwright test src/modules/ENERGY-AUDITS/tests",
     "test:hes": "playwright test --grep @hes",
     "test:commands": "playwright test --grep @commands",
     "test:auth": "node --max-old-space-size=4096 ./node_modules/@playwright/test/cli.js test --grep @auth",

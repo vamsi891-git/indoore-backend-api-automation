@@ -6,6 +6,15 @@ on:
   pull_request:
     branches: [main, master]
   workflow_dispatch:
+    inputs:
+      test_mode:
+        description: Test suite to run
+        required: true
+        default: smoke
+        type: choice
+        options:
+          - smoke
+          - full
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -16,7 +25,7 @@ permissions:
 
 jobs:
   test:
-    name: Run full API suite
+    name: Run API tests
     runs-on: ubuntu-latest
     timeout-minutes: 90
     permissions:
@@ -24,6 +33,7 @@ jobs:
 
     env:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+      PLAYWRIGHT_WORKERS: 2
       BASE_URL: ${{ secrets.BASE_URL }}
       EMAIL: ${{ secrets.EMAIL }}
       USERNAME: ${{ secrets.USERNAME }}
@@ -72,7 +82,19 @@ jobs:
         continue-on-error: true
 
       - name: Run Playwright tests
-        run: npm test
+        run: |
+          MODE="full"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            MODE="smoke"
+          elif [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            MODE="${{ github.event.inputs.test_mode }}"
+          fi
+          echo "Running test mode: $MODE"
+          if [ "$MODE" = "smoke" ]; then
+            npm run test:smoke
+          else
+            npm test
+          fi
 
       - name: Write Allure environment
         if: always()

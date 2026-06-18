@@ -4,11 +4,17 @@ import { DEFAULT_TEST_TIMEOUT_MS } from "./src/core/constants/api-timeouts";
 
 dotenv.config();
 
+const playwrightWorkers = Number(process.env.PLAYWRIGHT_WORKERS ?? "2");
+const resolvedWorkers =
+  Number.isFinite(playwrightWorkers) && playwrightWorkers > 0
+    ? playwrightWorkers
+    : 2;
+
 export default defineConfig({
   globalSetup: require.resolve("./src/global.setup.ts"),
   testDir: "./src",
   fullyParallel: true,
-  workers: 1,
+  workers: resolvedWorkers,
   timeout: DEFAULT_TEST_TIMEOUT_MS,
   retries: 1,
   reporter: [
