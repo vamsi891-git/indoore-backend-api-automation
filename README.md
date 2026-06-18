@@ -185,7 +185,17 @@ npm run report:allure
 | `npm run allure:open` | Open existing Allure report |
 | `npm run report:allure` | Generate + open |
 
-**Module-wise report:** Open the **Behaviors** or **Suites** tab (not Overview). Tests are grouped as **Module → spec/describe → test case** (e.g. `AUTH` → `Auth Login API` → individual tests). The **Packages** tab also lists modules.
+**Module-wise report:** Open the **Suites** or **Behaviors** tab (not Overview). Tests are grouped as:
+
+| Level | Suites tab | Behaviors tab | Example |
+|-------|------------|---------------|---------|
+| Module | `parentSuite` | `Epic` | `hes-commands` |
+| API group | `suite` | `Feature` | `HES Commands — History` |
+| Test case | `subSuite` | `Story` | individual test (pass/fail badge) |
+
+Click a module (e.g. **hes-commands**) to expand all specs and tests inside it with passed/failed status. Slugs match `npm run test:modules:list` (`energy-audits`, `hes-commands`, …).
+
+`npm run allure:generate` runs `scripts/patch-allure-module-labels.mjs` so grouping stays correct even when the Playwright reporter writes file paths.
 
 **Note:** Allure CLI requires **Java 17+** locally (`java -version`). GitHub Actions installs Java automatically.
 

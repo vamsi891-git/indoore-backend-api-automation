@@ -8,10 +8,11 @@ import {
   subSuite,
   suite,
 } from "allure-js-commons";
+import { moduleNameToSlug } from "./module-slug.util";
 
 const MODULE_PATH_RE = /[\\/]modules[\\/]([^\\/]+)[\\/]/i;
 
-/** e.g. AUTH, MIS DASHBOARDIES, REPORTS */
+/** e.g. AUTH, MIS DASHBOARDIES, HES-COMMANDS */
 export function resolveModuleNameFromPath(filePath: string): string {
   const match = filePath.match(MODULE_PATH_RE);
   return match?.[1] ?? "OTHER";
@@ -24,13 +25,16 @@ function resolveSpecFileLabel(filePath: string): string {
 }
 
 /**
- * Group Allure report by API module so Suites/Behaviors are not mixed file paths.
+ * Group Allure report by API module.
  *
- * Suites:  Module → spec/describe group → test case
- * Behaviors: Module (epic) → describe (feature) → test (story)
+ * Suites:   hes-commands → describe group → test case
+ * Behaviors: hes-commands (epic) → describe (feature) → test (story)
  */
-export function applyModuleAllureLabels(testInfo: TestInfo): void {
-  const moduleName = resolveModuleNameFromPath(testInfo.file);
+export async function applyModuleAllureLabels(
+  testInfo: TestInfo,
+): Promise<void> {
+  const moduleFolder = resolveModuleNameFromPath(testInfo.file);
+  const moduleSlug = moduleNameToSlug(moduleFolder);
   const specFile = resolveSpecFileLabel(testInfo.file);
 
   const describeTitles = testInfo.titlePath.slice(0, -1);
@@ -40,16 +44,17 @@ export function applyModuleAllureLabels(testInfo: TestInfo): void {
       ? describeTitles.slice(1).join(" › ")
       : undefined;
   const testName = testInfo.title;
+  const subSuiteName = nestedPath ? `${nestedPath} › ${testName}` : testName;
 
-  parentSuite(moduleName);
-  suite(suiteName);
-  subSuite(nestedPath ? `${nestedPath} › ${testName}` : testName);
-
-  epic(moduleName);
-  feature(suiteName);
-  story(nestedPath ? `${nestedPath} › ${testName}` : testName);
-
-  label("module", moduleName);
-  label("package", moduleName);
-  label("spec", specFile);
+  await Promise.all([
+    parentSuite(moduleSlug),
+    suite(suiteName),
+    subSuite(subSuiteName),
+    epic(moduleSlug),
+    feature(suiteName),
+    story(subSuiteName),
+    label("module", moduleSlug),
+    label("package", moduleSlug),
+    label("spec", specFile),
+  ]);
 }

@@ -3,8 +3,8 @@ import { applyModuleAllureLabels } from "../core/utils/allure-module.labels";
 
 export const test = playwrightTest;
 
-test.beforeEach(({}, testInfo) => {
-  applyModuleAllureLabels(testInfo);
+test.beforeEach(async ({}, testInfo) => {
+  await applyModuleAllureLabels(testInfo);
 });
 
 export { expect, request } from "@playwright/test";

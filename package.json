@@ -15,7 +15,7 @@
     "test:auth": "node --max-old-space-size=4096 ./node_modules/@playwright/test/cli.js test --grep @auth",
     "test:ui": "playwright test --ui",
     "report": "playwright show-report",
-    "allure:generate": "node scripts/write-allure-environment.mjs && allure generate allure-results -o allure-report --clean",
+    "allure:generate": "node scripts/write-allure-environment.mjs && node scripts/patch-allure-module-labels.mjs && allure generate allure-results -o allure-report --clean",
     "allure:open": "allure open allure-report",
     "allure:serve": "allure open allure-report",
     "report:allure": "npm run allure:generate && npm run allure:open",
