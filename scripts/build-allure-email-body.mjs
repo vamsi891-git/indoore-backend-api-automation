@@ -48,6 +48,14 @@ const duration =
     ? `${Math.round(summary.durationMs / 1000)}s`
     : "n/a";
 
+const moduleName = process.env.MODULE_NAME?.trim();
+const moduleScope = process.env.MODULE_SCOPE?.trim();
+const moduleRows =
+  moduleName
+    ? `<tr><td><b>Module</b></td><td>${moduleName}</td></tr>
+    <tr><td><b>Scope</b></td><td>${moduleScope || "all"}</td></tr>`
+    : "";
+
 const allureUrl =
   process.env.ALLURE_REPORT_URL?.trim() || defaultPagesUrl();
 
@@ -76,6 +84,7 @@ const html = `<!DOCTYPE html>
     <tr><td><b>Repository</b></td><td>${process.env.GITHUB_REPOSITORY ?? "local"}</td></tr>
     <tr><td><b>Branch</b></td><td>${process.env.GITHUB_REF_NAME ?? "local"}</td></tr>
     <tr><td><b>Commit</b></td><td>${(process.env.GITHUB_SHA ?? "local").slice(0, 7)}</td></tr>
+    ${moduleRows}
     <tr><td><b>Test run result</b></td><td>${process.env.WORKFLOW_JOB_STATUS ?? "unknown"}</td></tr>
     <tr><td><b>Total tests</b></td><td>${summary.total}</td></tr>
     <tr><td><b>Passed</b></td><td style="color:#0a7a2f;">${summary.passed}</td></tr>
