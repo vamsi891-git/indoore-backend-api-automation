@@ -71,35 +71,22 @@ test.describe("Search Consumer API", () => {
       // =========================================
       // BUSINESS VALIDATIONS
       // ==========================================
-      validation.execute(
-        "Serial Sequence Validation",
-        () => validator.validateSerialSequence(data)
+      validation.execute("Serial Sequence Validation",() => 
+        validator.validateSerialSequence(data)
       );
-
-      validation.execute(
-        "Duplicate Meter Serial Validation",
-        () =>
+      validation.execute("Duplicate Meter Serial Validation",() =>
           validator.validateDuplicateMeterSerials(data),
       );
-
-      validation.execute(
-        "Mobile Number Format Validation",
-        () => validator.validateMobileNumberFormat(data),
+      validation.execute("Mobile Number Format Validation",() => 
+        validator.validateMobileNumberFormat(data),
       );
-
-      validation.execute(
-        "IVRS Field Validation",
-        () => validator.validateIvrsFields(data),
+      validation.execute("IVRS Field Validation",() => 
+        validator.validateIvrsFields(data),
       );
-
       // ==========================================
       // SUMMARY
       // ==========================================
-
-      validation.printSummary(
-        "Consumer Search API",
-        responseTime
-      );
+      validation.printSummary("Consumer Search API",responseTime);
     }
   );
 });
