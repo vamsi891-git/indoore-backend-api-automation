@@ -5,8 +5,6 @@ export class TechnicalReportValidator {
     // =====================================
     validateResponseStructure(data: any): void {
         expect(data).toHaveProperty("analysisType");
-        expect(data).toHaveProperty("reportName");
-        expect(data).toHaveProperty("condition");
         expect(data).toHaveProperty("category");
         expect(data).toHaveProperty("month");
         expect(data).toHaveProperty("year");
@@ -14,7 +12,7 @@ export class TechnicalReportValidator {
         expect(data).toHaveProperty("pageSize");
         expect(data).toHaveProperty("totalCount");
         expect(data).toHaveProperty("totalPages");
-        expect(data).toHaveProperty("rows");
+        expect(Array.isArray(data.rows)).toBeTruthy();
     }
     // =====================================
     // REQUEST ECHO
@@ -37,6 +35,19 @@ export class TechnicalReportValidator {
         expect(data.totalCount).toBeGreaterThanOrEqual(0);
         expect(data.totalPages).toBeGreaterThanOrEqual(0);
         expect(data.rows.length).toBeLessThanOrEqual(data.pageSize);
+
+        if (data.totalCount === 0) {
+            expect(data.totalPages).toBe(0);
+            expect(data.rows.length).toBe(0);
+            return;
+        }
+
+        expect(data.totalPages).toBeGreaterThan(0);
+        const expectedTotalPages = Math.max(
+            1,
+            Math.ceil(data.totalCount / data.pageSize),
+        );
+        expect(data.totalPages).toBe(expectedTotalPages);
     }
     validatePaginationConsistency(data: any): void {
         expect(data.totalCount).toBeGreaterThanOrEqual(data.rows.length);

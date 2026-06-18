@@ -1,4 +1,4 @@
-import { test } from "../../../../src/fixtures/api.fixture";
+import { test } from "../../../fixtures/api.fixture";
 import { TechnicalSummaryApi } from "../Api/technical-summary.api";
 import { technicalSummaryData } from "../Data/technical-summary.data";
 import { TechnicalSummaryMapper } from "../Mapper/technical-summary.mapper";

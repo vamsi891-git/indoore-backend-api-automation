@@ -6,8 +6,7 @@ import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 test.describe("Organisation Hierarchy API", () => {
-  test(
-    "Validate Organisation Hierarchy",
+  test("Validate Organisation Hierarchy",
     {
       tag: ["@smoke", "@organisation"],
     },

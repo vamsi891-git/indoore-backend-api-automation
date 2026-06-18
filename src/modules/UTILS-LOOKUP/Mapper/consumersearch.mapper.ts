@@ -1,81 +1,63 @@
 export interface SearchConsumerResponse {
-    success: boolean;
-    data: SearchConsumerRawData;
+  success: boolean;
+  data: SearchConsumerRawData;
 }
 
 export interface SearchConsumerRawData {
-    columns?: Array<{ key: string; header: string }>;
-    rows?: ConsumerItem[];
-    items?: ConsumerItem[];
-    pagination?: {
-        page: number;
-        limit: number;
-        total: number;
-        totalPages: number;
-    };
-    total?: number;
-    page?: number;
-    limit?: number;
-    totalPages?: number;
+  columns?: Array<{ key: string; header: string }>;
+  rows?: ConsumerItem[];
+  items?: ConsumerItem[];
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  total?: number;
+  page?: number;
+  limit?: number;
+  totalPages?: number;
 }
 
 export interface SearchConsumerData {
-    items: ConsumerItem[];
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
+  items: ConsumerItem[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
+/** Live search API returns a slim consumer grid (not full master row). */
 export interface ConsumerItem {
-    slNo: number;
-
-    division: string | null;
-    zone: string | null;
-    feeder: string | null;
-    dtr: string | null;
-
-    feederNameNew: string | null;
-    dtrNameNew: string | null;
-
-    consumerCid: string;
-    consumerName: string;
-    consumerAddress: string;
-    consumerMobileNumber: string;
-
-    category: string;
-    sanctionedLoadKw: number;
-
-    ivrsNo: string;
-    existingIvrsNo: string;
-
-    meterSerialNumber: string;
-    meterPhase: string;
-
-    mf: number;
-
-    installationDate: string;
-
-    latitude: string | null;
-    longitude: string | null;
-
-    meterLookupTblRefId: number;
-
-    lsCount: number | null;
-    dpCount: number | null;
+  id?: string;
+  slNo?: number;
+  consumerName: string;
+  consumerCid: string;
+  consumerAddress: string;
+  ivrsNo: string;
+  existingIvrsNo: string;
+  meterSerialNumber: string;
+  consumerMobileNumber: string;
 }
 
 export class SearchConsumerMapper {
-    static mapData(data: SearchConsumerRawData): SearchConsumerData {
-        const items = data.rows ?? data.items ?? [];
-        const pagination = data.pagination;
+  static mapData(data: SearchConsumerRawData): SearchConsumerData {
+    const rawItems = data.rows ?? data.items ?? [];
+    const pagination = data.pagination;
+    const page = pagination?.page ?? data.page ?? 1;
+    const limit = pagination?.limit ?? data.limit ?? 20;
 
-        return {
-            items,
-            total: pagination?.total ?? data.total ?? items.length,
-            page: pagination?.page ?? data.page ?? 1,
-            limit: pagination?.limit ?? data.limit ?? 20,
-            totalPages: pagination?.totalPages ?? data.totalPages ?? 1,
-        };
-    }
+    const items = rawItems.map((item, index) => ({
+      ...item,
+      slNo: index + 1,
+    }));
+
+    return {
+      items,
+      total: pagination?.total ?? data.total ?? items.length,
+      page,
+      limit,
+      totalPages: pagination?.totalPages ?? data.totalPages ?? 1,
+    };
+  }
 }

@@ -8,8 +8,7 @@ import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 test.describe("Event API", () => {
-  test(
-    "Validate Event API",
+  test("Validate Event API",
     {
       tag: ["@smoke", "@events"],
     },

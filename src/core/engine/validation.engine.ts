@@ -7,6 +7,16 @@ export interface PrintSummaryOptions {
   testInfo?: TestInfo;
   defectContext?: DefectReportContext;
 }
+
+function isVerboseSummary(): boolean {
+  const flag = process.env.API_TEST_VERBOSE_SUMMARY?.trim().toLowerCase();
+  return flag === "1" || flag === "true" || flag === "yes";
+}
+
+function firstLine(message: string): string {
+  return message.split("\n")[0]?.trim() ?? message;
+}
+
 export class ValidationEngine {
   private results: ValidationResult[] = [];
   // =====================================
@@ -95,9 +105,45 @@ export class ValidationEngine {
     responseTime: number,
     options?: PrintSummaryOptions,
   ): void {
-    const divider = "=".repeat(50);
-    const finalStatus = this.getFailedCount() === 0 ? "PASS" : "FAIL";
+    const failed = this.results.filter((r) => r.status === "FAIL");
+    const finalStatus = failed.length === 0 ? "PASS" : "FAIL";
 
+    if (isVerboseSummary()) {
+      this.printVerboseBanner(apiName, responseTime, finalStatus);
+    }
+
+    this.printChecklist(apiName, responseTime, finalStatus, options);
+    this.assertAllPassed();
+  }
+
+  private printChecklist(
+    apiName: string,
+    responseTime: number,
+    finalStatus: "PASS" | "FAIL",
+    options?: PrintSummaryOptions,
+  ): void {
+    console.log(
+      `[${finalStatus}] ${apiName} — ${this.getPassedCount()}/${this.getTotalCount()} checks, ${responseTime}ms`,
+    );
+
+    this.results.forEach((result, index) => {
+      console.log(`  ${index + 1}. ${result.name} — ${result.status}`);
+      if (result.status === "FAIL" && result.message) {
+        console.log(`     ${firstLine(result.message)}`);
+      }
+    });
+
+    if (finalStatus === "FAIL") {
+      this.writeDefectReportIfNeeded(apiName, responseTime, options);
+    }
+  }
+
+  private printVerboseBanner(
+    apiName: string,
+    responseTime: number,
+    finalStatus: "PASS" | "FAIL",
+  ): void {
+    const divider = "=".repeat(50);
     console.log(`\n${divider}`);
     console.log(`API TEST SUMMARY — ${apiName}`);
     console.log(divider);
@@ -107,56 +153,41 @@ export class ValidationEngine {
     console.log(`FAILED          : ${this.getFailedCount()}`);
     console.log(`FINAL STATUS    : ${finalStatus}`);
     console.log(divider);
+  }
 
-    const failed = this.results.filter((r) => r.status === "FAIL");
-
-    if (failed.length > 0) {
-      console.log("FAILED VALIDATIONS:");
-      failed.forEach((f, index) => {
-        console.log(`  ${index + 1}. ${f.name}`);
-        if (f.message) {
-          console.log(`     Reason: ${f.message}`);
-        }
-      });
-      console.log(divider);
-
-      if (options?.defectContext) {
-        const markdown = DeveloperReportEngine.buildMarkdown({
-          apiName,
-          responseTimeMs: responseTime,
-          results: this.results,
-          context: options.defectContext,
-          testTitle: options.testInfo?.title,
-        });
-        const reportPath = DeveloperReportEngine.write({
-          apiName,
-          responseTimeMs: responseTime,
-          results: this.results,
-          context: options.defectContext,
-          testTitle: options.testInfo?.title,
-        });
-
-        console.log(`\nDEVELOPER DEFECT REPORT: ${reportPath}`);
-        console.log(
-          "Share this file with the backend team (Jira / Azure DevOps / GitHub).\n",
-        );
-
-        if (options.testInfo) {
-          void DeveloperReportEngine.attachToTest(
-            options.testInfo,
-            reportPath,
-            markdown,
-          );
-        }
-      }
+  private writeDefectReportIfNeeded(
+    apiName: string,
+    responseTime: number,
+    options?: PrintSummaryOptions,
+  ): void {
+    if (!options?.defectContext) {
+      return;
     }
 
-    console.log(`VALIDATION CHECKS (${apiName}):`);
-    this.results.forEach((r, index) => {
-      console.log(`  ${index}. ${r.name} — ${r.status}`);
+    const markdown = DeveloperReportEngine.buildMarkdown({
+      apiName,
+      responseTimeMs: responseTime,
+      results: this.results,
+      context: options.defectContext,
+      testTitle: options.testInfo?.title,
     });
-    console.log(`${divider}\n`);
-    this.assertAllPassed();
+    const reportPath = DeveloperReportEngine.write({
+      apiName,
+      responseTimeMs: responseTime,
+      results: this.results,
+      context: options.defectContext,
+      testTitle: options.testInfo?.title,
+    });
+
+    console.log(`Defect report: ${reportPath}`);
+
+    if (options.testInfo) {
+      void DeveloperReportEngine.attachToTest(
+        options.testInfo,
+        reportPath,
+        markdown,
+      );
+    }
   }
 }
 

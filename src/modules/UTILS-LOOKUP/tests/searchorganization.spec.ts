@@ -8,8 +8,7 @@ import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 test.describe("Organization Search API", () => {
-  test(
-    "Validate Organization Search",
+  test("Validate Organization Search",
     {
       tag: ["@smoke", "@organization"],
     },

@@ -8,8 +8,7 @@ import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 test.describe("Device Manufacturer API", () => {
-  test(
-    "Validate Device Manufacturers",
+  test("Validate Device Manufacturers",
     {
       tag: ["@smoke", "@manufacturer"],
     },

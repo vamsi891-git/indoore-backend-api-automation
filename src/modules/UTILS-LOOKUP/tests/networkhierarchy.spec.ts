@@ -6,8 +6,7 @@ import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 test.describe("Network Hierarchy API", () => {
-  test(
-    "Validate Network Hierarchy",
+  test("Validate Network Hierarchy",
     {
       tag: ["@smoke", "@network"],
     },

@@ -7,8 +7,7 @@ import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 test.describe("Network Search API", () => {
-  test(
-    "Validate Network Search",
+  test("Validate Network Search",
     {
       tag: ["@smoke", "@network"],
     },

@@ -1,5 +1,5 @@
 import { expect } from "@playwright/test";
-import { test } from "../../../../src/fixtures/api.fixture";
+import { test } from "../../../fixtures/api.fixture";
 import { TechnicalReportApi } from "../Api/technicalanalysis.api";
 import { TechnicalAnalysisData, type TechnicalAnalysisConfig,} from "../Data/technicalanalysis.data";
 import { TechnicalReportMapper} from "../Mapper/technicalanalysis.mapper";
@@ -58,7 +58,13 @@ test.describe("Technical Analysis Report API",() => {
                         // =====================================
                         // MAPPER
                         // =====================================
-                        const mapped =TechnicalReportMapper.map(responseBody);
+                        const mapped = TechnicalReportMapper.map(responseBody, {
+                            analysisType: report.analysisType,
+                            month: report.month,
+                            year: report.year,
+                            pageSize: report.pageSize,
+                            category: "total",
+                        });
                         const validator =new TechnicalReportValidator();
                         // =====================================
                         // ROOT VALIDATIONS

@@ -9,19 +9,15 @@ import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper
 
 test.describe("Power Factor Analysis API", () => {
   test.setTimeout(120000);
-
-  test(
-    "Validate Power Factor Analysis Report",
+  test("Validate Power Factor Analysis Report",
     { tag: ["@smoke", "@power-factor"] },
     async ({ authenticatedApi }, testInfo) => {
       const api = new PowerFactorApi(authenticatedApi);
       const assert = new AssertionEngine();
       const validation = new ValidationEngine();
       const validator = new PowerFactorValidator();
-
       const { rawResponse, responseBody, responseTime } =
         await api.getPfAnalysis(pfAnalysisQuery);
-
       const defectContext = {
         module: "COMMERICIAL ANALYSIS",
         endpoint: "/indore/analysis/commercial/pf",

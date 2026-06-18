@@ -8,8 +8,7 @@ import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 test.describe("Payment Contract API", () => {
-  test(
-    "Validate Payment Contract API",
+  test("Validate Payment Contract API",
     {
       tag: ["@smoke", "@payment"],
     },

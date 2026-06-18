@@ -8,8 +8,7 @@ import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 test.describe("LF Analysis API", () => {
   test.setTimeout(120000);
-  test(
-    "Validate LF Analysis Report",
+  test("Validate LF Analysis Report",
     {
       tag: ["@smoke", "@lf-analysis"],
     },
@@ -17,11 +16,9 @@ test.describe("LF Analysis API", () => {
       // =====================
       // API
       // =====================
-
       const api = new LFAnalysisApi(authenticatedApi);
       const { rawResponse, responseBody, responseTime } =
         await api.getLFAnalysis(lfAnalysisData);
-
       const defectContext = {
         module: "COMMERICIAL ANALYSIS",
         endpoint: "/indore/analysis/commercial/lf",
@@ -34,7 +31,6 @@ test.describe("LF Analysis API", () => {
 
       const assert = new AssertionEngine();
       const validation = new ValidationEngine();
-
       try {
       validation.execute("Status Code Validation", () =>
         assert.validateStatusCode(rawResponse, 200),
@@ -48,19 +44,14 @@ test.describe("LF Analysis API", () => {
       validation.execute("Sensitive Data Validation", () =>
         assert.validateSensitiveData(responseBody),
       );
-
       // =====================
       // Mapper
       // =====================
-
       const rows = mapLFAnalysisResponse(responseBody);
-
       // =====================
       // Validator
       // =====================
-
       const validator = new LFAnalysisValidator();
-
       validation.execute("Response Validation", () =>
         validator.validateResponse(responseBody),
       );
@@ -74,21 +65,14 @@ test.describe("LF Analysis API", () => {
       );
 
       validation.execute("LF Threshold Validation", () =>
-        validator.validateLfAgainstThreshold(
-          rows,
-          lfAnalysisData.threshold,
-          lfAnalysisData.operator,
-        ),
+        validator.validateLfAgainstThreshold(rows,lfAnalysisData.threshold,lfAnalysisData.operator,),
       );
-
       validation.execute("Duplicate LF Validation", () =>
         validator.validateNoDuplicateLFRecords(rows),
       );
-
       validation.execute("Pagination Validation", () =>
         validator.validatePagination(responseBody, lfAnalysisData),
       );
-
       validation.execute("Total Count Validation", () =>
         validator.validateTotalCount(responseBody, lfAnalysisData),
       );

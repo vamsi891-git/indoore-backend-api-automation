@@ -29,9 +29,7 @@ SELECT DISTINCT
 
   validateDuplicatePriorities(data: EventPriorityData) {
     const ids = data.items.map((x) => x.priorityTblRefId);
-
     const unique = new Set(ids);
-
     expect(ids.length).toBe(unique.size);
   }
 
@@ -49,9 +47,7 @@ ORDER BY ASC
 
   validateExpectedValues(data: EventPriorityData) {
     const expected = [1, 2, 3];
-
     const actual = data.items.map((x) => x.priorityTblRefId);
-
     expected.forEach((value) => {
       expect(actual).toContain(value);
     });
