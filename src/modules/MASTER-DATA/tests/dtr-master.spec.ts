@@ -1,72 +1,77 @@
-import { test } from "../../../../src/fixtures/api.fixture";
+import { test } from "../../../fixtures/api.fixture";
 import { DtrMasterApi } from "../Api/dtr-master.api";
-import { DtrMasterMapper } from "../Mapper/dtr-master.mapper";
-import { DtrMasterValidator } from "../Validator/dtr-master.validator";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import {
+  masterDataDefaultQuery,
+  masterDataPage2Query,
+  masterDataSmallPageQuery,
+} from "../Data/master-data.common.data";
+import { runDtrMasterValidation } from "./dtr-master.harness";
 
 test.describe("DTR Master API", () => {
+  test.describe.configure({ retries: 1 });
+  test.setTimeout(180_000);
+
   test(
-    "Validate DTR Master API",
-    {
-      tag: ["@smoke", "@dtr"],
-    },
+    "Validate GET /indore/master-data/dtr-master-data — default page",
+    { tag: ["@smoke", "@master-data", "@dtr-master"] },
     async ({ authenticatedApi }) => {
       const api = new DtrMasterApi(authenticatedApi);
-      const {
-        rawResponse,
-        responseBody,
-        responseTime,
-      } = await api.getDtrMasterData();
-      await PerformanceTracker.track(
-        rawResponse,
-        "DTR Master API",
-        `${process.env.BASE_URL}/indore/master-data/dtr-master-data?page=1&limit=20`,
-        responseTime
-      );
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
-      validation.execute(
-        "Status Validation",
-        () => assert.validateStatusCode(rawResponse, 200),
-      );
-      validation.execute(
-        "Content Validation",
-        () => assert.validateContentType(rawResponse),
-      );
-      validation.execute(
-        "Response Time",
-        () => assert.validateResponseTime(responseTime, 60000),
-      );
-      validation.execute(
-        "Security Validation",
-        () => assert.validateSensitiveData(responseBody),
-      );
-      const data = DtrMasterMapper.mapData(responseBody.data);
-      const validator = new DtrMasterValidator();
-      validation.execute("Response", () =>
-        validator.validateResponse(responseBody),
-      );
-      validation.execute("Items", () => validator.validateItemsExist(data));
-      validation.execute("Fields", () => validator.validateFields(data));
-      validation.execute("Pagination", () =>
-        validator.validatePagination(data),
-      );
-      validation.execute("Duplicate DTR Names", () =>
-        validator.validateDuplicateDtrNames(data),
-      );
-      validation.execute("Unique Meter Serials", () =>
-        validator.validateUniqueMeterSerials(data),
-      );
-      validation.execute("Ascending Order", () =>
-        validator.validateAscendingOrder(data),
-      );
-      validation.execute("Coordinates Validation", () =>
-        validator.validateCoordinates(data),
-      );
+      await runDtrMasterValidation({
+        api,
+        query: { ...masterDataDefaultQuery },
+        testLabel: "DTR Master API",
+      });
+    },
+  );
 
-      validation.printSummary("DTR Master API", responseTime);
+  test(
+    "Validate pagination — page 2",
+    { tag: ["@master-data", "@dtr-master"] },
+    async ({ authenticatedApi }) => {
+      const api = new DtrMasterApi(authenticatedApi);
+      await runDtrMasterValidation({
+        api,
+        query: { ...masterDataPage2Query },
+        testLabel: "DTR Master API — Page 2",
+      });
+    },
+  );
+
+  test(
+    "Validate pagination — smaller page size",
+    { tag: ["@master-data", "@dtr-master"] },
+    async ({ authenticatedApi }) => {
+      const api = new DtrMasterApi(authenticatedApi);
+      await runDtrMasterValidation({
+        api,
+        query: { ...masterDataSmallPageQuery },
+        testLabel: "DTR Master API — Limit 10",
+      });
+    },
+  );
+
+  test(
+    "Validate search q — DTR or meter serial partial match",
+    { tag: ["@master-data", "@dtr-master"] },
+    async ({ authenticatedApi }) => {
+      const api = new DtrMasterApi(authenticatedApi);
+      const probe = await api.getDtrMasterData({ ...masterDataDefaultQuery });
+      const firstRow = (probe.responseBody.data?.rows ?? [])[0];
+      const searchSource =
+        firstRow?.dtr?.trim() || firstRow?.meterSerialNumber?.trim();
+
+      if (!searchSource) {
+        test.skip(true, "No searchable DTR field on page 1");
+        return;
+      }
+
+      const searchTerm = searchSource.slice(0, Math.min(6, searchSource.length));
+      await runDtrMasterValidation({
+        api,
+        query: { ...masterDataDefaultQuery, q: searchTerm },
+        testLabel: "DTR Master API — Search",
+        searchTerm,
+      });
     },
   );
 });

@@ -43,7 +43,7 @@ export function registerLossAnalysisTests(
         const view = getLossAnalysisPaginatedView(responseBody, query);
 
         const defectContext = {
-          module: "ENERGY AUDITS",
+          module: "ENERGY-AUDITS",
           endpoint: "/indore/energy-audit/loss-analysis",
           requestParams: query,
           responseStatus: rawResponse.status(),

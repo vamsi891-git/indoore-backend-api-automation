@@ -1,6 +1,7 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
 import { LossAnalysisQuery, LossAnalysisResponse,} from "../Mapper/loss-analysis.mapper";
 import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
+import { printApiResponse } from "../../../core/utils/response-console.util";
 export interface LossAnalysisApiResult {
   rawResponse: APIResponse;
   responseBody: LossAnalysisResponse;
@@ -17,8 +18,15 @@ export class LossAnalysisApi {
     );
     const responseTime = Date.now() - start;
     if (!rawResponse.ok()) {
+      const errorBody = await rawResponse.text();
+      printApiResponse({
+        apiName: "Energy Audit Loss Analysis",
+        status: rawResponse.status(),
+        body: errorBody,
+        requestParams: query,
+      });
       throw new Error(
-        `Loss Analysis API failed — status ${rawResponse.status()}: ${await rawResponse.text()}`,
+        `Loss Analysis API failed — status ${rawResponse.status()}: ${errorBody}`,
       );
     }
     return {

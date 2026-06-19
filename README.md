@@ -83,13 +83,15 @@ src/
   fixtures/             # Playwright test extensions (authenticated API)
   Global.Setup.ts       # One-time API login before tests
   modules/
-    MASTER-DATA/        # Master data APIs
-    UTILS-LOOKUP/       # Lookup / search / hierarchy APIs
-    DASHBOARD/          # Dashboard metrics
-    MIS DASHBOARD/      # MIS reports (includes Data/ for query params)
-    REPORTS/            # Event reports (includes Data/)
-    COLLECTION REPORT/  # Collection reports (includes Data/)
-    COMMERICIAL ANALYSIS/  # Commercial analysis reports (includes Data/)
+    MASTER-DATA/           # Master data APIs
+    UTILS-LOOKUP/          # Lookup / search / hierarchy APIs
+    DASHBOARD/             # Dashboard metrics
+    MIS-DASHBOARD/         # MIS reports (includes Data/ for query params)
+    REPORTS/               # Event reports (includes Data/)
+    COMMERICIAL-ANALYSIS/  # Commercial analysis reports (includes Data/)
+    USERS-ADMIN/           # User management APIs
+    ASSET-MANAGEMENT/      # Asset / hierarchy APIs
+    AUDIT-LOGS/            # Audit log APIs
 ```
 
 Typical module folders:

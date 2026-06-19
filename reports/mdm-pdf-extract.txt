@@ -1,0 +1,525 @@
+MDM Portal Login
+
+-- 1 of 131 --
+
+MDM Home Screen
+
+-- 2 of 131 --
+
+
+
+-- 3 of 131 --
+
+Static Overview Dashboard
+
+-- 4 of 131 --
+
+MDM Consumer Master Data
+
+-- 5 of 131 --
+
+DTR Overview Detail
+
+-- 6 of 131 --
+
+Meter Command Request Configuration-Single Meter
+
+-- 7 of 131 --
+
+
+
+-- 8 of 131 --
+
+Meter Command Request Configuration-Bulk Meter
+
+-- 9 of 131 --
+
+Meter Command Request Configuration
+
+-- 10 of 131 --
+
+
+
+-- 11 of 131 --
+
+Billing Exchange Report- valid
+
+-- 12 of 131 --
+
+Billing Exchange Report- invalid
+
+-- 13 of 131 --
+
+Mobile Notification
+
+-- 14 of 131 --
+
+
+
+-- 15 of 131 --
+
+Network Loss Analysis- Billing
+
+-- 16 of 131 --
+
+Consumption Compare – Hourly Loss Report
+
+-- 17 of 131 --
+
+
+
+-- 18 of 131 --
+
+MIS Dashboard
+
+-- 19 of 131 --
+
+Communication Dashboard
+
+-- 20 of 131 --
+
+Live Communication Dashboard
+
+-- 21 of 131 --
+
+Communication Dashboard Monthly
+
+-- 22 of 131 --
+
+Event Data Phase wise
+
+-- 23 of 131 --
+
+Event Data Category wise
+
+-- 24 of 131 --
+
+Event Data Priority Wise
+
+-- 25 of 131 --
+
+DTR Overview
+
+-- 26 of 131 --
+
+Commercial Analysis
+
+-- 27 of 131 --
+
+
+
+-- 28 of 131 --
+
+
+
+-- 29 of 131 --
+
+Commercial Analysis- PF Violation
+
+-- 30 of 131 --
+
+Commercial Analysis – MD>CD Last Three Month
+
+-- 31 of 131 --
+
+Commercial Analysis – Sanction Load Violation
+
+-- 32 of 131 --
+
+Commercial Analysis – LF <5%
+
+-- 33 of 131 --
+
+Commercial Analysis – LF <100%
+
+-- 34 of 131 --
+
+Commercial Analysis – Consumption Compare Last Month
+
+-- 35 of 131 --
+
+Commercial Analysis – Consumption Compare Same Month Last Year
+
+-- 36 of 131 --
+
+Commercial Analysis – Abnormal Low Consumption
+
+-- 37 of 131 --
+
+Commercial Analysis – Zero Consumption
+
+-- 38 of 131 --
+
+Commercial Analysis – Zero Consumption for Last 3 Month
+
+-- 39 of 131 --
+
+Commercial Analysis – Zero Consumption for Last 6 Month
+
+-- 40 of 131 --
+
+Commercial Analysis – Zero Consumption for Last 9 Month
+
+-- 41 of 131 --
+
+Commercial Analysis – Zero Consumption for Last 12 Month
+
+-- 42 of 131 --
+
+Commercial Analysis – Zero Consumption More Than12 Month
+
+-- 43 of 131 --
+
+Commercial Analysis – 100-unit kwh from Last Three months continuous
+
+-- 44 of 131 --
+
+Commercial Analysis – 100-unit kwh from Last Six months continuous
+
+-- 45 of 131 --
+
+Commercial Analysis – 100-unit kwh from Last Nine months continuous
+
+-- 46 of 131 --
+
+Commercial Analysis – LAST SIX MONTH 50 % AVG CONSUMPTION < Initial Consumption
+
+-- 47 of 131 --
+
+Commercial Analysis – LF <5% Last Three Month
+
+-- 48 of 131 --
+
+Commercial Analysis – LF <5% Last Six Month
+
+-- 49 of 131 --
+
+Commercial Analysis – Night Zero Consumption
+
+-- 50 of 131 --
+
+Commercial Analysis – Night consumption <= 10% of Day consumption
+
+-- 51 of 131 --
+
+Technical Analysis
+
+-- 52 of 131 --
+
+
+
+-- 53 of 131 --
+
+
+
+-- 54 of 131 --
+
+Techno Commercial Analysis
+
+-- 55 of 131 --
+
+MIS Report
+
+-- 56 of 131 --
+
+Communication – Consumer Detail
+
+-- 57 of 131 --
+
+Communication – IP Data
+
+-- 58 of 131 --
+
+Communication – DP Data
+
+-- 59 of 131 --
+
+Communication – LS Data
+
+-- 60 of 131 --
+
+Event – Consumer Event
+
+-- 61 of 131 --
+
+Event – Consumer Event Detail
+
+-- 62 of 131 --
+
+DTR Communication
+
+-- 63 of 131 --
+
+DTR Event – DTR Interruption
+
+-- 64 of 131 --
+
+DTR Event – DTR Event Detail
+
+-- 65 of 131 --
+
+DTR Hourly Load – Actual Load
+
+-- 66 of 131 --
+
+DTR Hourly Load – Load %
+
+-- 67 of 131 --
+
+DTR Hourly Load – Consumption
+
+-- 68 of 131 --
+
+DTR Daily Analysis – Loading
+
+-- 69 of 131 --
+
+DTR Daily Analysis – Unbalance Loading
+
+-- 70 of 131 --
+
+DTR Daily Analysis – Unbalance Voltage
+
+-- 71 of 131 --
+
+DTR Daily Analysis – Load Summary
+
+-- 72 of 131 --
+
+Consumption – Consumer Consumption Hourly
+
+-- 73 of 131 --
+
+Consumption – Consumer Consumption Daily
+
+-- 74 of 131 --
+
+Consumption – Consumer Consumption Monthly
+
+-- 75 of 131 --
+
+Consumption – Consumer Night Zero Consumption (from 00:00 AM to 6:00 AM)
+
+-- 76 of 131 --
+
+Consumption – Consumption Monthly Net Meter
+
+-- 77 of 131 --
+
+Billing – Consumer Day wise Billing Data
+
+-- 78 of 131 --
+
+Billing – Consumer Monthly Billing Data
+
+-- 79 of 131 --
+
+Pattern Consumption - Last Three Months
+
+-- 80 of 131 --
+
+Pattern Consumption – Yearly Consumption
+
+-- 81 of 131 --
+
+Pattern Consumption –Yearly Consumption
+
+-- 82 of 131 --
+
+Pattern Consumption –Consumption Comparison
+
+-- 83 of 131 --
+
+Prepaid – Prepaid Summary
+
+-- 84 of 131 --
+
+MIS Download
+
+-- 85 of 131 --
+
+Event-Consumer Event Data No Restoration
+
+-- 86 of 131 --
+
+
+
+-- 87 of 131 --
+
+Event – Consumer Event Data
+
+-- 88 of 131 --
+
+
+
+-- 89 of 131 --
+
+Event – DT Wise interruption Detail
+
+-- 90 of 131 --
+
+Consumer Data – Min and Max Voltage
+
+-- 91 of 131 --
+
+Consumer Data – Min and Max Voltage
+
+-- 92 of 131 --
+
+Consumer Data – Current Without Voltage
+
+-- 93 of 131 --
+
+Collection of Report – Meter Replacement 1-Phase
+
+-- 94 of 131 --
+
+Collection of Report – Meter Replacement 3-Phase WC
+
+-- 95 of 131 --
+
+Collection of Report – Meter Replacement 3-Phase LTCT
+
+-- 96 of 131 --
+
+Collection of Report – Current Mismatch Neutral Current Zero
+
+-- 97 of 131 --
+
+Collection of Report – Current Mismatch
+
+-- 98 of 131 --
+
+Collection of Report – Neutral Current and Phase Current Zero
+
+-- 99 of 131 --
+
+Collection of Report – Phase Current Zero and Neutral Current >0
+
+-- 100 of 131 --
+
+Collection of Report – Alarm Data Last GASP
+
+-- 101 of 131 --
+
+Collection of Report – Alarm Data First GASP
+
+-- 102 of 131 --
+
+Collection of Report – 3 Ph Current Analysis
+
+-- 103 of 131 --
+
+Collection of Report – 3 Ph Voltage Analysis
+
+-- 104 of 131 --
+
+DTR IP Data
+
+-- 105 of 131 --
+
+
+
+-- 106 of 131 --
+
+DTR LS Data
+
+-- 107 of 131 --
+
+
+
+-- 108 of 131 --
+
+DTR DP Data
+
+-- 109 of 131 --
+
+
+
+-- 110 of 131 --
+
+
+
+-- 111 of 131 --
+
+
+
+-- 112 of 131 --
+
+
+
+-- 113 of 131 --
+
+
+
+-- 114 of 131 --
+
+
+
+-- 115 of 131 --
+
+
+
+-- 116 of 131 --
+
+
+
+-- 117 of 131 --
+
+Aberration Report
+
+-- 118 of 131 --
+
+Aberration Report Detail
+
+-- 119 of 131 --
+
+ATR - Zone
+
+-- 120 of 131 --
+
+Aberration Entry - Zone
+
+-- 121 of 131 --
+
+Aberration Entry - EENLTMT
+
+-- 122 of 131 --
+
+
+
+-- 123 of 131 --
+
+Consumer Based SAIFI SAIDI for Smart Meter
+
+-- 124 of 131 --
+
+Consumer Based SAIFI SAIDI (City having Population 1Lakh and Above)
+
+-- 125 of 131 --
+
+Consumer Based SAIFI SAIDI for Smart Meter (Cumulative - City having Population
+1Lakh and Above)
+
+-- 126 of 131 --
+
+Circle Wise Consumer Based SAIFI SAIDI (City having Population 1Lakh and Above)
+
+-- 127 of 131 --
+
+SAIFI and SAIDI report at 11kv Feeder level for Cities having population one Lakh and Above
+
+-- 128 of 131 --
+
+Circle wise SAIFI SAIDI
+
+-- 129 of 131 --
+
+Division wise SAIFI SAIDI
+
+-- 130 of 131 --
+
+Overall Overview
+
+-- 131 of 131 --
+

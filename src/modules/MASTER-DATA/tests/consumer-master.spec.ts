@@ -1,87 +1,79 @@
-import { test } from "../../../../src/fixtures/api.fixture";
+import { test } from "../../../fixtures/api.fixture";
 import { ConsumerMasterApi } from "../Api/consumer-master.api";
-import { ConsumerMasterMapper } from "../Mapper/consumer-master.mapper";
-import { ConsumerMasterValidator } from "../Validator/consumer-master.validator";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import {
+  masterDataDefaultQuery,
+  masterDataPage2Query,
+  masterDataSmallPageQuery,
+} from "../Data/master-data.common.data";
+import { runConsumerMasterValidation } from "./consumer-master.harness";
 
 test.describe("Consumer Master API", () => {
+  test.describe.configure({ retries: 1 });
+  test.setTimeout(180_000);
+
   test(
-    "Validate Consumer Master API",
-    {
-      tag: ["@smoke", "@consumer-master"],
-    },
+    "Validate GET /indore/master-data/consumer-master-data — default page",
+    { tag: ["@smoke", "@master-data", "@consumer-master"] },
     async ({ authenticatedApi }) => {
       const api = new ConsumerMasterApi(authenticatedApi);
-      const {
-        rawResponse,
-        responseBody,
-        responseTime,
-      } = await api.getConsumerMasterData();
-      await PerformanceTracker.track(
-        rawResponse,
-        "Consumer Master API",
-        `${process.env.BASE_URL}/indore/master-data/consumer-master-data?page=1&limit=20`,
-        responseTime
-      );
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
-      validation.execute(
-        "Status Validation",
-        () => assert.validateStatusCode(rawResponse, 200),
-      );
-      validation.execute(
-        "Content Validation",
-        () => assert.validateContentType(rawResponse),
-      );
-      validation.execute(
-        "Response Time",
-        () =>
-          assert.validateResponseTime(
-            responseTime,
-            60000,
-          ),
-      );
-      validation.execute(
-        "Security Validation",
-        () => assert.validateSensitiveData(responseBody),
-      );
-      const data = ConsumerMasterMapper.mapData(responseBody.data);
-      const validator = new ConsumerMasterValidator();
-      validation.execute(
-        "Response",
-        () => validator.validateResponse(responseBody),
-      );
-      validation.execute(
-        "Items",
-        () => validator.validateItemsExist(data),
-      );
-      validation.execute(
-        "Fields",
-        () => validator.validateFields(data),
-      );
-      validation.execute(
-        "Duplicate Consumer RefId",
-        () => validator.validateDuplicateConsumerIds(data),
-      );
-      validation.execute(
-        "Pagination Validation",
-        () => validator.validatePagination(data),
-      );
-      validation.execute(
-        "Meter Phase Validation",
-        () => validator.validateMeterPhases(data),
-      );
-      validation.execute(
-        "Hierarchy Validation",
-        () => validator.validateHierarchyFields(data),
-      );
+      await runConsumerMasterValidation({
+        api,
+        query: { ...masterDataDefaultQuery },
+        testLabel: "Consumer Master API",
+      });
+    },
+  );
 
-      validation.printSummary(
-        "Consumer Master API",
-        responseTime,
-      );
+  test(
+    "Validate pagination — page 2",
+    { tag: ["@master-data", "@consumer-master"] },
+    async ({ authenticatedApi }) => {
+      const api = new ConsumerMasterApi(authenticatedApi);
+      await runConsumerMasterValidation({
+        api,
+        query: { ...masterDataPage2Query },
+        testLabel: "Consumer Master API — Page 2",
+      });
+    },
+  );
+
+  test(
+    "Validate pagination — smaller page size",
+    { tag: ["@master-data", "@consumer-master"] },
+    async ({ authenticatedApi }) => {
+      const api = new ConsumerMasterApi(authenticatedApi);
+      await runConsumerMasterValidation({
+        api,
+        query: { ...masterDataSmallPageQuery },
+        testLabel: "Consumer Master API — Limit 10",
+      });
+    },
+  );
+
+  test(
+    "Validate search q — consumer or meter partial match",
+    { tag: ["@master-data", "@consumer-master"] },
+    async ({ authenticatedApi }) => {
+      const api = new ConsumerMasterApi(authenticatedApi);
+      const probe = await api.getConsumerMasterData({ ...masterDataDefaultQuery });
+      const firstRow = (probe.responseBody.data?.rows ?? [])[0];
+      const searchSource =
+        firstRow?.meterSerialNumber?.trim() ||
+        firstRow?.consumerName?.trim() ||
+        firstRow?.consumerCid?.trim();
+
+      if (!searchSource) {
+        test.skip(true, "No searchable field on page 1");
+        return;
+      }
+
+      const searchTerm = searchSource.slice(0, Math.min(6, searchSource.length));
+      await runConsumerMasterValidation({
+        api,
+        query: { ...masterDataDefaultQuery, q: searchTerm },
+        testLabel: "Consumer Master API — Search",
+        searchTerm,
+      });
     },
   );
 });

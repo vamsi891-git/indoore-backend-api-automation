@@ -1,27 +1,38 @@
-// Api/feeder-master.api.ts
 import { APIRequestContext, APIResponse } from "@playwright/test";
-import { FeederMasterResponse } from "../Mapper/feeder-master.mapper";
-export interface FeederMasterApiResponse {
+import {
+  FeederMasterQuery,
+  FeederMasterResponse,
+} from "../Mapper/feeder-master.mapper";
+
+export interface FeederMasterApiResult {
   rawResponse: APIResponse;
   responseBody: FeederMasterResponse;
   responseTime: number;
 }
+
 export class FeederMasterApi {
-  constructor(private request: APIRequestContext) {}
+  constructor(private readonly request: APIRequestContext) {}
+
   async getFeederMasterData(
-    page = 1,
-    limit = 20,
-  ): Promise<FeederMasterApiResponse> {
+    query: FeederMasterQuery = { page: 1, limit: 20 },
+  ): Promise<FeederMasterApiResult> {
     const start = Date.now();
+    const params: Record<string, string | number> = {
+      page: query.page ?? 1,
+      limit: query.limit ?? 20,
+    };
+    if (query.q?.trim()) params.q = query.q.trim();
+
     const rawResponse = await this.request.get(
-      `/indore/master-data/feeder-master-data?page=${page}&limit=${limit}`,
+      "/indore/master-data/feeder-master-data",
+      { params },
     );
-    const responseBody: FeederMasterResponse = await rawResponse.json();
-    const responseTime = Date.now() - start;
+    const responseBody = (await rawResponse.json()) as FeederMasterResponse;
+
     return {
       rawResponse,
       responseBody,
-      responseTime,
+      responseTime: Date.now() - start,
     };
   }
 }

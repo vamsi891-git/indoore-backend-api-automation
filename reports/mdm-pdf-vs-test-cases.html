@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>MDM PDF vs API Automation Framework — Gap Analysis</title>
+  <style>
+    @page { margin: 18mm 14mm 20mm 14mm; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.45;
+      color: #1a1a1a;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    .cover {
+      border-bottom: 3px solid #1f4e78;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+    .cover h1 {
+      color: #1f4e78;
+      font-size: 22pt;
+      margin: 0 0 8px 0;
+      line-height: 1.2;
+    }
+    .meta {
+      color: #555;
+      font-size: 10pt;
+      margin: 4px 0;
+    }
+    h1 { color: #1f4e78; font-size: 18pt; margin-top: 28px; }
+    h2 { color: #1f4e78; font-size: 14pt; margin-top: 22px; border-bottom: 1px solid #d9e1f2; padding-bottom: 4px; }
+    h3 { color: #2e5f8a; font-size: 12pt; margin-top: 16px; }
+    p { margin: 8px 0; }
+    blockquote {
+      border-left: 4px solid #1f4e78;
+      margin: 12px 0;
+      padding: 8px 12px;
+      background: #f5f8fc;
+      color: #333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 16px 0;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+    th {
+      background: #1f4e78;
+      color: #fff;
+      text-align: left;
+      padding: 7px 8px;
+      font-weight: 600;
+    }
+    td {
+      border: 1px solid #cfd8e3;
+      padding: 6px 8px;
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: #f8fafc; }
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 9pt;
+      background: #eef2f7;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+    pre {
+      background: #f4f6f8;
+      padding: 10px;
+      overflow-x: auto;
+      font-size: 9pt;
+    }
+    ul, ol { margin: 8px 0 12px 20px; }
+    li { margin: 4px 0; }
+    hr { border: none; border-top: 1px solid #ccc; margin: 20px 0; }
+    .footer-note {
+      font-size: 9pt;
+      color: #666;
+      font-style: italic;
+      margin-top: 24px;
+    }
+    .page-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 8pt;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="cover">
+    <h1>MDM Presentation vs API Automation Framework</h1>
+    <p class="meta"><strong>Gap Analysis Report</strong></p>
+    <p class="meta">Project: Indoore MDMS Backend API Automation</p>
+    <p class="meta">Generated: 19 June 2026</p>
+    <p class="meta">Scope: Playwright API framework only (src/modules)</p>
+  </div>
+  <h1>MDM Presentation PDF vs API Automation Framework — Gap Analysis</h1>
+<p><strong>Source PDF:</strong> <code>templates/MDM Presentation_23.12.2025.pdf</code> (131 slides, 23-Dec-2025) <strong>Compared against:</strong> Playwright API automation in <code>src/modules/*/tests/*.spec.ts</code></p>
+<p><strong>Scope:</strong> Framework only — manual testing / Excel workbook <strong>not</strong> included.</p>
+<blockquote>The PDF is a screenshot deck. Text extraction yields <strong>slide titles only</strong> (no steps or API paths). Mapping is at <strong>feature/screen → automation module</strong> level.</blockquote>
+<hr/>
+<h2>Summary</h2>
+<table><thead><tr><th>Metric</th><th>Count</th></tr></thead><tbody>
+<tr><td>PDF named screens</td><td>~95</td></tr>
+<tr><td>Automation modules</td><td>22</td></tr>
+<tr><td>Spec files</td><td>127</td></tr>
+<tr><td><strong>Fully covered</strong></td><td>~42</td></tr>
+<tr><td><strong>Partially covered</strong></td><td>~18</td></tr>
+<tr><td><strong>Not covered</strong></td><td>~35</td></tr>
+</tbody></table>
+<p><strong>Framework coverage (rough): ~63%</strong> of PDF screens have at least one API spec. Core MDM flows (auth, dashboard, master data, DTRs, consumers, billing, MIS, HES commands, energy audits) are well represented. Large report families (SAIFI/SAIDI, Collection Reports, Aberration, Billing Exchange) have <strong>no module</strong>.</p>
+<hr/>
+<h2>Automation modules (framework inventory)</h2>
+<table><thead><tr><th>Module</th><th>Specs</th><th>PDF area</th></tr></thead><tbody>
+<tr><td>AUTH</td><td>11</td><td>Login, session, invite</td></tr>
+<tr><td>DASHBOARD</td><td>5</td><td>Home / overview widgets</td></tr>
+<tr><td>OVERALL-DASHBOARD</td><td>2</td><td>Overall overview</td></tr>
+<tr><td>MASTER-DATA</td><td>4</td><td>Consumer / DTR / Feeder / Substation master</td></tr>
+<tr><td>DTRS</td><td>7</td><td>DTR overview, events, daily analysis</td></tr>
+<tr><td>FEEDER</td><td>4</td><td>Feeder profile, consumption, alerts</td></tr>
+<tr><td>CONSUMERS</td><td>13</td><td>Consumer profile, load, events, billing</td></tr>
+<tr><td>CONSUMPTION</td><td>5</td><td>Daily / pattern / net meter</td></tr>
+<tr><td>BILLING</td><td>2</td><td>Day-wise and monthly billing</td></tr>
+<tr><td>COMMERICIAL-ANALYSIS</td><td>6</td><td>Commercial summary, PF, MD, LF, compare, pattern</td></tr>
+<tr><td>TECHNICAL-ANALYSIS</td><td>2</td><td>Technical summary and analysis</td></tr>
+<tr><td>MIS-DASHBOARD</td><td>16</td><td>Communication, event data, priority</td></tr>
+<tr><td>ENERGY-AUDITS</td><td>7</td><td>Loss analysis, hourly loss, network trends</td></tr>
+<tr><td>HES-COMMANDS</td><td>14</td><td>Meter commands, config, history, samples</td></tr>
+<tr><td>REPORTS</td><td>3</td><td>Event report, event detail, DTR billing</td></tr>
+<tr><td>NOTIFICATIONS</td><td>2</td><td>Web + mobile notifications</td></tr>
+<tr><td>ASSET-MANAGEMENT</td><td>3</td><td>Org / network hierarchy, DTR lookup</td></tr>
+<tr><td>UTILS-LOOKUP</td><td>14</td><td>Search and dropdown lookups</td></tr>
+<tr><td>USERS-ADMIN</td><td>3</td><td>User management, security, devices</td></tr>
+<tr><td>ROLE-PERMISSIONS</td><td>1</td><td>Role permission CRUD</td></tr>
+<tr><td>MODULES-PERMISSIONS</td><td>1</td><td>Module permission CRUD</td></tr>
+<tr><td>AUDIT-LOGS</td><td>2</td><td>Audit list and export</td></tr>
+</tbody></table>
+<hr/>
+<h2>Slide-by-slide mapping (framework only)</h2>
+<p>Legend: ✅ Covered | ⚠️ Partial | ❌ Missing</p>
+<h3>Auth &amp; Home</h3>
+<table><thead><tr><th>PDF Slide</th><th>Framework module / spec</th></tr></thead><tbody>
+<tr><td>MDM Portal Login</td><td>✅ <code>AUTH</code> — login, refresh, invite flows</td></tr>
+<tr><td>MDM Home Screen</td><td>⚠️ <code>DASHBOARD</code> — metrics, DTR summary</td></tr>
+<tr><td>Static Overview Dashboard</td><td>⚠️ <code>DASHBOARD</code> + <code>OVERALL-DASHBOARD</code></td></tr>
+<tr><td>Overall Overview</td><td>✅ <code>OVERALL-DASHBOARD</code> — dashboardmetrics, dtrcommunication</td></tr>
+</tbody></table>
+<h3>Master Data &amp; DTR</h3>
+<table><thead><tr><th>PDF Slide</th><th>Framework module / spec</th></tr></thead><tbody>
+<tr><td>MDM Consumer Master Data</td><td>✅ <code>MASTER-DATA/consumer-master.spec.ts</code></td></tr>
+<tr><td>DTR Overview / DTR Overview Detail</td><td>✅ <code>DTRS</code> — profile, statistics, feeders, events</td></tr>
+</tbody></table>
+<h3>HES / Meter Commands</h3>
+<table><thead><tr><th>PDF Slide</th><th>Framework module / spec</th></tr></thead><tbody>
+<tr><td>Meter Command — Single Meter</td><td>✅ <code>HES-COMMANDS</code> — meter, meter-info, query-meter-job, payment, billing</td></tr>
+<tr><td>Meter Command — Bulk Meter</td><td>⚠️ search-meters, history; no explicit bulk-only spec</td></tr>
+<tr><td>Meter Command Configuration</td><td>✅ profile-config, demand-config, metering-mode, load-curtailment</td></tr>
+</tbody></table>
+<h3>Billing Exchange &amp; Notifications</h3>
+<table><thead><tr><th>PDF Slide</th><th>Framework module / spec</th></tr></thead><tbody>
+<tr><td>Billing Exchange Report — valid</td><td>❌ No module</td></tr>
+<tr><td>Billing Exchange Report — invalid</td><td>❌ No module</td></tr>
+<tr><td>Mobile Notification</td><td>✅ <code>NOTIFICATIONS/notificationsmobile.spec.ts</code></td></tr>
+</tbody></table>
+<h3>Energy Audits / Loss Analysis</h3>
+<table><thead><tr><th>PDF Slide</th><th>Framework module / spec</th></tr></thead><tbody>
+<tr><td>Network Loss Analysis — Billing</td><td>✅ <code>ENERGY-AUDITS/loss-analysis-*.spec.ts</code></td></tr>
+<tr><td>Consumption Compare — Hourly Loss Report</td><td>✅ <code>ENERGY-AUDITS/hourly-loss-report-*.spec.ts</code></td></tr>
+<tr><td>DTR IP Data / LS Data / DP Data</td><td>✅ <code>ENERGY-AUDITS</code> loss-analysis by data type</td></tr>
+</tbody></table>
+<h3>MIS Dashboards</h3>
+<table><thead><tr><th>PDF Slide</th><th>Framework module / spec</th></tr></thead><tbody>
+<tr><td>MIS Dashboard</td><td>✅ <code>MIS-DASHBOARD</code> (16 specs)</td></tr>
+<tr><td>Communication Dashboard</td><td>✅ communication, communicationstats</td></tr>
+<tr><td>Live Communication Dashboard</td><td>⚠️ communication stats only; no live-specific spec</td></tr>
+<tr><td>Communication Dashboard Monthly</td><td>⚠️ No dedicated monthly spec</td></tr>
+<tr><td>Event Data Phase wise</td><td>✅ eventdatavoltage, eventdatacurrent, eventdatapower</td></tr>
+<tr><td>Event Data Category wise</td><td>✅ event-classification</td></tr>
+<tr><td>Event Data Priority Wise</td><td>✅ eventpriority 1–6, priority-overview</td></tr>
+<tr><td>Event — No Restoration</td><td>⚠️ eventdatanonrollover</td></tr>
+<tr><td>MIS Download</td><td>❌ No export/download API test</td></tr>
+</tbody></table>
+<h3>Commercial Analysis (22 PDF sub-screens)</h3>
+<table><thead><tr><th>PDF Slide</th><th>Framework module / spec</th></tr></thead><tbody>
+<tr><td>Commercial Analysis (summary)</td><td>✅ commercial-summary.spec.ts</td></tr>
+<tr><td>PF Violation</td><td>✅ powerfactor.spec.ts</td></tr>
+<tr><td>MD &gt; CD Last Three Month</td><td>✅ mdanalysis.spec.ts (1 variant)</td></tr>
+<tr><td>Sanction Load Violation</td><td>⚠️ Data in <code>mdanalysis.data.ts</code>; <strong>not executed in spec</strong></td></tr>
+<tr><td>LF &lt; 5% / LF &lt; 100%</td><td>⚠️ loadfactor.spec.ts — <code>operator: lt</code>, <code>months: 1</code> only</td></tr>
+<tr><td>LF &lt; 5% Last 3/6 Month</td><td>⚠️ <code>months</code> param exists; not tested</td></tr>
+<tr><td>Consumption Compare Last Month</td><td>✅ consumptioncompare.spec.ts</td></tr>
+<tr><td>Consumption Compare Same Month Last Year</td><td>⚠️ Data exists; <strong>not in spec</strong></td></tr>
+<tr><td>Abnormal Low Consumption</td><td>⚠️ Data exists; <strong>not in spec</strong></td></tr>
+<tr><td>Zero Consumption (1/3/6/9/12/&gt;12 month)</td><td>⚠️ consumptionpattern — <code>zero</code>, <code>months: 1</code> only</td></tr>
+<tr><td>100-unit kWh (3/6/9 month)</td><td>⚠️ threshold param; not all month windows</td></tr>
+<tr><td>LAST SIX MONTH 50% AVG &lt; Initial</td><td>❌ No spec</td></tr>
+<tr><td>Night Zero Consumption</td><td>❌ No spec</td></tr>
+<tr><td>Night consumption &lt;= 10% of Day</td><td>❌ No spec</td></tr>
+</tbody></table>
+<h3>Technical &amp; Techno-Commercial</h3>
+<table><thead><tr><th>PDF Slide</th><th>Framework module / spec</th></tr></thead><tbody>
+<tr><td>Technical Analysis</td><td>✅ TECHNICAL-ANALYSIS (2 specs)</td></tr>
+<tr><td>Techno Commercial Analysis</td><td>❌ No module</td></tr>
+</tbody></table>
+<h3>Reports — Communication &amp; Events</h3>
+<table><thead><tr><th>PDF Slide</th><th>Framework module / spec</th></tr></thead><tbody>
+<tr><td>MIS Report</td><td>⚠️ <code>REPORTS</code> — eventreport, eventdetail, dtrbilling</td></tr>
+<tr><td>Communication — Consumer Detail / IP / DP / LS</td><td>⚠️ <code>CONSUMERS</code> + <code>HES-COMMANDS</code> meter-samples partial</td></tr>
+<tr><td>Event — Consumer Event / Detail</td><td>✅ eventreport, eventdetail</td></tr>
+<tr><td>Event — DT Wise interruption Detail</td><td>❌ No dedicated spec</td></tr>
+</tbody></table>
+<h3>DTR Operations</h3>
+<table><thead><tr><th>PDF Slide</th><th>Framework module / spec</th></tr></thead><tbody>
+<tr><td>DTR Communication</td><td>✅ DASHBOARD/OVERALL dtrcommunication</td></tr>
+<tr><td>DTR Event — Interruption / Detail</td><td>✅ DTRS/dtrevents</td></tr>
+<tr><td>DTR Hourly Load — Actual Load / Load % / Consumption</td><td>⚠️ CONSUMERS/liveloadprofile partial</td></tr>
+<tr><td>DTR Daily Analysis — Loading / Unbalance / Summary</td><td>⚠️ dtrdailythresholdchart, dtrcapacitygauge</td></tr>
+</tbody></table>
+<h3>Consumption, Billing, Pattern</h3>
+<table><thead><tr><th>PDF Slide</th><th>Framework module / spec</th></tr></thead><tbody>
+<tr><td>Consumer Consumption Hourly / Daily / Monthly</td><td>⚠️ dailyconsumption; hourly/monthly gaps</td></tr>
+<tr><td>Night Zero Consumption (00:00–06:00)</td><td>❌ No spec</td></tr>
+<tr><td>Consumption Monthly Net Meter</td><td>✅ monthlynetmeter</td></tr>
+<tr><td>Billing — Day wise / Monthly</td><td>✅ daywisebilling, billingdata</td></tr>
+<tr><td>Pattern — Last 3 Months / Yearly / Comparison</td><td>✅ lastthreemonths, yearly, comparison</td></tr>
+</tbody></table>
+<h3>Consumer Data &amp; Collection Reports</h3>
+<table><thead><tr><th>PDF Slide</th><th>Framework module / spec</th></tr></thead><tbody>
+<tr><td>Consumer Data — Min/Max Voltage</td><td>⚠️ CONSUMERS/powerquality</td></tr>
+<tr><td>Consumer Data — Current Without Voltage</td><td>❌ No spec</td></tr>
+<tr><td>Collection of Report (11 variants)</td><td>❌ <strong>No module</strong></td></tr>
+</tbody></table>
+<h3>Prepaid, Aberration, SAIFI/SAIDI</h3>
+<table><thead><tr><th>PDF Slide</th><th>Framework module / spec</th></tr></thead><tbody>
+<tr><td>Prepaid Summary</td><td>⚠️ HES payment command only; no summary report API</td></tr>
+<tr><td>Aberration Report / Detail / Entry / ATR Zone</td><td>❌ No module</td></tr>
+<tr><td>SAIFI / SAIDI (7 report variants)</td><td>❌ <strong>No module</strong></td></tr>
+</tbody></table>
+<h3>In framework but not prominent in PDF</h3>
+<table><thead><tr><th>Module</th><th>Purpose</th></tr></thead><tbody>
+<tr><td>USERS-ADMIN</td><td>User management, security, devices</td></tr>
+<tr><td>ROLE-PERMISSIONS / MODULES-PERMISSIONS</td><td>Access control</td></tr>
+<tr><td>AUDIT-LOGS</td><td>Audit list and export</td></tr>
+<tr><td>ASSET-MANAGEMENT / UTILS-LOOKUP</td><td>Hierarchy and search APIs</td></tr>
+<tr><td>FEEDER</td><td>Feeder profile, electrical params, daily consumption</td></tr>
+</tbody></table>
+<hr/>
+<h2>Priority gaps (framework only)</h2>
+<h3>P0 — No automation module</h3>
+<ol>
+<li><strong>SAIFI / SAIDI reports</strong> (PDF slides 124–130) — 7 report types</li>
+<li><strong>Collection of Reports</strong> (slides 94–104) — 11 meter/alarm analysis reports</li>
+<li><strong>Billing Exchange Report</strong> valid/invalid (slides 11–12)</li>
+<li><strong>Aberration Report / Entry / ATR</strong> (slides 118–122)</li>
+<li><strong>Techno Commercial Analysis</strong> (slide 55)</li>
+</ol>
+<h3>P1 — Module exists but coverage is thin</h3>
+<ol>
+<li><strong>COMMERICIAL-ANALYSIS</strong> — 22 PDF sub-screens; only ~6 specs; many data variants not executed (Sanction Load, Same Month Last Year, Abnormal Low, zero 3/6/9/12 months, LF 3/6 months, night rules)</li>
+<li><strong>MIS Download</strong> — no export API test</li>
+<li><strong>Prepaid Summary</strong> — only HES payment command, not prepaid report</li>
+<li><strong>Live vs Monthly Communication Dashboard</strong> — no distinct specs</li>
+<li><strong>Consumer hourly consumption</strong>, <strong>Current Without Voltage</strong></li>
+<li><strong>Event — DT Wise interruption Detail</strong></li>
+</ol>
+<h3>P2 — Quick wins inside existing modules</h3>
+<p>Expand specs using data already in <code>src/modules/COMMERICIAL-ANALYSIS/Data/</code>:</p>
+<ul>
+<li><code>consumptioncompare.data.ts</code> — add tests for Same Month Last Year, Abnormal Low</li>
+<li><code>mdanalysis.data.ts</code> — add Sanction Load Violation, Improper MD</li>
+<li><code>consumptionpattern.data.ts</code> — add zero pattern with months 3, 6, 9, 12</li>
+<li><code>loadfactor.api.ts</code> — add months 3, 6 and operator <code>gt</code> (LF &gt; 100%)</li>
+</ul>
+<hr/>
+<h2>Recommended next steps (framework)</h2>
+<ol>
+<li><strong>New modules</strong> (need backend endpoints): SAIFI-SAIDI, COLLECTION-REPORTS, BILLING-EXCHANGE, ABERRATION, TECHNO-COMMERCIAL</li>
+<li><strong>Expand COMMERICIAL-ANALYSIS</strong> — parameterized specs for all PDF commercial sub-types</li>
+<li><strong>Add CONSUMPTION</strong> specs for hourly consumption and night-zero rules if APIs exist</li>
+<li><strong>Add REPORTS/MIS export</strong> spec once download endpoint is confirmed</li>
+</ol>
+<hr/>
+<p class="footer-note">PDF extract: <code>reports/mdm-pdf-extract.txt</code> | Automation root: <code>src/modules/</code></p>
+</body>
+</html>

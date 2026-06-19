@@ -12,7 +12,7 @@ import { moduleNameToSlug } from "./module-slug.util";
 
 const MODULE_PATH_RE = /[\\/]modules[\\/]([^\\/]+)[\\/]/i;
 
-/** e.g. AUTH, MIS DASHBOARDIES, HES-COMMANDS */
+/** e.g. AUTH, MIS-DASHBOARD, HES-COMMANDS */
 export function resolveModuleNameFromPath(filePath: string): string {
   const match = filePath.match(MODULE_PATH_RE);
   return match?.[1] ?? "OTHER";

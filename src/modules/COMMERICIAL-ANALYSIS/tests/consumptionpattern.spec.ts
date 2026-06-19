@@ -23,7 +23,7 @@ test.describe("Consumption Pattern API", () => {
       const { rawResponse, responseBody, responseTime } =
         await api.getConsumptionPattern(consumptionPatternData);
       const defectContext = {
-        module: "COMMERICIAL ANALYSIS",
+        module: "COMMERICIAL-ANALYSIS",
         endpoint: "/indore/analysis/commercial/consumption-pattern",
         requestParams: consumptionPatternData,
         responseStatus: rawResponse.status(),

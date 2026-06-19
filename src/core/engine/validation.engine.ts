@@ -1,6 +1,6 @@
 import { expect, type TestInfo } from "@playwright/test";
-import { backendRules, labelMappings } from "../../modules/MIS DASHBOARDIES/Data/event-classification.data";
-import { EventClassificationResponse, EventClassificationData } from "../../modules/MIS DASHBOARDIES/Mapper/event-classification.mapper";
+import { backendRules, labelMappings } from "../../modules/MIS-DASHBOARD/Data/event-classification.data";
+import { EventClassificationResponse, EventClassificationData } from "../../modules/MIS-DASHBOARD/Mapper/event-classification.mapper";
 import { ValidationResult } from "../models/resultModel";
 import { DefectReportContext, DeveloperReportEngine,} from "./developer-report.engine";
 export interface PrintSummaryOptions {

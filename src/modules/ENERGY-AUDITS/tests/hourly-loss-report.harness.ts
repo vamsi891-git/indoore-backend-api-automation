@@ -26,7 +26,7 @@ export function registerHourlyLossReportTest(
       const hasRows = view.totalCount > 0;
 
       const defectContext = {
-        module: "ENERGY AUDITS",
+        module: "ENERGY-AUDITS",
         endpoint: "/indore/energy-audit/hourly-loss-report",
         requestParams: query,
         responseStatus: rawResponse.status(),

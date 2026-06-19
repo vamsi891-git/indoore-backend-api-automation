@@ -1,13 +1,10 @@
 import fs from "fs";
 import path from "path";
-
 const resultsPath = path.join(process.cwd(), "reports", "playwright-results.json");
-
 function readSummary() {
   if (!fs.existsSync(resultsPath)) {
     return { total: "?", passed: "?", failed: "?", skipped: "?", flaky: "?" };
   }
-
   try {
     const data = JSON.parse(fs.readFileSync(resultsPath, "utf8"));
     const stats = data.stats ?? {};

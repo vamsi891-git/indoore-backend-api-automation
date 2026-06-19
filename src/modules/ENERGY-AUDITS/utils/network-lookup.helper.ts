@@ -1,4 +1,4 @@
-import type { NetworkNode } from "../../ASSET MANAGEMENT/Mapper/networkhierarchy.mapper";
+import type { NetworkNode } from "../../ASSET-MANAGEMENT/Mapper/networkhierarchy.mapper";
 
 export function findFeederNetworkLookupId(
   nodes: NetworkNode[],

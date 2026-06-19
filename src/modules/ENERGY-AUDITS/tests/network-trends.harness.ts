@@ -25,7 +25,7 @@ export function registerNetworkTrendsTest(
       const data = mapNetworkTrendData(responseBody);
 
       const defectContext = {
-        module: "ENERGY AUDITS",
+        module: "ENERGY-AUDITS",
         endpoint: "/indore/energy-audit/network-trends",
         requestParams: query,
         responseStatus: rawResponse.status(),

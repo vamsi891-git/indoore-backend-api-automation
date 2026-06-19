@@ -19,7 +19,7 @@ test.describe("Power Factor Analysis API", () => {
       const { rawResponse, responseBody, responseTime } =
         await api.getPfAnalysis(pfAnalysisQuery);
       const defectContext = {
-        module: "COMMERICIAL ANALYSIS",
+        module: "COMMERICIAL-ANALYSIS",
         endpoint: "/indore/analysis/commercial/pf",
         requestParams: pfAnalysisQuery,
         responseStatus: rawResponse.status(),

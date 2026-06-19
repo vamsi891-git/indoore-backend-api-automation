@@ -1,6 +1,18 @@
+import { mapMasterDataList, MasterDataList } from "./master-data-list.mapper";
+
+export interface ConsumerMasterQuery {
+  page?: number;
+  limit?: number;
+  q?: string;
+  connectionStatusTblRefId?: number;
+  categoryTblRefId?: number;
+  isNetMeter?: boolean;
+}
+
 export interface ConsumerMasterResponse {
   success: boolean;
-  data: ConsumerMasterRawData;
+  data?: ConsumerMasterRawData;
+  error?: { code?: string; message?: string };
 }
 
 export interface ConsumerMasterRawData {
@@ -19,12 +31,8 @@ export interface ConsumerMasterRawData {
   totalPages?: number;
 }
 
-export interface ConsumerMasterData {
-  items: ConsumerMasterItem[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
+export interface ConsumerMasterData extends MasterDataList<ConsumerMasterItem> {
+  columns: Array<{ key: string; header: string }>;
 }
 
 export interface ConsumerMasterItem {
@@ -56,16 +64,14 @@ export interface ConsumerMasterItem {
 }
 
 export class ConsumerMasterMapper {
-  static mapData(data: ConsumerMasterRawData): ConsumerMasterData {
-    const items = data.rows ?? data.items ?? [];
-    const pagination = data.pagination;
-
+  static mapData(
+    data: ConsumerMasterRawData | undefined,
+    defaultLimit = 20,
+  ): ConsumerMasterData {
+    const list = mapMasterDataList(data ?? {}, defaultLimit);
     return {
-      items,
-      total: pagination?.total ?? data.total ?? items.length,
-      page: pagination?.page ?? data.page ?? 1,
-      limit: pagination?.limit ?? data.limit ?? 20,
-      totalPages: pagination?.totalPages ?? data.totalPages ?? 1,
+      ...list,
+      columns: data?.columns ?? [],
     };
   }
 }

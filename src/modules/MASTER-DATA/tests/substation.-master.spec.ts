@@ -1,65 +1,75 @@
-// Tests/substation-master.spec.ts
-
-import { test } from "../../../../src/fixtures/api.fixture";
+import { test } from "../../../fixtures/api.fixture";
 import { SubstationMasterApi } from "../Api/substation-master.api";
-import { SubstationMasterMapper } from "../Mapper/substation-master.mapper";
-import { SubstationMasterValidator } from "../Validator/substation-master.validator";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import {
+  masterDataDefaultQuery,
+  masterDataPage2Query,
+  masterDataSmallPageQuery,
+} from "../Data/master-data.common.data";
+import { runSubstationMasterValidation } from "./substation-master.harness";
 
 test.describe("Substation Master API", () => {
+  test.describe.configure({ retries: 1 });
+  test.setTimeout(180_000);
+
   test(
-    "Validate Substation Master API",
-    {
-      tag: ["@smoke", "@substation"],
-    },
+    "Validate GET /indore/master-data/substation-master-data — default page",
+    { tag: ["@smoke", "@master-data", "@substation-master"] },
     async ({ authenticatedApi }) => {
       const api = new SubstationMasterApi(authenticatedApi);
-      const { rawResponse, responseBody, responseTime } =
-        await api.getSubstationMasterData();
-        await PerformanceTracker.track(
-          rawResponse,
-          "Substation Master API",
-          `${process.env.BASE_URL}/indore/master-data/substation-master-data?page=1&limit=20`,
-          responseTime
-        );
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
-      validation.execute("Status Validation", () =>
-        assert.validateStatusCode(rawResponse, 200),
-      );
-      validation.execute("Content Validation", () =>
-        assert.validateContentType(rawResponse),
-      );
-      validation.execute("Response Time", () =>
-        assert.validateResponseTime(responseTime, 60000),
-      );
-      validation.execute("Security Validation", () =>
-        assert.validateSensitiveData(responseBody),
-      );
-      const data = SubstationMasterMapper.mapData(responseBody.data);
-      const validator = new SubstationMasterValidator();
-      validation.execute("Response", () =>
-        validator.validateResponse(responseBody),
-      );
-      validation.execute("Items", () => validator.validateItemsExist(data));
-      validation.execute("Fields", () => validator.validateFields(data));
-      validation.execute("Pagination", () =>
-        validator.validatePagination(data),
-      );
-      validation.execute("Hierarchy", () =>
-        validator.validateHierarchyFields(data),
-      );
-      validation.execute("Counts", () => validator.validateCounts(data));
-      validation.execute("Serial Numbers", () =>
-        validator.validateSerialNumbers(data),
-      );
-      validation.execute("Consumer DTR Relation", () =>
-        validator.validateConsumerDtrRelation(data),
-      );
+      await runSubstationMasterValidation({
+        api,
+        query: { ...masterDataDefaultQuery },
+        testLabel: "Substation Master API",
+      });
+    },
+  );
 
-      validation.printSummary("Substation Master API", responseTime);
+  test(
+    "Validate pagination — page 2",
+    { tag: ["@master-data", "@substation-master"] },
+    async ({ authenticatedApi }) => {
+      const api = new SubstationMasterApi(authenticatedApi);
+      await runSubstationMasterValidation({
+        api,
+        query: { ...masterDataPage2Query },
+        testLabel: "Substation Master API — Page 2",
+      });
+    },
+  );
+
+  test(
+    "Validate pagination — smaller page size",
+    { tag: ["@master-data", "@substation-master"] },
+    async ({ authenticatedApi }) => {
+      const api = new SubstationMasterApi(authenticatedApi);
+      await runSubstationMasterValidation({
+        api,
+        query: { ...masterDataSmallPageQuery },
+        testLabel: "Substation Master API — Limit 10",
+      });
+    },
+  );
+
+  test(
+    "Validate search q — substation name partial match",
+    { tag: ["@master-data", "@substation-master"] },
+    async ({ authenticatedApi }) => {
+      const api = new SubstationMasterApi(authenticatedApi);
+      const probe = await api.getSubstationMasterData({ ...masterDataDefaultQuery });
+      const substationName = (probe.responseBody.data?.rows ?? [])[0]?.substationName?.trim();
+
+      if (!substationName) {
+        test.skip(true, "No substation name on page 1");
+        return;
+      }
+
+      const searchTerm = substationName.slice(0, Math.min(6, substationName.length));
+      await runSubstationMasterValidation({
+        api,
+        query: { ...masterDataDefaultQuery, q: searchTerm },
+        testLabel: "Substation Master API — Search",
+        searchTerm,
+      });
     },
   );
 });

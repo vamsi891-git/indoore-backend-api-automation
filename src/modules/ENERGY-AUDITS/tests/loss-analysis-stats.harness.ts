@@ -25,7 +25,7 @@ export function registerLossAnalysisStatsTest(
       const data = mapLossAnalysisStatsData(responseBody);
 
       const defectContext = {
-        module: "ENERGY AUDITS",
+        module: "ENERGY-AUDITS",
         endpoint: "/indore/energy-audit/loss-analysis-stats",
         requestParams: query,
         responseStatus: rawResponse.status(),

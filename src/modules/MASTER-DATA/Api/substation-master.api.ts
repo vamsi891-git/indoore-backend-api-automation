@@ -1,30 +1,38 @@
-// Api/substation-master.api.ts
-
 import { APIRequestContext, APIResponse } from "@playwright/test";
-import { SubstationMasterResponse } from "../Mapper/substation-master.mapper";
+import {
+  SubstationMasterQuery,
+  SubstationMasterResponse,
+} from "../Mapper/substation-master.mapper";
 
-export interface SubstationMasterApiResponse {
+export interface SubstationMasterApiResult {
   rawResponse: APIResponse;
-
   responseBody: SubstationMasterResponse;
   responseTime: number;
 }
+
 export class SubstationMasterApi {
-  constructor(private request: APIRequestContext) {}
+  constructor(private readonly request: APIRequestContext) {}
+
   async getSubstationMasterData(
-    page = 1,
-    limit = 20,
-  ): Promise<SubstationMasterApiResponse> {
+    query: SubstationMasterQuery = { page: 1, limit: 20 },
+  ): Promise<SubstationMasterApiResult> {
     const start = Date.now();
+    const params: Record<string, string | number> = {
+      page: query.page ?? 1,
+      limit: query.limit ?? 20,
+    };
+    if (query.q?.trim()) params.q = query.q.trim();
+
     const rawResponse = await this.request.get(
-      `/indore/master-data/substation-master-data?page=${page}&limit=${limit}`,
+      "/indore/master-data/substation-master-data",
+      { params },
     );
-    const responseBody: SubstationMasterResponse = await rawResponse.json();
-    const responseTime = Date.now() - start;
+    const responseBody = (await rawResponse.json()) as SubstationMasterResponse;
+
     return {
       rawResponse,
       responseBody,
-      responseTime,
+      responseTime: Date.now() - start,
     };
   }
 }

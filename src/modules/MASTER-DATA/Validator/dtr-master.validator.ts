@@ -1,12 +1,22 @@
 import { expect } from "@playwright/test";
-import { DtrMasterData, DtrMasterResponse } from "../Mapper/dtr-master.mapper";
+import {
+  DtrMasterData,
+  DtrMasterQuery,
+  DtrMasterResponse,
+} from "../Mapper/dtr-master.mapper";
+import { MasterDataCommonValidator } from "./master-data-common.validator";
 
 export class DtrMasterValidator {
-  validateResponse(response: DtrMasterResponse) {
+  validateResponse(response: DtrMasterResponse): void {
     expect(response.success).toBeTruthy();
+    expect(response.data).toBeDefined();
   }
 
-  validateItemsExist(data: DtrMasterData) {
+  validateColumns(data: DtrMasterData): void {
+    MasterDataCommonValidator.validateColumns(data.columns);
+  }
+
+  validateItemsExist(data: DtrMasterData): void {
     if (data.total > 0) {
       expect(data.items.length).toBeGreaterThan(0);
     } else {
@@ -14,72 +24,62 @@ export class DtrMasterValidator {
     }
   }
 
-  validateFields(data: DtrMasterData) {
+  validateFields(data: DtrMasterData): void {
     data.items.forEach((item) => {
+      expect(Number.isInteger(item.slNo)).toBeTruthy();
       expect(item.slNo).toBeGreaterThan(0);
-      expect(item.id).toBeTruthy();
-      expect(item.id.trim()).not.toEqual("");
-      expect(item.dtr).toBeTruthy();
-      expect(item.dtr.trim()).not.toEqual("");
+      expect(item.id?.trim()).toBeTruthy();
+      expect(item.dtr?.trim()).toBeTruthy();
       expect(item.id).toEqual(item.dtr);
 
-      if (item.circle !== null) {
-        expect(item.circle.trim()).not.toEqual("");
+      for (const field of [
+        item.circle,
+        item.division,
+        item.zone,
+        item.subStation,
+        item.feeder,
+        item.meterSerialNumber,
+        item.serviceDate,
+      ]) {
+        if (field !== null) {
+          expect(field.trim()).not.toEqual("");
+        }
       }
-      if (item.division !== null) {
-        expect(item.division.trim()).not.toEqual("");
-      }
-      if (item.zone !== null) {
-        expect(item.zone.trim()).not.toEqual("");
-      }
-      if (item.subStation !== null) {
-        expect(item.subStation.trim()).not.toEqual("");
-      }
-      if (item.feeder !== null) {
-        expect(item.feeder.trim()).not.toEqual("");
-      }
-      if (item.meterSerialNumber !== null) {
-        expect(item.meterSerialNumber.trim()).not.toEqual("");
-      }
+
       if (item.mf !== null) {
         expect(item.mf.trim()).not.toEqual("");
-        expect(isNaN(Number(item.mf))).toBeFalsy();
-      }
-      if (item.serviceDate !== null) {
-        expect(item.serviceDate.trim()).not.toEqual("");
+        expect(Number.isNaN(Number(item.mf))).toBeFalsy();
       }
     });
   }
 
-  validatePagination(data: DtrMasterData) {
-    expect(Math.ceil(data.total / data.limit)).toEqual(data.totalPages);
+  validatePagination(data: DtrMasterData): void {
+    MasterDataCommonValidator.validatePagination(data);
   }
 
-  /** Same DTR may appear on multiple rows (one row per meter). Log only. */
-  validateDuplicateDtrNames(data: DtrMasterData) {
-    const names = data.items.map((x) => x.dtr);
-    const duplicates = names.filter(
-      (name, index) => names.indexOf(name) !== index,
+  validateQueryParams(data: DtrMasterData, query: DtrMasterQuery): void {
+    MasterDataCommonValidator.validateQueryParams(data, query);
+  }
+
+  validateSlNoSequence(data: DtrMasterData): void {
+    MasterDataCommonValidator.validateSlNoSequence(data);
+  }
+
+  validateRowKeysMatchColumns(data: DtrMasterData): void {
+    MasterDataCommonValidator.validateRowKeysMatchColumns(
+      data.columns,
+      data.items as unknown as Record<string, unknown>[],
     );
-    if (duplicates.length) {
-      console.log(
-        "Duplicate DTR codes on page (multiple meters per DTR):",
-        duplicates.length,
-        "records",
-        [...new Set(duplicates)],
-      );
-    }
   }
 
-  validateUniqueMeterSerials(data: DtrMasterData) {
+  validateUniqueMeterSerials(data: DtrMasterData): void {
     const serials = data.items
       .map((x) => x.meterSerialNumber?.trim())
       .filter((msn): msn is string => Boolean(msn));
-    const unique = new Set(serials);
-    expect(serials.length).toBe(unique.size);
+    expect(new Set(serials).size).toEqual(serials.length);
   }
 
-  validateAscendingOrder(data: DtrMasterData) {
+  validateAscendingDtrOrder(data: DtrMasterData): void {
     data.items.forEach((item, index) => {
       if (index > 0) {
         expect(
@@ -89,14 +89,25 @@ export class DtrMasterValidator {
     });
   }
 
-  validateCoordinates(data: DtrMasterData) {
+  validateCoordinates(data: DtrMasterData): void {
     data.items.forEach((item) => {
       if (item.latitude) {
-        expect(isNaN(Number(item.latitude))).toBeFalsy();
+        expect(Number.isNaN(Number(item.latitude))).toBeFalsy();
       }
       if (item.longitude) {
-        expect(isNaN(Number(item.longitude))).toBeFalsy();
+        expect(Number.isNaN(Number(item.longitude))).toBeFalsy();
       }
+    });
+  }
+
+  validateSearchResults(data: DtrMasterData, searchTerm: string): void {
+    const q = searchTerm.trim().toLowerCase();
+    expect(q.length).toBeGreaterThan(0);
+    data.items.forEach((item) => {
+      const haystack = [item.dtr, item.meterSerialNumber ?? "", item.id]
+        .join(" ")
+        .toLowerCase();
+      expect(haystack.includes(q)).toBeTruthy();
     });
   }
 }

@@ -1,65 +1,75 @@
-// Tests/feeder-master.spec.ts
-
-import { test } from "../../../../src/fixtures/api.fixture";
+import { test } from "../../../fixtures/api.fixture";
 import { FeederMasterApi } from "../Api/feeder-master.api";
-import { FeederMasterMapper } from "../Mapper/feeder-master.mapper";
-import { FeederMasterValidator } from "../Validator/feeder-master.validator";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import {
+  masterDataDefaultQuery,
+  masterDataPage2Query,
+  masterDataSmallPageQuery,
+} from "../Data/master-data.common.data";
+import { runFeederMasterValidation } from "./feeder-master.harness";
 
 test.describe("Feeder Master API", () => {
+  test.describe.configure({ retries: 1 });
+  test.setTimeout(180_000);
+
   test(
-    "Validate Feeder Master API",
-    {
-      tag: ["@smoke", "@feeder"],
-    },
+    "Validate GET /indore/master-data/feeder-master-data — default page",
+    { tag: ["@smoke", "@master-data", "@feeder-master"] },
     async ({ authenticatedApi }) => {
       const api = new FeederMasterApi(authenticatedApi);
-      const { rawResponse, responseBody, responseTime } =
-        await api.getFeederMasterData();
-        await PerformanceTracker.track(
-          rawResponse,
-          "Feeder Master API",
-          `${process.env.BASE_URL}/indore/master-data/feeder-master-data?page=1&limit=20`,
-          responseTime
-        );
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
-      validation.execute("Status Validation", () =>
-        assert.validateStatusCode(rawResponse, 200),
-      );
-      validation.execute("Content Validation", () =>
-        assert.validateContentType(rawResponse),
-      );
-      validation.execute("Response Time", () =>
-        assert.validateResponseTime(responseTime, 60000),
-      );
-      validation.execute("Security Validation", () =>
-        assert.validateSensitiveData(responseBody),
-      );
-      const data = FeederMasterMapper.mapData(responseBody.data);
-      const validator = new FeederMasterValidator();
-      validation.execute("Response", () =>
-        validator.validateResponse(responseBody),
-      );
-      validation.execute("Items", () => validator.validateItemsExist(data));
-      validation.execute("Fields", () => validator.validateFields(data));
-      validation.execute("Pagination", () =>
-        validator.validatePagination(data),
-      );
-      validation.execute("Hierarchy", () =>
-        validator.validateHierarchyFields(data),
-      );
-      validation.execute("Counts", () => validator.validateCounts(data));
-      validation.execute("Serial Numbers", () =>
-        validator.validateSerialNumbers(data),
-      );
-      validation.execute("Consumer DTR Relation", () =>
-        validator.validateConsumerDtrRelation(data),
-      );
+      await runFeederMasterValidation({
+        api,
+        query: { ...masterDataDefaultQuery },
+        testLabel: "Feeder Master API",
+      });
+    },
+  );
 
-      validation.printSummary("Feeder Master API", responseTime);
+  test(
+    "Validate pagination — page 2",
+    { tag: ["@master-data", "@feeder-master"] },
+    async ({ authenticatedApi }) => {
+      const api = new FeederMasterApi(authenticatedApi);
+      await runFeederMasterValidation({
+        api,
+        query: { ...masterDataPage2Query },
+        testLabel: "Feeder Master API — Page 2",
+      });
+    },
+  );
+
+  test(
+    "Validate pagination — smaller page size",
+    { tag: ["@master-data", "@feeder-master"] },
+    async ({ authenticatedApi }) => {
+      const api = new FeederMasterApi(authenticatedApi);
+      await runFeederMasterValidation({
+        api,
+        query: { ...masterDataSmallPageQuery },
+        testLabel: "Feeder Master API — Limit 10",
+      });
+    },
+  );
+
+  test(
+    "Validate search q — feeder name partial match",
+    { tag: ["@master-data", "@feeder-master"] },
+    async ({ authenticatedApi }) => {
+      const api = new FeederMasterApi(authenticatedApi);
+      const probe = await api.getFeederMasterData({ ...masterDataDefaultQuery });
+      const feederName = (probe.responseBody.data?.rows ?? [])[0]?.feederName?.trim();
+
+      if (!feederName) {
+        test.skip(true, "No feeder name on page 1");
+        return;
+      }
+
+      const searchTerm = feederName.slice(0, Math.min(6, feederName.length));
+      await runFeederMasterValidation({
+        api,
+        query: { ...masterDataDefaultQuery, q: searchTerm },
+        testLabel: "Feeder Master API — Search",
+        searchTerm,
+      });
     },
   );
 });

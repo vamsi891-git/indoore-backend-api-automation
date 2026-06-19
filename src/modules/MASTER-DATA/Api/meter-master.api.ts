@@ -1,33 +1,35 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
 import {
-  DtrMasterQuery,
-  DtrMasterResponse,
-} from "../Mapper/dtr-master.mapper";
+  MeterMasterQuery,
+  MeterMasterResponse,
+} from "../Mapper/meter-master.mapper";
 
-export interface DtrMasterApiResult {
+export interface MeterMasterApiResult {
   rawResponse: APIResponse;
-  responseBody: DtrMasterResponse;
+  responseBody: MeterMasterResponse;
   responseTime: number;
 }
 
-export class DtrMasterApi {
+export class MeterMasterApi {
   constructor(private readonly request: APIRequestContext) {}
 
-  async getDtrMasterData(
-    query: DtrMasterQuery = { page: 1, limit: 20 },
-  ): Promise<DtrMasterApiResult> {
+  async getMeterMasterData(
+    query: MeterMasterQuery = { page: 1, limit: 20 },
+  ): Promise<MeterMasterApiResult> {
     const start = Date.now();
     const params: Record<string, string | number> = {
       page: query.page ?? 1,
       limit: query.limit ?? 20,
     };
-    if (query.q?.trim()) params.q = query.q.trim();
+    if (query.q?.trim()) {
+      params.q = query.q.trim();
+    }
 
     const rawResponse = await this.request.get(
-      "/indore/master-data/dtr-master-data",
+      "/indore/master-data/meter-master-data",
       { params },
     );
-    const responseBody = (await rawResponse.json()) as DtrMasterResponse;
+    const responseBody = (await rawResponse.json()) as MeterMasterResponse;
 
     return {
       rawResponse,

@@ -4,12 +4,21 @@ import {
   MasterDataListRaw,
 } from "./master-data-list.mapper";
 
-export interface DtrMasterResponse {
-  success: boolean;
-  data: MasterDataListRaw<DtrMasterItem>;
+export interface DtrMasterQuery {
+  page?: number;
+  limit?: number;
+  q?: string;
 }
 
-export type DtrMasterData = MasterDataList<DtrMasterItem>;
+export interface DtrMasterResponse {
+  success: boolean;
+  data?: MasterDataListRaw<DtrMasterItem>;
+  error?: { code?: string; message?: string };
+}
+
+export interface DtrMasterData extends MasterDataList<DtrMasterItem> {
+  columns: Array<{ key: string; header: string }>;
+}
 
 export interface DtrMasterItem {
   id: string;
@@ -28,7 +37,14 @@ export interface DtrMasterItem {
 }
 
 export class DtrMasterMapper {
-  static mapData(data: MasterDataListRaw<DtrMasterItem>): DtrMasterData {
-    return mapMasterDataList(data);
+  static mapData(
+    data: MasterDataListRaw<DtrMasterItem> | undefined,
+    defaultLimit = 20,
+  ): DtrMasterData {
+    const list = mapMasterDataList(data ?? {}, defaultLimit);
+    return {
+      ...list,
+      columns: data?.columns ?? [],
+    };
   }
 }

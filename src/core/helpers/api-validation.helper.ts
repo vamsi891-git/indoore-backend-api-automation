@@ -4,6 +4,10 @@ import { ValidationEngine } from "../engine/validation.engine";
 import type { DefectReportContext } from "../engine/developer-report.engine";
 import { BackendResponse } from "../utils/backend-response.util";
 import { DEFAULT_REQUEST_TIMEOUT_MS } from "../constants/api-timeouts";
+import {
+  printApiResponse,
+  shouldPrintResponseAlways,
+} from "../utils/response-console.util";
 
 export interface StandardApiValidationOptions {
   apiName: string;
@@ -35,6 +39,14 @@ export class ApiValidationHelper {
       BackendResponse.logFinding(apiName, rawResponse.status(), responseBody);
     }
 
+    if (shouldPrintResponseAlways()) {
+      printApiResponse({
+        apiName,
+        status: rawResponse.status(),
+        body: responseBody,
+      });
+    }
+
     validation.execute("Status", () =>
       assert.validateStatusCode(rawResponse, expectedStatus, responseBody)
     );
@@ -59,6 +71,15 @@ export class ApiValidationHelper {
       defectContext: DefectReportContext;
     },
   ): void {
+    if (validation.getFailedCount() > 0) {
+      printApiResponse({
+        apiName: options.apiName,
+        status: options.defectContext.responseStatus,
+        body: options.defectContext.responseBody,
+        requestParams: options.defectContext.requestParams,
+      });
+    }
+
     validation.printSummary(options.apiName, options.responseTime, {
       testInfo: options.testInfo,
       defectContext: options.defectContext,
