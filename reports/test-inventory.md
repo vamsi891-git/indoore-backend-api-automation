@@ -1,60 +1,76 @@
 # API Test Inventory
 
-Generated: 2026-06-12T04:31:07.938Z
+Generated: 2026-06-19T07:24:02.873Z
 
 ## Summary
 
 | Metric | Count |
 |--------|------:|
-| Modules | 21 |
-| API files | 92 |
-| Spec files | 106 |
-| Test cases | 134 |
-| APIs without spec | 6 |
-| Specs without API | 21 |
+| Modules | 22 |
+| API files | 113 |
+| Spec files | 129 |
+| Test cases | 203 |
+| APIs without spec | 8 |
+| Specs without API | 25 |
 
 ## By module
 
 | Module | APIs | Specs | Tests | API coverage | Missing specs |
 |--------|-----:|------:|------:|-------------:|--------------:|
-| ASSET MANAGEMENT | 3 | 3 | 3 | 67% | 1 |
-| AUDIT LOGS | 2 | 2 | 4 | 100% | 0 |
-| AUTH | 2 | 11 | 35 | 0% | 2 |
+| ASSET-MANAGEMENT | 3 | 3 | 3 | 67% | 1 |
+| AUDIT-LOGS | 2 | 2 | 4 | 100% | 0 |
+| AUTH | 2 | 11 | 38 | 0% | 2 |
 | BILLING | 2 | 2 | 2 | 100% | 0 |
 | COMMERICIAL-ANALYSIS | 7 | 6 | 6 | 100% | 0 |
 | CONSUMERS | 13 | 13 | 13 | 100% | 0 |
 | CONSUMPTION | 3 | 5 | 5 | 67% | 1 |
 | DASHBOARD | 5 | 5 | 5 | 100% | 0 |
 | DTRS | 7 | 7 | 7 | 100% | 0 |
-| ENERGY-AUDITS | 0 | 0 | 0 | — | 0 |
+| ENERGY-AUDITS | 5 | 7 | 0 | 60% | 2 |
 | FEEDER | 4 | 4 | 4 | 100% | 0 |
-| MASTER-DATA | 4 | 4 | 4 | 75% | 1 |
-| MIS DASHBOARDIES | 16 | 16 | 18 | 100% | 0 |
-| MODULES PERMISSIONS | 1 | 1 | 1 | 100% | 0 |
+| HES-COMMANDS | 14 | 14 | 35 | 100% | 0 |
+| MASTER-DATA | 6 | 6 | 35 | 83% | 1 |
+| MIS-DASHBOARD | 16 | 16 | 18 | 100% | 0 |
+| MODULES-PERMISSIONS | 1 | 1 | 1 | 100% | 0 |
 | NOTIFICATIONS | 1 | 2 | 2 | 100% | 0 |
 | OVERALL-DASHBOARD | 2 | 2 | 2 | 100% | 0 |
 | REPORTS | 3 | 3 | 3 | 100% | 0 |
-| ROLE PERMISSIONS | 1 | 1 | 1 | 100% | 0 |
-| TECHNICAL ANALYSIS | 2 | 2 | 2 | 100% | 0 |
-| USERS ADMIN | 1 | 3 | 3 | 100% | 0 |
+| ROLE-PERMISSIONS | 1 | 1 | 1 | 100% | 0 |
+| TECHNICAL-ANALYSIS | 2 | 2 | 2 | 100% | 0 |
+| USERS-ADMIN | 1 | 3 | 3 | 100% | 0 |
 | UTILS-LOOKUP | 13 | 14 | 14 | 92% | 1 |
 
 ## Tags (test case count)
 
 | Tag | Tests |
 |-----|------:|
-| @smoke | 92 |
-| @auth | 35 |
-| @invite | 31 |
-| @e2e | 20 |
+| @smoke | 157 |
+| @auth | 38 |
+| @commands | 35 |
+| @hes | 35 |
+| @master-data | 35 |
+| @invite | 34 |
+| @e2e | 31 |
+| @negative | 30 |
 | @consumer | 14 |
-| @dtr | 10 |
+| @meter-communication | 10 |
+| @dtr | 9 |
 | @dashboard | 6 |
 | @consumption | 5 |
-| @feeder | 5 |
+| @commands-history | 5 |
+| @consumer-master | 5 |
+| @dtr-master | 5 |
+| @feeder-master | 5 |
+| @meter-master | 5 |
+| @substation-master | 5 |
 | @audit | 4 |
 | @billing | 4 |
+| @feeder | 4 |
 | @profile | 3 |
+| @commands-meter-alarms | 3 |
+| @commands-meter-location | 3 |
+| @commands-meter-samples | 3 |
+| @commands-search-meters | 3 |
 | @reports | 3 |
 | @hierarchy | 2 |
 | @export | 2 |
@@ -62,6 +78,15 @@ Generated: 2026-06-12T04:31:07.938Z
 | @event-log | 2 |
 | @power | 2 |
 | @daily-consumption | 2 |
+| @commands-billing | 2 |
+| @commands-demand-config | 2 |
+| @commands-load-curtailment | 2 |
+| @commands-meter-info | 2 |
+| @commands-meter | 2 |
+| @commands-metering-mode | 2 |
+| @commands-payment | 2 |
+| @commands-profile-config | 2 |
+| @commands-query-meter-job | 2 |
 | @comm-stats | 2 |
 | @event-data | 2 |
 | @eventpriority | 2 |
@@ -95,8 +120,6 @@ Generated: 2026-06-12T04:31:07.938Z
 | @statistics | 1 |
 | @feeder-alerts | 1 |
 | @electrical-parameters | 1 |
-| @consumer-master | 1 |
-| @substation | 1 |
 | @classification | 1 |
 | @eventpriority2 | 1 |
 | @priority-overview | 1 |
@@ -121,10 +144,12 @@ Generated: 2026-06-12T04:31:07.938Z
 
 ## APIs missing tests
 
-- **ASSET MANAGEMENT** — `src/modules/ASSET MANAGEMENT/Api/DtrId.api.ts`
+- **ASSET-MANAGEMENT** — `src/modules/ASSET-MANAGEMENT/Api/DtrId.api.ts`
 - **AUTH** — `src/modules/AUTH/Api/auth.api.ts`
 - **AUTH** — `src/modules/AUTH/Api/invite.api.ts`
 - **CONSUMPTION** — `src/modules/CONSUMPTION/Api/patternconsumption.api.ts`
+- **ENERGY-AUDITS** — `src/modules/ENERGY-AUDITS/Api/hourly-loss-report.api.ts`
+- **ENERGY-AUDITS** — `src/modules/ENERGY-AUDITS/Api/loss-analysis.api.ts`
 - **MASTER-DATA** — `src/modules/MASTER-DATA/Api/substation-master.api.ts`
 - **UTILS-LOOKUP** — `src/modules/UTILS-LOOKUP/Api/networksearch.api.ts`
 
@@ -132,24 +157,28 @@ Generated: 2026-06-12T04:31:07.938Z
 
 _Often multi-API flows (e.g. AUTH invite) or renamed APIs._
 
-- **ASSET MANAGEMENT** — `src/modules/ASSET MANAGEMENT/tests/dtrId.spec.ts`
+- **ASSET-MANAGEMENT** — `src/modules/ASSET-MANAGEMENT/tests/dtrId.spec.ts`
 - **AUTH** — `src/modules/AUTH/tests/00-invite-setup.spec.ts`
-- **AUTH** — `src/modules/AUTH/tests/invite-accept-validate.spec.ts`
+- **AUTH** — `src/modules/AUTH/tests/10-invite-preview.spec.ts`
+- **AUTH** — `src/modules/AUTH/tests/11-invite-validate.spec.ts`
+- **AUTH** — `src/modules/AUTH/tests/15-invite-user.spec.ts`
+- **AUTH** — `src/modules/AUTH/tests/90-invite-accept-validate.spec.ts`
+- **AUTH** — `src/modules/AUTH/tests/91-invite-e2e.spec.ts`
+- **AUTH** — `src/modules/AUTH/tests/92-invite-delete.spec.ts`
 - **AUTH** — `src/modules/AUTH/tests/invite-accept.spec.ts`
-- **AUTH** — `src/modules/AUTH/tests/invite-delete.spec.ts`
-- **AUTH** — `src/modules/AUTH/tests/invite-e2e.spec.ts`
 - **AUTH** — `src/modules/AUTH/tests/invite-list.spec.ts`
-- **AUTH** — `src/modules/AUTH/tests/invite-preview.spec.ts`
-- **AUTH** — `src/modules/AUTH/tests/invite-user.spec.ts`
-- **AUTH** — `src/modules/AUTH/tests/invite-validate.spec.ts`
 - **AUTH** — `src/modules/AUTH/tests/login.spec.ts`
 - **AUTH** — `src/modules/AUTH/tests/refresh.spec.ts`
 - **CONSUMPTION** — `src/modules/CONSUMPTION/tests/comparison.spec.ts`
 - **CONSUMPTION** — `src/modules/CONSUMPTION/tests/lastthreemonths.spec.ts`
 - **CONSUMPTION** — `src/modules/CONSUMPTION/tests/yearly.spec.ts`
+- **ENERGY-AUDITS** — `src/modules/ENERGY-AUDITS/tests/hourly-loss-report-dtr.spec.ts`
+- **ENERGY-AUDITS** — `src/modules/ENERGY-AUDITS/tests/hourly-loss-report-feeder.spec.ts`
+- **ENERGY-AUDITS** — `src/modules/ENERGY-AUDITS/tests/loss-analysis-dtr.spec.ts`
+- **ENERGY-AUDITS** — `src/modules/ENERGY-AUDITS/tests/loss-analysis-feeder.spec.ts`
 - **MASTER-DATA** — `src/modules/MASTER-DATA/tests/substation.-master.spec.ts`
 - **NOTIFICATIONS** — `src/modules/NOTIFICATIONS/tests/notificationsmobile.spec.ts`
-- **USERS ADMIN** — `src/modules/USERS ADMIN/tests/userdevices.spec.ts`
-- **USERS ADMIN** — `src/modules/USERS ADMIN/tests/usersecurity.spec.ts`
+- **USERS-ADMIN** — `src/modules/USERS-ADMIN/tests/userdevices.spec.ts`
+- **USERS-ADMIN** — `src/modules/USERS-ADMIN/tests/usersecurity.spec.ts`
 - **UTILS-LOOKUP** — `src/modules/UTILS-LOOKUP/tests/event.spec.ts`
 - **UTILS-LOOKUP** — `src/modules/UTILS-LOOKUP/tests/networksearch.api.spec.ts`

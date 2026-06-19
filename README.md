@@ -82,17 +82,32 @@ src/
   core/                 # Shared client, assertion/validation engines, models
   fixtures/             # Playwright test extensions (authenticated API)
   Global.Setup.ts       # One-time API login before tests
-  modules/
-    MASTER-DATA/           # Master data APIs
-    UTILS-LOOKUP/          # Lookup / search / hierarchy APIs
-    DASHBOARD/             # Dashboard metrics
-    MIS-DASHBOARD/         # MIS reports (includes Data/ for query params)
-    REPORTS/               # Event reports (includes Data/)
-    COMMERICIAL-ANALYSIS/  # Commercial analysis reports (includes Data/)
-    USERS-ADMIN/           # User management APIs
-    ASSET-MANAGEMENT/      # Asset / hierarchy APIs
-    AUDIT-LOGS/            # Audit log APIs
+  modules/               # 22 modules — run `npm run test:modules:list` for slugs
+    ASSET-MANAGEMENT/
+    AUDIT-LOGS/
+    AUTH/
+    BILLING/
+    COMMERICIAL-ANALYSIS/
+    CONSUMERS/
+    CONSUMPTION/
+    DASHBOARD/
+    DTRS/
+    ENERGY-AUDITS/
+    FEEDER/
+    HES-COMMANDS/
+    MASTER-DATA/
+    MIS-DASHBOARD/
+    MODULES-PERMISSIONS/
+    NOTIFICATIONS/
+    OVERALL-DASHBOARD/
+    REPORTS/
+    ROLE-PERMISSIONS/
+    TECHNICAL-ANALYSIS/
+    USERS-ADMIN/
+    UTILS-LOOKUP/
 ```
+
+Module folder names use hyphens (e.g. `ASSET-MANAGEMENT`, not `ASSET MANAGEMENT`). Older docs or reports may still show the previous spaced names.
 
 Typical module folders:
 
