@@ -7,6 +7,8 @@ import { masterDataMaxResponseTimeMs } from "../Data/master-data.common.data";
 import { MeterCommunicationStatusMapper } from "../Mapper/meter-communication-status.mapper";
 import type { MeterCommunicationStatusQuery } from "../Mapper/meter-communication-status.mapper";
 import { MeterCommunicationStatusValidator } from "../Validator/meter-communication-status.validator";
+import { MasterDataCommonValidator } from "../Validator/master-data-common.validator";
+import { MeterCommunicationStatusSuccessResponseSchema } from "../schemas/master-data.schemas";
 
 export interface RunMeterCommunicationValidationOptions {
   api: MeterCommunicationStatusApi;
@@ -74,6 +76,12 @@ export async function runMeterCommunicationValidation(
   );
   validation.execute("Security Validation", () =>
     assert.validateSensitiveData(responseBody),
+  );
+  validation.execute("Zod Response Schema", () =>
+    MasterDataCommonValidator.validateZodResponseSchema(
+      responseBody,
+      MeterCommunicationStatusSuccessResponseSchema,
+    ),
   );
   validation.execute("Response", () => validator.validateResponse(responseBody));
   validation.execute("Summary Counts", () =>

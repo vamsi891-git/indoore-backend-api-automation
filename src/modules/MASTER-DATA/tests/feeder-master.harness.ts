@@ -9,6 +9,8 @@ import {
   FeederMasterQuery,
 } from "../Mapper/feeder-master.mapper";
 import { FeederMasterValidator } from "../Validator/feeder-master.validator";
+import { MasterDataCommonValidator } from "../Validator/master-data-common.validator";
+import { FeederMasterSuccessResponseSchema } from "../schemas/master-data.schemas";
 
 export interface RunFeederMasterValidationOptions {
   api: FeederMasterApi;
@@ -67,6 +69,12 @@ export async function runFeederMasterValidation(
   );
   validation.execute("Security Validation", () =>
     assert.validateSensitiveData(responseBody),
+  );
+  validation.execute("Zod Response Schema", () =>
+    MasterDataCommonValidator.validateZodResponseSchema(
+      responseBody,
+      FeederMasterSuccessResponseSchema,
+    ),
   );
   validation.execute("Response", () => validator.validateResponse(responseBody));
   validation.execute("Columns", () => validator.validateColumns(data));

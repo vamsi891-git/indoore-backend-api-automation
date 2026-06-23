@@ -5,6 +5,7 @@ import {
 } from "../Data/commands-search-meters.data";
 import { SearchMetersResponse } from "../Mapper/commands-search-meters.mapper";
 import { postCommandsWithRetry } from "../utils/commands-request.helper";
+import { parseCommandsResponseBody } from "../utils/commands-response.helper";
 
 export interface CommandsSearchMetersApiResult {
   rawResponse: APIResponse;
@@ -23,7 +24,8 @@ export class CommandsSearchMetersApi {
       SEARCH_METERS_PATH,
       body,
     );
-    const responseBody = (await rawResponse.json()) as SearchMetersResponse;
+    const responseBody =
+      await parseCommandsResponseBody<SearchMetersResponse>(rawResponse);
     return {
       rawResponse,
       responseBody,

@@ -7,6 +7,8 @@ import { masterDataMaxResponseTimeMs } from "../Data/master-data.common.data";
 import { MeterMasterMapper } from "../Mapper/meter-master.mapper";
 import type { MeterMasterQuery } from "../Mapper/meter-master.mapper";
 import { MeterMasterValidator } from "../Validator/meter-master.validator";
+import { MasterDataCommonValidator } from "../Validator/master-data-common.validator";
+import { MeterMasterSuccessResponseSchema } from "../schemas/master-data.schemas";
 
 export interface RunMeterMasterValidationOptions {
   api: MeterMasterApi;
@@ -67,6 +69,12 @@ export async function runMeterMasterValidation(
   );
   validation.execute("Security Validation", () =>
     assert.validateSensitiveData(responseBody),
+  );
+  validation.execute("Zod Response Schema", () =>
+    MasterDataCommonValidator.validateZodResponseSchema(
+      responseBody,
+      MeterMasterSuccessResponseSchema,
+    ),
   );
   validation.execute("Response", () => validator.validateResponse(responseBody));
   validation.execute("Columns", () => validator.validateColumns(data));

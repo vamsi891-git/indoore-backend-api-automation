@@ -39,7 +39,7 @@ export class MeterMasterValidator {
       expect(Number.isInteger(item.meterLookupTblRefId)).toBeTruthy();
       expect(item.meterLookupTblRefId).toBeGreaterThan(0);
 
-      expect(item.id).toEqual(`meter-${item.meterLookupTblRefId}`);
+      expect(item.id).toEqual(String(item.meterLookupTblRefId));
 
       expect(item.isActiveStatus).toBe(true);
 

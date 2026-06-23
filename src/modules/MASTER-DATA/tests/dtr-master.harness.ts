@@ -6,6 +6,8 @@ import { DtrMasterApi } from "../Api/dtr-master.api";
 import { masterDataMaxResponseTimeMs } from "../Data/master-data.common.data";
 import { DtrMasterMapper, DtrMasterQuery } from "../Mapper/dtr-master.mapper";
 import { DtrMasterValidator } from "../Validator/dtr-master.validator";
+import { MasterDataCommonValidator } from "../Validator/master-data-common.validator";
+import { DtrMasterSuccessResponseSchema } from "../schemas/master-data.schemas";
 
 export interface RunDtrMasterValidationOptions {
   api: DtrMasterApi;
@@ -64,6 +66,12 @@ export async function runDtrMasterValidation(
   );
   validation.execute("Security Validation", () =>
     assert.validateSensitiveData(responseBody),
+  );
+  validation.execute("Zod Response Schema", () =>
+    MasterDataCommonValidator.validateZodResponseSchema(
+      responseBody,
+      DtrMasterSuccessResponseSchema,
+    ),
   );
   validation.execute("Response", () => validator.validateResponse(responseBody));
   validation.execute("Columns", () => validator.validateColumns(data));

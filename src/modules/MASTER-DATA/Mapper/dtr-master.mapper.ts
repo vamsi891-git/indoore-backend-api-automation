@@ -23,6 +23,7 @@ export interface DtrMasterData extends MasterDataList<DtrMasterItem> {
 export interface DtrMasterItem {
   id: string;
   slNo: number;
+  meterLookupTblRefId?: number;
   circle: string | null;
   division: string | null;
   zone: string | null;

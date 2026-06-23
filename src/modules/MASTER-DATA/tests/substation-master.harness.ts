@@ -9,6 +9,8 @@ import {
   SubstationMasterQuery,
 } from "../Mapper/substation-master.mapper";
 import { SubstationMasterValidator } from "../Validator/substation-master.validator";
+import { MasterDataCommonValidator } from "../Validator/master-data-common.validator";
+import { SubstationMasterSuccessResponseSchema } from "../schemas/master-data.schemas";
 
 export interface RunSubstationMasterValidationOptions {
   api: SubstationMasterApi;
@@ -67,6 +69,12 @@ export async function runSubstationMasterValidation(
   );
   validation.execute("Security Validation", () =>
     assert.validateSensitiveData(responseBody),
+  );
+  validation.execute("Zod Response Schema", () =>
+    MasterDataCommonValidator.validateZodResponseSchema(
+      responseBody,
+      SubstationMasterSuccessResponseSchema,
+    ),
   );
   validation.execute("Response", () => validator.validateResponse(responseBody));
   validation.execute("Columns", () => validator.validateColumns(data));

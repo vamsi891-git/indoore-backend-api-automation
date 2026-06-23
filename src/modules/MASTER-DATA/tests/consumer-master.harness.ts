@@ -9,6 +9,8 @@ import {
   ConsumerMasterQuery,
 } from "../Mapper/consumer-master.mapper";
 import { ConsumerMasterValidator } from "../Validator/consumer-master.validator";
+import { MasterDataCommonValidator } from "../Validator/master-data-common.validator";
+import { ConsumerMasterSuccessResponseSchema } from "../schemas/master-data.schemas";
 
 export interface RunConsumerMasterValidationOptions {
   api: ConsumerMasterApi;
@@ -67,6 +69,12 @@ export async function runConsumerMasterValidation(
   );
   validation.execute("Security Validation", () =>
     assert.validateSensitiveData(responseBody),
+  );
+  validation.execute("Zod Response Schema", () =>
+    MasterDataCommonValidator.validateZodResponseSchema(
+      responseBody,
+      ConsumerMasterSuccessResponseSchema,
+    ),
   );
   validation.execute("Response", () => validator.validateResponse(responseBody));
   validation.execute("Columns", () => validator.validateColumns(data));

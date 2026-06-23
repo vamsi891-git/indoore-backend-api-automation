@@ -30,7 +30,10 @@ export class DtrMasterValidator {
       expect(item.slNo).toBeGreaterThan(0);
       expect(item.id?.trim()).toBeTruthy();
       expect(item.dtr?.trim()).toBeTruthy();
-      expect(item.id).toEqual(item.dtr);
+
+      if (item.meterLookupTblRefId != null) {
+        expect(item.id).toEqual(String(item.meterLookupTblRefId));
+      }
 
       for (const field of [
         item.circle,

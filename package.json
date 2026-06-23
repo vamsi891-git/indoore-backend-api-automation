@@ -22,6 +22,11 @@
     "report:defects": "explorer reports\\defects",
     "typecheck": "tsc --noEmit",
     "test:inventory": "node scripts/test-inventory.mjs",
+    "test:master-data": "playwright test src/modules/MASTER-DATA/tests --grep-invert @db",
+    "test:master-data:db": "playwright test src/modules/MASTER-DATA/tests --grep @db",
+    "test:billing": "playwright test src/modules/BILLING/tests --grep-invert @db",
+    "test:billing:db": "playwright test src/modules/BILLING/tests --grep @db",
+    "test:db": "playwright test --grep @db",
     "db:ping": "node scripts/db-ping.mjs",
     "db:list": "node scripts/list-databases.mjs"
   },

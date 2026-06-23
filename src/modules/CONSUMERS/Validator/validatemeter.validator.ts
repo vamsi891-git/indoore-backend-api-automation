@@ -89,13 +89,29 @@ export class ValidateMeterValidator {
         }
     }
 
-    validateNoMeterDetailsWhenInvalid(data: ValidateMeterData) {
+    /** Invalid responses vary by reason — NOT_FOUND has no lookup fields; ASSIGNED returns meter context. */
+    validateMeterDetailsByInvalidReason(
+        data: ValidateMeterData,
+        meterSerialNumber: string,
+        organisationLookupId: number,
+    ) {
         if (data.valid) {
             return;
         }
-        expect(data.meterLookupId).toBeUndefined();
-        expect(data.meterSerialNumber).toBeUndefined();
-        expect(data.networkLookupId).toBeUndefined();
+
+        if (data.reason === "METER_NOT_FOUND") {
+            expect(data.meterLookupId).toBeUndefined();
+            expect(data.meterSerialNumber).toBeUndefined();
+            expect(data.networkLookupId).toBeUndefined();
+            return;
+        }
+
+        if (data.reason === "METER_ALREADY_ASSIGNED") {
+            expect(data.meterLookupId).toBeGreaterThan(0);
+            expect(data.meterSerialNumber?.trim()).toBe(meterSerialNumber.trim());
+            expect(data.organisationLookupId).toBe(organisationLookupId);
+            expect(data.networkLookupId).toBeGreaterThan(0);
+        }
     }
 
     validateExpectedOutcome(
@@ -141,7 +157,11 @@ export class ValidateMeterValidator {
             meterSerialNumber,
             organisationLookupId,
         );
-        this.validateNoMeterDetailsWhenInvalid(data);
+        this.validateMeterDetailsByInvalidReason(
+            data,
+            meterSerialNumber,
+            organisationLookupId,
+        );
         if (expectedValid !== undefined) {
             this.validateExpectedOutcome(
                 data,

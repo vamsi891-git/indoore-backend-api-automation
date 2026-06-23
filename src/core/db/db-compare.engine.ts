@@ -8,6 +8,15 @@ export type DbCompareField = {
   optional?: boolean;
 };
 
+/** How the summary table labels the pagination-total row. */
+export type DbTotalCompareMode = "exact" | "lte" | "tolerance";
+
+export type LogDbVsApiSectionOptions = {
+  totalMode?: DbTotalCompareMode;
+  /** Used when totalMode is tolerance (defaults to max(200, 0.1% of DB total)). */
+  tolerance?: number;
+};
+
 function normalizeCompareValue(value: unknown): unknown {
   if (value === null || value === undefined) {
     return null;
@@ -29,42 +38,100 @@ function normalizeCompareValue(value: unknown): unknown {
   return value;
 }
 
-function displayValue(value: unknown): string {
+function displayValueForTable(value: unknown): string {
   if (value === null || value === undefined) {
-    return "(empty)";
+    return "-";
   }
   if (typeof value === "string") {
-    return `"${value}"`;
+    const trimmed = value.trim();
+    return trimmed === "" ? "-" : trimmed;
   }
   return String(value);
 }
 
-const LOG_PREFIX = "[DB vs API]";
+function padCell(value: string, width: number): string {
+  if (value.length <= width) {
+    return value.padEnd(width);
+  }
+  if (width <= 1) {
+    return value.slice(0, width);
+  }
+  return `${value.slice(0, width - 1)}…`;
+}
+
+function buildAsciiTable(headers: string[], rows: string[][]): string {
+  const colWidths = headers.map((header, index) =>
+    Math.max(
+      header.length,
+      ...rows.map((row) => (row[index] ?? "").length),
+      3,
+    ),
+  );
+
+  const border = `+${colWidths.map((w) => "-".repeat(w + 2)).join("+")}+`;
+  const headerRow = `| ${headers.map((h, i) => padCell(h, colWidths[i])).join(" | ")} |`;
+  const bodyRows = rows.map(
+    (row) => `| ${row.map((cell, i) => padCell(cell ?? "", colWidths[i])).join(" | ")} |`,
+  );
+
+  return [border, headerRow, border, ...bodyRows, border].join("\n");
+}
+
+function printDbVsApiTable(title: string, headers: string[], rows: string[][]): void {
+  console.log(`\n${title}`);
+  console.log(buildAsciiTable(headers, rows));
+}
+
+function totalCompareStatus(
+  apiTotal: number,
+  dbTotal: number,
+  mode: DbTotalCompareMode,
+  tolerance: number,
+): string {
+  switch (mode) {
+    case "exact":
+      return apiTotal === dbTotal ? "MATCH" : "MISMATCH";
+    case "lte":
+      return apiTotal <= dbTotal ? "OK (API ≤ DB)" : "FAIL (API > DB)";
+    case "tolerance": {
+      const delta = Math.abs(apiTotal - dbTotal);
+      return delta <= tolerance ? `OK (Δ ${delta})` : `FAIL (Δ ${delta})`;
+    }
+  }
+}
 
 /**
- * Compare API field values to DB query results and print each value in console.
+ * Compare API field values to DB query results and print a summary table.
  * Throws when any required field mismatches — test must fail.
  */
-export function compareApiToDb(fields: DbCompareField[]): void {
+export function compareApiToDb(
+  fields: DbCompareField[],
+  title = "DB vs API — field comparison",
+): void {
   const mismatches: string[] = [];
+  const tableRows: string[][] = [];
 
   fields.forEach(({ label, apiValue, dbValue, optional }) => {
     const api = normalizeCompareValue(apiValue);
     const db = normalizeCompareValue(dbValue);
 
     if (optional && api === null && db === null) {
-      console.log(
-        `${LOG_PREFIX} ${label} | API: (empty) | DB: (empty) | SKIP (optional)`,
-      );
+      tableRows.push([
+        label,
+        displayValueForTable(apiValue),
+        displayValueForTable(dbValue),
+        "SKIP",
+      ]);
       return;
     }
 
     const match = api === db;
-    const status = match ? "MATCH" : "MISMATCH";
-
-    console.log(
-      `${LOG_PREFIX} ${label} | API: ${displayValue(apiValue)} | DB: ${displayValue(dbValue)} | ${status}`,
-    );
+    tableRows.push([
+      label,
+      displayValueForTable(apiValue),
+      displayValueForTable(dbValue),
+      match ? "MATCH" : "MISMATCH",
+    ]);
 
     if (!match) {
       mismatches.push(
@@ -73,9 +140,11 @@ export function compareApiToDb(fields: DbCompareField[]): void {
     }
   });
 
+  printDbVsApiTable(title, ["Field", "API", "DB", "Status"], tableRows);
+
   if (mismatches.length > 0) {
-    console.log(`\n${LOG_PREFIX} FAILED — ${mismatches.length} field(s) mismatched:`);
-    mismatches.forEach((m) => console.log(`  - ${m}`));
+    console.log(`\nDB vs API FAILED — ${mismatches.length} field(s) mismatched:`);
+    mismatches.forEach((m) => console.log(`  • ${m}`));
   }
 
   expect(
@@ -91,24 +160,35 @@ export function assertDbVsApiScalar(
   label: string,
   apiValue: unknown,
   dbValue: unknown,
+  title = "DB vs API — scalar comparison",
 ): void {
-  compareApiToDb([{ label, apiValue, dbValue }]);
+  compareApiToDb([{ label, apiValue, dbValue }], title);
 }
 
+/** Context table before field/scalar assertions — not a pass/fail on its own. */
 export function logDbVsApiSection(
   entityName: string,
   api: { total: number; page: number; limit: number; rowCount: number },
-  db: { total: number; rowCount: number },
+  db: { total: number },
+  options: LogDbVsApiSectionOptions = {},
 ): void {
-  const divider = "=".repeat(50);
-  console.log(`\n${divider}`);
-  console.log(`DB vs API VALIDATION — ${entityName}`);
-  console.log(divider);
-  console.log(`API total     : ${api.total}`);
-  console.log(`DB total      : ${db.total}`);
-  console.log(`API page      : ${api.page}`);
-  console.log(`API limit     : ${api.limit}`);
-  console.log(`API row count : ${api.rowCount}`);
-  console.log(`DB row count  : ${db.rowCount}`);
-  console.log(divider);
+  const totalMode = options.totalMode ?? "exact";
+  const tolerance =
+    options.tolerance ?? Math.max(200, Math.ceil(db.total * 0.001));
+
+  printDbVsApiTable(
+    `DB vs API — ${entityName} (summary)`,
+    ["Metric", "API", "DB", "Status"],
+    [
+      [
+        "Pagination total",
+        String(api.total),
+        String(db.total),
+        totalCompareStatus(api.total, db.total, totalMode, tolerance),
+      ],
+      ["Page", String(api.page), "-", "-"],
+      ["Limit", String(api.limit), "-", "-"],
+      ["Rows on page", String(api.rowCount), "-", "page only"],
+    ],
+  );
 }

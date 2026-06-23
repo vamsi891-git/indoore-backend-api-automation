@@ -5,6 +5,7 @@ import {
 } from "../Data/commands-meter-samples.data";
 import { MeterSamplesResponse } from "../Mapper/commands-meter-samples.mapper";
 import { postCommandsWithRetry } from "../utils/commands-request.helper";
+import { parseCommandsResponseBody } from "../utils/commands-response.helper";
 
 export interface CommandsMeterSamplesApiResult {
   rawResponse: APIResponse;
@@ -23,7 +24,8 @@ export class CommandsMeterSamplesApi {
       METER_SAMPLES_PATH,
       body,
     );
-    const responseBody = (await rawResponse.json()) as MeterSamplesResponse;
+    const responseBody =
+      await parseCommandsResponseBody<MeterSamplesResponse>(rawResponse);
     return {
       rawResponse,
       responseBody,

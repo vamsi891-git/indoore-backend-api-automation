@@ -92,8 +92,12 @@ test.describe("Validate Meter API", () => {
                     organisationLookupId,
                 ),
             );
-            validation.execute("No Meter Details When Invalid", () =>
-                validator.validateNoMeterDetailsWhenInvalid(mapped),
+            validation.execute("Meter Details By Invalid Reason", () =>
+                validator.validateMeterDetailsByInvalidReason(
+                    mapped,
+                    meterSerialNumber,
+                    organisationLookupId,
+                ),
             );
             validation.execute("Expected Outcome", () =>
                 validator.validateExpectedOutcome(

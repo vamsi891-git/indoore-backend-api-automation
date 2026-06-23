@@ -5,6 +5,7 @@ import {
 } from "../Data/commands-meter-location.data";
 import { MeterLocationResponse } from "../Mapper/commands-meter-location.mapper";
 import { postCommandsWithRetry } from "../utils/commands-request.helper";
+import { parseCommandsResponseBody } from "../utils/commands-response.helper";
 
 export interface CommandsMeterLocationApiResult {
   rawResponse: APIResponse;
@@ -23,7 +24,8 @@ export class CommandsMeterLocationApi {
       METER_LOCATION_PATH,
       body,
     );
-    const responseBody = (await rawResponse.json()) as MeterLocationResponse;
+    const responseBody =
+      await parseCommandsResponseBody<MeterLocationResponse>(rawResponse);
     return {
       rawResponse,
       responseBody,

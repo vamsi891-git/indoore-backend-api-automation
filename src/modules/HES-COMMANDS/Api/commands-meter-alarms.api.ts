@@ -3,6 +3,7 @@ import { METER_ALARMS_PATH } from "../Data/commands-meter-alarms.data";
 import type { MeterAlarmsRequestBody } from "../Data/commands-meter-alarms.data";
 import { MeterAlarmsResponse } from "../Mapper/commands-meter-alarms.mapper";
 import { postCommandsWithRetry } from "../utils/commands-request.helper";
+import { parseCommandsResponseBody } from "../utils/commands-response.helper";
 
 export interface CommandsMeterAlarmsApiResult {
   rawResponse: APIResponse;
@@ -21,7 +22,8 @@ export class CommandsMeterAlarmsApi {
       METER_ALARMS_PATH,
       body,
     );
-    const responseBody = (await rawResponse.json()) as MeterAlarmsResponse;
+    const responseBody =
+      await parseCommandsResponseBody<MeterAlarmsResponse>(rawResponse);
     return {
       rawResponse,
       responseBody,

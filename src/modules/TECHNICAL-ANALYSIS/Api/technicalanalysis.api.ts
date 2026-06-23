@@ -1,6 +1,6 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
 import { TechnicalReportResponse } from "../Mapper/technicalanalysis.mapper";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
+import { getTechnicalReportWithRetry } from "../utils/technical-request.helper";
 
 export interface TechnicalReportApiResult {
   rawResponse: APIResponse;
@@ -17,9 +17,7 @@ export class TechnicalReportApi {
     year: number,
     pageSize: number = 100,
   ): Promise<TechnicalReportApiResult> {
-    const startTime = Date.now();
-
-    const response = await getWithAutoRefresh(
+    const { response, responseTime } = await getTechnicalReportWithRetry(
       this.authenticatedApi,
       "/indore/analysis/technical/report",
       {
@@ -33,18 +31,19 @@ export class TechnicalReportApi {
       },
     );
 
-    const responseTime = Date.now() - startTime;
-
-    if (!response.ok()) {
-      throw new Error(`
-        Status: ${response.status()}
-        Body: ${await response.text()}
-      `);
+    let responseBody: TechnicalReportResponse;
+    try {
+      responseBody = (await response.json()) as TechnicalReportResponse;
+    } catch {
+      responseBody = {
+        success: false,
+        data: { rows: [], pagination: { page: 1, limit: pageSize, total: 0, totalPages: 0 } },
+      };
     }
 
     return {
       rawResponse: response,
-      responseBody: await response.json(),
+      responseBody,
       responseTime,
     };
   }

@@ -4,6 +4,8 @@ import {
   buildCommandsHistoryPath,
   CommandsHistoryQuery,
 } from "../Data/commands-history.data";
+import { getCommandsWithRetry } from "../utils/commands-request.helper";
+import { parseCommandsResponseBody } from "../utils/commands-response.helper";
 
 export interface CommandsHistoryApiResult {
   rawResponse: APIResponse;
@@ -17,14 +19,16 @@ export class CommandsHistoryApi {
   async getHistory(
     query: CommandsHistoryQuery = {},
   ): Promise<CommandsHistoryApiResult> {
-    const start = Date.now();
-    const rawResponse = await this.request.get(buildCommandsHistoryPath(query));
+    const { rawResponse, responseTime } = await getCommandsWithRetry(
+      this.request,
+      buildCommandsHistoryPath(query),
+    );
     const responseBody =
-      (await rawResponse.json()) as CommandsHistoryResponse;
+      await parseCommandsResponseBody<CommandsHistoryResponse>(rawResponse);
     return {
       rawResponse,
       responseBody,
-      responseTime: Date.now() - start,
+      responseTime,
     };
   }
 }

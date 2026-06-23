@@ -5,6 +5,7 @@ import {
 } from "../Data/commands-load-curtailment.data";
 import { CommandJobInitResponse } from "../shared/commands-job-init.mapper";
 import { postCommandsWithRetry } from "../utils/commands-request.helper";
+import { parseCommandsResponseBody } from "../utils/commands-response.helper";
 
 export interface CommandsLoadCurtailmentApiResult {
   rawResponse: APIResponse;
@@ -23,7 +24,8 @@ export class CommandsLoadCurtailmentApi {
       LOAD_CURTAILMENT_PATH,
       body,
     );
-    const responseBody = (await rawResponse.json()) as CommandJobInitResponse;
+    const responseBody =
+      await parseCommandsResponseBody<CommandJobInitResponse>(rawResponse);
     return {
       rawResponse,
       responseBody,

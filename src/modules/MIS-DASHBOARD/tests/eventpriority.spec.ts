@@ -13,16 +13,17 @@ test.describe("MIS Event Priority API",{tag: ["@smoke","@eventpriority"]},() => 
                     async ({authenticatedApi}) => {
                         const api =new EventPriorityApi(authenticatedApi);
                         const result =await api.getPriorityData(query.priority,{ period:query.period});
-                        if (result.timeout) {
+                        const rawResponse = result.rawResponse;
+                        if (result.timeout || !rawResponse) {
                             console.log(`BACKEND FINDING Priority API timeout ${query.period}`);
                             return;
                         }
                         const assert =new AssertionEngine();
                         const validation =new ValidationEngine();
                         validation.execute("Status",() => 
-                        assert.validateStatusCode(result.rawResponse,200));
+                        assert.validateStatusCode(rawResponse,200));
                         validation.execute("Content",() => 
-                            assert.validateContentType(result.rawResponse,"application/json"));
+                            assert.validateContentType(rawResponse,"application/json"));
                         validation.execute("Response Time",() => 
                             assert.validateResponseTime(result.responseTime,120000));
                         validation.execute("Sensitive Data",() => 

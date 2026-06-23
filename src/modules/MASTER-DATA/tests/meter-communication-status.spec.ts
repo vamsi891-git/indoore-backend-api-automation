@@ -5,7 +5,15 @@ import {
   masterDataPage2Query,
   masterDataSmallPageQuery,
 } from "../Data/master-data.common.data";
-import { meterCommunicationUnknownFilterQuery } from "../Data/meter-communication-status.data";
+import {
+  meterCommunicationCommunicatingFilterQuery,
+  meterCommunicationNonCommunicatingFilterQuery,
+  meterCommunicationUnknownFilterQuery,
+} from "../Data/meter-communication-status.data";
+import { AssertionEngine } from "../../../core/engine/assertion.engine";
+import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { MasterDataCommonValidator } from "../Validator/master-data-common.validator";
+import { MasterDataErrorResponseSchema } from "../schemas/master-data.schemas";
 import { runMeterCommunicationValidation } from "./meter-communication-status.harness";
 
 test.describe("Meter Communication Status API", () => {
@@ -52,16 +60,61 @@ test.describe("Meter Communication Status API", () => {
   );
 
   test(
-    "Validate communicationStatus filter — unknown",
+    "Validate communicationStatus filter — communicating",
     { tag: ["@master-data", "@meter-communication"] },
     async ({ authenticatedApi }) => {
       const api = new MeterCommunicationStatusApi(authenticatedApi);
       await runMeterCommunicationValidation({
         api,
-        query: { ...meterCommunicationUnknownFilterQuery },
-        testLabel: "Meter Communication Status API — Filter Unknown",
-        communicationStatusFilter: "unknown",
+        query: { ...meterCommunicationCommunicatingFilterQuery },
+        testLabel: "Meter Communication Status API — Filter Communicating",
+        communicationStatusFilter: "communicating",
+        skipCommunicatingTimestampCheck: true,
       });
+    },
+  );
+
+  test(
+    "Validate communicationStatus filter — non-communicating",
+    { tag: ["@master-data", "@meter-communication"] },
+    async ({ authenticatedApi }) => {
+      const api = new MeterCommunicationStatusApi(authenticatedApi);
+      await runMeterCommunicationValidation({
+        api,
+        query: { ...meterCommunicationNonCommunicatingFilterQuery },
+        testLabel: "Meter Communication Status API — Filter Non-Communicating",
+        communicationStatusFilter: "non-communicating",
+      });
+    },
+  );
+
+  test(
+    "Reject communicationStatus filter — unknown query param returns 400",
+    { tag: ["@master-data", "@meter-communication"] },
+    async ({ authenticatedApi }) => {
+      const api = new MeterCommunicationStatusApi(authenticatedApi);
+      const { rawResponse, responseBody } = await api.getMeterCommunicationStatus(
+        meterCommunicationUnknownFilterQuery,
+      );
+
+      const assert = new AssertionEngine();
+      const validation = new ValidationEngine();
+      validation.execute("Status Validation", () =>
+        assert.validateStatusCode(rawResponse, 400, responseBody),
+      );
+      validation.execute("Zod Error Schema", () =>
+        MasterDataCommonValidator.validateZodResponseSchema(
+          responseBody,
+          MasterDataErrorResponseSchema,
+        ),
+      );
+      validation.execute("Security Validation", () =>
+        assert.validateSensitiveData(responseBody),
+      );
+      validation.printSummary(
+        "Meter Communication Status API — Unknown Filter Rejected",
+        0,
+      );
     },
   );
 
@@ -93,43 +146,37 @@ test.describe("Meter Communication Status API", () => {
     },
   );
 
-  test(
-    "Validate organisationLookupId filter when MDM_METER_COMM_ORG_LOOKUP_ID is set",
-    { tag: ["@master-data", "@meter-communication"] },
-    async ({ authenticatedApi }) => {
-      const orgId = Number(process.env.MDM_METER_COMM_ORG_LOOKUP_ID);
-      test.skip(
-        !orgId || Number.isNaN(orgId),
-        "Set MDM_METER_COMM_ORG_LOOKUP_ID to run org-scoped validation",
-      );
+  const orgLookupId = Number(process.env.MDM_METER_COMM_ORG_LOOKUP_ID);
+  if (orgLookupId && !Number.isNaN(orgLookupId)) {
+    test(
+      "Validate organisationLookupId filter when MDM_METER_COMM_ORG_LOOKUP_ID is set",
+      { tag: ["@master-data", "@meter-communication"] },
+      async ({ authenticatedApi }) => {
+        const api = new MeterCommunicationStatusApi(authenticatedApi);
+        await runMeterCommunicationValidation({
+          api,
+          query: { ...masterDataDefaultQuery, organisationLookupId: orgLookupId },
+          testLabel: "Meter Communication Status API — Organisation Filter",
+          skipCommunicatingTimestampCheck: true,
+        });
+      },
+    );
+  }
 
-      const api = new MeterCommunicationStatusApi(authenticatedApi);
-      await runMeterCommunicationValidation({
-        api,
-        query: { ...masterDataDefaultQuery, organisationLookupId: orgId },
-        testLabel: "Meter Communication Status API — Organisation Filter",
-        skipCommunicatingTimestampCheck: true,
-      });
-    },
-  );
-
-  test(
-    "Validate networkLookupId filter when MDM_METER_COMM_NETWORK_LOOKUP_ID is set",
-    { tag: ["@master-data", "@meter-communication"] },
-    async ({ authenticatedApi }) => {
-      const networkId = Number(process.env.MDM_METER_COMM_NETWORK_LOOKUP_ID);
-      test.skip(
-        !networkId || Number.isNaN(networkId),
-        "Set MDM_METER_COMM_NETWORK_LOOKUP_ID to run network-scoped validation",
-      );
-
-      const api = new MeterCommunicationStatusApi(authenticatedApi);
-      await runMeterCommunicationValidation({
-        api,
-        query: { ...masterDataDefaultQuery, networkLookupId: networkId },
-        testLabel: "Meter Communication Status API — Network Filter",
-        skipCommunicatingTimestampCheck: true,
-      });
-    },
-  );
+  const networkLookupId = Number(process.env.MDM_METER_COMM_NETWORK_LOOKUP_ID);
+  if (networkLookupId && !Number.isNaN(networkLookupId)) {
+    test(
+      "Validate networkLookupId filter when MDM_METER_COMM_NETWORK_LOOKUP_ID is set",
+      { tag: ["@master-data", "@meter-communication"] },
+      async ({ authenticatedApi }) => {
+        const api = new MeterCommunicationStatusApi(authenticatedApi);
+        await runMeterCommunicationValidation({
+          api,
+          query: { ...masterDataDefaultQuery, networkLookupId: networkLookupId },
+          testLabel: "Meter Communication Status API — Network Filter",
+          skipCommunicatingTimestampCheck: true,
+        });
+      },
+    );
+  }
 });

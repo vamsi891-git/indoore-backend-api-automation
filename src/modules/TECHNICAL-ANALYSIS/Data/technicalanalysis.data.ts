@@ -1,3 +1,5 @@
+import { TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
+
 export interface TechnicalAnalysisConfig {
   analysisType: string;
   month: number;
@@ -20,7 +22,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration100",
   },
 
@@ -30,7 +32,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: false,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration100",
   },
 
@@ -40,7 +42,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration100",
   },
 
@@ -50,7 +52,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: false,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration100",
   },
 
@@ -60,7 +62,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration100",
   },
 
@@ -70,7 +72,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration12",
   },
 
@@ -80,7 +82,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration12",
   },
 
@@ -90,7 +92,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: false,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration12",
   },
 
@@ -100,7 +102,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: false,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration12",
   },
 
@@ -110,7 +112,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: false,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration12",
   },
 
@@ -120,7 +122,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration12",
   },
 
@@ -130,7 +132,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration12",
   },
 
@@ -140,7 +142,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration12",
   },
 
@@ -150,7 +152,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: false,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "phase",
   },
 
@@ -160,7 +162,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: false,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "phase",
   },
 
@@ -170,7 +172,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: false,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "phase",
   },
 
@@ -180,7 +182,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "count",
   },
 
@@ -190,7 +192,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "count",
   },
 
@@ -200,7 +202,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration100",
   },
 
@@ -210,7 +212,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration12",
   },
 
@@ -220,7 +222,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration10",
   },
 
@@ -230,7 +232,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration10",
   },
 
@@ -240,7 +242,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration10",
   },
 
@@ -250,7 +252,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration12",
   },
 
@@ -260,7 +262,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2025,
     hasData: true,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "count",
   },
 
@@ -270,7 +272,7 @@ export const TechnicalAnalysisData: TechnicalAnalysisConfig[] = [
     year: 2024,
     hasData: false,
     pageSize: 100,
-    maxResponseTime: 60000,
+    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "count",
   },
 ];

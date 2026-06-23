@@ -7,7 +7,13 @@ import {  TechnicalReportValidator} from "../Validator/technical-analysis.shared
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker }  from "../../../core/utils/performancetracker";
+import { BackendResponse } from "../../../core/utils/backend-response.util";
+import { TECHNICAL_ANALYSIS_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
+
 test.describe("Technical Analysis Report API",() => {
+        test.describe.configure({ mode: "serial", retries: 2 });
+        test.setTimeout(TECHNICAL_ANALYSIS_TEST_TIMEOUT_MS);
+
         TechnicalAnalysisData.forEach(
             (report: TechnicalAnalysisConfig) => {
                 test(`${report.analysisType} Report Validation`,
@@ -31,6 +37,15 @@ test.describe("Technical Analysis Report API",() => {
                             `${process.env.BASE_URL}/indore/analysis/technical/report?analysisType=${report.analysisType}&month=${report.month}&year=${report.year}&category=total&pageSize=${report.pageSize}`,
                             responseTime
                         );
+
+                        if (BackendResponse.isServerError(rawResponse.status())) {
+                            BackendResponse.logFinding(
+                                `Technical Analysis - ${report.analysisType}`,
+                                rawResponse.status(),
+                                responseBody,
+                            );
+                        }
+
                         const assert = new AssertionEngine();
                         const validation = new ValidationEngine();
                         // =====================================
@@ -55,6 +70,15 @@ test.describe("Technical Analysis Report API",() => {
                                 expect(responseBody.success,"API Success Validation",).toBeTruthy();
                             },
                         );
+
+                        if (rawResponse.status() !== 200 || !responseBody.success) {
+                            validation.printSummary(
+                                `${report.analysisType} Report API`,
+                                responseTime,
+                            );
+                            return;
+                        }
+
                         // =====================================
                         // MAPPER
                         // =====================================

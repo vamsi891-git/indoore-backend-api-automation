@@ -1,8 +1,17 @@
 import { expect } from "@playwright/test";
+import type { ZodType } from "zod";
+import { assertZodSchema } from "../../../core/utils/zod-validation.helper";
 import type { MasterDataList } from "../Mapper/master-data-list.mapper";
 import type { MasterDataListQuery } from "../Data/master-data.common.data";
 
 export class MasterDataCommonValidator {
+  static validateZodResponseSchema<T>(
+    body: unknown,
+    schema: ZodType<T>,
+  ): T {
+    return assertZodSchema(schema, body, "Zod Response Schema");
+  }
+
   static validatePagination(data: MasterDataList<unknown>): void {
     expect(data.page).toBeGreaterThan(0);
     expect(data.limit).toBeGreaterThan(0);

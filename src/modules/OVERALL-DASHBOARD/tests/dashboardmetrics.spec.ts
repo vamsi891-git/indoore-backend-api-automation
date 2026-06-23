@@ -31,7 +31,9 @@ test.describe("Dashboard Metrics API", () => {
       validation.execute("Security Validation", () =>
         assert.validateSensitiveData(responseBody),
       );
-      const data = DashboardMetricsMapper.mapData(responseBody.data);
+      const data = DashboardMetricsMapper.mapData(
+        responseBody.data as unknown as Record<string, unknown>,
+      );
       const validator = new DashboardMetricsValidator();
       validation.execute("Response Validation", () =>
         validator.validateResponse(responseBody),

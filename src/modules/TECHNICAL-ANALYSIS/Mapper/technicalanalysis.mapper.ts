@@ -47,7 +47,8 @@ export type TechnicalReportRawData = TechnicalGridData | TechnicalReportLegacyDa
 
 export interface TechnicalReportResponse {
   success: boolean;
-  data: TechnicalReportRawData;
+  data?: TechnicalReportRawData;
+  error?: { code: string; message: string };
 }
 
 export interface TechnicalReportQuery {
@@ -94,6 +95,20 @@ export class TechnicalReportMapper {
   ): TechnicalReportMapped {
     const data = response.data;
     const category = query.category ?? "total";
+
+    if (!data) {
+      return {
+        analysisType: query.analysisType,
+        category,
+        month: query.month,
+        year: query.year,
+        page: 1,
+        pageSize: query.pageSize,
+        totalCount: 0,
+        totalPages: 0,
+        rows: [],
+      };
+    }
 
     if (isTechnicalGridData(data)) {
       const { pagination, rows } = data;

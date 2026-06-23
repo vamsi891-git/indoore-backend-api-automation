@@ -28,6 +28,19 @@ export const meterCommunicationSmallPageQuery = {
   limit: 10,
 } as const;
 
+export const meterCommunicationCommunicatingFilterQuery = {
+  page: 1,
+  limit: 20,
+  communicationStatus: "communicating" as CommunicationStatus,
+};
+
+export const meterCommunicationNonCommunicatingFilterQuery = {
+  page: 1,
+  limit: 20,
+  communicationStatus: "non-communicating" as CommunicationStatus,
+};
+
+/** Backend rejects unknown as a query filter (400); kept for contract test only. */
 export const meterCommunicationUnknownFilterQuery = {
   page: 1,
   limit: 20,

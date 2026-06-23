@@ -1,6 +1,6 @@
 # API Test Inventory
 
-Generated: 2026-06-19T07:24:02.873Z
+Generated: 2026-06-23T04:42:25.233Z
 
 ## Summary
 
@@ -9,7 +9,7 @@ Generated: 2026-06-19T07:24:02.873Z
 | Modules | 22 |
 | API files | 113 |
 | Spec files | 129 |
-| Test cases | 203 |
+| Test cases | 205 |
 | APIs without spec | 8 |
 | Specs without API | 25 |
 
@@ -29,7 +29,7 @@ Generated: 2026-06-19T07:24:02.873Z
 | ENERGY-AUDITS | 5 | 7 | 0 | 60% | 2 |
 | FEEDER | 4 | 4 | 4 | 100% | 0 |
 | HES-COMMANDS | 14 | 14 | 35 | 100% | 0 |
-| MASTER-DATA | 6 | 6 | 35 | 83% | 1 |
+| MASTER-DATA | 6 | 6 | 37 | 83% | 1 |
 | MIS-DASHBOARD | 16 | 16 | 18 | 100% | 0 |
 | MODULES-PERMISSIONS | 1 | 1 | 1 | 100% | 0 |
 | NOTIFICATIONS | 1 | 2 | 2 | 100% | 0 |
@@ -44,16 +44,16 @@ Generated: 2026-06-19T07:24:02.873Z
 
 | Tag | Tests |
 |-----|------:|
-| @smoke | 157 |
+| @smoke | 159 |
 | @auth | 38 |
+| @master-data | 37 |
 | @commands | 35 |
 | @hes | 35 |
-| @master-data | 35 |
 | @invite | 34 |
 | @e2e | 31 |
 | @negative | 30 |
 | @consumer | 14 |
-| @meter-communication | 10 |
+| @meter-communication | 12 |
 | @dtr | 9 |
 | @dashboard | 6 |
 | @consumption | 5 |

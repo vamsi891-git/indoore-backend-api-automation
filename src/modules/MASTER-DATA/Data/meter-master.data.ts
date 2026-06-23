@@ -1,18 +1,15 @@
 export const EXPECTED_METER_MASTER_COLUMNS = [
   { key: "slNo", header: "Sl No." },
-  { key: "meterLookupTblRefId", header: "MeterLookup_TblRefID" },
-  { key: "meterSerialNumber", header: "Meter_Serial_Number" },
-  { key: "simNumber", header: "SIM_Number" },
-  { key: "ismiNumber", header: "ISMI_Number" },
-  { key: "ipAddress", header: "IPAddress" },
-  { key: "modemSerialNumber", header: "Modem_Serial_Number" },
-  { key: "modemImeiNumber", header: "Modem_IEMI_Number" },
-  { key: "organisationLookupTblRefId", header: "OrganisationLookup_TblRefID" },
-  { key: "networkLookupTblRefId", header: "NetworkLookup_TblRefID" },
-  { key: "isActiveStatus", header: "IsActiveStatus" },
-  { key: "assetId", header: "AssetID" },
-  { key: "meterRapdrpCode", header: "Meter_RAPDRPCode" },
+  { key: "meterSerialNumber", header: "Meter SL No." },
+  { key: "meterRapdrpCode", header: "Meter RAPDRP Code" },
+  { key: "assetId", header: "Asset ID" },
   { key: "mf", header: "MF" },
+  { key: "simNumber", header: "SIM Number" },
+  { key: "ismiNumber", header: "IMSI Number" },
+  { key: "ipAddress", header: "IP Address" },
+  { key: "modemSerialNumber", header: "Modem Serial No." },
+  { key: "modemImeiNumber", header: "Modem IMEI No." },
+  { key: "isActiveStatus", header: "Status" },
 ] as const;
 
 export const meterMasterDefaultQuery = {

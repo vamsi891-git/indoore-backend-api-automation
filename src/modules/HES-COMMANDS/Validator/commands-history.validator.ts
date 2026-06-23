@@ -62,8 +62,9 @@ export class CommandsHistoryValidator {
     for (const row of rows) {
       expect(row.sno).toBeGreaterThan(0);
       expect(Number.isInteger(row.sno)).toBe(true);
-      expect(Number.isFinite(row.requestId)).toBe(true);
-      expect(row.requestId).toBeGreaterThan(0);
+      expect(row.requestId).toBe(row.requestId.trim());
+      expect(row.requestId.length).toBeGreaterThan(0);
+      expect(/^\d+$/.test(row.requestId)).toBe(true);
       expect(row.requestedBy).toBe(row.requestedBy.trim());
       expect(row.requestedBy.length).toBeGreaterThan(0);
       expect(row.commandName).toBe(row.commandName.trim());
@@ -125,7 +126,7 @@ export class CommandsHistoryValidator {
 
   /** Rows sharing a requestId must be Bulk with matching command/user/time. */
   validateBulkJobRowConsistency(rows: CommandsHistoryRow[]): void {
-    const byRequestId = new Map<number, CommandsHistoryRow[]>();
+    const byRequestId = new Map<string, CommandsHistoryRow[]>();
     for (const row of rows) {
       const group = byRequestId.get(row.requestId) ?? [];
       group.push(row);

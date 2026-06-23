@@ -10,6 +10,14 @@ import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../../src/core/utils/performancetracker";
 import {
+    createPgPool,
+    isDbConfigured,
+} from "../../../core/db/postgres.client";
+import {
+    assertBillingMeterHeaderMatchesDb,
+    firstBillingRowWithMeter,
+} from "./billing-db.helpers";
+import {
     BILLING_MAX_RESPONSE_TIME_MS,
     BILLING_TEST_TIMEOUT_MS,
 } from "../../../core/constants/api-timeouts";
@@ -48,6 +56,9 @@ test.describe("Daywise Billing Data API", () => {
             const validation = new ValidationEngine();
             const validator = new DaywiseBillingValidator();
             let parsed!: ParsedDaywiseBillingResponse;
+            let mappedData:
+                | ReturnType<typeof DaywiseBillingMapper.mapData>
+                | undefined;
 
             try {
                 validation.execute("Status Code", () =>
@@ -84,6 +95,7 @@ test.describe("Daywise Billing Data API", () => {
                     page: DaywiseBillingTestData.page,
                     limit: DaywiseBillingTestData.limit,
                 });
+                mappedData = data;
                 validation.execute("Data Exists", () =>
                     validator.validateDataExists(data),
                 );
@@ -126,6 +138,18 @@ test.describe("Daywise Billing Data API", () => {
                 );
             } finally {
                 validation.finalize("Daywise Billing Data API", responseTime);
+            }
+
+            if (isDbConfigured() && mappedData) {
+                const apiRow = firstBillingRowWithMeter(mappedData.items);
+                if (apiRow?.meterNumber?.trim()) {
+                    const pool = createPgPool();
+                    try {
+                        await assertBillingMeterHeaderMatchesDb(pool, apiRow);
+                    } finally {
+                        await pool.end();
+                    }
+                }
             }
         },
     );

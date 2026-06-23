@@ -50,6 +50,26 @@ export function isDbConfigured(): boolean {
   );
 }
 
+/** Archive DB (Billing_Class_D3, T_DPData_CateSP) — optional second database. */
+export function isArchiveDbConfigured(): boolean {
+  return isDbConfigured() && Boolean(process.env.DB_ARCHIVE_NAME?.trim());
+}
+
+export function readArchiveDbConfig(): DbConfig {
+  const base = readDbConfig();
+  const archiveName = normalizeDatabaseName(process.env.DB_ARCHIVE_NAME ?? "");
+  if (!archiveName) {
+    throw new Error("Missing DB_ARCHIVE_NAME in .env");
+  }
+  return { ...base, database: archiveName };
+}
+
+export function createArchivePgPool(
+  config: DbConfig = readArchiveDbConfig(),
+): pg.Pool {
+  return createPgPool(config);
+}
+
 export function getMissingDbEnvKeys(): string[] {
   const required = ["DB_HOST", "DB_USER", "DB_PASSWORD", "DB_NAME"] as const;
   return required.filter((key) => {

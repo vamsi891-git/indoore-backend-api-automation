@@ -1,6 +1,7 @@
 export interface CommandsHistoryRow {
   sno: number;
-  requestId: number;
+  /** Job/request identifier — API returns string (may exceed MAX_SAFE_INTEGER). */
+  requestId: string;
   requestedBy: string;
   commandName: string;
   selectedMeter: string;
@@ -43,7 +44,7 @@ export class CommandsHistoryMapper {
       message: body.message?.trim() ?? "",
       rows: body.data.map((row) => ({
         sno: row.sno,
-        requestId: row.requestId,
+        requestId: String(row.requestId).trim(),
         requestedBy: row.requestedBy.trim(),
         commandName: row.commandName.trim(),
         selectedMeter: row.selectedMeter.trim(),
