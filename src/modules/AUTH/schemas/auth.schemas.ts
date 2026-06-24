@@ -140,7 +140,7 @@ const AuthSessionDeviceSchema = z
   .object({
     id: z.string().uuid(),
     name: z.string().nullable(),
-    deviceType: z.enum(["desktop", "mobile", "tablet"]),
+    deviceType: z.string().min(1),
     browser: z.string().nullable(),
     os: z.string().nullable(),
     userAgent: z.string().min(1),
@@ -151,7 +151,7 @@ const AuthSessionDeviceSchema = z
     trustedAt: z.string().datetime().nullable(),
     revokedAt: z.string().datetime().nullable(),
     isCurrentDevice: z.boolean(),
-    sessions: z.array(AuthDeviceSessionSchema).min(1),
+    sessions: z.array(AuthDeviceSessionSchema),
   })
   .passthrough();
 

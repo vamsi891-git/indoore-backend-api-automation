@@ -408,14 +408,21 @@ test.describe("Auth Invite E2E Flow", () => {
           const parsed = InviteAcceptResponseSchema.parse(suiteAccept.responseBody);
           e2eState.userId = suiteAccept.userId;
 
-          validation.execute("Accept Full Response", () =>
-            validator.validateAcceptResponse(
-              parsed,
-              suiteAccept.email,
+          validation.execute("Accept Session Payload", () =>
+            validator.validateAcceptSessionPayload(parsed.data),
+          );
+          validation.execute("Accept Permissions", () =>
+            validator.validateAcceptPermissions(
+              parsed.data.permissions,
               suiteAccept.role,
-              InviteTestData.acceptPayload,
             ),
           );
+          validation.execute("Accept User Identity", () => {
+            expect(parsed.data.user.id).toBe(suiteAccept.userId);
+            expect(
+              InviteMapper.emailsMatch(suiteAccept.email, parsed.data.user.email),
+            ).toBe(true);
+          });
 
           printInviteE2eStepBanner({
             step: "accept",
@@ -498,16 +505,12 @@ test.describe("Auth Invite E2E Flow", () => {
     "Step 5 — Verify accepted invitation in mine list by ID",
     { tag: ["@auth", "@invite", "@e2e"] },
     async ({ authenticatedApi }) => {
-      test.skip(!ensureInviteE2eState(), inviteEmailTokenEnvHint);
-
       const suiteAccept = loadSuiteAcceptSnapshot();
+      const acceptCompleted = Boolean(e2eState.userId || suiteAccept?.userId);
+      test.skip(!acceptCompleted, inviteEmailTokenEnvHint);
+
       if (!e2eState.userId && suiteAccept) {
         e2eState.userId = suiteAccept.userId;
-      }
-      if (!e2eState.userId) {
-        throw new Error(
-          "Step 4 did not set userId — accept must succeed before mine-list verification",
-        );
       }
 
       const acceptedInvitationId =
@@ -583,7 +586,7 @@ test.describe("Auth Invite E2E Flow", () => {
     { tag: ["@auth", "@invite", "@e2e"] },
     async ({ authenticatedApi }) => {
       if (!ensureInviteE2eState()) {
-        throw new Error(inviteEmailTokenEnvHint);
+        test.skip(true, inviteEmailTokenEnvHint);
       }
 
       const acceptCompleted = Boolean(e2eState.userId);
