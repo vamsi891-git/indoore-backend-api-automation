@@ -172,17 +172,20 @@ test.describe("Auth Invite User API", () => {
               SentInvitationsListResponseSchema.parse(listResponse.responseBody),
             );
 
-            validation.execute("List Business Rules", () =>
-              validator.validateListInvitations(listModel),
-            );
-            validation.execute("Created Invitation In List", () =>
+            validation.execute("Created Invitation In List", () => {
               validator.validateCreatedInvitationInList(
                 listModel,
                 invitationId,
                 inviteEmail,
                 role,
-              ),
-            );
+              );
+              const listed = InviteMapper.findInvitationById(
+                listModel,
+                invitationId,
+              );
+              expect(listed).toBeDefined();
+              validator.validateInvitationItem(listed!);
+            });
 
             validation.execute("Email Verified", () => {
               expect(InviteMapper.emailsMatch(inviteEmail, inviteModel.email)).toBe(

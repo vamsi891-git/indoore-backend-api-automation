@@ -94,6 +94,7 @@ export class RolePermissionValidator {
             expect(module.moduleId).toBeGreaterThan(0);
             expect(module.moduleKey).toBeTruthy();
             expect(module.moduleName).toBeTruthy();
+            expect(typeof module.moduleIsEnabled).toBe("boolean");
             expect(typeof module.enabled).toBe("boolean");
             expect(Array.isArray(module.permissions)).toBeTruthy();
             expect(moduleIds.has(module.moduleId)).toBeFalsy();
@@ -212,5 +213,119 @@ export class RolePermissionValidator {
             return;
         }
         expect(response.success).toBeTruthy();
+    }
+
+    validateErrorResponse(
+        status: number,
+        body: { success?: boolean; error?: { code?: string; message?: string } },
+        expectedStatuses: number[],
+        expectedCode?: string,
+    ) {
+        expect(expectedStatuses).toContain(status);
+        expect(body.success).toBe(false);
+        expect(body.error?.code).toBeTruthy();
+        if (expectedCode) {
+            expect(body.error?.code).toBe(expectedCode);
+        }
+    }
+
+    validateMyModulesResponse(body: { success?: boolean; data?: { modules?: unknown[] } }) {
+        expect(body.success).toBe(true);
+        expect(Array.isArray(body.data?.modules)).toBe(true);
+        expect(body.data!.modules!.length).toBeGreaterThan(0);
+    }
+
+    validateMyPermissionsResponse(body: {
+        success?: boolean;
+        data?: { permissions?: string[] };
+    }) {
+        expect(body.success).toBe(true);
+        expect(Array.isArray(body.data?.permissions)).toBe(true);
+        expect(body.data!.permissions!.length).toBeGreaterThan(0);
+    }
+
+    validateDependencyRulesResponse(body: {
+        success?: boolean;
+        data?: { requires?: Record<string, string[]> };
+    }) {
+        expect(body.success).toBe(true);
+        expect(body.data?.requires).toBeDefined();
+        expect(typeof body.data!.requires).toBe("object");
+        expect(Object.keys(body.data!.requires!).length).toBeGreaterThan(0);
+    }
+
+    validateModuleEnabledState(
+        modules: Module[],
+        moduleId: number,
+        expectedEnabled: boolean,
+    ) {
+        const module = modules.find((entry) => entry.moduleId === moduleId);
+        expect(module).toBeDefined();
+        expect(module!.enabled).toBe(expectedEnabled);
+    }
+
+    /** When role module toggle is on, every permission in that module is granted. */
+    validateModuleToggleGrantsAllPermissions(module: Module) {
+        expect(module.enabled).toBe(true);
+        expect(module.permissions.length).toBeGreaterThan(0);
+        for (const permission of module.permissions) {
+            expect(permission.granted).toBe(true);
+        }
+    }
+
+    /** When role module toggle is off, no permission in that module is granted. */
+    validateModuleToggleRevokesAllPermissions(module: Module) {
+        expect(module.enabled).toBe(false);
+        for (const permission of module.permissions) {
+            expect(permission.granted).toBe(false);
+        }
+    }
+
+    /** PUT /permissions replaces all grants — exact key match, no extras. */
+    validateExactGrantedKeys(modules: Module[], expectedKeys: string[]) {
+        const grantedKeys = modules.flatMap((module) =>
+            module.permissions
+                .filter((permission) => permission.granted)
+                .map((permission) => permission.permissionKey),
+        );
+        expect(grantedKeys.sort()).toEqual([...expectedKeys].sort());
+    }
+
+    validateNoGrantedPermissions(modules: Module[]) {
+        this.validateExactGrantedKeys(modules, []);
+    }
+
+    validateKeyNotGranted(modules: Module[], key: string) {
+        for (const module of modules) {
+            for (const permission of module.permissions) {
+                if (permission.permissionKey === key) {
+                    expect(permission.granted).toBe(false);
+                }
+            }
+        }
+    }
+
+    validateExpandedDependencies(
+        grantedKeys: string[],
+        assignedKey: string,
+        requiredKeys: string[],
+    ) {
+        expect(grantedKeys).toContain(assignedKey);
+        for (const requiredKey of requiredKeys) {
+            expect(grantedKeys).toContain(requiredKey);
+        }
+    }
+
+    /** Matches built-in roles regardless of casing/spacing (e.g. "Admin", "super admin"). */
+    isProtectedRoleName(name: string): boolean {
+        const normalized = name.trim().toLowerCase().replace(/\s+/g, "_");
+        return [
+            "admin",
+            "super_admin",
+            "superadmin",
+            "manager",
+            "viewer",
+            "user",
+        ].includes(normalized);
     }
 }

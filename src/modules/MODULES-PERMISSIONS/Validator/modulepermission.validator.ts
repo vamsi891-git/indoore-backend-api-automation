@@ -31,6 +31,7 @@ export class ModulePermissionValidator {
             expect(typeof module.key).toBe("string");
             expect(typeof module.name).toBe("string");
             expect(typeof module.sortOrder).toBe("number");
+            expect(typeof module.isEnabled).toBe("boolean");
             expect(Array.isArray(module.permissions)).toBeTruthy();
         }
     }
@@ -176,15 +177,25 @@ export class ModulePermissionValidator {
         expect(module.key).toBe(payload.key);
         expect(module.name).toBe(payload.name);
         expect(module.description).toBe(payload.description);
+        expect(module.isEnabled).toBe(payload.isEnabled ?? true);
         expect(module.permissions.length).toBe(0);
     }
     // =====================================
     // UPDATE MODULE
     // =====================================
     validateUpdatedModule(module: Module,payload: any) {
-        expect(module.key).toBe(payload.key);
-        expect(module.name).toBe(payload.name);
-        expect(module.description).toBe(payload.description);
+        if (payload.key !== undefined) {
+            expect(module.key).toBe(payload.key);
+        }
+        if (payload.name !== undefined) {
+            expect(module.name).toBe(payload.name);
+        }
+        if (payload.description !== undefined) {
+            expect(module.description).toBe(payload.description);
+        }
+        if (payload.isEnabled !== undefined) {
+            expect(module.isEnabled).toBe(payload.isEnabled);
+        }
     }
     // =====================================
     // CREATE PERMISSION
@@ -213,5 +224,27 @@ export class ModulePermissionValidator {
     }
     validateDeleteModule(statusCode: number) {
         expect([200, 204].includes(statusCode)).toBeTruthy();
+    }
+
+    validateErrorResponse(
+        status: number,
+        body: { success?: boolean; error?: { code?: string; message?: string } },
+        expectedStatuses: number[],
+        expectedCode?: string,
+    ) {
+        expect(expectedStatuses).toContain(status);
+        expect(body.success).toBe(false);
+        expect(body.error?.code).toBeTruthy();
+        if (expectedCode) {
+            expect(body.error?.code).toBe(expectedCode);
+        }
+    }
+
+    validatePermissionKeyMatchesModule(moduleKey: string, permissionKey: string) {
+        const legacyModuleKeys = new Set(["dashboard", "hes_commands"]);
+        if (legacyModuleKeys.has(moduleKey)) {
+            return;
+        }
+        expect(permissionKey.startsWith(`${moduleKey}.`)).toBeTruthy();
     }
 }

@@ -1,14 +1,18 @@
-import { test } from "../../../../src/fixtures/api.fixture";
-import { AssertionEngine } from "../../../../src/core/engine/assertion.engine";
-import { ValidationEngine } from "../../../../src/core/engine/validation.engine";
-import { PerformanceTracker } from "../../../../src/core/utils/performancetracker";
+import { test } from "../../../fixtures/api.fixture";
+import { AssertionEngine } from "../../../core/engine/assertion.engine";
+import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { RolePermissionApi } from "../Api/rolepermission.api";
 import { RolePermissionData } from "../Data/rolepermission.data";
 import { RolePermissionMapper } from "../Mapper/rolepermission.mapper";
 import {  RolePermissionValidator } from "../Validator/rolepermission.validator";
-test.describe("Role Permission CRUD Flow",() => {
-        test("Validate Role Permission Module",
-            async ({authenticatedApi}) => {
+test.describe("Role Permission CRUD Flow", () => {
+  test.describe.configure({ mode: "serial" });
+
+  test(
+    "Validate Role Permission Module",
+    { tag: ["@permissions", "@role-permissions"] },
+    async ({ authenticatedApi }) => {
                 const assert =new AssertionEngine();
                 const validation =new ValidationEngine();
                 const validator =new RolePermissionValidator();
@@ -161,11 +165,30 @@ test.describe("Role Permission CRUD Flow",() => {
                 );
                 // =====================================
                 // STEP 7
-                // TOGGLE 2FA (skipped — endpoint not available on API)
+                // TOGGLE 2FA
                 // =====================================
-                console.log(
-                    "BACKEND FINDING: 2FA manage endpoint not available; skipping toggle step"
-                );
+                const toggle2FAResponse =
+                    await roleApi.toggle2FA(RolePermissionData.toggle2FAPayload);
+                const toggleStatus = toggle2FAResponse.rawResponse.status();
+                if (toggleStatus === 404) {
+                    console.log(
+                        "BACKEND FINDING: 2FA manage endpoint not deployed; skipping toggle validation"
+                    );
+                } else {
+                    validation.execute("Toggle 2FA Status", () =>
+                        assert.validateStatusCode(
+                            toggle2FAResponse.rawResponse,
+                            200,
+                            toggle2FAResponse.responseBody
+                        )
+                    );
+                    const toggle2FAData = RolePermissionMapper.mapToggle2FA(
+                        toggle2FAResponse.responseBody
+                    );
+                    validation.execute("Validate Toggle 2FA", () =>
+                        validator.validateToggle2FA(toggle2FAData)
+                    );
+                }
                 // =====================================
                 // STEP 8
                 // DELETE ROLE

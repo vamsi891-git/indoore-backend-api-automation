@@ -8,6 +8,18 @@ export class RolePermissionApi extends TimedApiClient {
     return this.getJson(ROLES_BASE);
   }
 
+  getMyModules(): Promise<ApiCallResult> {
+    return this.getJson("/indore/permissions/me/modules");
+  }
+
+  getMyPermissions(): Promise<ApiCallResult> {
+    return this.getJson("/indore/permissions/me/permissions");
+  }
+
+  getDependencyRules(): Promise<ApiCallResult> {
+    return this.getJson("/indore/permissions/dependency-rules");
+  }
+
   createRole(payload: object): Promise<ApiCallResult> {
     return this.postJson(ROLES_BASE, { data: payload });
   }
@@ -24,8 +36,18 @@ export class RolePermissionApi extends TimedApiClient {
     return this.putJson(`${ROLES_BASE}/${roleId}/permissions`, { data: payload });
   }
 
+  setRoleModuleEnabled(
+    roleId: number,
+    moduleId: number,
+    payload: object,
+  ): Promise<ApiCallResult> {
+    return this.putJson(`${ROLES_BASE}/${roleId}/modules/${moduleId}`, {
+      data: payload,
+    });
+  }
+
   toggle2FA(payload: object): Promise<ApiCallResult> {
-    return this.postJson(`${ROLES_BASE}/permissions/2fa-manage`, { data: payload });
+    return this.putJson(`${ROLES_BASE}/permissions/2fa-manage`, { data: payload });
   }
 
   deleteRole(roleId: number): Promise<ApiCallResult> {

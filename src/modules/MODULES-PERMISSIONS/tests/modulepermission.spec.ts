@@ -1,15 +1,19 @@
 import { expect } from "@playwright/test";
-import { test } from "../../../../src/fixtures/api.fixture";
-import { AssertionEngine } from "../../../../src/core/engine/assertion.engine";
-import { ValidationEngine } from "../../../../src/core/engine/validation.engine";
-import { PerformanceTracker } from "../../../../src/core/utils/performancetracker";
+import { test } from "../../../fixtures/api.fixture";
+import { AssertionEngine } from "../../../core/engine/assertion.engine";
+import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { ModulePermissionApi } from "../Api/modulepermission.api";
 import { ModulePermissionData } from "../Data/modulepermission.data";
 import { ModulePermissionMapper } from "../Mapper/modulepermission.mapper";
 import {  ModulePermissionValidator } from "../Validator/modulepermission.validator";
-test.describe("Module Permission CRUD Flow",() => {
-        test("Validate Module Permission Module",
-            async ({authenticatedApi}) => {
+test.describe("Module Permission CRUD Flow", () => {
+  test.describe.configure({ mode: "serial" });
+
+  test(
+    "Validate Module Permission Module",
+    { tag: ["@permissions", "@modules-permissions"] },
+    async ({ authenticatedApi }) => {
                 const assert =new AssertionEngine();
                 const validation =new ValidationEngine();
                 const validator =new ModulePermissionValidator();
@@ -41,6 +45,11 @@ test.describe("Module Permission CRUD Flow",() => {
                 validation.execute("Validate Module Structure",() =>
                         validator.validateModuleStructure(modules)
                 );
+                validation.execute("Validate Module isEnabled", () => {
+                    for (const module of modules) {
+                        expect(typeof module.isEnabled).toBe("boolean");
+                    }
+                });
                 validation.execute("Validate Module Business Rules",() =>
                         validator.validateModuleBusinessRules(modules)
                 );
@@ -84,7 +93,12 @@ test.describe("Module Permission CRUD Flow",() => {
                 // STEP 2
                 // CREATE MODULE
                 // =====================================
-                const createModuleResponse =await moduleApi.createModule(ModulePermissionData.createModulePayload);
+                const createModulePayload =
+                    ModulePermissionData.buildUniqueModulePayload();
+                const createModuleResponse =await moduleApi.createModule(createModulePayload);
+                if (createModuleResponse.rawResponse.status() === 429) {
+                    test.skip(true, "Rate limited — retry module CRUD test later");
+                }
                 validation.execute("Create Module Status Code",() =>
                         assert.validateStatusCode(createModuleResponse.rawResponse,201,createModuleResponse.responseBody)
                 );
@@ -97,7 +111,7 @@ test.describe("Module Permission CRUD Flow",() => {
                 const createdModule =ModulePermissionMapper.mapModule(createModuleResponse.responseBody);
                 ModulePermissionData.moduleId =createdModule.id;
                 validation.execute("Validate Created Module",() =>
-                        validator.validateCreatedModule(createdModule,ModulePermissionData.createModulePayload)
+                        validator.validateCreatedModule(createdModule,createModulePayload)
                 );
                 await PerformanceTracker.track(
                     createModuleResponse.rawResponse,

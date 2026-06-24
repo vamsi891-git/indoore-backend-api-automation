@@ -2,9 +2,16 @@ import { APIRequestContext } from "@playwright/test";
 import {
   AuthLoginData,
   AuthLoginSession,
+  AuthMeData,
   isDeviceSelectionPayload,
   isLoginSessionPayload,
 } from "../schemas/auth.schemas";
+import {
+  Device,
+  DeviceGroup,
+  DeviceSession,
+  UserManagementMapper,
+} from "../../USERS-ADMIN/Mapper/usermanagement.mapper";
 
 export interface AuthSessionModel {
   accessToken: string;
@@ -78,5 +85,37 @@ export class AuthMapper {
 
   static hasDirectSession(data: AuthLoginData): data is AuthLoginSession {
     return isLoginSessionPayload(data);
+  }
+
+  static mapMe(response: { data?: AuthMeData }): AuthMeData {
+    return response.data as AuthMeData;
+  }
+
+  static mapAuthDevices(response: {
+    data?: {
+      deviceGroups?: DeviceGroup[];
+      devices?: Device[];
+      unlinkedSessions?: DeviceSession[];
+    };
+  }): {
+    deviceGroups: DeviceGroup[];
+    devices: Device[];
+    unlinkedSessions: DeviceSession[];
+  } {
+    return UserManagementMapper.mapDevices({ data: response?.data ?? {} });
+  }
+
+  static mapDeleteDevice(response: {
+    data?: {
+      deviceId?: string;
+      familiesRevoked?: number;
+      refreshRowsRevoked?: number;
+    };
+  }) {
+    return UserManagementMapper.mapDeleteDevice({ data: response?.data ?? {} });
+  }
+
+  static pickDeletableDevice(devices: Device[]): Device | undefined {
+    return UserManagementMapper.pickDeletableDevice(devices);
   }
 }

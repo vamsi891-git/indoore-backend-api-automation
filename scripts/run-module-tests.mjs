@@ -29,7 +29,7 @@ if (!module) {
   process.exit(1);
 }
 
-const playwrightArgs = ["playwright", "test", module.testPath];
+const playwrightArgs = ["playwright", "test", module.testPath, "--workers=1"];
 if (smoke) {
   playwrightArgs.push("--grep", "@smoke");
 }

@@ -23,4 +23,13 @@ export class UserManagementApi extends TimedApiClient {
   forceLogout(userId: string): Promise<ApiCallResult> {
     return this.postJson(`${USERS_BASE}/${userId}/force-logout`);
   }
+
+  getAuditLogs(params: {
+    page?: number;
+    limit?: number;
+    sort?: string;
+    action?: string;
+  }): Promise<ApiCallResult> {
+    return this.getJson(`${USERS_BASE}/audit-logs`, { params });
+  }
 }

@@ -62,6 +62,20 @@ export interface DeviceSession {
     expiresAt: string;
 }
 // =====================================
+// DEVICE GROUP
+// =====================================
+
+export interface DeviceGroup {
+    osKey: string;
+    osLabel: string;
+    deviceCount: number;
+    activeSessionCount: number;
+    lastSeenAt: string | null;
+    hasCurrentDevice: boolean;
+    devices: Device[];
+}
+
+// =====================================
 // DEVICE
 // =====================================
 
@@ -81,34 +95,89 @@ export interface Device {
     isCurrentDevice: boolean;
     sessions: DeviceSession[];
 }
+
+// =====================================
+// AUDIT LOG
+// =====================================
+
+export interface AuditLog {
+    id: string;
+    actorId: string | null;
+    targetId: string | null;
+    actorFullName: string;
+    actorEmail: string;
+    actorRoleName: string;
+    targetFullName: string;
+    targetEmail: string;
+    targetRoleName: string;
+    action: string;
+    details: Record<string, unknown> | null;
+    ipAddress: string;
+    createdAt: string;
+    actionLabel: string | null;
+    actorLabel: string;
+    roleLabel: string;
+    ipAddressLabel: string;
+    detailsLines: string[];
+    detailsLabel: string;
+}
+
+export interface ActionFilterOption {
+    value: string;
+    label: string;
+}
+
+export interface AuditLogsPagination extends UsersPagination {
+    nextCursor: string | null;
+}
+
 // =====================================
 // USER MAPPER
 // ======
 export class UserManagementMapper {
-    static mapUsers(response: any) {
+    static mapUsers(response: any): {
+        users: User[];
+        pagination: UsersPagination;
+    } {
         const data = response?.data ?? {};
         return {
-        users:data.users ?? [],
+            users: (data.users ?? []) as User[],
             pagination: {
-                total:data.total ?? 0,
-                page:data.page ?? 0,
-                limit:data.limit ?? 0,
-                totalPages:data.totalPages ?? 0
-            }
+                total: data.total ?? 0,
+                page: data.page ?? 0,
+                limit: data.limit ?? 0,
+                totalPages: data.totalPages ?? 0,
+            },
         };
     }
     static mapUser(response: any): User {
         return response?.data?.user;
     }
     static mapDevices(response: any): {
+        deviceGroups: DeviceGroup[];
         devices: Device[];
         unlinkedSessions: DeviceSession[];
     } {
         const data = response?.data ?? {};
+        const deviceGroups = (data.deviceGroups ?? []) as DeviceGroup[];
+        const devicesFromGroups = deviceGroups.flatMap(
+            (group) => group.devices ?? [],
+        );
+        const legacyDevices = (data.devices ?? []) as Device[];
         return {
-            devices: (data.devices ?? []) as Device[],
+            deviceGroups,
+            devices:
+                devicesFromGroups.length > 0 ? devicesFromGroups : legacyDevices,
             unlinkedSessions: (data.unlinkedSessions ?? []) as DeviceSession[],
         };
+    }
+
+    static pickDeletableDevice(devices: Device[]): Device | undefined {
+        return (
+            devices.find((device) => !device.isCurrentDevice && !device.revokedAt) ??
+            devices.find((device) => !device.isCurrentDevice) ??
+            devices[0]
+        );
     }
     static mapForceLogout(response: any) {
         const data = response?.data ?? {};
@@ -123,6 +192,26 @@ export class UserManagementMapper {
             deviceId:data.deviceId ?? "",
             familiesRevoked:data.familiesRevoked ?? 0,
             refreshRowsRevoked:data.refreshRowsRevoked ?? 0
+        };
+    }
+
+    static mapAuditLogs(response: any): {
+        logs: AuditLog[];
+        actionFilterOptions: ActionFilterOption[];
+        pagination: AuditLogsPagination;
+    } {
+        const data = response?.data ?? {};
+        return {
+            logs: (data.logs ?? []) as AuditLog[],
+            actionFilterOptions: (data.actionFilterOptions ??
+                []) as ActionFilterOption[],
+            pagination: {
+                total: data.total ?? 0,
+                page: data.page ?? 0,
+                limit: data.limit ?? 0,
+                totalPages: data.totalPages ?? 0,
+                nextCursor: data.nextCursor ?? null,
+            },
         };
     }
 }

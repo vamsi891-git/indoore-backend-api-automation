@@ -18,6 +18,9 @@ export interface Module {
     moduleId: number;
     moduleKey: string;
     moduleName: string;
+    /** Catalog flag — module enabled in the permissions catalog. */
+    moduleIsEnabled: boolean;
+    /** Role-level toggle — grants/revokes all permissions in the module. */
     enabled: boolean;
     permissions: Permission[];
 }
@@ -109,5 +112,136 @@ export class RolePermissionMapper {
         }
 
         return { permissionKeys: keys };
+    }
+
+    static collectGrantedKeys(modules: Module[]): string[] {
+        const keys: string[] = [];
+        for (const module of modules) {
+            for (const permission of module.permissions) {
+                if (permission.granted) {
+                    keys.push(permission.permissionKey);
+                }
+            }
+        }
+        return keys;
+    }
+
+    static findModule(modules: Module[], moduleKey: string): Module | undefined {
+        return modules.find((module) => module.moduleKey === moduleKey);
+    }
+
+    static findModuleById(modules: Module[], moduleId: number): Module | undefined {
+        return modules.find((module) => module.moduleId === moduleId);
+    }
+
+    /** Two distinct permission keys from different modules for replace-semantics tests. */
+    static pickReplacePermissionKeys(
+        modules: Module[],
+        requires: Record<string, string[]> = {},
+    ): { firstKeys: string[]; secondKeys: string[] } | null {
+        const catalogKeys = new Set(
+            modules.flatMap((module) =>
+                module.permissions.map((permission) => permission.permissionKey),
+            ),
+        );
+
+        const isStableModuleKey = (moduleKey: string): boolean =>
+            !/module_updated_|^auto_|test_module/i.test(moduleKey);
+
+        const hasResolvableDeps = (key: string): boolean => {
+            const deps = requires[key];
+            if (!deps?.length) {
+                return true;
+            }
+            return deps.every(
+                (dep) => dep === key || catalogKeys.has(dep),
+            );
+        };
+
+        const preferredModuleOrder = [
+            "analysis",
+            "reports",
+            "events",
+            "billing",
+            "communication",
+        ];
+
+        const candidates: { moduleKey: string; moduleId: number; key: string }[] =
+            [];
+        for (const module of modules) {
+            if (module.moduleIsEnabled === false || !isStableModuleKey(module.moduleKey)) {
+                continue;
+            }
+            for (const permission of module.permissions) {
+                const key = permission.permissionKey?.trim();
+                if (key && hasResolvableDeps(key)) {
+                    candidates.push({
+                        moduleKey: module.moduleKey,
+                        moduleId: module.moduleId,
+                        key,
+                    });
+                }
+            }
+        }
+
+        candidates.sort((a, b) => {
+            const aRank = preferredModuleOrder.indexOf(a.moduleKey);
+            const bRank = preferredModuleOrder.indexOf(b.moduleKey);
+            const aScore = aRank === -1 ? 999 : aRank;
+            const bScore = bRank === -1 ? 999 : bRank;
+            return aScore - bScore;
+        });
+
+        const first = candidates[0];
+        const second = candidates.find(
+            (entry) =>
+                entry.moduleId !== first?.moduleId && entry.key !== first?.key,
+        );
+
+        if (!first || !second) {
+            return null;
+        }
+
+        return {
+            firstKeys: [first.key],
+            secondKeys: [second.key],
+        };
+    }
+
+    /**
+     * Picks a permission that has dependency requires in the catalog
+     * (prefers user_management.update → user_management.view).
+     */
+    static pickDependencyAssignCase(
+        requires: Record<string, string[]>,
+        modules: Module[],
+    ): { permissionKey: string; requiredKeys: string[] } | null {
+        const catalogKeys = new Set(
+            modules.flatMap((module) =>
+                module.permissions.map((permission) => permission.permissionKey),
+            ),
+        );
+
+        const preferred = "user_management.update";
+        const preferredDeps = requires[preferred]?.filter(
+            (key) => key !== preferred && catalogKeys.has(key),
+        );
+        if (preferredDeps?.length) {
+            return { permissionKey: preferred, requiredKeys: preferredDeps };
+        }
+
+        for (const [permissionKey, deps] of Object.entries(requires)) {
+            if (!catalogKeys.has(permissionKey)) {
+                continue;
+            }
+            const requiredKeys = deps.filter(
+                (key) => key !== permissionKey && catalogKeys.has(key),
+            );
+            if (requiredKeys.length > 0) {
+                return { permissionKey, requiredKeys };
+            }
+        }
+
+        return null;
     }
 }

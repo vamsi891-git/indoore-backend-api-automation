@@ -4,11 +4,11 @@ import { DEFAULT_TEST_TIMEOUT_MS } from "./src/core/constants/api-timeouts";
 
 dotenv.config();
 
-const playwrightWorkers = Number(process.env.PLAYWRIGHT_WORKERS ?? "2");
+const playwrightWorkers = Number(process.env.PLAYWRIGHT_WORKERS ?? "1");
 const resolvedWorkers =
   Number.isFinite(playwrightWorkers) && playwrightWorkers > 0
     ? playwrightWorkers
-    : 2;
+    : 1;
 
 export default defineConfig({
   globalSetup: require.resolve("./src/global.setup.ts"),

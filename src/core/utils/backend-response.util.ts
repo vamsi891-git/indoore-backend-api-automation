@@ -32,5 +32,13 @@ export const BackendResponse = {
     }
     this.logFinding(label, status, body);
     return true;
-  }
+  },
+
+  shouldSkipRateLimit(status: number, label = "Rate limit"): boolean {
+    if (status !== 429) {
+      return false;
+    }
+    this.logFinding(label, "429 TOO_MANY_REQUESTS");
+    return true;
+  },
 };

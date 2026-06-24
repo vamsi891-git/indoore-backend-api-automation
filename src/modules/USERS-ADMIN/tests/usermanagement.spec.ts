@@ -1,15 +1,24 @@
-import { test } from "../../../../src/fixtures/api.fixture";
+import { test } from "../../../fixtures/api.fixture";
 import { expect } from "@playwright/test";
-import { AssertionEngine } from "../../../../src/core/engine/assertion.engine";
-import { ValidationEngine } from "../../../../src/core/engine/validation.engine";
-import { PerformanceTracker } from "../../../../src/core/utils/performancetracker";
+import { AssertionEngine } from "../../../core/engine/assertion.engine";
+import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { UserManagementApi } from "../Api/usermanagement.api";
-import { UserManagementData }  from "../Data/usermanagement.data";
-import { UserManagementMapper} from "../Mapper/usermanagement.mapper";
-import { UserManagementValidator} from "../Validator/usermanagement.validator";
-test.describe("User Management Flow",() => {
-        test("Validate User Management Module",
-            async ({authenticatedApi}) => {
+import {
+    isAutomationAccount,
+    UserDevicesTestConfig,
+    UserManagementData,
+} from "../Data/usermanagement.data";
+import { User, UserManagementMapper } from "../Mapper/usermanagement.mapper";
+import { UserManagementValidator } from "../Validator/usermanagement.validator";
+
+test.describe("User Management Flow", () => {
+    test.describe.configure({ mode: "serial" });
+
+    test(
+        "Validate User Management Module",
+        { tag: ["@users-admin"] },
+        async ({ authenticatedApi }) => {
                 const assert =new AssertionEngine();
                 const validation =new ValidationEngine();
                 const validator =new UserManagementValidator();
@@ -72,17 +81,20 @@ test.describe("User Management Flow",() => {
                 validation.execute("Validate NaN Handling",() =>
                         validator.validateNaNValues(users)
                 );
-                const selectedUser =users.find((u: any) =>u.role === "manager") || users[0];
-                UserManagementData.userId =selectedUser.id;
-                UserManagementData.updateUserPayload = {
-                    firstName: "Automation",
-                    lastName: "User",
-                    phone: `9${Date.now().toString().slice(-9)}`,
-                    designation: selectedUser.designation ?? "manager",
-                    organisationId: selectedUser.organisationLookupId,
-                    networkId: selectedUser.networkLookupId,
-                    role: selectedUser.role
-                };
+                const selectedUser =
+                    users.find(
+                        (user: User) =>
+                            user.id === UserDevicesTestConfig.deviceTestUserId &&
+                            !isAutomationAccount(user),
+                    ) ??
+                    users.find(
+                        (user: User) =>
+                            user.role.toLowerCase() === "manager" &&
+                            !isAutomationAccount(user),
+                    ) ??
+                    users.find((user: User) => !isAutomationAccount(user)) ??
+                    users[0];
+                UserManagementData.userId = selectedUser.id;
                 await PerformanceTracker.track(
                     usersResponse.rawResponse,
                     "Get Users",
@@ -109,6 +121,8 @@ test.describe("User Management Flow",() => {
                 validation.execute("Validate Two Factor Rules",() =>
                         validator.validateTwoFactorRules(user)
                 );
+                UserManagementData.updateUserPayload =
+                    UserManagementData.buildUpdateUserPayload(user);
                 await PerformanceTracker.track(
                     userResponse.rawResponse,
                     "Get User By Id",

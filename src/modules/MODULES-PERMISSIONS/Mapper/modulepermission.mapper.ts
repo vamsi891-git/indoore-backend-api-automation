@@ -17,6 +17,7 @@ export interface Module {
     name: string;
     description: string | null;
     sortOrder: number;
+    isEnabled: boolean;
     permissions: Permission[];
 }
 // =====================================
@@ -33,6 +34,7 @@ export class ModulePermissionMapper {
                 name:module.name,
                 description:module.description,
                 sortOrder:module.sortOrder,
+                isEnabled:module.isEnabled ?? true,
                 permissions:module.permissions ?? []
             })
         );
@@ -48,6 +50,7 @@ export class ModulePermissionMapper {
             name:response.data.module.name,
             description:response.data.module.description,
             sortOrder:response.data.module.sortOrder,
+            isEnabled:response.data.module.isEnabled ?? true,
             permissions:response.data.module.permissions ?? []
         };
     }

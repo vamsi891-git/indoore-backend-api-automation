@@ -1,6 +1,9 @@
 export const AuthPaths = {
   login: "/indore/auth/login",
   refresh: "/indore/auth/refresh",
+  me: "/indore/auth/me",
+  devices: "/indore/auth/devices",
+  deviceById: (deviceId: string) => `/indore/auth/devices/${deviceId}`,
   releaseDevice: "/indore/auth/login/release-device",
   invite: "/indore/auth/invite",
   invitePreview: "/indore/auth/invite/preview",
@@ -34,4 +37,8 @@ export const AuthTestData = {
   get hasValidCredentials(): boolean {
     return Boolean(this.validEmail && this.validPassword);
   },
+  unknownDeviceId: "00000000-0000-0000-0000-000000000001",
+  expectedUnauthorizedStatus: 401,
+  expectedCsrfMissingStatus: 403,
+  expectedCsrfMissingCode: "CSRF_MISSING",
 };

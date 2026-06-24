@@ -93,6 +93,9 @@ test.describe("Auth Refresh API", () => {
           validation.execute("Refresh Session", () =>
             validator.validateRefreshSession(beforeSession, afterSession),
           );
+          validation.execute("Refresh Token Type", () =>
+            validator.validateRefreshTokenType(parsed.data),
+          );
 
           TokenManager.seed(
             afterSession.accessToken,
