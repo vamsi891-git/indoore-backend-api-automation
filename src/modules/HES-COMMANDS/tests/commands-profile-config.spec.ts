@@ -1,5 +1,6 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
+import { HES_COMMANDS_E2E_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
@@ -22,9 +23,11 @@ import {
   extractJobNamesFromInitResponse,
 } from "../shared/commands-job-init.mapper";
 import { pollQueryMeterJob } from "../utils/commands-job-e2e.helper";
+import { waitForHesJobQueueSlot } from "../utils/commands-hes-queue.helper";
 
 test.describe("HES Commands — Profile Config (E2E)", () => {
-  test.setTimeout(180_000);
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(HES_COMMANDS_E2E_TEST_TIMEOUT_MS);
 
   test(
     "Validate POST /commands/profile-config → query-meter-job — profile_capture_period_get E2E",
@@ -38,6 +41,7 @@ test.describe("HES Commands — Profile Config (E2E)", () => {
       ],
     },
     async ({ authenticatedApi }, testInfo) => {
+      await waitForHesJobQueueSlot();
       const body = buildProfileConfigBody();
       const requestedMeters = normalizeMeters(body.meters);
       const profileApi = new CommandsProfileConfigApi(authenticatedApi);

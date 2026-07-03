@@ -1,6 +1,17 @@
 import { expect } from "@playwright/test";
 import { OrganisationHierarchyData, OrganisationNode} from "../Mapper/organizationhierarchy.mapper";
+import { AssetManagementCommonValidator } from "./asset-management-common.validator";
+import { OrganisationHierarchySuccessResponseSchema } from "../schemas/asset-management.schemas";
+
 export class OrganisationHierarchyValidator {
+
+    validateResponse(body: unknown) {
+        AssetManagementCommonValidator.validateSuccessEnvelope(body as { success?: boolean });
+        AssetManagementCommonValidator.validateZodResponseSchema(
+            body,
+            OrganisationHierarchySuccessResponseSchema,
+        );
+    }
     validateItemsExist(data: OrganisationHierarchyData) {
         expect(data.hierarchy.length).toBeGreaterThan(0);
     }
@@ -31,6 +42,7 @@ export class OrganisationHierarchyValidator {
             node.dtrs?.forEach(dtr => {
                 expect(dtr.networkLookupId).toBeGreaterThan(0);
                 expect(dtr.dtrName).toBeTruthy();
+                expect(Number.isInteger(dtr.consumerCount)).toBe(true);
                 expect(dtr.consumerCount).toBeGreaterThanOrEqual(0);
                 if (dtr.dtrMeter) {
                     expect(dtr.dtrMeter.meterLookupId).toBeGreaterThan(0);
@@ -70,5 +82,29 @@ export class OrganisationHierarchyValidator {
         expected.forEach(level => {
             expect(found).toContain(level)
         })
+    }
+
+    validateOrgDtrUniqueness(nodes: OrganisationNode[]) {
+        const walk = (items: OrganisationNode[]) => {
+            items.forEach((node) => {
+                const dtrIds = (node.dtrs ?? []).map((d) => d.networkLookupId);
+                expect(new Set(dtrIds).size).toEqual(dtrIds.length);
+                walk(node.children ?? []);
+            });
+        };
+        walk(nodes);
+    }
+
+    validateSubtreeRoot(nodes: OrganisationNode[], rootId: number) {
+        expect(nodes.length).toBeGreaterThan(0);
+        const ids = new Set<number>();
+        const walk = (items: OrganisationNode[]) => {
+            items.forEach((node) => {
+                ids.add(node.organisationLookupId);
+                walk(node.children ?? []);
+            });
+        };
+        walk(nodes);
+        expect(ids.has(rootId)).toBe(true);
     }
 }

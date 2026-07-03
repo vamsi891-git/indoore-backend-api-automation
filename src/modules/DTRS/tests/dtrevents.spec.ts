@@ -31,7 +31,10 @@ test.describe("DTR Events API", () => {
             const validation = new ValidationEngine();
             const validator = new DtrEventsValidator();
 
-            validation.execute("Status", () =>
+            // =====================================
+            // API VALIDATIONS
+            // =====================================
+            validation.execute("Status Code", () =>
                 assert.validateStatusCode(rawResponse, 200, responseBody),
             );
             validation.execute("Content Type", () =>
@@ -45,17 +48,19 @@ test.describe("DTR Events API", () => {
             );
             validation.execute("Required Fields", () =>
                 assert.validateRequiredFields(responseBody.data, [
-                    "rows",
-                    "page",
-                    "pageSize",
-                    "totalCount",
-                    "totalPages",
+                    ...dtrEventsData.dataFields,
                 ]),
             );
 
             const mapped = DtrEventsMapper.map(responseBody);
             const { rows } = mapped;
 
+            // =====================================
+            // BACKEND VALIDATIONS
+            // =====================================
+            validation.execute("Response Envelope", () =>
+                validator.validateResponseEnvelope(responseBody),
+            );
             validation.execute("Success", () =>
                 validator.validateSuccess(mapped.success),
             );
@@ -71,14 +76,14 @@ test.describe("DTR Events API", () => {
             validation.execute("Pagination Math", () =>
                 validator.validatePaginationMath(mapped),
             );
+            validation.execute("Approximate Total Count", () =>
+                validator.validateApproximateTotalCount(mapped),
+            );
             validation.execute("Empty Scenario", () =>
                 validator.validateEmptyScenario(mapped),
             );
             validation.execute("Rows Present When Total Positive", () =>
                 validator.validateRowsPresentWhenTotalPositive(mapped),
-            );
-            validation.execute("Business Rules", () =>
-                validator.validateBusinessRules(mapped),
             );
 
             if (rows.length > 0) {
@@ -92,11 +97,7 @@ test.describe("DTR Events API", () => {
                     validator.validateRowStructure(rows),
                 );
                 validation.execute("Serial Sequence", () =>
-                    validator.validateSerialSequence(
-                        rows,
-                        mapped.page,
-                        mapped.pageSize,
-                    ),
+                    validator.validateSerialSequence(rows, mapped.page, mapped.pageSize),
                 );
                 validation.execute("Unique Serial Numbers", () =>
                     validator.validateUniqueSerialNumbers(rows),

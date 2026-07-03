@@ -1,5 +1,6 @@
 import { expect } from "@playwright/test";
 import { test as apiDbTest } from "../../../fixtures/api-db.fixture";
+import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import {
   assertDbVsApiScalar,
   compareApiToDb,
@@ -11,7 +12,7 @@ import { ConsumerMasterApi } from "../Api/consumer-master.api";
 import { FeederMasterApi } from "../Api/feeder-master.api";
 import { SubstationMasterApi } from "../Api/substation-master.api";
 import { MeterCommunicationStatusApi } from "../Api/meter-communication-status.api";
-import { masterDataDefaultQuery } from "../Data/master-data.common.data";
+import { masterDataDefaultQuery, meterMasterDefaultQuery } from "../Data/master-data.common.data";
 import {
   countActiveMeters,
   countConsumerMasterRows,
@@ -24,15 +25,15 @@ import {
 } from "../Db/master-data.db";
 
 apiDbTest.describe("Master Data — DB validation", () => {
-  apiDbTest.describe.configure({ retries: 1 });
-  apiDbTest.setTimeout(180_000);
+  apiDbTest.describe.configure({ retries: 1, mode: "serial" });
+  apiDbTest.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
   apiDbTest(
     "Meter Master — API total matches DB active meter count",
     { tag: ["@master-data", "@meter-master", "@db"] },
     async ({ authenticatedApi, db }) => {
       const api = new MeterMasterApi(authenticatedApi);
-      const query = { ...masterDataDefaultQuery };
+      const query = { ...meterMasterDefaultQuery };
       const { responseBody } = await api.getMeterMasterData(query);
 
       const apiTotal =
@@ -66,7 +67,7 @@ apiDbTest.describe("Master Data — DB validation", () => {
     async ({ authenticatedApi, db }) => {
       const api = new MeterMasterApi(authenticatedApi);
       const { responseBody } = await api.getMeterMasterData({
-        ...masterDataDefaultQuery,
+        ...meterMasterDefaultQuery,
       });
 
       const apiRow = (responseBody.data?.rows ?? []).find((row) =>

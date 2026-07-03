@@ -1,107 +1,219 @@
 import { expect } from "@playwright/test";
+import { dtrStatisticsData } from "../Data/dtrstatistics.data";
+
+type StatisticCard = {
+    title: string;
+    value: string;
+    subtitle: string | null;
+    trendPercent: number | null;
+};
+
 export class DtrStatisticsValidator {
+    // =========================================
+    // RESPONSE ENVELOPE
+    // =========================================
+    validateResponseEnvelope(response: { success: boolean; data: unknown }): void {
+        expect(response.success).toBe(true);
+        expect(response.data).toBeDefined();
+    }
 
     // =========================================
     // CARD COUNT
     // =========================================
-    validateCardCount(cards: any[]): void {
+    validateCardCount(cards: StatisticCard[]): void {
         expect(cards.length).toBe(10);
     }
 
     // =========================================
-    // REQUIRED TITLES
+    // CARD STRUCTURE
     // =========================================
-    validateCardTitles(cards: any[]): void {
-        const titles =cards.map(card => card.title);
-        expect(titles).toEqual(["Total LT Feeders","Total KW","Total KVA","Total KWh","Total KVAh","LT Feeders Fuse Blown","Unbalanced LT Feeders","Power On","Power Off","Status"]);
+    validateCardStructure(cards: StatisticCard[]): void {
+        cards.forEach((card) => {
+            expect(card).toHaveProperty("title");
+            expect(card).toHaveProperty("value");
+            expect(card).toHaveProperty("subtitle");
+            expect(card).toHaveProperty("trendPercent");
+        });
     }
+
+    // =========================================
+    // REQUIRED TITLES (ORDER)
+    // =========================================
+    validateCardTitles(cards: StatisticCard[]): void {
+        const titles = cards.map((card) => card.title);
+        expect(titles).toEqual([...dtrStatisticsData.expectedCardTitles]);
+    }
+
+    // =========================================
+    // FIXED SUBTITLES (BACKEND buildStatisticCards)
+    // =========================================
+    validateExpectedSubtitles(cards: StatisticCard[]): void {
+        for (const [title, expectedSubtitle] of Object.entries(
+            dtrStatisticsData.expectedSubtitles,
+        )) {
+            const card = cards.find((c) => c.title === title);
+            expect(card).toBeDefined();
+            expect(card!.subtitle).toBe(expectedSubtitle);
+        }
+
+        const status = cards.find((c) => c.title === "Status");
+        expect(status).toBeDefined();
+        expect(typeof status!.subtitle).toBe("string");
+    }
+
     // =========================================
     // VALUE VALIDATION
     // =========================================
-    validateValues(cards: any[]): void {
-        cards.forEach(card => {
+    validateValues(cards: StatisticCard[]): void {
+        cards.forEach((card) => {
             expect(card.value).not.toBeUndefined();
             expect(card.value).not.toBeNull();
             expect(typeof card.value).toBe("string");
+            expect(card.value.length).toBeGreaterThan(0);
         });
     }
+
     // =========================================
-    // TREND PERCENT VALIDATION
+    // TREND PERCENT — only on power/energy cards
+    // calcTrend: null when curr/prev null or prev === 0
     // =========================================
-    validateTrendPercent(cards: any[]): void {
-        cards.forEach(card => {
-            if (card.trendPercent !== null) {
-                expect(typeof card.trendPercent).toBe("number");
-                expect(card.trendPercent).toBeGreaterThanOrEqual(-100);
+    validateTrendPercent(cards: StatisticCard[]): void {
+        const trendTitles = new Set<string>(dtrStatisticsData.cardsWithTrend);
+
+        cards.forEach((card) => {
+            if (trendTitles.has(card.title)) {
+                if (card.trendPercent !== null) {
+                    expect(typeof card.trendPercent).toBe("number");
+                    expect(Number.isInteger(card.trendPercent)).toBeTruthy();
+                }
+            } else {
+                expect(card.trendPercent).toBeNull();
             }
         });
     }
+
     // =========================================
-    // POWER FORMAT VALIDATION
+    // POWER ON / OFF — HH:MM:SS clock format
+    // Power Off is always "00:00:00" in backend
     // =========================================
-    validatePowerFormat(cards: any[]): void {
-        const powerOn =cards.find(x => x.title === "Power On");
-        const powerOff =cards.find(x => x.title === "Power Off")
-        expect(powerOn.value).toMatch(/^\d{2}:\d{2}:\d{2}$/);
-        expect(powerOff.value).toMatch(/^\d{2}:\d{2}:\d{2}$/);
+    validatePowerFormat(cards: StatisticCard[]): void {
+        const powerOn = cards.find((x) => x.title === "Power On");
+        const powerOff = cards.find((x) => x.title === "Power Off");
+        expect(powerOn).toBeDefined();
+        expect(powerOff).toBeDefined();
+        expect(powerOn!.value).toMatch(/^\d{2}:\d{2}:\d{2}$/);
+        expect(powerOff!.value).toMatch(/^\d{2}:\d{2}:\d{2}$/);
+        expect(powerOff!.value).toBe("00:00:00");
     }
+
     // =========================================
-    // STATUS CARD VALIDATION
+    // STATUS CARD — Limited | Under Load + load limit subtitle
     // =========================================
-    validateStatusCard(cards: any[]): void {
-        const status =cards.find(x => x.title === "Status");
-        expect(["Limited","Under Load"]).toContain(status.value);
-        expect(typeof status.subtitle).toBe("string");
+    validateStatusCard(cards: StatisticCard[]): void {
+        const status = cards.find((x) => x.title === "Status");
+        expect(status).toBeDefined();
+        expect([...dtrStatisticsData.statusValues]).toContain(status!.value);
+        expect(typeof status!.subtitle).toBe("string");
+        expect(status!.subtitle).toMatch(/^\d+(\.\d{2})?$/);
+        expect(status!.trendPercent).toBeNull();
     }
+
     // =========================================
-    // DECIMAL FORMAT VALIDATION
+    // DECIMAL FORMATS — KW/KWh/KVAh use toFixed(2); KVA uses fmtKva
     // =========================================
-    validateDecimalFormats(cards: any[]): void {
-        const kw = cards.find(  x => x.title === "Total KW" );
-        const kwh =cards.find(x => x.title === "Total KWh");
-        const kvah =cards.find(x => x.title === "Total KVAh");
-        expect(kw.value).toMatch(/^\d+(\.\d{2})?$/);
-        expect(kwh.value).toMatch(/^\d+(\.\d{2})?$/);
-        expect(kvah.value).toMatch(/^\d+(\.\d{2})?$/);
+    validateDecimalFormats(cards: StatisticCard[]): void {
+        const kw = cards.find((x) => x.title === "Total KW");
+        const kwh = cards.find((x) => x.title === "Total KWh");
+        const kvah = cards.find((x) => x.title === "Total KVAh");
+        const kva = cards.find((x) => x.title === "Total KVA");
+
+        expect(kw!.value).toMatch(/^\d+\.\d{2}$/);
+        expect(kwh!.value).toMatch(/^\d+\.\d{2}$/);
+        expect(kvah!.value).toMatch(/^\d+\.\d{2}$/);
+        expect(kva!.value).toMatch(/^\d+$|^\d+\.\d{2}$/);
     }
+
     // =========================================
-    // UNBALANCED FEEDERS VALIDATION
+    // INTEGER COUNT CARDS
     // =========================================
-    validateUnbalancedFeeders(cards: any[]): void {
-        const unbalanced =cards.find(x =>x.title ==="Unbalanced LT Feeders");
-        expect(typeof unbalanced.value).toBe("string");
-        if (unbalanced.value.includes("%")) {
-            expect(unbalanced.value).toMatch(/^\d+(\.\d+)?%$/);
-        }
+    validateIntegerCountCards(cards: StatisticCard[]): void {
+        const feeders = cards.find((x) => x.title === "Total LT Feeders");
+        const fuseBlown = cards.find((x) => x.title === "LT Feeders Fuse Blown");
+
+        expect(feeders!.value).toMatch(/^\d+$/);
+        expect(Number(feeders!.value)).toBeGreaterThanOrEqual(0);
+
+        expect(fuseBlown!.value).toMatch(/^\d+$/);
+        expect(Number(fuseBlown!.value)).toBeGreaterThanOrEqual(0);
     }
+
     // =========================================
-    // SUBTITLE VALIDATION
+    // UNBALANCED FEEDERS — "0" or "N%" (one decimal max)
+    // calculateUnbalance: Math.round((maxDev/avg)*1000)/10
     // =========================================
-    validateSubtitles(cards: any[]): void {
-        cards.forEach(card => {
+    validateUnbalancedFeeders(cards: StatisticCard[]): void {
+        const unbalanced = cards.find((x) => x.title === "Unbalanced LT Feeders");
+        expect(unbalanced).toBeDefined();
+        expect(unbalanced!.value === "0" || /^\d+(\.\d)?%$/.test(unbalanced!.value)).toBeTruthy();
+        expect(unbalanced!.trendPercent).toBeNull();
+    }
+
+    // =========================================
+    // SUBTITLE TYPE
+    // =========================================
+    validateSubtitles(cards: StatisticCard[]): void {
+        cards.forEach((card) => {
             if (card.subtitle !== null) {
                 expect(typeof card.subtitle).toBe("string");
             }
         });
     }
+
     // =========================================
-    // BACKEND FALLBACK LOGIC
+    // BACKEND FALLBACK — null readings become "0" / "0.00"
     // =========================================
-    validateFallbackValues(cards: any[]): void {
-        cards.forEach(card => {
-            expect(card.value).not.toBeUndefined();
-            expect(card.title).not.toBeUndefined();
-        });
+    validateFallbackValues(cards: StatisticCard[]): void {
+        const kw = cards.find((x) => x.title === "Total KW");
+        const kva = cards.find((x) => x.title === "Total KVA");
+        const kwh = cards.find((x) => x.title === "Total KWh");
+        const kvah = cards.find((x) => x.title === "Total KVAh");
+
+        expect(kw!.value).not.toBe("");
+        expect(kva!.value).not.toBe("");
+        expect(kwh!.value).not.toBe("");
+        expect(kvah!.value).not.toBe("");
     }
+
     // =========================================
     // BUSINESS RULES
     // =========================================
-    validateBusinessRules(cards: any[]): void {
-        const status =cards.find(x => x.title === "Status");
-        if (status.value === "Limited") {
-            expect(Number(status.subtitle)).toBeGreaterThan(0);
+    validateBusinessRules(cards: StatisticCard[]): void {
+        const status = cards.find((x) => x.title === "Status");
+        const powerOff = cards.find((x) => x.title === "Power Off");
+
+        expect(powerOff!.value).toBe("00:00:00");
+
+        if (status!.value === "Limited") {
+            expect(Number(status!.subtitle)).toBeGreaterThanOrEqual(0);
         }
-        const feeder =cards.find(x =>x.title ==="Total LT Feeders");
-        expect(Number(feeder.value)).toBeGreaterThanOrEqual(0);
+
+        if (status!.value === "Under Load") {
+            expect(status!.subtitle).toMatch(/^\d+(\.\d{2})?$/);
+        }
+    }
+
+    // =========================================
+    // NON-NEGATIVE NUMERIC VALUES
+    // =========================================
+    validateNonNegativeNumericValues(cards: StatisticCard[]): void {
+        const kw = cards.find((x) => x.title === "Total KW");
+        const kva = cards.find((x) => x.title === "Total KVA");
+        const kwh = cards.find((x) => x.title === "Total KWh");
+        const kvah = cards.find((x) => x.title === "Total KVAh");
+
+        expect(parseFloat(kw!.value)).toBeGreaterThanOrEqual(0);
+        expect(parseFloat(kva!.value)).toBeGreaterThanOrEqual(0);
+        expect(parseFloat(kwh!.value)).toBeGreaterThanOrEqual(0);
+        expect(parseFloat(kvah!.value)).toBeGreaterThanOrEqual(0);
     }
 }

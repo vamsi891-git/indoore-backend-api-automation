@@ -169,18 +169,48 @@ function markdownToHtml(md) {
   return out.join("\n");
 }
 
-function buildHtml(body) {
+function extractCoverMeta(md) {
+  const lines = md.replace(/\r\n/g, "\n").split("\n");
+  let title = "Report";
+  let subtitle = "";
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (/^#\s+/.test(line)) {
+      title = line.replace(/^#\s+/, "").trim();
+      for (let j = i + 1; j < lines.length; j++) {
+        const next = lines[j].trim();
+        if (next === "" || next.startsWith("|")) continue;
+        if (/^\*\*(.+)\*\*$/.test(next)) {
+          subtitle = next.replace(/^\*\*|\*\*$/g, "");
+          break;
+        }
+        if (!next.startsWith("#")) {
+          subtitle = next.replace(/\*\*/g, "");
+          break;
+        }
+        break;
+      }
+      break;
+    }
+  }
+  return { title, subtitle };
+}
+
+function buildHtml(body, meta) {
   const generated = new Date().toLocaleDateString("en-IN", {
     year: "numeric",
     month: "long",
     day: "numeric",
   });
+  const title = meta?.title ?? "Report";
+  const subtitle = meta?.subtitle ?? "";
+  const footerLabel = meta?.footer ?? title;
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>MDM PDF vs API Automation Framework — Gap Analysis</title>
+  <title>${escapeHtml(title)}</title>
   <style>
     @page { margin: 18mm 14mm 20mm 14mm; }
     * { box-sizing: border-box; }
@@ -275,11 +305,10 @@ function buildHtml(body) {
 </head>
 <body>
   <div class="cover">
-    <h1>MDM Presentation vs API Automation Framework</h1>
-    <p class="meta"><strong>Gap Analysis Report</strong></p>
+    <h1>${escapeHtml(title)}</h1>
+    ${subtitle ? `<p class="meta"><strong>${escapeHtml(subtitle)}</strong></p>` : ""}
     <p class="meta">Project: Indoore MDMS Backend API Automation</p>
     <p class="meta">Generated: ${generated}</p>
-    <p class="meta">Scope: Playwright API framework only (src/modules)</p>
   </div>
   ${body}
 </body>
@@ -288,9 +317,14 @@ function buildHtml(body) {
 
 async function main() {
   const md = fs.readFileSync(MD_PATH, "utf8");
+  const coverMeta = extractCoverMeta(md);
   const body = markdownToHtml(md);
-  const html = buildHtml(body);
-  const htmlPath = path.join(ROOT, "reports", "mdm-pdf-vs-test-cases.html");
+  const html = buildHtml(body, {
+    title: coverMeta.title,
+    subtitle: coverMeta.subtitle,
+    footer: path.basename(PDF_PATH, ".pdf"),
+  });
+  const htmlPath = PDF_PATH.replace(/\.pdf$/i, ".html");
   fs.writeFileSync(htmlPath, html, "utf8");
 
   const browser = await chromium.launch();
@@ -304,7 +338,7 @@ async function main() {
     displayHeaderFooter: true,
     headerTemplate: "<span></span>",
     footerTemplate:
-      '<div style="width:100%;font-size:8px;text-align:center;color:#888;padding:0 12mm;">Indoore MDMS — Framework Gap Analysis · Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>',
+      `<div style="width:100%;font-size:8px;text-align:center;color:#888;padding:0 12mm;">Indoore MDMS — ${escapeHtml(coverMeta.title)} · Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>`,
   });
   await browser.close();
 

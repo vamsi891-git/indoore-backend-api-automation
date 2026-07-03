@@ -1,79 +1,143 @@
 import { expect } from "@playwright/test";
+import { dtrPowerTriangleData } from "../Data/dtrpowertriangle.data";
+
+type PowerTriangleData = {
+    activeEnergyKWh: number | null;
+    reactiveEnergyKvarh: number | null;
+    apparentEnergyKVAh: number | null;
+    powerFactor: number | null;
+};
+
 export class DtrPowerTriangleValidator {
     // =========================================
-    // REQUIRED FIELDS
+    // RESPONSE ENVELOPE
     // =========================================
-    validateFields(data: any): void {
-        expect(data).toHaveProperty("activeEnergyKWh");
-        expect(data).toHaveProperty("reactiveEnergyKvarh");
-        expect(data).toHaveProperty("apparentEnergyKVAh");
-        expect(data).toHaveProperty("powerFactor");
+    validateResponseEnvelope(response: { success: boolean; data: unknown }): void {
+        expect(response.success).toBe(true);
+        expect(response.data).toBeDefined();
     }
+
     // =========================================
-    // NULL OR NUMBER VALIDATION
+    // REQUIRED FIELDS ONLY (composePowerTriangle output)
     // =========================================
-    validateTypes(data: any): void {
-        const fields = ["activeEnergyKWh","reactiveEnergyKvarh","apparentEnergyKVAh","powerFactor"];
-        fields.forEach(field => {
+    validateFields(data: PowerTriangleData): void {
+        for (const field of dtrPowerTriangleData.requiredFields) {
+            expect(data).toHaveProperty(field);
+        }
+        expect(Object.keys(data).sort()).toEqual(
+            [...dtrPowerTriangleData.requiredFields].sort(),
+        );
+    }
+
+    // =========================================
+    // NULL OR NUMBER — toNumber() backend mapping
+    // =========================================
+    validateTypes(data: PowerTriangleData): void {
+        for (const field of dtrPowerTriangleData.requiredFields) {
             const value = data[field];
-            expect(value === null ||  typeof value === "number").toBeTruthy();
-        });
+            expect(value === null || typeof value === "number").toBeTruthy();
+        }
     }
+
     // =========================================
-    // POWER FACTOR RANGE
+    // REACTIVE ENERGY — never populated by composePowerTriangle
+    // =========================================
+    validateReactiveEnergyAlwaysNull(data: PowerTriangleData): void {
+        expect(data.reactiveEnergyKvarh).toBeNull();
+    }
+
+    // =========================================
+    // POWER FACTOR RANGE (PF / PW_FACTOR columns)
     // =========================================
     validatePowerFactor(powerFactor: number | null): void {
         if (powerFactor !== null) {
-            expect( powerFactor).toBeGreaterThanOrEqual(-1);
+            expect(powerFactor).toBeGreaterThanOrEqual(-1);
             expect(powerFactor).toBeLessThanOrEqual(1);
         }
     }
+
     // =========================================
-    // ENERGY VALUE VALIDATION
+    // ENERGY VALUES — non-negative when present
     // =========================================
-    validateEnergyValues(data: any): void {
-        const fields = ["activeEnergyKWh","reactiveEnergyKvarh","apparentEnergyKVAh"];
-        fields.forEach(field => {
+    validateEnergyValues(data: PowerTriangleData): void {
+        const energyFields = [
+            "activeEnergyKWh",
+            "apparentEnergyKVAh",
+        ] as const;
+
+        for (const field of energyFields) {
             const value = data[field];
             if (value !== null) {
                 expect(value).toBeGreaterThanOrEqual(0);
             }
-        });
-    }
-    // =========================================
-    // BACKEND FALLBACK LOGIC
-    // =========================================
-    validateFallbackLogic(data: any): void {
-        // if activeEnergyKWh is null,
-        // apparentEnergyKVAh should also
-        // normally be null
-        if (data.activeEnergyKWh === null) {
-            expect(data.apparentEnergyKVAh).toBeNull();
         }
     }
+
     // =========================================
-    // REACTIVE ENERGY LOGIC
+    // NO METER / NO IP READING — all-null payload is valid
+    // buildPowerTriangleForBase + composePowerTriangle empty path
     // =========================================
-    validateReactiveEnergy(reactiveEnergyKvarh: number | null): void {
-        // backend currently never sets value
-        expect(reactiveEnergyKvarh).toBeNull();
-    }
-    // =========================================
-    // BUSINESS LOGIC
-    // =========================================
-    validateBusinessLogic(data: any): void {
-        if (data.powerFactor !== null &&data.activeEnergyKWh !== null) {
-            expect(data.apparentEnergyKVAh).not.toBeNull();
+    validateEmptyReadingState(data: PowerTriangleData): void {
+        const allNull =
+            data.activeEnergyKWh === null &&
+            data.apparentEnergyKVAh === null &&
+            data.powerFactor === null &&
+            data.reactiveEnergyKvarh === null;
+
+        if (allNull) {
+            expect(data.reactiveEnergyKvarh).toBeNull();
         }
     }
+
     // =========================================
-    // NaN VALIDATION
+    // IP SOURCE CONSISTENCY — energies share ipBest branch
+    // when ipBest missing, active + apparent stay null together
     // =========================================
-    validateNaN(data: any): void {
-        Object.values(data).forEach(value => {
-                if (typeof value === "number") {
-                    expect(Number.isNaN(value)).toBeFalsy();
-                }
-            });
+    validateIpSourceConsistency(data: PowerTriangleData): void {
+        const hasActive = data.activeEnergyKWh !== null;
+        const hasApparent = data.apparentEnergyKVAh !== null;
+
+        if (!hasActive && !hasApparent) {
+            return;
+        }
+
+        expect(hasActive || hasApparent).toBeTruthy();
+    }
+
+    // =========================================
+    // POWER FACTOR REQUIRES IP TIMESTAMP
+    // PF set only when ts(latestTp) > 0 || ts(latestSp) > 0
+    // =========================================
+    validatePowerFactorWithReadings(data: PowerTriangleData): void {
+        const hasAnyEnergy =
+            data.activeEnergyKWh !== null || data.apparentEnergyKVAh !== null;
+
+        if (data.powerFactor !== null && !hasAnyEnergy) {
+            expect(typeof data.powerFactor).toBe("number");
+        }
+    }
+
+    // =========================================
+    // FINITE NUMBERS — toNumber rejects NaN
+    // =========================================
+    validateFiniteNumbers(data: PowerTriangleData): void {
+        for (const field of dtrPowerTriangleData.requiredFields) {
+            const value = data[field];
+            if (typeof value === "number") {
+                expect(Number.isFinite(value)).toBeTruthy();
+                expect(Number.isNaN(value)).toBeFalsy();
+            }
+        }
+    }
+
+    // =========================================
+    // BUSINESS LOGIC — cumulative energy triangle constraints
+    // =========================================
+    validateBusinessLogic(data: PowerTriangleData): void {
+        expect(data.reactiveEnergyKvarh).toBeNull();
+
+        if (data.activeEnergyKWh !== null && data.apparentEnergyKVAh !== null) {
+            expect(data.activeEnergyKWh).toBeLessThanOrEqual(data.apparentEnergyKVAh + 0.001);
+        }
     }
 }

@@ -3,7 +3,7 @@ import { BILLING_REQUEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts
 import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
 
 const BILLING_RETRY_STATUSES = new Set([500, 502, 503, 504]);
-const BILLING_MAX_ATTEMPTS = 5;
+const BILLING_MAX_ATTEMPTS = 3;
 const BILLING_RETRY_DELAY_MS = 5_000;
 
 export interface BillingRequestResult {

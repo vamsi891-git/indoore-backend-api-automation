@@ -1,133 +1,190 @@
 import { expect } from "@playwright/test";
+import { dtrDailyThresholdChartData } from "../Data/dtrdailythresholdchart.data";
+
+type ThresholdPoint = {
+    month: number;
+    monthLabel: string;
+    activePower: number | null;
+    reactivePower: number | null;
+    apparentPower: number | null;
+    powerFactor: number | null;
+};
+
+type ChartData = {
+    year: number;
+    points: ThresholdPoint[];
+};
+
 export class DtrDailyThresholdChartValidator {
     // =====================================
-    // SUCCESS VALIDATION
+    // RESPONSE ENVELOPE
     // =====================================
-    validateSuccess(response: any): void {
-        expect(response.success).toBeTruthy();
+    validateResponseEnvelope(response: { success: boolean; data: unknown }): void {
+        expect(response.success).toBe(true);
+        expect(response.data).toBeDefined();
     }
+
     // =====================================
-    // ROOT FIELD VALIDATION
+    // ROOT FIELDS — year + points
     // =====================================
-    validateFields(data: any): void {
+    validateFields(data: ChartData): void {
         expect(data).toHaveProperty("year");
         expect(data).toHaveProperty("points");
         expect(typeof data.year).toBe("number");
         expect(Array.isArray(data.points)).toBeTruthy();
     }
+
     // =====================================
-    // YEAR VALIDATION
+    // YEAR — calendar year for chart query
     // =====================================
     validateYear(year: number): void {
+        expect(Number.isInteger(year)).toBeTruthy();
         expect(year).toBeGreaterThan(2020);
         expect(year).toBeLessThan(2100);
     }
+
     // =====================================
-    // POINTS LENGTH
+    // POINTS LENGTH — MONTH_INDEXES (12 months)
     // =====================================
-    validatePointsLength(points: any[]): void {
-        expect(points.length).toBe(12);
+    validatePointsLength(points: ThresholdPoint[]): void {
+        expect(points.length).toBe(dtrDailyThresholdChartData.pointsCount);
     }
+
     // =====================================
-    // MONTH VALIDATION
+    // MONTH + LABEL — MONTH_LABELS[month - 1]
     // =====================================
-    validateMonthStructure(points: any[],expectedMonths: string[]): void {
-        points.forEach((point,index) => {
+    validateMonthStructure(
+        points: ThresholdPoint[],
+        expectedMonths: readonly string[],
+    ): void {
+        points.forEach((point, index) => {
             expect(point.month).toBe(index + 1);
             expect(point.monthLabel).toBe(expectedMonths[index]);
         });
     }
+
     // =====================================
-    // POINT STRUCTURE
+    // POINT STRUCTURE — exactly 6 fields
     // =====================================
-    validatePointStructure(points: any[]): void {
-        points.forEach(point => {
-            expect(point).toHaveProperty("month");
-            expect(point).toHaveProperty("monthLabel");
-            expect(point).toHaveProperty("activePower");
-            expect(point).toHaveProperty("reactivePower");
-            expect(point).toHaveProperty("apparentPower");
-            expect(point).toHaveProperty("powerFactor");
+    validatePointStructure(points: ThresholdPoint[]): void {
+        points.forEach((point) => {
+            expect(Object.keys(point).sort()).toEqual(
+                [...dtrDailyThresholdChartData.pointFields].sort(),
+            );
         });
     }
+
     // =====================================
-    // MONTH RANGE VALIDATION
+    // MONTH RANGE — 1..12
     // =====================================
-    validateMonthRange(points: any[]): void {
-        points.forEach(point => {
+    validateMonthRange(points: ThresholdPoint[]): void {
+        points.forEach((point) => {
             expect(point.month).toBeGreaterThanOrEqual(1);
             expect(point.month).toBeLessThanOrEqual(12);
         });
     }
+
     // =====================================
-    // NUMERIC / NULL VALIDATION
+    // NUMERIC / NULL — toNumber() mapping
     // =====================================
-    validateNumericOrNull(points: any[]): void {
-        points.forEach(point => {
-            const fields = [
-                "activePower",
-                "reactivePower",
-                "apparentPower",
-                "powerFactor"
-            ];
-            fields.forEach(field => {
-                expect(point[field] === null || typeof point[field] === "number").toBeTruthy();
-            });
+    validateNumericOrNull(points: ThresholdPoint[]): void {
+        points.forEach((point) => {
+            for (const field of dtrDailyThresholdChartData.powerFields) {
+                const value = point[field];
+                expect(value === null || typeof value === "number").toBeTruthy();
+            }
         });
     }
+
+    // =====================================
+    // FINITE NUMBERS — no NaN
+    // =====================================
+    validateFiniteNumbers(points: ThresholdPoint[]): void {
+        points.forEach((point) => {
+            for (const field of dtrDailyThresholdChartData.powerFields) {
+                const value = point[field];
+                if (typeof value === "number") {
+                    expect(Number.isFinite(value)).toBeTruthy();
+                    expect(Number.isNaN(value)).toBeFalsy();
+                }
+            }
+        });
+    }
+
     // =====================================
     // POWER FACTOR RANGE
     // =====================================
-    validatePowerFactorRange(points: any[]): void {
-        points.forEach(point => {
+    validatePowerFactorRange(points: ThresholdPoint[]): void {
+        points.forEach((point) => {
             if (point.powerFactor !== null) {
                 expect(point.powerFactor).toBeGreaterThanOrEqual(-1);
                 expect(point.powerFactor).toBeLessThanOrEqual(1);
             }
         });
     }
+
     // =====================================
-    // NON NEGATIVE POWERS
+    // NON-NEGATIVE POWERS
     // =====================================
-    validateNonNegativeValues(points: any[]): void {
-        points.forEach(point => {
-            const fields = ["activePower","reactivePower","apparentPower"];
-            fields.forEach(field => {
-                if (point[field] !== null) {
-                    expect( point[field]).toBeGreaterThanOrEqual(0);
+    validateNonNegativeValues(points: ThresholdPoint[]): void {
+        points.forEach((point) => {
+            const fields = ["activePower", "reactivePower", "apparentPower"] as const;
+            for (const field of fields) {
+                const value = point[field];
+                if (value !== null) {
+                    expect(value).toBeGreaterThanOrEqual(0);
                 }
-            });
+            }
         });
     }
+
     // =====================================
-    // MONTH LABEL VALIDATION
+    // EMPTY POINTS — no archive data → all null (emptyPoints())
     // =====================================
-    validateMonthLabelsNotEmpty(points: any[]): void {
-        points.forEach(point => {
+    validateEmptyPointsState(points: ThresholdPoint[]): void {
+        const allNull = points.every(
+            (p) =>
+                p.activePower === null &&
+                p.reactivePower === null &&
+                p.apparentPower === null &&
+                p.powerFactor === null,
+        );
+        if (allNull) {
+            expect(points.length).toBe(12);
+        }
+    }
+
+    // =====================================
+    // MONTH LABELS — non-empty strings
+    // =====================================
+    validateMonthLabelsNotEmpty(points: ThresholdPoint[]): void {
+        points.forEach((point) => {
             expect(point.monthLabel.trim().length).toBeGreaterThan(0);
         });
     }
-    // ====================================
+
+    // =====================================
     // UNIQUE MONTHS
     // =====================================
-    validateUniqueMonths(points: any[]): void {
-        const months =points.map(x => x.month);
-        const unique =new Set(months);
-        expect(unique.size).toBe(12);
+    validateUniqueMonths(points: ThresholdPoint[]): void {
+        const months = points.map((x) => x.month);
+        expect(new Set(months).size).toBe(dtrDailyThresholdChartData.pointsCount);
     }
+
     // =====================================
-    // CHRONOLOGICAL ORDER
+    // CHRONOLOGICAL ORDER — MONTH_INDEXES 1..12
     // =====================================
-    validateMonthOrder(points: any[]): void {
-        for (let i = 1;i < points.length;i++) {
-            expect(points[i].month).toBeGreaterThan(points[i - 1].month);
+    validateMonthOrder(points: ThresholdPoint[]): void {
+        for (let i = 1; i < points.length; i++) {
+            expect(points[i].month).toBe(points[i - 1].month + 1);
         }
     }
+
     // =====================================
-    // RESPONSE TYPE
+    // POINT TYPES
     // =====================================
-    validatePointTypes(points: any[]): void {
-        points.forEach(point => {
+    validatePointTypes(points: ThresholdPoint[]): void {
+        points.forEach((point) => {
             expect(typeof point.month).toBe("number");
             expect(typeof point.monthLabel).toBe("string");
         });

@@ -3,7 +3,7 @@ import {
   ConsumerMasterQuery,
   ConsumerMasterResponse,
 } from "../Mapper/consumer-master.mapper";
-import { getMasterDataWithRetry } from "../utils/master-data-request.helper";
+import { fetchMasterDataJson } from "../utils/master-data-request.helper";
 
 export interface ConsumerMasterApiResult {
   rawResponse: APIResponse;
@@ -20,6 +20,7 @@ export class ConsumerMasterApi {
     const params: Record<string, string | number | boolean> = {
       page: query.page ?? 1,
       limit: query.limit ?? 20,
+      meterType: query.meterType ?? "all",
     };
 
     if (query.q?.trim()) params.q = query.q.trim();
@@ -31,12 +32,12 @@ export class ConsumerMasterApi {
     }
     if (query.isNetMeter != null) params.isNetMeter = query.isNetMeter;
 
-    const { response: rawResponse, responseTime } = await getMasterDataWithRetry(
-      this.request,
-      "/indore/master-data/consumer-master-data",
-      params,
-    );
-    const responseBody = (await rawResponse.json()) as ConsumerMasterResponse;
+    const { rawResponse, responseBody, responseTime } =
+      await fetchMasterDataJson<ConsumerMasterResponse>(
+        this.request,
+        "/indore/master-data/consumer-master-data",
+        params,
+      );
 
     return {
       rawResponse,

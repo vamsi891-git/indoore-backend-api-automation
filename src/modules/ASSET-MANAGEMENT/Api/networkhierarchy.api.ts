@@ -9,10 +9,17 @@ export interface NetworkHierarchyApiResponse {
 }
 export class NetworkHierarchyApi {
     constructor(private authenticatedApi:APIRequestContext) { }
-    async getNetworkHierarchy():
-        Promise<NetworkHierarchyApiResponse> {
+    async getNetworkHierarchy(
+        rootId?: number,
+        requestTimeoutMs?: number,
+    ): Promise<NetworkHierarchyApiResponse> {
         const start = Date.now();
-        const rawResponse =await getWithAutoRefresh(this.authenticatedApi,"/indore/asset-management/network-hierarchy");
+        const query = rootId != null ? `?rootId=${rootId}` : "";
+        const rawResponse = await getWithAutoRefresh(
+            this.authenticatedApi,
+            `/indore/asset-management/network-hierarchy${query}`,
+            requestTimeoutMs != null ? { timeout: requestTimeoutMs } : {},
+        );
         const responseBody:NetworkHierarchyResponse =
         await rawResponse.json();
         const responseTime = Date.now() - start;

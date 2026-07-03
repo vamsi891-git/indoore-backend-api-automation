@@ -1,3 +1,33 @@
 export const dtrStatisticsData = {
-    dtrCode: "34SO21"
+    dtrCode: "34SO21",
+    expectedCardTitles: [
+        "Total LT Feeders",
+        "Total KW",
+        "Total KVA",
+        "Total KWh",
+        "Total KVAh",
+        "LT Feeders Fuse Blown",
+        "Unbalanced LT Feeders",
+        "Power On",
+        "Power Off",
+        "Status",
+    ] as const,
+    expectedSubtitles: {
+        "Total LT Feeders": "Connected to DTR",
+        "Total KW": "Active Power",
+        "Total KVA": "Apparent Power",
+        "Total KWh": "Cumulative Active Energy",
+        "Total KVAh": "Cumulative Apparent Energy",
+        "LT Feeders Fuse Blown": "Requires maintenance",
+        "Unbalanced LT Feeders": "Last Month",
+        "Power On": null,
+        "Power Off": null,
+    } as const,
+    cardsWithTrend: [
+        "Total KW",
+        "Total KVA",
+        "Total KWh",
+        "Total KVAh",
+    ] as const,
+    statusValues: ["Limited", "Under Load"] as const,
 };

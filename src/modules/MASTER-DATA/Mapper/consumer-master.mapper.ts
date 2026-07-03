@@ -1,9 +1,12 @@
 import { mapMasterDataList, MasterDataList } from "./master-data-list.mapper";
 
+export type ConsumerMasterMeterType = "all" | "live" | "test";
+
 export interface ConsumerMasterQuery {
   page?: number;
   limit?: number;
   q?: string;
+  meterType?: ConsumerMasterMeterType;
   connectionStatusTblRefId?: number;
   categoryTblRefId?: number;
   isNetMeter?: boolean;
@@ -36,6 +39,7 @@ export interface ConsumerMasterData extends MasterDataList<ConsumerMasterItem> {
 }
 
 export interface ConsumerMasterItem {
+  id?: string;
   slNo: number;
   division: string | null;
   zone: string | null;

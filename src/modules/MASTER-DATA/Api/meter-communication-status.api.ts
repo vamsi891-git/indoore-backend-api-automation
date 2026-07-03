@@ -3,6 +3,7 @@ import {
   MeterCommunicationStatusQuery,
   MeterCommunicationStatusResponse,
 } from "../Mapper/meter-communication-status.mapper";
+import { fetchMasterDataJson } from "../utils/master-data-request.helper";
 
 export interface MeterCommunicationStatusApiResult {
   rawResponse: APIResponse;
@@ -16,7 +17,6 @@ export class MeterCommunicationStatusApi {
   async getMeterCommunicationStatus(
     query: MeterCommunicationStatusQuery = { page: 1, limit: 20 },
   ): Promise<MeterCommunicationStatusApiResult> {
-    const start = Date.now();
     const params: Record<string, string | number> = {
       page: query.page ?? 1,
       limit: query.limit ?? 20,
@@ -34,17 +34,17 @@ export class MeterCommunicationStatusApi {
       params.communicationStatus = query.communicationStatus;
     }
 
-    const rawResponse = await this.request.get(
-      "/indore/master-data/meter-communication-status",
-      { params },
-    );
-    const responseBody =
-      (await rawResponse.json()) as MeterCommunicationStatusResponse;
+    const { rawResponse, responseBody, responseTime } =
+      await fetchMasterDataJson<MeterCommunicationStatusResponse>(
+        this.request,
+        "/indore/master-data/meter-communication-status",
+        params,
+      );
 
     return {
       rawResponse,
       responseBody,
-      responseTime: Date.now() - start,
+      responseTime,
     };
   }
 }

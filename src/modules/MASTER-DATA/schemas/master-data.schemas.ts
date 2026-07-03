@@ -190,4 +190,51 @@ export type ParsedMeterCommunicationStatusSuccessResponse = z.infer<
   typeof MeterCommunicationStatusSuccessResponseSchema
 >;
 
+const ValidateDtrMeterDetailsSchema = z
+  .object({
+    meterPhaseTblRefId: z.number().int().positive().nullable().optional(),
+    simNo: nullableString.optional(),
+    imsiNo: nullableString.optional(),
+    mobileNo: nullableString.optional(),
+    ipAddress: nullableString.optional(),
+    modemSerialNumber: nullableString.optional(),
+    modemImei: nullableString.optional(),
+    meterInitialReading: nullableString.optional(),
+    meterInitialReadingDate: nullableString.optional(),
+    meterInitialReadingTime: nullableString.optional(),
+    mainSubMeterTblRefId: z.number().int().positive().nullable().optional(),
+    servicePointId: z.number().int().positive().nullable().optional(),
+    dateOfService: nullableString.optional(),
+    connectedToDcu: z.boolean().nullable().optional(),
+    isNetMeter: z.boolean().nullable().optional(),
+  })
+  .passthrough();
+
+export const ValidateDtrMeterDataSchema = z
+  .object({
+    valid: z.boolean(),
+    meterExists: z.boolean().optional(),
+    reason: z.enum([
+      "METER_ALREADY_ON_DTR",
+      "METER_INACTIVE",
+      "METER_ALREADY_ASSIGNED",
+    ]).optional(),
+    meterLookupId: z.number().int().positive().optional(),
+    meterSerialNumber: z.string().optional(),
+    organisationLookupId: z.number().int().positive().optional(),
+    networkLookupId: z.number().int().positive().optional(),
+    phase: z.string().optional(),
+    meterDetais: ValidateDtrMeterDetailsSchema.optional(),
+  })
+  .passthrough();
+
+export const ValidateDtrMeterSuccessResponseSchema = z.object({
+  success: z.literal(true),
+  data: ValidateDtrMeterDataSchema,
+});
+
+export type ParsedValidateDtrMeterSuccessResponse = z.infer<
+  typeof ValidateDtrMeterSuccessResponseSchema
+>;
+
 export { ApiErrorResponseSchema as MasterDataErrorResponseSchema };

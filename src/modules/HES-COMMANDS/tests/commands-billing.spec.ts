@@ -1,5 +1,6 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
+import { HES_COMMANDS_E2E_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
@@ -21,14 +22,17 @@ import {
   extractJobNamesFromInitResponse,
 } from "../shared/commands-job-init.mapper";
 import { pollQueryMeterJob } from "../utils/commands-job-e2e.helper";
+import { waitForHesJobQueueSlot } from "../utils/commands-hes-queue.helper";
 
 test.describe("HES Commands — Billing (E2E)", () => {
-  test.setTimeout(180_000);
+  test.describe.configure({ mode: "serial" });
+  test.setTimeout(HES_COMMANDS_E2E_TEST_TIMEOUT_MS);
 
   test(
     "Validate POST /commands/billing → query-meter-job — billing_period_get E2E",
     { tag: ["@smoke", "@commands", "@hes", "@commands-billing", "@e2e"] },
     async ({ authenticatedApi }, testInfo) => {
+      await waitForHesJobQueueSlot();
       const body = buildBillingBody();
       const billingApi = new CommandsBillingApi(authenticatedApi);
       const queryApi = new CommandsQueryMeterJobApi(authenticatedApi);

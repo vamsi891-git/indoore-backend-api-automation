@@ -13,11 +13,10 @@ export const dtrProfileData = {
         "MF",
         "Permanent Address",
         "Latitude",
-        "Longitude"
-    ],
-    expectedHierarchyTitles: [
-        "Sub Station",
-        "Feeder",
-        "DTR"
-    ]
+        "Longitude",
+    ] as const,
+    profileFieldCount: 13,
+    maxActivities: 5,
+    activityLookbackDays: 180,
+    defaultActivityTitle: "Meter event",
 };

@@ -79,6 +79,30 @@ export class MeterMasterValidator {
         expect(item.meterRapdrpCode.trim()).not.toEqual("");
       }
     });
+
+    const incompleteRows = data.items
+      .filter(
+        (item) =>
+          !item.meterSerialNumber?.trim() &&
+          (item.assetId !== null || item.meterRapdrpCode !== null),
+      )
+      .map((item) => item.slNo);
+    if (incompleteRows.length) {
+      console.log(
+        "BACKEND FINDING: meter rows with null serial but populated asset/RAPDRP:",
+        incompleteRows,
+      );
+    }
+
+    const nullSerialRows = data.items
+      .filter((item) => !item.meterSerialNumber?.trim())
+      .map((item) => item.slNo);
+    if (nullSerialRows.length) {
+      console.log(
+        "BACKEND FINDING: meter rows with null or empty meterSerialNumber:",
+        nullSerialRows,
+      );
+    }
   }
 
   validatePagination(data: MeterMasterData): void {

@@ -23,7 +23,7 @@ import {
 } from "../../../core/constants/api-timeouts";
 
 test.describe("Daywise Billing Data API", () => {
-    test.describe.configure({ retries: 2 });
+    test.describe.configure({ retries: 0, mode: "serial" });
     test.setTimeout(BILLING_TEST_TIMEOUT_MS);
 
     test(

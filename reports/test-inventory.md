@@ -1,26 +1,26 @@
 # API Test Inventory
 
-Generated: 2026-06-23T04:42:25.233Z
+Generated: 2026-06-25T05:08:14.419Z
 
 ## Summary
 
 | Metric | Count |
 |--------|------:|
-| Modules | 22 |
-| API files | 113 |
-| Spec files | 129 |
-| Test cases | 205 |
-| APIs without spec | 8 |
-| Specs without API | 25 |
+| Modules | 23 |
+| API files | 115 |
+| Spec files | 148 |
+| Test cases | 300 |
+| APIs without spec | 9 |
+| Specs without API | 43 |
 
 ## By module
 
 | Module | APIs | Specs | Tests | API coverage | Missing specs |
 |--------|-----:|------:|------:|-------------:|--------------:|
-| ASSET-MANAGEMENT | 3 | 3 | 3 | 67% | 1 |
+| ASSET-MANAGEMENT | 3 | 5 | 21 | 67% | 1 |
 | AUDIT-LOGS | 2 | 2 | 4 | 100% | 0 |
-| AUTH | 2 | 11 | 38 | 0% | 2 |
-| BILLING | 2 | 2 | 2 | 100% | 0 |
+| AUTH | 3 | 14 | 51 | 0% | 3 |
+| BILLING | 2 | 3 | 2 | 100% | 0 |
 | COMMERICIAL-ANALYSIS | 7 | 6 | 6 | 100% | 0 |
 | CONSUMERS | 13 | 13 | 13 | 100% | 0 |
 | CONSUMPTION | 3 | 5 | 5 | 67% | 1 |
@@ -29,33 +29,42 @@ Generated: 2026-06-23T04:42:25.233Z
 | ENERGY-AUDITS | 5 | 7 | 0 | 60% | 2 |
 | FEEDER | 4 | 4 | 4 | 100% | 0 |
 | HES-COMMANDS | 14 | 14 | 35 | 100% | 0 |
-| MASTER-DATA | 6 | 6 | 37 | 83% | 1 |
+| MASTER-DATA | 6 | 7 | 35 | 83% | 1 |
 | MIS-DASHBOARD | 16 | 16 | 18 | 100% | 0 |
-| MODULES-PERMISSIONS | 1 | 1 | 1 | 100% | 0 |
+| MODULES-PERMISSIONS | 1 | 4 | 20 | 100% | 0 |
 | NOTIFICATIONS | 1 | 2 | 2 | 100% | 0 |
 | OVERALL-DASHBOARD | 2 | 2 | 2 | 100% | 0 |
 | REPORTS | 3 | 3 | 3 | 100% | 0 |
-| ROLE-PERMISSIONS | 1 | 1 | 1 | 100% | 0 |
+| ROLE-PERMISSIONS | 1 | 4 | 22 | 100% | 0 |
 | TECHNICAL-ANALYSIS | 2 | 2 | 2 | 100% | 0 |
-| USERS-ADMIN | 1 | 3 | 3 | 100% | 0 |
+| USERS-ADMIN | 1 | 6 | 23 | 100% | 0 |
+| USERS-PROFILE-IMAGE | 1 | 3 | 6 | 100% | 0 |
 | UTILS-LOOKUP | 13 | 14 | 14 | 92% | 1 |
 
 ## Tags (test case count)
 
 | Tag | Tests |
 |-----|------:|
-| @smoke | 159 |
-| @auth | 38 |
-| @master-data | 37 |
+| @smoke | 174 |
+| @negative | 86 |
+| @auth | 56 |
+| @permissions | 42 |
+| @invite | 35 |
 | @commands | 35 |
 | @hes | 35 |
-| @invite | 34 |
-| @e2e | 31 |
-| @negative | 30 |
+| @master-data | 35 |
+| @e2e | 32 |
+| @dtr | 27 |
+| @users-admin | 23 |
+| @role-permissions | 22 |
+| @asset-management | 21 |
+| @hierarchy | 20 |
+| @modules-permissions | 20 |
 | @consumer | 14 |
-| @meter-communication | 12 |
-| @dtr | 9 |
+| @edge | 13 |
+| @meter-communication | 10 |
 | @dashboard | 6 |
+| @users-profile-image | 6 |
 | @consumption | 5 |
 | @commands-history | 5 |
 | @consumer-master | 5 |
@@ -72,7 +81,6 @@ Generated: 2026-06-23T04:42:25.233Z
 | @commands-meter-samples | 3 |
 | @commands-search-meters | 3 |
 | @reports | 3 |
-| @hierarchy | 2 |
 | @export | 2 |
 | @energy | 2 |
 | @event-log | 2 |
@@ -141,10 +149,12 @@ Generated: 2026-06-23T04:42:25.233Z
 | @organisation | 1 |
 | @payment | 1 |
 | @organization | 1 |
+| @db | 0 |
 
 ## APIs missing tests
 
 - **ASSET-MANAGEMENT** — `src/modules/ASSET-MANAGEMENT/Api/DtrId.api.ts`
+- **AUTH** — `src/modules/AUTH/Api/auth-session.api.ts`
 - **AUTH** — `src/modules/AUTH/Api/auth.api.ts`
 - **AUTH** — `src/modules/AUTH/Api/invite.api.ts`
 - **CONSUMPTION** — `src/modules/CONSUMPTION/Api/patternconsumption.api.ts`
@@ -157,6 +167,8 @@ Generated: 2026-06-23T04:42:25.233Z
 
 _Often multi-API flows (e.g. AUTH invite) or renamed APIs._
 
+- **ASSET-MANAGEMENT** — `src/modules/ASSET-MANAGEMENT/tests/asset-management-edge.spec.ts`
+- **ASSET-MANAGEMENT** — `src/modules/ASSET-MANAGEMENT/tests/asset-management-negative.spec.ts`
 - **ASSET-MANAGEMENT** — `src/modules/ASSET-MANAGEMENT/tests/dtrId.spec.ts`
 - **AUTH** — `src/modules/AUTH/tests/00-invite-setup.spec.ts`
 - **AUTH** — `src/modules/AUTH/tests/10-invite-preview.spec.ts`
@@ -165,10 +177,14 @@ _Often multi-API flows (e.g. AUTH invite) or renamed APIs._
 - **AUTH** — `src/modules/AUTH/tests/90-invite-accept-validate.spec.ts`
 - **AUTH** — `src/modules/AUTH/tests/91-invite-e2e.spec.ts`
 - **AUTH** — `src/modules/AUTH/tests/92-invite-delete.spec.ts`
+- **AUTH** — `src/modules/AUTH/tests/auth-devices.spec.ts`
+- **AUTH** — `src/modules/AUTH/tests/auth-me.spec.ts`
+- **AUTH** — `src/modules/AUTH/tests/auth-session-negative.spec.ts`
 - **AUTH** — `src/modules/AUTH/tests/invite-accept.spec.ts`
 - **AUTH** — `src/modules/AUTH/tests/invite-list.spec.ts`
 - **AUTH** — `src/modules/AUTH/tests/login.spec.ts`
 - **AUTH** — `src/modules/AUTH/tests/refresh.spec.ts`
+- **BILLING** — `src/modules/BILLING/tests/billing.db.spec.ts`
 - **CONSUMPTION** — `src/modules/CONSUMPTION/tests/comparison.spec.ts`
 - **CONSUMPTION** — `src/modules/CONSUMPTION/tests/lastthreemonths.spec.ts`
 - **CONSUMPTION** — `src/modules/CONSUMPTION/tests/yearly.spec.ts`
@@ -176,9 +192,21 @@ _Often multi-API flows (e.g. AUTH invite) or renamed APIs._
 - **ENERGY-AUDITS** — `src/modules/ENERGY-AUDITS/tests/hourly-loss-report-feeder.spec.ts`
 - **ENERGY-AUDITS** — `src/modules/ENERGY-AUDITS/tests/loss-analysis-dtr.spec.ts`
 - **ENERGY-AUDITS** — `src/modules/ENERGY-AUDITS/tests/loss-analysis-feeder.spec.ts`
+- **MASTER-DATA** — `src/modules/MASTER-DATA/tests/master-data.db.spec.ts`
 - **MASTER-DATA** — `src/modules/MASTER-DATA/tests/substation.-master.spec.ts`
+- **MODULES-PERMISSIONS** — `src/modules/MODULES-PERMISSIONS/tests/modulepermission-advanced.spec.ts`
+- **MODULES-PERMISSIONS** — `src/modules/MODULES-PERMISSIONS/tests/modulepermission-list.spec.ts`
+- **MODULES-PERMISSIONS** — `src/modules/MODULES-PERMISSIONS/tests/modulepermission-negative.spec.ts`
 - **NOTIFICATIONS** — `src/modules/NOTIFICATIONS/tests/notificationsmobile.spec.ts`
+- **ROLE-PERMISSIONS** — `src/modules/ROLE-PERMISSIONS/tests/rolepermission-advanced.spec.ts`
+- **ROLE-PERMISSIONS** — `src/modules/ROLE-PERMISSIONS/tests/rolepermission-list.spec.ts`
+- **ROLE-PERMISSIONS** — `src/modules/ROLE-PERMISSIONS/tests/rolepermission-negative.spec.ts`
+- **USERS-ADMIN** — `src/modules/USERS-ADMIN/tests/useradmin-advanced.spec.ts`
+- **USERS-ADMIN** — `src/modules/USERS-ADMIN/tests/useradmin-list.spec.ts`
+- **USERS-ADMIN** — `src/modules/USERS-ADMIN/tests/useradmin-negative.spec.ts`
 - **USERS-ADMIN** — `src/modules/USERS-ADMIN/tests/userdevices.spec.ts`
 - **USERS-ADMIN** — `src/modules/USERS-ADMIN/tests/usersecurity.spec.ts`
+- **USERS-PROFILE-IMAGE** — `src/modules/USERS-PROFILE-IMAGE/tests/profileimage-list.spec.ts`
+- **USERS-PROFILE-IMAGE** — `src/modules/USERS-PROFILE-IMAGE/tests/profileimage-negative.spec.ts`
 - **UTILS-LOOKUP** — `src/modules/UTILS-LOOKUP/tests/event.spec.ts`
 - **UTILS-LOOKUP** — `src/modules/UTILS-LOOKUP/tests/networksearch.api.spec.ts`

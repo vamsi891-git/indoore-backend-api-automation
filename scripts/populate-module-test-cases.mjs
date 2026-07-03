@@ -1,11 +1,27 @@
 /**
  * Populates module sheet with test cases from scripts/data/*.mjs
  * Usage: node scripts/populate-module-test-cases.mjs DASHBOARD
+ *        node scripts/populate-module-test-cases.mjs ASSET-ONBOARDING
  */
 import ExcelJS from "exceljs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dashboardOverviewCases } from "./data/dashboard-overview-test-cases.mjs";
+import { assetOnboardingCases } from "./data/asset-onboarding-test-cases.mjs";
+
+/** @type {Record<string, { cases: object[]; title: string; indexModule: string }>} */
+const SHEET_REGISTRY = {
+  DASHBOARD: {
+    cases: dashboardOverviewCases,
+    title: "Dashboard — Dashboard Overview (Manual Test Cases)",
+    indexModule: "Dashboard",
+  },
+  "ASSET-ONBOARDING": {
+    cases: assetOnboardingCases,
+    title: "Asset Onboarding — Add Meter → Add Consumer → Add DTR (Manual Test Cases)",
+    indexModule: "Asset Onboarding",
+  },
+};
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const WORKBOOK = path.join(__dirname, "..", "src", "Manual Testing", "INDOORE_TESTING.xlsx");
@@ -92,7 +108,7 @@ async function populateSheet(workbook, sheetName, cases, title) {
 
   ws.mergeCells("A2:S2");
   const sub = ws.getCell("A2");
-  sub.value = `Documented cases: ${cases.length} | Status default: Not Executed | Source: Live UI screenshots`;
+  sub.value = `Documented cases: ${cases.length} | Status default: Not Executed | Execution order: follow Test Case ID sequence`;
   sub.fill = SUBHEADER_FILL;
   sub.alignment = { wrapText: true, vertical: "middle" };
   ws.getRow(2).height = 28;
@@ -113,36 +129,59 @@ async function populateSheet(workbook, sheetName, cases, title) {
   return cases.length;
 }
 
-async function updateIndex(workbook, sheetName, count) {
+async function updateIndex(workbook, sheetName, count, indexModule, featuresSummary) {
   const index = workbook.getWorksheet("INDEX");
   if (!index) return;
 
+  let found = false;
   for (let r = 3; r <= index.rowCount; r++) {
     const cell = index.getRow(r).getCell(1);
     if (cell.value === sheetName) {
-      index.getRow(r).getCell(5).value = 0;
       index.getRow(r).getCell(3).value = count;
+      index.getRow(r).getCell(5).value = 0;
       index.getRow(r).getCell(6).value = "0%";
+      if (featuresSummary) {
+        index.getRow(r).getCell(4).value = featuresSummary;
+      }
+      found = true;
       break;
     }
+  }
+
+  if (!found) {
+    const row = index.addRow([
+      sheetName,
+      indexModule,
+      count,
+      featuresSummary ?? "",
+      0,
+      "0%",
+    ]);
+    row.getCell(1).font = { bold: true, color: { argb: "FF0563C1" } };
   }
 }
 
 async function main() {
   const sheetArg = process.argv[2] || "DASHBOARD";
-  const cases = dashboardOverviewCases;
-  const title = "Dashboard — Dashboard Overview (Manual Test Cases)";
+  const config = SHEET_REGISTRY[sheetArg];
 
-  if (sheetArg !== "DASHBOARD") {
-    console.error(`Only DASHBOARD populated in this run. Got: ${sheetArg}`);
+  if (!config) {
+    console.error(
+      `Unknown sheet: ${sheetArg}. Available: ${Object.keys(SHEET_REGISTRY).join(", ")}`,
+    );
     process.exit(1);
   }
+
+  const { cases, title, indexModule } = config;
+  const featuresSummary = [
+    ...new Set(cases.map((c) => String(c.feature).split(" > ")[0])),
+  ].join(", ");
 
   const workbook = new ExcelJS.Workbook();
   await workbook.xlsx.readFile(WORKBOOK);
 
-  const count = await populateSheet(workbook, "DASHBOARD", cases, title);
-  await updateIndex(workbook, "DASHBOARD", count);
+  const count = await populateSheet(workbook, sheetArg, cases, title);
+  await updateIndex(workbook, sheetArg, count, indexModule, featuresSummary);
 
   await workbook.xlsx.writeFile(WORKBOOK);
 
@@ -152,7 +191,7 @@ async function main() {
     console.warn(`Could not update template (file may be open): ${TEMPLATE}`);
   }
 
-  console.log(`Updated DASHBOARD sheet with ${count} test cases.`);
+  console.log(`Updated ${sheetArg} sheet with ${count} test cases.`);
   console.log(`Files:\n  ${WORKBOOK}`);
   if (!process.env.SKIP_TEMPLATE) {
     console.log(`  ${TEMPLATE}`);

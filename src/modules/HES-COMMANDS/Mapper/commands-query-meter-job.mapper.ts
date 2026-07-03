@@ -23,6 +23,8 @@ export interface QueryMeterJobMeterResult {
   status: string;
   hesStatusCode: number;
   errorMessage?: string | null;
+  message?: string | null;
+  note?: string | null;
   hesResponse?: QueryMeterJobHesResponse | null;
 }
 
@@ -34,6 +36,8 @@ export interface QueryMeterJobData {
   hesStatusCode: number;
   summary: QueryMeterJobSummary;
   meterResults: QueryMeterJobMeterResult[];
+  message?: string | null;
+  note?: string | null;
 }
 
 export interface QueryMeterJobResponse {
@@ -76,8 +80,12 @@ export class CommandsQueryMeterJobMapper {
           status: row.status.trim(),
           hesStatusCode: row.hesStatusCode,
           errorMessage: row.errorMessage?.trim() ?? null,
+          message: row.message?.trim() ?? null,
+          note: row.note?.trim() ?? null,
           hesResponse: row.hesResponse ?? null,
         })),
+        message: data.message?.trim() ?? null,
+        note: data.note?.trim() ?? null,
       },
     };
   }

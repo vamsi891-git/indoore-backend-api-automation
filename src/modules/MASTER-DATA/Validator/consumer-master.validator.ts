@@ -1,4 +1,5 @@
 import { expect } from "@playwright/test";
+import { EXPECTED_CONSUMER_MASTER_COLUMNS } from "../Data/consumer-master.data";
 import {
   ConsumerMasterData,
   ConsumerMasterQuery,
@@ -7,6 +8,8 @@ import {
 import { MasterDataCommonValidator } from "./master-data-common.validator";
 
 const ALLOWED_METER_PHASES = ["1 PH", "3PH WC", "HT"] as const;
+const INSTALLATION_DATE_REGEX =
+  /^\d{4}-\d{2}-\d{2}( \d{2}:\d{2}:\d{2}(\.\d{3})?)?$/;
 
 export class ConsumerMasterValidator {
   validateResponse(response: ConsumerMasterResponse): void {
@@ -15,7 +18,11 @@ export class ConsumerMasterValidator {
   }
 
   validateColumns(data: ConsumerMasterData): void {
-    MasterDataCommonValidator.validateColumns(data.columns);
+    expect(data.columns.length).toEqual(EXPECTED_CONSUMER_MASTER_COLUMNS.length);
+    EXPECTED_CONSUMER_MASTER_COLUMNS.forEach((expected, index) => {
+      expect(data.columns[index]?.key).toEqual(expected.key);
+      expect(data.columns[index]?.header).toEqual(expected.header);
+    });
   }
 
   validateItemsExist(data: ConsumerMasterData): void {
@@ -34,20 +41,20 @@ export class ConsumerMasterValidator {
       expect(item.slNo).toBeGreaterThan(0);
       expect(item.meterLookupTblRefId).toBeGreaterThan(0);
 
-      if (!item.consumerCid?.trim() || !item.consumerName?.trim()) {
-        incompleteRows.push(item.slNo);
-        return;
-      }
+      expect(item.consumerCid?.trim()).not.toEqual("");
+      expect(item.ivrsNo?.trim()).not.toEqual("");
+      expect(item.meterSerialNumber?.trim()).not.toEqual("");
+      expect(item.meterPhase?.trim()).not.toEqual("");
 
-      if (item.meterSerialNumber?.trim()) {
-        expect(item.meterSerialNumber.trim()).not.toEqual("");
-      }
-      if (item.meterPhase?.trim()) {
-        expect(item.meterPhase.trim()).not.toEqual("");
+      if (!item.consumerName?.trim()) {
+        incompleteRows.push(item.slNo);
       }
 
       if (item.mf != null) {
         expect(item.mf).toBeGreaterThan(0);
+      }
+      if (item.sanctionedLoadKw != null) {
+        expect(item.sanctionedLoadKw).toBeGreaterThanOrEqual(0);
       }
       if (item.lsCount != null) {
         expect(item.lsCount).toBeGreaterThanOrEqual(0);
@@ -58,25 +65,29 @@ export class ConsumerMasterValidator {
       if (item.connectedToDcu != null) {
         expect(typeof item.connectedToDcu).toEqual("boolean");
       }
-      if (item.latitude != null) {
+      if (item.latitude != null && item.latitude.trim() !== "") {
         expect(Number.isNaN(Number(item.latitude))).toBeFalsy();
       }
-      if (item.longitude != null) {
+      if (item.longitude != null && item.longitude.trim() !== "") {
         expect(Number.isNaN(Number(item.longitude))).toBeFalsy();
+      }
+      if (item.installationDate?.trim()) {
+        expect(INSTALLATION_DATE_REGEX.test(item.installationDate.trim())).toBeTruthy();
+      }
+      if (item.category?.trim()) {
+        expect(item.category.trim()).not.toEqual("");
       }
     });
 
     if (incompleteRows.length) {
       console.log(
-        "BACKEND FINDING: consumer rows with empty consumerCid or consumerName:",
+        "BACKEND FINDING: consumer rows with empty consumerName:",
         incompleteRows,
       );
     }
 
     if (data.total > 0) {
-      const completeRows = data.items.filter(
-        (item) => item.consumerCid?.trim() && item.consumerName?.trim(),
-      );
+      const completeRows = data.items.filter((item) => item.consumerName?.trim());
       expect(completeRows.length).toBeGreaterThan(0);
     }
   }
@@ -98,11 +109,27 @@ export class ConsumerMasterValidator {
       data.columns,
       data.items as unknown as Record<string, unknown>[],
     );
+    data.items.forEach((item) => {
+      expect(item).toHaveProperty("id");
+    });
+  }
+
+  validateIdMatchesConsumerCid(data: ConsumerMasterData): void {
+    data.items.forEach((item) => {
+      if (item.id != null) {
+        expect(item.id).toEqual(item.consumerCid);
+      }
+    });
   }
 
   validateUniqueMeterLookupIds(data: ConsumerMasterData): void {
     const ids = data.items.map((x) => x.meterLookupTblRefId);
     expect(new Set(ids).size).toEqual(ids.length);
+  }
+
+  validateUniqueMeterSerialsOnPage(data: ConsumerMasterData): void {
+    const serials = data.items.map((x) => x.meterSerialNumber.trim());
+    expect(new Set(serials).size).toEqual(serials.length);
   }
 
   validateUniqueConsumerCids(data: ConsumerMasterData): void {
@@ -115,6 +142,14 @@ export class ConsumerMasterValidator {
         [...new Set(duplicates)],
       );
     }
+  }
+
+  validateIvrsConsistency(data: ConsumerMasterData): void {
+    data.items.forEach((item) => {
+      if (item.existingIvrsNo?.trim() && item.ivrsNo?.trim()) {
+        expect(item.existingIvrsNo).toEqual(item.ivrsNo);
+      }
+    });
   }
 
   validateMeterPhases(data: ConsumerMasterData): void {
@@ -144,7 +179,14 @@ export class ConsumerMasterValidator {
         item.consumerName,
         item.meterSerialNumber,
         item.ivrsNo,
+        item.existingIvrsNo,
+        item.division,
+        item.zone,
+        item.feeder,
+        item.dtr,
+        item.consumerAddress,
       ]
+        .filter(Boolean)
         .join(" ")
         .toLowerCase();
       expect(haystack.includes(q)).toBeTruthy();

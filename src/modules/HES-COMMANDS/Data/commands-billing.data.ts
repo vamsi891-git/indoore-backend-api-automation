@@ -1,12 +1,12 @@
 import { commandsMeterData } from "./commands-meter.data";
+import { commandsJobPollConfig } from "./commands-job-poll.config";
 export type BillingCommandType = "billing_period_get" | "billing_period_set";
 export const commandsBillingData = {
   defaultType: "billing_period_get" as BillingCommandType,
   defaultMeterSerial: commandsMeterData.validMeterSerial,
   unknownMeterSerial: commandsMeterData.unknownMeterSerial,
   maxResponseTimeMs: 120_000,
-  jobPollTimeoutMs: Number(process.env.JOB_POLL_TIMEOUT_MS ?? 120_000),
-  jobPollIntervalMs: Number(process.env.JOB_POLL_INTERVAL_MS ?? 3_000),
+  ...commandsJobPollConfig,
   expectedInitAction: "GET_CONFIG",
   expectedHesResponseType: "BILLING_PERIOD",
   billingCycles: ["MONTHLY", "WEEKLY", "DAILY"] as const,

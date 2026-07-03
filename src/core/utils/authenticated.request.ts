@@ -52,8 +52,18 @@ function isNonRetryableError(error: unknown): boolean {
   return (
     message.includes("Timeout") ||
     message.includes("timeout") ||
-    message.includes("Request context disposed") ||
-    message.includes("ECONNABORTED")
+    message.includes("Request context disposed")
+  );
+}
+
+function isTransientNetworkError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return (
+    message.includes("ECONNABORTED") ||
+    message.includes("ECONNRESET") ||
+    message.includes("ETIMEDOUT") ||
+    message.includes("EPIPE") ||
+    message.includes("socket hang up")
   );
 }
 
@@ -134,8 +144,11 @@ async function requestWithAutoRefresh(
         return response;
       },
       (response, error) => {
-        if (isNonRetryableError(error)) {
-          return false;
+        if (error != null) {
+          if (isNonRetryableError(error)) {
+            return false;
+          }
+          return isTransientNetworkError(error);
         }
         return Boolean(response) && RETRYABLE_STATUSES.has((response as APIResponse).status());
       },

@@ -7,5 +7,9 @@ export const AuditLogExportTestData = {
     minExportIntervalMs: 300_000,
     /** Max wall time for a single export HTTP round-trip (excludes rate-limit spacing) */
     maxResponseTimeMs: 120_000,
-
+    /** Override when backend route differs from default */
+    exportPath:
+        process.env.AUDIT_LOG_EXPORT_PATH?.trim() ||
+        "/indore/users/audit-logs/export",
 };
+

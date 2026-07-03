@@ -58,24 +58,36 @@ export interface PollQueryMeterJobResult {
   pollAttempts: number;
 }
 
+const QUERY_FINISHED_MESSAGE = /job finished|synced from meterStatusForJob/i;
+
+function hasTerminalMeterRows(body: QueryMeterJobResponse): boolean {
+  const rows = body.data?.meterResults ?? [];
+  if (rows.length === 0) {
+    return false;
+  }
+  return rows.every((row) => {
+    const status = row.status?.trim().toUpperCase();
+    return status === "SUCCESS" || status === "FAILED" || status === "REJECTED";
+  });
+}
+
 export function isQueryMeterJobComplete(body: QueryMeterJobResponse): boolean {
   const hesStatus = body.data?.hesJobStatus?.trim().toUpperCase();
   if (hesStatus && INCOMPLETE_HES_JOB_STATUSES.has(hesStatus)) {
+    if (
+      body.message &&
+      QUERY_FINISHED_MESSAGE.test(body.message) &&
+      hasTerminalMeterRows(body)
+    ) {
+      return true;
+    }
     return false;
   }
   if (hesStatus && TERMINAL_HES_JOB_STATUSES.has(hesStatus)) {
     return true;
   }
 
-  const rows = body.data?.meterResults ?? [];
-  if (rows.length === 0) {
-    return false;
-  }
-
-  return rows.every((row) => {
-    const status = row.status?.trim().toUpperCase();
-    return status === "SUCCESS" || status === "FAILED" || status === "REJECTED";
-  });
+  return hasTerminalMeterRows(body);
 }
 
 export async function pollQueryMeterJob(
@@ -129,13 +141,22 @@ export async function pollQueryMeterJob(
     lastResult.responseBody.success !== false &&
     !isQueryMeterJobComplete(lastResult.responseBody)
   ) {
-    const hesJobStatus = lastResult.responseBody.data?.hesJobStatus ?? "unknown";
-    const meterStatus =
-      lastResult.responseBody.data?.meterResults?.[0]?.status ?? "unknown";
+    const data = lastResult.responseBody.data;
+    const hesJobStatus = data?.hesJobStatus ?? "unknown";
+    const meterStatus = data?.meterResults?.[0]?.status ?? "unknown";
+    const meterNote = data?.meterResults?.[0]?.note ?? data?.note ?? "";
+    const callbackPending = /hes callback/i.test(
+      `${lastResult.responseBody.message ?? ""} ${meterNote}`,
+    );
+    const callbackHint = callbackPending
+      ? " Job is async: backend waits for HES callback to set FINISHED/SUCCESS. " +
+        "Verify HES processes billing_period_get for this meter and the callback webhook updates the job."
+      : "";
     throw new Error(
       `Job ${jobName} did not reach terminal state within ${timeoutMs}ms ` +
-        `(pollAttempts=${pollAttempts}, hesJobStatus=${hesJobStatus}, meterStatus=${meterStatus}). ` +
-        "HES may still be processing; increase JOB_POLL_TIMEOUT_MS or retry.",
+        `(pollAttempts=${pollAttempts}, hesJobStatus=${hesJobStatus}, meterStatus=${meterStatus}).` +
+        callbackHint +
+        " Increase JOB_POLL_TIMEOUT_MS, run with --workers=1, or retry when HES is less loaded.",
     );
   }
 

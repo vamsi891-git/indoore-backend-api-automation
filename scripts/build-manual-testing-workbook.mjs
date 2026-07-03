@@ -152,6 +152,12 @@ const MODULES = [
     features: ["Organization Hierarchy", "Network Hierarchy", "DTR ID Lookup"],
   },
   {
+    sheet: "ASSET-ONBOARDING",
+    module: "Asset Onboarding",
+    targetCases: 40,
+    features: ["Add Meter", "Add Consumer", "Add DTR", "E2E Regression"],
+  },
+  {
     sheet: "UTILS-LOOKUP",
     module: "Search & Lookup",
     targetCases: 180,

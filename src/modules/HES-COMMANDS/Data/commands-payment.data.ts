@@ -1,9 +1,5 @@
 import { commandsMeterData } from "./commands-meter.data";
-import {
-  HES_COMMANDS_JOB_POLL_INTERVAL_MS,
-  HES_COMMANDS_JOB_POLL_TIMEOUT_MS,
-} from "../../../core/constants/api-timeouts";
-import { parsePositiveMs } from "../utils/commands-job-e2e.helper";
+import { commandsJobPollConfig } from "./commands-job-poll.config";
 
 export type PaymentCommandType =
   | "payment_get"
@@ -17,14 +13,7 @@ export const commandsPaymentData = {
   defaultMeterSerial: commandsMeterData.validMeterSerial,
   unknownMeterSerial: commandsMeterData.unknownMeterSerial,
   maxResponseTimeMs: 120_000,
-  jobPollTimeoutMs: parsePositiveMs(
-    process.env.JOB_POLL_TIMEOUT_MS,
-    HES_COMMANDS_JOB_POLL_TIMEOUT_MS,
-  ),
-  jobPollIntervalMs: parsePositiveMs(
-    process.env.JOB_POLL_INTERVAL_MS,
-    HES_COMMANDS_JOB_POLL_INTERVAL_MS,
-  ),
+  ...commandsJobPollConfig,
   expectedInitAction: "GET_CONFIG",
   expectedHesResponseType: "PAYMENT",
   paymentModes: ["PREPAID", "POSTPAID"] as const,

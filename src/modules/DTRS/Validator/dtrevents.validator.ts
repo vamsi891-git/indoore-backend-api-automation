@@ -1,16 +1,9 @@
 import { expect } from "@playwright/test";
+import { dtrEventsData } from "../Data/dtrevents.data";
 import { DtrEventRow, DtrEventsData } from "../Mapper/dtrevents.mapper";
 
-const ALLOWED_STATUSES = ["Resolved", "Pending"] as const;
-const ROW_REQUIRED_FIELDS = [
-    "serialNo",
-    "meterSlNo",
-    "eventDateTime",
-    "restoredDateTime",
-    "description",
-    "duration",
-    "status",
-] as const;
+const ALLOWED_STATUSES = dtrEventsData.allowedStatuses;
+
 // Backend formatDurationHuman: e.g. "0m 10s", "1m 47s", "2h 5m 30s"
 const HUMAN_DURATION =
     /^\d+h(?:\s+\d+m)?(?:\s+\d+s)?$|^\d+m(?:\s+\d+s)?$/;
@@ -23,11 +16,22 @@ function parseEventDateTime(value: string): number | null {
 }
 
 export class DtrEventsValidator {
-    validateSuccess(success: boolean) {
+    // =====================================
+    // RESPONSE ENVELOPE
+    // =====================================
+    validateResponseEnvelope(response: { success: boolean; data: unknown }): void {
+        expect(response.success).toBe(true);
+        expect(response.data).toBeDefined();
+    }
+
+    validateSuccess(success: boolean): void {
         expect(success).toBeTruthy();
     }
 
-    validateRootStructure(data: DtrEventsData) {
+    // =====================================
+    // ROOT STRUCTURE
+    // =====================================
+    validateRootStructure(data: DtrEventsData): void {
         expect(Array.isArray(data.rows)).toBeTruthy();
         expect(typeof data.page).toBe("number");
         expect(typeof data.pageSize).toBe("number");
@@ -35,12 +39,18 @@ export class DtrEventsValidator {
         expect(typeof data.totalPages).toBe("number");
     }
 
-    validateQueryEcho(data: DtrEventsData, page: number, limit: number) {
+    // =====================================
+    // QUERY ECHO — page + pageSize (limit)
+    // =====================================
+    validateQueryEcho(data: DtrEventsData, page: number, limit: number): void {
         expect(data.page).toBe(page);
         expect(data.pageSize).toBe(limit);
     }
 
-    validatePaginationBounds(data: DtrEventsData) {
+    // =====================================
+    // PAGINATION BOUNDS
+    // =====================================
+    validatePaginationBounds(data: DtrEventsData): void {
         expect(data.page).toBeGreaterThan(0);
         expect(data.pageSize).toBeGreaterThan(0);
         expect(data.totalCount).toBeGreaterThanOrEqual(0);
@@ -48,7 +58,10 @@ export class DtrEventsValidator {
         expect(data.rows.length).toBeLessThanOrEqual(data.pageSize);
     }
 
-    validatePaginationMath(data: DtrEventsData) {
+    // =====================================
+    // PAGINATION MATH — totalPages = ceil(totalCount / pageSize)
+    // =====================================
+    validatePaginationMath(data: DtrEventsData): void {
         if (data.totalCount === 0) {
             expect(data.rows.length).toBe(0);
             expect(data.totalPages).toBe(0);
@@ -56,26 +69,38 @@ export class DtrEventsValidator {
         }
 
         expect(data.totalCount).toBeGreaterThanOrEqual(data.rows.length);
-        const expectedPages = Math.ceil(data.totalCount / data.pageSize);
-        expect(data.totalPages).toBe(expectedPages);
+        expect(data.totalPages).toBe(Math.ceil(data.totalCount / data.pageSize));
     }
 
-    validateEmptyScenario(data: DtrEventsData) {
+    // =====================================
+    // APPROXIMATE TOTAL — full page → totalCount >= offset + pageSize
+    // =====================================
+    validateApproximateTotalCount(data: DtrEventsData): void {
+        if (data.rows.length === data.pageSize) {
+            const offset = (data.page - 1) * data.pageSize;
+            expect(data.totalCount).toBeGreaterThanOrEqual(offset + data.pageSize);
+        }
+    }
+
+    // =====================================
+    // EMPTY SCENARIO — no meter / no archive events
+    // =====================================
+    validateEmptyScenario(data: DtrEventsData): void {
         if (data.totalCount !== 0) {
             return;
         }
-        expect(data.rows.length).toBe(0);
+        expect(data.rows).toEqual([]);
         expect(data.totalPages).toBe(0);
     }
 
-    validateRowsPresentWhenTotalPositive(data: DtrEventsData) {
+    validateRowsPresentWhenTotalPositive(data: DtrEventsData): void {
         if (data.totalCount > 0) {
             expect(data.rows.length).toBeGreaterThan(0);
             expect(data.totalPages).toBeGreaterThan(0);
         }
     }
 
-    validateDataPresentPagination(data: DtrEventsData) {
+    validateDataPresentPagination(data: DtrEventsData): void {
         if (data.rows.length === 0) {
             return;
         }
@@ -83,15 +108,21 @@ export class DtrEventsValidator {
         expect(data.totalPages).toBeGreaterThan(0);
     }
 
-    validateRowRequiredFields(rows: DtrEventRow[]) {
+    // =====================================
+    // ROW FIELDS — getDtrEventLogByCode mapping
+    // =====================================
+    validateRowRequiredFields(rows: DtrEventRow[]): void {
         rows.forEach((row) => {
-            ROW_REQUIRED_FIELDS.forEach((field) => {
+            for (const field of dtrEventsData.rowFields) {
                 expect(row).toHaveProperty(field);
-            });
+            }
+            expect(Object.keys(row).sort()).toEqual(
+                [...dtrEventsData.rowFields].sort(),
+            );
         });
     }
 
-    validateRowStructure(rows: DtrEventRow[]) {
+    validateRowStructure(rows: DtrEventRow[]): void {
         rows.forEach((row) => {
             expect(typeof row.serialNo).toBe("number");
             expect(row.serialNo).toBeGreaterThan(0);
@@ -110,27 +141,27 @@ export class DtrEventsValidator {
             expect(
                 row.duration === null || typeof row.duration === "string",
             ).toBeTruthy();
-            expect(ALLOWED_STATUSES).toContain(row.status);
+            expect([...ALLOWED_STATUSES]).toContain(row.status);
         });
     }
 
-    validateSerialSequence(rows: DtrEventRow[], page: number, pageSize: number) {
+    // serialNo = offset + idx + 1
+    validateSerialSequence(rows: DtrEventRow[], page: number, pageSize: number): void {
         const base = (page - 1) * pageSize;
         rows.forEach((row, index) => {
             expect(row.serialNo).toBe(base + index + 1);
         });
     }
 
-    validateUniqueSerialNumbers(rows: DtrEventRow[]) {
+    validateUniqueSerialNumbers(rows: DtrEventRow[]): void {
         const serials = rows.map((row) => row.serialNo);
         expect(new Set(serials).size).toBe(serials.length);
     }
 
-    validateStatusRules(rows: DtrEventRow[]) {
+    // durationSeconds != null → Resolved; else Pending
+    validateStatusRules(rows: DtrEventRow[]): void {
         rows.forEach((row) => {
             if (row.status === "Resolved") {
-                // Backend marks Resolved when durationSeconds != null; restoredDateTime
-                // is only computed when durationSeconds > 0 (instant resolution → null).
                 expect(
                     row.restoredDateTime === null ||
                         typeof row.restoredDateTime === "string",
@@ -143,7 +174,7 @@ export class DtrEventsValidator {
         });
     }
 
-    validateDateTimeFormat(rows: DtrEventRow[]) {
+    validateDateTimeFormat(rows: DtrEventRow[]): void {
         rows.forEach((row) => {
             expect(row.eventDateTime.trim().length).toBeGreaterThan(0);
             expect(IST_DATE_TIME.test(row.eventDateTime.trim())).toBeTruthy();
@@ -156,7 +187,7 @@ export class DtrEventsValidator {
         });
     }
 
-    validateDurationFormat(rows: DtrEventRow[]) {
+    validateDurationFormat(rows: DtrEventRow[]): void {
         rows.forEach((row) => {
             if (row.status !== "Resolved" || row.duration == null) {
                 return;
@@ -165,7 +196,7 @@ export class DtrEventsValidator {
         });
     }
 
-    validateMeterSlNo(rows: DtrEventRow[]) {
+    validateMeterSlNo(rows: DtrEventRow[]): void {
         rows.forEach((row) => {
             if (row.meterSlNo == null) {
                 return;
@@ -174,7 +205,8 @@ export class DtrEventsValidator {
         });
     }
 
-    validateMeterSlNoConsistency(rows: DtrEventRow[]) {
+    // Same DTR asset meter on all rows
+    validateMeterSlNoConsistency(rows: DtrEventRow[]): void {
         const meterSerials = rows
             .map((row) => row.meterSlNo?.trim())
             .filter((value): value is string => Boolean(value));
@@ -184,7 +216,7 @@ export class DtrEventsValidator {
         expect(new Set(meterSerials).size).toBe(1);
     }
 
-    validateDescription(rows: DtrEventRow[]) {
+    validateDescription(rows: DtrEventRow[]): void {
         rows.forEach((row) => {
             if (row.description == null) {
                 return;
@@ -193,7 +225,8 @@ export class DtrEventsValidator {
         });
     }
 
-    validateRestoreAfterOccurrence(rows: DtrEventRow[]) {
+    // restoreTime = occurrence + durationSeconds when duration > 0
+    validateRestoreAfterOccurrence(rows: DtrEventRow[]): void {
         rows.forEach((row) => {
             if (row.status !== "Resolved" || !row.restoredDateTime) {
                 return;
@@ -206,7 +239,8 @@ export class DtrEventsValidator {
         });
     }
 
-    validateChronologicalOrder(rows: DtrEventRow[]) {
+    // ORDER BY Occurence_Time DESC
+    validateChronologicalOrder(rows: DtrEventRow[]): void {
         if (rows.length < 2) {
             return;
         }
@@ -219,18 +253,9 @@ export class DtrEventsValidator {
         }
     }
 
-    validateStatusDistribution(rows: DtrEventRow[]) {
-        const statuses = rows.map((row) => row.status);
-        statuses.forEach((status) => {
-            expect(ALLOWED_STATUSES).toContain(status);
+    validateStatusDistribution(rows: DtrEventRow[]): void {
+        rows.forEach((row) => {
+            expect([...ALLOWED_STATUSES]).toContain(row.status);
         });
-    }
-
-    validateBusinessRules(data: DtrEventsData) {
-        expect(data).toHaveProperty("rows");
-        expect(data).toHaveProperty("page");
-        expect(data).toHaveProperty("pageSize");
-        expect(data).toHaveProperty("totalCount");
-        expect(data).toHaveProperty("totalPages");
     }
 }

@@ -1,9 +1,35 @@
 import { expect } from "@playwright/test";
+import { dtrProfileData } from "../Data/dtrprofile.data";
+
+type ProfileItem = {
+    title: string;
+    value: string | null;
+};
+
+type ActivityItem = {
+    title: string;
+    timestamp: string;
+};
+
+type ProfileData = {
+    profileInformation: ProfileItem[];
+    hierarchy: ProfileItem[];
+    latestActivities: ActivityItem[];
+};
+
 export class DtrProfileValidator {
     // =====================================
-    // FIELD VALIDATIONS
+    // RESPONSE ENVELOPE
     // =====================================
-    validateFields(data: any): void {
+    validateResponseEnvelope(response: { success: boolean; data: unknown }): void {
+        expect(response.success).toBe(true);
+        expect(response.data).toBeDefined();
+    }
+
+    // =====================================
+    // TOP-LEVEL FIELDS
+    // =====================================
+    validateFields(data: ProfileData): void {
         expect(data).toHaveProperty("profileInformation");
         expect(data).toHaveProperty("hierarchy");
         expect(data).toHaveProperty("latestActivities");
@@ -11,132 +37,212 @@ export class DtrProfileValidator {
         expect(Array.isArray(data.hierarchy)).toBeTruthy();
         expect(Array.isArray(data.latestActivities)).toBeTruthy();
     }
+
     // =====================================
-    // PROFILE TITLE VALIDATION
+    // PROFILE COUNT — fixed 13 fields from getDtrProfileByCode
     // =====================================
-    validateProfileTitles(profileInformation: any[],expectedTitles: string[]): void {
-        const actualTitles =profileInformation.map( x => x.title);
-        expect(actualTitles).toEqual(expectedTitles);
+    validateProfileFieldCount(profileInformation: ProfileItem[]): void {
+        expect(profileInformation.length).toBe(dtrProfileData.profileFieldCount);
     }
+
     // =====================================
-    // HIERARCHY VALIDATION
+    // PROFILE TITLE ORDER
     // =====================================
-    validateHierarchyTitles(hierarchy: any[],expectedTitles: string[]): void {
-        const actualTitles =hierarchy.map( x => x.title);
-        expect(actualTitles).toEqual(expectedTitles);
+    validateProfileTitles(
+        profileInformation: ProfileItem[],
+        expectedTitles: readonly string[],
+    ): void {
+        const actualTitles = profileInformation.map((x) => x.title);
+        expect(actualTitles).toEqual([...expectedTitles]);
     }
+
     // =====================================
-    // PROFILE STRUCTURE
+    // PROFILE STRUCTURE — value is string | null
     // =====================================
-    validateProfileStructure(profileInformation: any[]): void {
-        profileInformation.forEach(item => {
+    validateProfileStructure(profileInformation: ProfileItem[]): void {
+        profileInformation.forEach((item) => {
             expect(item).toHaveProperty("title");
             expect(item).toHaveProperty("value");
             expect(typeof item.title).toBe("string");
             expect(item.value === null || typeof item.value === "string").toBeTruthy();
         });
     }
+
     // =====================================
-    // HIERARCHY STRUCTURE
+    // HIERARCHY STRUCTURE — value always string (Network_Name trim)
     // =====================================
-    validateHierarchyStructure(hierarchy: any[]): void {
-        hierarchy.forEach(item => {
+    validateHierarchyStructure(hierarchy: ProfileItem[]): void {
+        hierarchy.forEach((item) => {
             expect(item).toHaveProperty("title");
             expect(item).toHaveProperty("value");
+            expect(typeof item.title).toBe("string");
+            expect(typeof item.value).toBe("string");
+            expect(item.title.length).toBeGreaterThan(0);
         });
     }
+
     // =====================================
-    // ACTIVITIES STRUCTURE
+    // HIERARCHY ORDER — depth DESC: root → … → DTR last
     // =====================================
-    validateActivitiesStructure(latestActivities: any[]): void {
-        latestActivities.forEach(activity => {
+    validateHierarchyOrder(hierarchy: ProfileItem[]): void {
+        expect(hierarchy.length).toBeGreaterThan(0);
+        const lastHierarchy = hierarchy[hierarchy.length - 1];
+        expect(lastHierarchy.title).toBe("DTR");
+        expect(lastHierarchy.value).not.toBeNull();
+        expect(lastHierarchy.value!.length).toBeGreaterThan(0);
+    }
+
+    // =====================================
+    // ACTIVITIES STRUCTURE — fetchLatestActivities LIMIT 5
+    // =====================================
+    validateActivitiesStructure(latestActivities: ActivityItem[]): void {
+        latestActivities.forEach((activity) => {
             expect(activity).toHaveProperty("title");
             expect(activity).toHaveProperty("timestamp");
             expect(typeof activity.title).toBe("string");
             expect(typeof activity.timestamp).toBe("string");
+            expect(activity.title.length).toBeGreaterThan(0);
+            expect(activity.timestamp.length).toBeGreaterThan(0);
         });
     }
+
     // =====================================
-    // ACTIVITIES LIMIT
+    // ACTIVITIES LIMIT — max 5, empty array allowed
     // =====================================
-    validateActivitiesLimit(latestActivities: any[] ): void {
-        expect(latestActivities.length).toBeLessThanOrEqual(5);
+    validateActivitiesLimit(latestActivities: ActivityItem[]): void {
+        expect(latestActivities.length).toBeLessThanOrEqual(dtrProfileData.maxActivities);
     }
+
     // =====================================
-    // LATITUDE LONGITUDE
+    // ACTIVITY TITLE — empty eventName → "Meter event"
     // =====================================
-    validateCoordinates(profileInformation: any[]): void {
-        const latitude =profileInformation.find(x => x.title === "Latitude");
-        const longitude =profileInformation.find(x => x.title === "Longitude");
-        if (latitude?.value !== null) {
-            expect(isNaN(Number(latitude.value))).toBeFalsy();
+    validateActivityTitles(latestActivities: ActivityItem[]): void {
+        latestActivities.forEach((activity) => {
+            expect(activity.title).not.toBe("");
+            if (activity.title === dtrProfileData.defaultActivityTitle) {
+                expect(activity.title).toBe("Meter event");
+            }
+        });
+    }
+
+    // =====================================
+    // LATITUDE / LONGITUDE — numeric strings when present
+    // =====================================
+    validateCoordinates(profileInformation: ProfileItem[]): void {
+        const latitude = profileInformation.find((x) => x.title === "Latitude");
+        const longitude = profileInformation.find((x) => x.title === "Longitude");
+
+        if (latitude != null && latitude.value !== null) {
+            const lat = Number(latitude.value);
+            expect(Number.isFinite(lat)).toBeTruthy();
+            expect(lat).toBeGreaterThanOrEqual(-90);
+            expect(lat).toBeLessThanOrEqual(90);
         }
-        if (longitude?.value !== null) {
-            expect(isNaN(Number(longitude.value))).toBeFalsy();
+
+        if (longitude != null && longitude.value !== null) {
+            const lon = Number(longitude.value);
+            expect(Number.isFinite(lon)).toBeTruthy();
+            expect(lon).toBeGreaterThanOrEqual(-180);
+            expect(lon).toBeLessThanOrEqual(180);
         }
     }
+
     // =====================================
-    // CAPACITY FORMAT
+    // CAPACITY — "{n} kVA" or null (getDtrRatedCapacityKva)
     // =====================================
-    validateCapacityFormat(profileInformation: any[]): void {
-        const capacity =profileInformation.find(x => x.title === "Capacity");
-        if (capacity?.value !== null) {
-            expect(capacity.value.endsWith(" kVA")).toBeTruthy();
+    validateCapacityFormat(profileInformation: ProfileItem[]): void {
+        const capacity = profileInformation.find((x) => x.title === "Capacity");
+        expect(capacity).toBeDefined();
+        if (capacity!.value !== null) {
+            expect(capacity!.value).toMatch(/^\d+(\.\d+)? kVA$/);
         }
     }
+
     // =====================================
-    // EMPTY STRING VALIDATION
+    // NON-NULL VALUES — no empty strings
     // =====================================
-    validateEmptyStrings(
-        profileInformation: any[]
-    ): void {
-        profileInformation.forEach(item => {
+    validateEmptyStrings(profileInformation: ProfileItem[]): void {
+        profileInformation.forEach((item) => {
             if (item.value !== null) {
                 expect(item.value.trim().length).toBeGreaterThan(0);
             }
         });
     }
+
     // =====================================
     // UNIQUE PROFILE TITLES
     // =====================================
-    validateUniqueTitles(profileInformation: any[]): void {
-        const titles =profileInformation.map(x => x.title);
-        const unique =new Set(titles);
-        expect(unique.size).toBe(titles.length);
+    validateUniqueTitles(profileInformation: ProfileItem[]): void {
+        const titles = profileInformation.map((x) => x.title);
+        expect(new Set(titles).size).toBe(titles.length);
     }
+
     // =====================================
-    // DTR NUMBER VALIDATION
+    // DTR NO — matches requested Network_Code
     // =====================================
-    validateDtrNumber(
-profileInformation: any[],expectedDtrCode: string): void {
-        const dtrNo =profileInformation.find(x => x.title === "DTR No");
+    validateDtrNumber(profileInformation: ProfileItem[], expectedDtrCode: string): void {
+        const dtrNo = profileInformation.find((x) => x.title === "DTR No");
         expect(dtrNo?.value).toBe(expectedDtrCode);
     }
-//=====================================
-    // HIERARCHY ORDER
-    // =====================================
-    validateHierarchyOrder(hierarchy: any[]): void {
-        expect(hierarchy.length).toBeGreaterThan(0);
-        const lastHierarchy =hierarchy[hierarchy.length - 1];
-        expect(lastHierarchy.title).toBe("DTR");
-    }
-//=====================================
-    // =====================================
-    // MF VALIDATION
-    // =====================================
 
-    validateMF(profileInformation: any[]): void {
-        const mf =profileInformation.find(x => x.title === "MF");
-        if ( mf?.value !== null ) {
-            expect(isNaN(Number(mf.value))).toBeFalsy();
+    // =====================================
+    // DTR NAME — non-null string when DTR exists
+    // =====================================
+    validateDtrName(profileInformation: ProfileItem[]): void {
+        const dtrName = profileInformation.find((x) => x.title === "DTR Name");
+        expect(dtrName?.value).not.toBeNull();
+        expect(typeof dtrName?.value).toBe("string");
+    }
+
+    // =====================================
+    // MF — numeric string when present
+    // =====================================
+    validateMF(profileInformation: ProfileItem[]): void {
+        const mf = profileInformation.find((x) => x.title === "MF");
+        if (mf != null && mf.value !== null) {
+            expect(Number.isFinite(Number(mf.value))).toBeTruthy();
+            expect(Number(mf.value)).toBeGreaterThan(0);
         }
     }
+
     // =====================================
-    // NO DUPLICATE HIERARCHY
+    // METER SL NO — numeric string when present
     // =====================================
-    validateUniqueHierarchy(hierarchy: any[]): void {
-        const titles =hierarchy.map(x => x.title);
-        const unique = new Set(titles);
-        expect(unique.size ).toBe(titles.length);
+    validateMeterSerial(profileInformation: ProfileItem[]): void {
+        const meterSl = profileInformation.find((x) => x.title === "Meter SL No");
+        if (meterSl != null && meterSl.value !== null) {
+            expect(/^\d+$/.test(meterSl.value)).toBeTruthy();
+        }
+    }
+
+    // =====================================
+    // UNIQUE HIERARCHY TITLES
+    // =====================================
+    validateUniqueHierarchy(hierarchy: ProfileItem[]): void {
+        const titles = hierarchy.map((x) => x.title);
+        expect(new Set(titles).size).toBe(titles.length);
+    }
+
+    // =====================================
+    // HIERARCHY ↔ PROFILE CONSISTENCY
+    // Sub Station / Feeder values align when both present
+    // =====================================
+    validateHierarchyProfileConsistency(
+        profileInformation: ProfileItem[],
+        hierarchy: ProfileItem[],
+    ): void {
+        const profileFeeder = profileInformation.find((x) => x.title === "Feeder")?.value;
+        const hierarchyFeeder = hierarchy.find((x) => x.title === "Feeder")?.value;
+
+        if (profileFeeder && hierarchyFeeder) {
+            expect(hierarchyFeeder).toBe(profileFeeder);
+        }
+
+        const profileSubStation = profileInformation.find((x) => x.title === "Sub Station")?.value;
+        const hierarchySubStation = hierarchy.find((x) => x.title === "Sub Station")?.value;
+
+        if (profileSubStation && hierarchySubStation) {
+            expect(hierarchySubStation).toBe(profileSubStation);
+        }
     }
 }

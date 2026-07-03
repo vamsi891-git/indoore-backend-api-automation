@@ -1,4 +1,5 @@
 import { commandsMeterData } from "./commands-meter.data";
+import { commandsJobPollConfig } from "./commands-job-poll.config";
 
 export type ProfileConfigCommandType =
   | "profile_capture_period_get"
@@ -9,8 +10,7 @@ export const commandsProfileConfigData = {
   defaultMeterSerial: commandsMeterData.validMeterSerial,
   unknownMeterSerial: commandsMeterData.unknownMeterSerial,
   maxResponseTimeMs: 120_000,
-  jobPollTimeoutMs: Number(process.env.JOB_POLL_TIMEOUT_MS ?? 120_000),
-  jobPollIntervalMs: Number(process.env.JOB_POLL_INTERVAL_MS ?? 3_000),
+  ...commandsJobPollConfig,
   expectedInitAction: "GET_CONFIG",
   expectedHesResponseType: "PROFILE_CAPTURE_PERIOD",
   profileTypes: ["INSTANTANEOUS", "BLOCK_LOAD", "DAILY_LOAD", "BILLING"] as const,

@@ -1,6 +1,9 @@
-export const DtrDetailTestData={
-    page:1,
-    limit:20,
-    dtrId:2339
-    
-    }
+import {
+    AssetDtrLookupId,
+    DtrDetailPaginationQueries,
+} from "./asset-management.common.data";
+
+export const DtrDetailTestData = {
+    ...DtrDetailPaginationQueries.default,
+    dtrId: AssetDtrLookupId,
+};

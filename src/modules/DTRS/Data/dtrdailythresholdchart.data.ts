@@ -12,6 +12,16 @@ export const dtrDailyThresholdChartData = {
         "September",
         "October",
         "November",
-        "December"
-    ]
+        "December",
+    ] as const,
+    pointsCount: 12,
+    pointFields: [
+        "month",
+        "monthLabel",
+        "activePower",
+        "reactivePower",
+        "apparentPower",
+        "powerFactor",
+    ] as const,
+    powerFields: ["activePower", "reactivePower", "apparentPower", "powerFactor"] as const,
 };

@@ -1,5 +1,4 @@
 export const powerQualityData = {
-    consumerNumber:"3543025952",
-    maxResponseTime:240000
-
-}
+    consumerNumber: process.env.CONSUMER_NUMBER?.trim() || "N3477021215",
+    maxResponseTime: 240_000,
+};

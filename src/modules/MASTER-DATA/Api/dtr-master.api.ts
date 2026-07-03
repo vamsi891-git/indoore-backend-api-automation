@@ -3,6 +3,7 @@ import {
   DtrMasterQuery,
   DtrMasterResponse,
 } from "../Mapper/dtr-master.mapper";
+import { fetchMasterDataJson } from "../utils/master-data-request.helper";
 
 export interface DtrMasterApiResult {
   rawResponse: APIResponse;
@@ -16,23 +17,23 @@ export class DtrMasterApi {
   async getDtrMasterData(
     query: DtrMasterQuery = { page: 1, limit: 20 },
   ): Promise<DtrMasterApiResult> {
-    const start = Date.now();
     const params: Record<string, string | number> = {
       page: query.page ?? 1,
       limit: query.limit ?? 20,
     };
     if (query.q?.trim()) params.q = query.q.trim();
 
-    const rawResponse = await this.request.get(
-      "/indore/master-data/dtr-master-data",
-      { params },
-    );
-    const responseBody = (await rawResponse.json()) as DtrMasterResponse;
+    const { rawResponse, responseBody, responseTime } =
+      await fetchMasterDataJson<DtrMasterResponse>(
+        this.request,
+        "/indore/master-data/dtr-master-data",
+        params,
+      );
 
     return {
       rawResponse,
       responseBody,
-      responseTime: Date.now() - start,
+      responseTime,
     };
   }
 }

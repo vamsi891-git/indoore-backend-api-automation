@@ -7,7 +7,6 @@ export interface AuditLogExportApiResponse {
     csvContent: string;
     responseTime: number;
 }
-const EXPORT_PATH = "/indore/users/audit-logs/export";
 const MAX_429_ATTEMPTS = 2;
 export class AuditLogExportApi {
     private static lastExportRequestAt = 0;
@@ -36,19 +35,23 @@ export class AuditLogExportApi {
 
         for (let attempt = 0; attempt < MAX_429_ATTEMPTS; attempt++) {
             await AuditLogExportApi.waitForExportSlot();
-            AuditLogExportApi.lastExportRequestAt = Date.now();
 
             const requestStart = Date.now();
             rawResponse = await getWithAutoRefresh(
                 this.authenticatedApi,
-                EXPORT_PATH,
+                AuditLogExportTestData.exportPath,
                 { params: { limit, sort } },
             );
 
             csvContent = await rawResponse.text();
             responseTime = Date.now() - requestStart;
 
-            if (rawResponse.status() !== 429) {
+            const status = rawResponse.status();
+            if (status === 200 || status === 429) {
+                AuditLogExportApi.lastExportRequestAt = Date.now();
+            }
+
+            if (status !== 429) {
                 break;
             }
         }

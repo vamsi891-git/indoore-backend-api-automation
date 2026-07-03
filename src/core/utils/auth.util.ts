@@ -295,9 +295,13 @@ export class AuthApi {
     throw new Error("Device selection exhausted all release attempts");
   }
 
-  private static async loginOnce(): Promise<LoginResponse> {
-    const email = process.env.EMAIL ?? process.env.USERNAME;
-    const password = process.env.PASSWORD;
+  private static async loginOnce(credentials?: {
+    email: string;
+    password: string;
+  }): Promise<LoginResponse> {
+    const email =
+      credentials?.email ?? process.env.EMAIL ?? process.env.USERNAME;
+    const password = credentials?.password ?? process.env.PASSWORD;
 
     if (!email || !password) {
       throw new Error("Missing EMAIL (or USERNAME) and PASSWORD environment variables");
@@ -351,7 +355,10 @@ export class AuthApi {
     }
   }
 
-  static async login(): Promise<LoginResponse> {
+  static async login(credentials?: {
+    email: string;
+    password: string;
+  }): Promise<LoginResponse> {
     let lastError: Error | null = null;
 
     for (let attempt = 0; attempt < this.loginRetryMs.length; attempt += 1) {
@@ -364,7 +371,7 @@ export class AuthApi {
       }
 
       try {
-        return await this.loginOnce();
+        return await this.loginOnce(credentials);
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
 
@@ -381,5 +388,9 @@ export class AuthApi {
 
     LoggerEngine.error("AuthApi.login failed after retries", lastError);
     throw lastError ?? new Error("Login failed after retries");
+  }
+
+  static async loginAs(email: string, password: string): Promise<LoginResponse> {
+    return this.login({ email, password });
   }
 }

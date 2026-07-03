@@ -1,10 +1,9 @@
 export const consumerProfileData = {
-
     consumerNumber:
-        "3543025952",
+        process.env.CONSUMER_NUMBER?.trim() || "N3477021215",
     query: {
         billingLimit: 12,
         eventPage: 1,
-        eventPageSize: 20
-    }
+        eventPageSize: 20,
+    },
 };

@@ -5,6 +5,7 @@ import {
     type BillingItem,
     type ParsedBillingDataResponse,
 } from "../schemas/billing.schemas";
+import { normalizeBillingItem } from "../utils/billing-item.helper";
 
 export type { BillingItem };
 
@@ -47,7 +48,7 @@ export class BillingDataMapper {
                 limit: pagination.limit,
                 total: pagination.total,
                 totalPages: pagination.totalPages,
-                items: rows,
+                items: rows.map(normalizeBillingItem),
             };
         }
 
@@ -58,7 +59,7 @@ export class BillingDataMapper {
             limit: data.limit ?? query.limit,
             total: data.total ?? 0,
             totalPages: data.totalPages ?? 0,
-            items: data.items ?? [],
+            items: (data.items ?? []).map(normalizeBillingItem),
         };
     }
 }

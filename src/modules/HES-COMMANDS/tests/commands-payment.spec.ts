@@ -28,6 +28,7 @@ import {
   logCommandE2eResponses,
   pollQueryMeterJob,
 } from "../utils/commands-job-e2e.helper";
+import { waitForHesJobQueueSlot } from "../utils/commands-hes-queue.helper";
 
 interface PaymentE2eCase {
   title: string;
@@ -74,10 +75,12 @@ const paymentE2eCases: PaymentE2eCase[] = [
 ];
 
 test.describe("HES Commands — Payment (E2E)", () => {
+  test.describe.configure({ mode: "serial" });
   test.setTimeout(HES_COMMANDS_PAYMENT_TEST_TIMEOUT_MS);
 
   for (const paymentCase of paymentE2eCases) {
     test(paymentCase.title, { tag: paymentCase.tags }, async ({ authenticatedApi }, testInfo) => {
+      await waitForHesJobQueueSlot();
       const body = paymentCase.body;
       const requestedMeters = normalizeMeters(body.meters);
       const paymentApi = new CommandsPaymentApi(authenticatedApi);

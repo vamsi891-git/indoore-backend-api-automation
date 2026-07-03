@@ -1,43 +1,84 @@
 import { expect } from "@playwright/test";
+import { dtrCapacityGaugeData } from "../Data/dtrcapacitygauge.data";
+
+type CapacityBand = {
+    label: string;
+    value: number;
+    percent: number;
+    unit: string;
+};
+
+type CapacityGaugeData = {
+    ratedCapacityKva: number | null;
+    bands: CapacityBand[];
+};
+
+/** Mirrors backend gaugePercent(). */
+function gaugePercent(value: number | null, capacity: number | null): number {
+    const v = value != null && Number.isFinite(value) ? Math.max(0, value) : 0;
+    if (capacity == null || !Number.isFinite(capacity) || capacity <= 0) return 0;
+    return Math.min(100, Math.round((100 * v) / capacity));
+}
+
+/** Mirrors backend roundGauge(). */
+function roundGauge(n: number | null): number {
+    if (n == null || !Number.isFinite(n)) return 0;
+    return Math.round(n * 100) / 100;
+}
+
 export class DtrCapacityGaugeValidator {
+    // =========================================
+    // RESPONSE ENVELOPE
+    // =========================================
+    validateResponseEnvelope(response: { success: boolean; data: unknown }): void {
+        expect(response.success).toBe(true);
+        expect(response.data).toBeDefined();
+    }
+
     // =========================================
     // REQUIRED FIELDS
     // =========================================
-    validateFields(data: any): void {
+    validateFields(data: CapacityGaugeData): void {
         expect(data).toHaveProperty("ratedCapacityKva");
         expect(data).toHaveProperty("bands");
         expect(Array.isArray(data.bands)).toBeTruthy();
     }
+
     // =========================================
-    // BAND COUNT
-    //=========================================
-    validateBandCount(bands: any[]): void {
+    // BAND COUNT — getDtrCapacityGaugeByCode builds 5 bands
+    // =========================================
+    validateBandCount(bands: CapacityBand[]): void {
         expect(bands.length).toBe(5);
     }
+
     // =========================================
     // BAND STRUCTURE
     // =========================================
-    validateBandStructure(bands: any[]): void {
-        bands.forEach(band => {
+    validateBandStructure(bands: CapacityBand[]): void {
+        bands.forEach((band) => {
             expect(band).toHaveProperty("label");
             expect(band).toHaveProperty("value");
             expect(band).toHaveProperty("percent");
             expect(band).toHaveProperty("unit");
         });
     }
+
     // =========================================
     // BAND ORDER
     // =========================================
-    validateBandOrder(bands: any[],expectedBands: string[]): void {
-        const labels =bands.map(x => x.label );
-        expect(labels).toEqual(expectedBands);
+    validateBandOrder(bands: CapacityBand[], expectedBands: readonly string[]): void {
+        const labels = bands.map((x) => x.label);
+        expect(labels).toEqual([...expectedBands]);
     }
+
     // =========================================
     // VALUE TYPES
     // =========================================
-    validateTypes(data: any): void {
-        expect(data.ratedCapacityKva === null ||typeof data.ratedCapacityKva === "number").toBeTruthy();
-        data.bands.forEach((band: any) => {
+    validateTypes(data: CapacityGaugeData): void {
+        expect(
+            data.ratedCapacityKva === null || typeof data.ratedCapacityKva === "number",
+        ).toBeTruthy();
+        data.bands.forEach((band) => {
             expect(typeof band.label).toBe("string");
             expect(typeof band.value).toBe("number");
             expect(typeof band.percent).toBe("number");
@@ -46,78 +87,122 @@ export class DtrCapacityGaugeValidator {
     }
 
     // =========================================
-    // UNIT VALIDATION
+    // UNIT VALIDATION — Instant=KVA, MD bands=MDkVA
     // =========================================
-    validateUnits(bands: any[]): void {
-        bands.forEach((band: any) => {
-            if (band.label === "Instant") {
-                expect(band.unit).toBe("KVA");
-            }
-            else {
-                expect(band.unit).toBe("MDkVA");
-            }
+    validateUnits(bands: CapacityBand[]): void {
+        bands.forEach((band) => {
+            const expectedUnit =
+                dtrCapacityGaugeData.bandUnits[
+                    band.label as keyof typeof dtrCapacityGaugeData.bandUnits
+                ];
+            expect(expectedUnit).toBeDefined();
+            expect(band.unit).toBe(expectedUnit);
         });
     }
+
     // =========================================
-    // PERCENT VALIDATION
+    // PERCENT — gaugePercent: integer 0–100
     // =========================================
-    validatePercentages(bands: any[]): void {
-        bands.forEach((band: any) => {
+    validatePercentages(bands: CapacityBand[]): void {
+        bands.forEach((band) => {
             expect(band.percent).toBeGreaterThanOrEqual(0);
             expect(band.percent).toBeLessThanOrEqual(100);
             expect(Number.isInteger(band.percent)).toBeTruthy();
         });
     }
+
     // =========================================
-    // VALUE VALIDATION
+    // VALUE — roundGauge output, non-negative
     // =========================================
-    validateValues(bands: any[]): void {
-        bands.forEach((band: any) => {
+    validateValues(bands: CapacityBand[]): void {
+        bands.forEach((band) => {
             expect(band.value).toBeGreaterThanOrEqual(0);
+            expect(Number.isFinite(band.value)).toBeTruthy();
         });
     }
+
     // =========================================
-    // CAPACITY LOGIC
+    // NULL / ZERO CAPACITY — all percent = 0
+    // getDtrRatedCapacityKva currently always null
     // =========================================
-    validateCapacityLogic(ratedCapacityKva: number | null,bands: any[]): void {
-        // backend logic:
-        // if capacity null/0
-        // all percentages become 0
+    validateCapacityLogic(ratedCapacityKva: number | null, bands: CapacityBand[]): void {
         if (ratedCapacityKva === null || ratedCapacityKva <= 0) {
-            bands.forEach((band: any) => {
+            bands.forEach((band) => {
                 expect(band.percent).toBe(0);
             });
         }
     }
+
     // =========================================
-    // ROUNDING VALIDATION
+    // GAUGE PERCENT FORMULA — when capacity > 0
     // =========================================
-    validateRoundedValues(bands: any[]): void {
-        bands.forEach((band: any) => {
-            const decimalPart =band.value.toString().split(".")[1];
+    validateGaugePercentFormula(
+        ratedCapacityKva: number | null,
+        bands: CapacityBand[],
+    ): void {
+        if (ratedCapacityKva == null || ratedCapacityKva <= 0) {
+            return;
+        }
+
+        bands.forEach((band) => {
+            expect(band.percent).toBe(gaugePercent(band.value, ratedCapacityKva));
+        });
+    }
+
+    // =========================================
+    // ROUNDING — roundGauge max 2 decimal places
+    // =========================================
+    validateRoundedValues(bands: CapacityBand[]): void {
+        bands.forEach((band) => {
+            expect(band.value).toBe(roundGauge(band.value));
+            const decimalPart = band.value.toString().split(".")[1];
             if (decimalPart) {
                 expect(decimalPart.length).toBeLessThanOrEqual(2);
             }
         });
     }
+
     // =========================================
-    // NaN VALIDATION
+    // NaN / FINITE
     // =========================================
-    validateNaN(data: any): void {
+    validateNaN(data: CapacityGaugeData): void {
         if (data.ratedCapacityKva !== null) {
             expect(Number.isNaN(data.ratedCapacityKva)).toBeFalsy();
+            expect(Number.isFinite(data.ratedCapacityKva)).toBeTruthy();
         }
-        data.bands.forEach((band: any) => {
+        data.bands.forEach((band) => {
             expect(Number.isNaN(band.value)).toBeFalsy();
             expect(Number.isNaN(band.percent)).toBeFalsy();
         });
     }
+
     // =========================================
     // DUPLICATE LABELS
     // =========================================
-    validateUniqueLabels(bands: any[]): void {
-        const labels =bands.map(x => x.label);
-        const unique =new Set(labels);
-        expect(unique.size).toBe(labels.length);
+    validateUniqueLabels(bands: CapacityBand[]): void {
+        const labels = bands.map((x) => x.label);
+        expect(new Set(labels).size).toBe(labels.length);
+    }
+
+    // =========================================
+    // NO-DATA FALLBACK — null readings → value 0
+    // =========================================
+    validateZeroFallbackState(data: CapacityGaugeData): void {
+        const allZero = data.bands.every((b) => b.value === 0 && b.percent === 0);
+        if (allZero && (data.ratedCapacityKva === null || data.ratedCapacityKva <= 0)) {
+            data.bands.forEach((band) => {
+                expect(band.value).toBe(0);
+                expect(band.percent).toBe(0);
+            });
+        }
+    }
+
+    // =========================================
+    // RATED CAPACITY — null or positive when available
+    // =========================================
+    validateRatedCapacity(data: CapacityGaugeData): void {
+        if (data.ratedCapacityKva !== null) {
+            expect(data.ratedCapacityKva).toBeGreaterThan(0);
+        }
     }
 }

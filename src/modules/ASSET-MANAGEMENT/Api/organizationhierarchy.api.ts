@@ -11,9 +11,17 @@ export interface OrganisationHierarchyApiResponse {
 }
 export class OrganisationHierarchyApi {
     constructor(private authenticatedApi:APIRequestContext) { }
-    async getOrganisationHierarchy():Promise<OrganisationHierarchyApiResponse> {
+    async getOrganisationHierarchy(
+        rootId?: number,
+        requestTimeoutMs?: number,
+    ): Promise<OrganisationHierarchyApiResponse> {
         const start =Date.now();
-        const rawResponse =await getWithAutoRefresh(this.authenticatedApi,"/indore/asset-management/organisation-hierarchy");
+        const query = rootId != null ? `?rootId=${rootId}` : "";
+        const rawResponse = await getWithAutoRefresh(
+            this.authenticatedApi,
+            `/indore/asset-management/organisation-hierarchy${query}`,
+            requestTimeoutMs != null ? { timeout: requestTimeoutMs } : {},
+        );
         const responseBody =await rawResponse.json();
         const responseTime =Date.now() - start;
         return {

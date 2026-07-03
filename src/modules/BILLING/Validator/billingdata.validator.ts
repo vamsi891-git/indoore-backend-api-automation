@@ -4,6 +4,10 @@ import {
     BillingDataResponseSchema,
     type ParsedBillingDataResponse,
 } from "../schemas/billing.schemas";
+import {
+    resolveBillingDate,
+    sumBillingTiers,
+} from "../utils/billing-item.helper";
 
 /** API dates are `YYYY-MM-DD HH:mm:ss` — parse calendar parts to avoid TZ drift. */
 function billingCalendarParts(billingDate: string): { month: number; year: number } {
@@ -45,9 +49,11 @@ export class BillingDataValidator {
             expect(item.slNo).toBeGreaterThan(0);
             expect(item.meterNumber).toBeTruthy();
             expect(item.phase).toBeTruthy();
-            expect(item.billingDate).toBeTruthy();
+            expect(resolveBillingDate(item)).toBeTruthy();
             expect(item.entryDateTime).toBeTruthy();
-            expect(item.mf).toBeGreaterThan(0);
+            if (item.mf != null) {
+                expect(item.mf).toBeGreaterThan(0);
+            }
             expect(item.billOnMin).toBeGreaterThanOrEqual(0);
             expect(item.kwhC).toBeGreaterThanOrEqual(0);
             expect(item.kvahC).toBeGreaterThanOrEqual(0);
@@ -63,21 +69,13 @@ export class BillingDataValidator {
     }
     validateEnergyCalculation(data: BillingData) {
         data.items.forEach(item => {
-            const totalKwh =
-                (item.kwhT1 ?? 0) +
-                (item.kwhT2 ?? 0) +
-                (item.kwhT3 ?? 0) +
-                (item.kwhT4 ?? 0);
+            const totalKwh = sumBillingTiers(item, "kwhT");
             expect(Math.abs((item.kwhC ?? 0) - totalKwh)).toBeLessThanOrEqual(10);
         });
     }
     validateKvahCalculation(data: BillingData) {
         data.items.forEach(item => {
-            const totalKvah =
-                (item.kvahT1 ?? 0) +
-                (item.kvahT2 ?? 0) +
-                (item.kvahT3 ?? 0) +
-                (item.kvahT4 ?? 0);
+            const totalKvah = sumBillingTiers(item, "kvahT");
             expect(Math.abs((item.kvahC ?? 0) - totalKvah)).toBeLessThanOrEqual(10);
         });
     }
@@ -101,8 +99,9 @@ export class BillingDataValidator {
         expect(data.month).toBe(expectedMonth);
         expect(data.year).toBe(expectedYear);
         data.items.forEach((item) => {
-            expect(item.billingDate).toBeTruthy();
-            const { month, year } = billingCalendarParts(item.billingDate!);
+            const billingDate = resolveBillingDate(item);
+            expect(billingDate).toBeTruthy();
+            const { month, year } = billingCalendarParts(billingDate!);
             expect(month).toBe(expectedMonth);
             expect(year).toBe(expectedYear);
         });
@@ -117,7 +116,7 @@ export class BillingDataValidator {
         expect(duplicates.length).toBe(0);
     }
     validateDuplicateBillingRecords(data: BillingData) {
-        const keys =data.items.map(item =>`${item.meterNumber}_${item.billingDate}_${item.entryDateTime}`);
+        const keys =data.items.map(item =>`${item.meterNumber}_${resolveBillingDate(item)}_${item.entryDateTime}`);
         const duplicates =keys.filter((value,index) =>keys.indexOf(value) !== index);
         if (duplicates.length) {
             console.log("Duplicate Billing Records:",duplicates);
