@@ -1,0 +1,439 @@
+Bulk upload validations:
+
+
+
+File Validation:
+
+Only .xlsx files are allowed.
+File must be readable and follow the approved template.
+Required columns must be present.
+Duplicate column names are not allowed.
+File must contain at least one data row.
+Blank rows are ignored.
+
+Network Hierarchy Validation
+Zone must exist.
+Sub Station must exist and belong to the selected Zone.
+Feeder must exist and belong to the selected Sub Station .
+DTR must exist and belong to selected Feeder.
+
+
+Meter Bulk Upload Validations
+
+1. Meter Identification Validation
+Meter Serial Number is mandatory.
+Asset ID and RAPDRP Code should match Meter Serial Number or remain blank.
+Meter Serial Number must be unique.
+Duplicate Meter Serial Numbers within the upload file are not allowed.
+Existing meters cannot be uploaded again.
+
+2. Meter Master Validation
+Meter Manufacturer must exist.
+Meter Model must exist if provided.
+Meter Status must contain valid values.
+DLMS / Non-DLMS must contain valid values.
+
+3. Meter Configuration Validation
+MPTR, MCTR, LPTR, and LCTR must be valid integers.
+MF must be greater than zero.
+Display Digit must be a valid positive integer.
+
+4. Date Validation
+Meter PO Date must be valid.
+Meter Testing Date must be valid.
+Future dates are not allowed.
+Testing Date must be greater than or equal to PO Date.
+
+5. Field Length Validation
+Accuracy Class maximum 8 characters.
+Meter PO Number maximum 32 characters.
+Meter Version maximum 32 characters.
+Meter Rating maximum 15 characters.
+
+
+DTR Bulk Upload Validations:
+
+1. DTR Validation
+DTR Code is mandatory and unique.
+DTR Name is mandatory.
+DTR Capacity must be greater than zero.
+Status must contain valid values.
+Duplicate DTR Codes within the upload file are not allowed.
+
+2. Meter Mapping Validation
+Meter Serial Number is mandatory.
+Meter must exist.
+Meter must be active.
+Meter must not already be mapped to another DTR.
+Main/Sub Meter must contain valid values.
+Meter Phase must contain valid values.
+Service Point ID is mandatory.
+
+3. Communication Validation
+SIM Number is mandatory.
+IMSI Number must contain digits only.
+IP Address must be valid.
+Modem Serial Number is mandatory.
+Modem IMEI must contain 15 digits.
+
+4. Date Validation:
+Service Date and Installation Date must be valid.
+Future dates are not allowed.
+
+
+Consumer Bulk Validations:
+
+1.Consumer Validation
+Consumer ID is mandatory and unique.
+Nearest Account ID must be valid.
+
+
+2.Connection Validation
+Billing Cycle must be valid.
+Bill Day must be between 1 and 28.
+Consumer Category must be valid.
+Connection Type, Status, and TOD must be valid if provided.
+
+3.Meter Validation
+Main/Sub Meter must be valid.
+Meter Serial Number (MSN) is mandatory.
+Meter must be active.
+Meter must not already be mapped.
+Service Point ID is mandatory.
+Meter Phase must be valid.
+Meter Initial Reading must be greater than 0.
+
+4.Communication Validation
+SIM Number is mandatory.
+IMSI Number must be numeric.
+Meter Mobile Number must contain 10 digits.
+IP Address must be valid.
+Modem Serial Number is mandatory.
+
+
+5.Duplicate Validation
+Consumer ID must be unique.
+Meter Serial Number must be unique.
+
+
+================================================================================
+CREATE DTR API — AUTOMATION DEFECTS
+Endpoint: POST /indore/master-data/add-dtr
+Spec: src/modules/MASTER-DATA/tests/create-dtr.spec.ts
+Reference: DTR Bulk Upload Validations (sections 1–4 above) + Consumer Bulk §3 (Meter Initial Reading)
+Last run: 17 passed, 10 failed (failures = backend gaps; tests are correct)
+
+Rule: If API behaviour mismatches the validations above → test FAILS.
+      If API correctly rejects invalid data → test PASSES.
+
+--------------------------------------------------------------------------------
+FAILED — Backend accepts invalid payload (returns 201 instead of rejecting)
+--------------------------------------------------------------------------------
+
+1. DTR Capacity must be greater than zero
+   Manual ref: DTR Bulk Upload §1 — "DTR Capacity must be greater than zero"
+   Test payload: "DTR Capacity (KVA)" = 0
+   Expected: HTTP 400, success=false, validation error
+   Actual:   HTTP 201, DTR created successfully
+   Defect:   Zero capacity is accepted.
+
+2. Future Service Date rejected
+   Manual ref: DTR Bulk Upload §4 — "Future dates are not allowed"
+   Test payload: "Service Date" = 2099-01-01
+   Expected: HTTP 400, validation error for Service Date
+   Actual:   HTTP 201, DTR created with future date
+   Defect:   Future service date is accepted.
+
+3. Future Installation Date rejected
+   Manual ref: DTR Bulk Upload §4 — "Future dates are not allowed"
+   Test payload: "Installation Date" = 2099-01-01
+   Expected: HTTP 400, validation error for Installation Date
+   Actual:   HTTP 201, DTR created with future date
+   Defect:   Future installation date is accepted.
+
+4. Future Date Of Service rejected
+   Manual ref: DTR Bulk Upload §4 (Service Date rule applies to all service dates)
+   Test payload: "Date Of Service" = 2099-01-01
+   Expected: HTTP 400, validation error for Date Of Service
+   Actual:   HTTP 201, DTR created with future date
+   Defect:   Future date of service is accepted.
+
+5. Meter must exist
+   Manual ref: DTR Bulk Upload §2 — "Meter must exist"
+   Test payload: MSN = non-existent serial (e.g. Z{timestamp})
+   Expected: HTTP 404, error code METER_NOT_FOUND
+   Actual:   HTTP 201, DTR created without a valid meter
+   Defect:   Missing meter is not blocked before create.
+
+6. Meter must be active
+   Manual ref: DTR Bulk Upload §2 — "Meter must be active"
+   Test payload: MSN = VALIDATE_DTR_METER_INACTIVE_SERIAL (7060268)
+   Expected: HTTP 409, error code METER_INACTIVE
+   Actual:   METER_NOT_FOUND (or wrong error) — serial may be stale in .env
+   Defect:   Inactive meter not rejected correctly; refresh test serial if needed.
+
+7. Main/Sub Meter must be valid
+   Manual ref: DTR Bulk Upload §2 — "Main/Sub Meter must contain valid values"
+   Test payload: "Main/Sub Meter" = 99999999 (invalid lookup ID)
+   Expected: HTTP 400, validation error for Main/Sub Meter
+   Actual:   HTTP 201, DTR created
+   Defect:   Invalid Main/Sub Meter lookup is accepted.
+
+8. Meter Phase must be valid
+   Manual ref: DTR Bulk Upload §2 — "Meter Phase must contain valid values"
+   Test payload: "Meter Phase" = 99999999 (invalid lookup ID)
+   Expected: HTTP 400, validation error for Meter Phase
+   Actual:   HTTP 201, DTR created
+   Defect:   Invalid Meter Phase lookup is accepted.
+
+9. Modem IMEI must be 15 digits
+   Manual ref: DTR Bulk Upload §3 — "Modem IMEI must contain 15 digits"
+   Test payload: "Modem IMEI" = "12345" (5 digits)
+   Expected: HTTP 400, validation error for Modem IMEI
+   Actual:   HTTP 201, DTR created
+   Defect:   IMEI length/format is not enforced.
+
+10. Meter Initial Reading must be greater than zero
+    Manual ref: Consumer Bulk §3 — "Meter Initial Reading must be greater than 0"
+                  (same rule on Add DTR Step 3)
+    Test payload: "Meter Initial Reading" = 0
+    Expected: HTTP 400, validation error for Meter Initial Reading
+    Actual:   HTTP 201, DTR created
+    Defect:   Zero initial reading is accepted.
+
+--------------------------------------------------------------------------------
+PASSED — API correctly enforces (examples)
+--------------------------------------------------------------------------------
+- DTR Code / DTR Name required
+- DTR Code must be unique (409 when duplicate)
+- Date format YYYY-MM-DD (invalid format rejected)
+- MSN required
+- IMSI / Mobile / IP Address format validation
+- Latitude / Longitude numeric validation
+- Meter already on another DTR (409)
+- Meter already assigned to consumer (409)
+- Create DTR successfully (smoke, valid payload)
+
+--------------------------------------------------------------------------------
+ENV (create-dtr tests)
+--------------------------------------------------------------------------------
+CREATE_DTR_ORGANISATION_LOOKUP_ID=30      (Zone: Hawabangla)
+CREATE_DTR_SUBSTATION_NETWORK_LOOKUP_ID=3   (Sub Station: PragatiNagar)
+CREATE_DTR_FEEDER_NETWORK_LOOKUP_ID=4       (Feeder: PARMANU NAGAR(CHQ))
+CREATE_DTR_EXISTS_CODE=RJ662                (existing DTR for duplicate test)
+VALIDATE_DTR_METER_ON_DTR_SERIAL / INACTIVE / ASSIGNED — negative meter scenarios
+
+
+================================================================================
+BULK UPLOAD DTR API — AUTOMATION DEFECTS
+Endpoint: POST /indore/master-data/bulk-upload-dtr
+Spec: src/modules/MASTER-DATA/tests/bulk-upload-dtr.spec.ts
+Reference: DTR Bulk Upload Validations (sections 1–4 above)
+
+Rule: If API behaviour mismatches the validations above → test FAILS.
+      If API correctly rejects invalid data → test PASSES.
+
+--------------------------------------------------------------------------------
+FAILED — Backend defect (bulk-upload-dtr)
+--------------------------------------------------------------------------------
+
+1. Meter must be active
+   Manual ref: DTR Bulk Upload §2 — "Meter must be active"
+   Test payload: MSN = VALIDATE_DTR_METER_INACTIVE_SERIAL (7060268)
+   Expected: Row rejected with inactive/active error message
+   Actual:   "meter not found or not in your access scope"
+   Note:     GET validate-dtr-meter returns METER_INACTIVE for the same serial.
+
+--------------------------------------------------------------------------------
+ENV (bulk-upload-dtr tests)
+--------------------------------------------------------------------------------
+BULK_DTR_ZONE_NAME=Hawabangla
+BULK_DTR_SUBSTATION_NAME=PragatiNagar
+BULK_DTR_FEEDER_NAME=PARMANU NAGAR(CHQ)
+BULK_DTR_MAIN_SUB_METER=Main
+BULK_DTR_METER_PHASE=1 PH
+# Refresh after runs: VALIDATE_DTR_METER_VALID_SERIAL or BULK_DTR_METER_SERIALS
+
+
+================================================================================
+BULK UPLOAD CONSUMERS API — AUTOMATION COVERAGE
+Endpoint: POST /indore/master-data/bulk-upload-consumers
+Spec: src/modules/MASTER-DATA/tests/bulk-upload-consumers.spec.ts
+Data: src/modules/MASTER-DATA/Data/bulk-upload-consumers.data.ts
+Reference: File Validation + Network Hierarchy + Consumer Bulk Validations (§1–§5 above)
+
+Rule: If API behaviour mismatches the validations above → test FAILS.
+      If API correctly rejects invalid data → test PASSES.
+
+| Manual rule (Bulk upload validations.txt) | Scenario | Type |
+|-------------------------------------------|----------|------|
+| Only .xlsx files allowed | file_invalid_type | Negative |
+| Required columns present | file_missing_columns | Negative |
+| Duplicate column names not allowed | file_duplicate_columns | Negative |
+| At least one data row | file_no_data_rows | Negative |
+| Blank rows ignored | bulk_success_blank_row | Positive |
+| Zone must exist | file_invalid_zone | Negative |
+| Sub Station exists / belongs to Zone | row_invalid_substation | Negative |
+| Feeder exists / belongs to hierarchy | row_invalid_feeder | Negative |
+| DTR exists / belongs to Feeder | row_invalid_dtr | Negative |
+| Consumer ID mandatory | row_missing_consumer_id | Negative |
+| Consumer ID unique (within file) | row_duplicate_consumer_id | Negative |
+| Consumer ID unique (already in DB) | row_consumer_id_exists | Negative (auto: consumer master `consumerCid`) |
+| Nearest Account ID required | row_missing_nearest_acct_id | Negative |
+| Nearest Account ID must be valid | row_invalid_nearest_acct_id | Negative |
+| Billing Cycle must be valid | row_invalid_billing_cycle | Negative |
+| Bill Day between 1 and 28 (high) | row_invalid_bill_day | Negative |
+| Bill Day between 1 and 28 (low) | row_invalid_bill_day_zero | Negative |
+| Consumer Category must be valid | row_invalid_consumer_category | Negative |
+| Connection Type must be valid (if provided) | row_invalid_connection_type | Negative |
+| Connection Status must be valid (if provided) | row_invalid_connection_status | Negative |
+| TOD must be valid (if provided) | row_invalid_tod | Negative |
+| Main/Sub Meter must be valid | row_invalid_main_sub_meter | Negative |
+| MSN mandatory | row_missing_msn | Negative |
+| Meter must exist | row_meter_not_found | Negative |
+| Meter must be active | row_meter_inactive | Negative |
+| Meter must not already be mapped | row_meter_already_mapped | Negative |
+| Service Point ID mandatory | row_missing_service_point | Negative |
+| Meter Phase must be valid | row_invalid_meter_phase | Negative |
+| Meter Initial Reading > 0 | row_reading_zero | Negative |
+| SIM Number mandatory | row_missing_sim | Negative |
+| IMSI numeric | row_invalid_imsi | Negative |
+| Meter Mobile Number 10 digits | row_invalid_meter_mobile | Negative |
+| IP Address valid | row_invalid_ip | Negative |
+| Modem Serial Number mandatory | row_missing_modem_serial | Negative |
+| MSN unique within file | row_duplicate_msn | Negative |
+| Bulk create one consumer | bulk_success | Positive |
+| Bulk create two consumers | bulk_success_multi | Positive |
+
+Not automated (manual / edge):
+- File must be readable and follow approved template (corrupt workbook — out of scope)
+- Modem IMEI 15 digits (row_invalid_imei — template column; not listed in Consumer §4 but covered as extra)
+
+Run: npx playwright test src/modules/MASTER-DATA/tests/bulk-upload-consumers.spec.ts --workers=1
+
+================================================================================
+BULK UPLOAD CONSUMERS API — AUTOMATION DEFECTS
+Endpoint: POST /indore/master-data/bulk-upload-consumers
+Spec: src/modules/MASTER-DATA/tests/bulk-upload-consumers.spec.ts
+Last run: 35 passed, 2 failed, 0 skipped (after dynamic existing-CID resolution)
+
+Rule: If API behaviour mismatches the validations above → test FAILS.
+      If API correctly rejects invalid data → test PASSES.
+
+--------------------------------------------------------------------------------
+SKIPPED — Only when consumer master returns no rows (rare)
+--------------------------------------------------------------------------------
+| Test | Reason |
+|------|--------|
+| existing Consumer ID rejected (row_consumer_id_exists) | GET consumer-master-data returned no `consumerCid`. Optional override: BULK_CONSUMER_EXISTS_CID in .env |
+
+--------------------------------------------------------------------------------
+FAILED — Backend accepts invalid row (returns 200 / success:true instead of 400)
+--------------------------------------------------------------------------------
+| Test | Manual rule | Payload | Actual API | Expected |
+|------|-------------|---------|------------|----------|
+| meter must exist (row_meter_not_found) | Consumer §3 — Meter must exist | MSN = Z{random11} (non-existent serial) | HTTP 200, success: true, row status CREATED | HTTP 400, success: false, VALIDATION_FAILED |
+| Modem IMEI must be 15 digits (row_invalid_imei) | DTR §3 analogue / template column | Modem IMEI = "12345" (5 digits) | HTTP 200, success: true, consumer created | HTTP 400, success: false, VALIDATION_FAILED |
+
+Action for dev: Reject these rows at validation (same pattern as bulk-upload-dtr meter/IMEI negatives).
+Tests must stay failing until backend enforces the rules.
+
+================================================================================
+CREATE CONSUMER API — AUTOMATION COVERAGE
+Endpoint: POST /indore/consumers
+Spec: src/modules/MASTER-DATA/tests/create-consumer.spec.ts
+Data: src/modules/MASTER-DATA/Data/create-consumer.data.ts
+Reference: Consumer Bulk Validations (§1–§5 above) + Network Hierarchy
+
+Rule: If API behaviour mismatches the validations above → test FAILS.
+      If API correctly rejects invalid data → test PASSES.
+
+| Manual rule (Bulk upload validations.txt) | Scenario | Type |
+|-------------------------------------------|----------|------|
+| Consumer ID mandatory | missing_consumer_id | Negative |
+| Nearest Account ID required | missing_nearest_acct_id | Negative |
+| Nearest Account ID must be valid | invalid_nearest_acct_id | Negative |
+| Consumer ID unique (already in DB) | consumer_id_exists | Negative (auto: consumer master `consumerCid`) |
+| Billing Cycle must be valid | invalid_billing_cycle | Negative |
+| Bill Day between 1 and 28 (high) | invalid_bill_day | Negative |
+| Bill Day between 1 and 28 (low) | invalid_bill_day_zero | Negative |
+| Consumer Category must be valid | invalid_consumer_category | Negative |
+| Connection Type must be valid (if provided) | invalid_connection_type | Negative |
+| Connection Status must be valid (if provided) | invalid_connection_status | Negative |
+| TOD must be valid (if provided) | invalid_tod | Negative |
+| Sub Station exists / belongs to hierarchy | invalid_substation | Negative |
+| Feeder exists / belongs to hierarchy | invalid_feeder | Negative |
+| DTR exists / belongs to Feeder | invalid_dtr | Negative |
+| Main/Sub Meter must be valid | invalid_main_sub_meter | Negative |
+| MSN mandatory | missing_msn | Negative |
+| Meter must exist | meter_not_found | Negative |
+| Meter must be active | meter_inactive | Negative |
+| Meter must not already be mapped | meter_already_mapped | Negative |
+| Service Point ID mandatory | missing_service_point | Negative |
+| Meter Phase must be valid | invalid_meter_phase | Negative |
+| Meter Initial Reading > 0 | reading_zero | Negative |
+| SIM Number mandatory | missing_sim | Negative |
+| IMSI numeric | invalid_imsi | Negative |
+| Meter Mobile Number 10 digits | invalid_meter_mobile | Negative |
+| IP Address valid | invalid_ip | Negative |
+| Modem Serial Number mandatory | missing_modem_serial | Negative |
+| Create one consumer | create_success | Positive (+ profile persistence) |
+
+Run: npx playwright test src/modules/MASTER-DATA/tests/create-consumer.spec.ts --workers=1
+
+================================================================================
+CREATE CONSUMER API — AUTOMATION DEFECTS
+Endpoint: POST /indore/consumers
+Spec: src/modules/MASTER-DATA/tests/create-consumer.spec.ts
+Last run: 6 passed, 20 failed, 2 flaky (16.1m, --workers=1)
+
+Rule: If API behaviour mismatches the validations above → test FAILS.
+      If API correctly rejects invalid data → test PASSES.
+
+--------------------------------------------------------------------------------
+FAILED — Backend accepts invalid payload (HTTP 201 / success:true instead of 400)
+--------------------------------------------------------------------------------
+| Test | Manual rule | Payload highlight | Actual API | Expected |
+|------|-------------|-------------------|------------|----------|
+| Nearest Account ID required | Consumer §1 | Nearest Acct. ID = "" | HTTP 201, consumer created | HTTP 400, VALIDATION_ERROR |
+| Bill Day above range | Consumer §2 | Bill Day = 31 | HTTP 201, consumer created | HTTP 400, VALIDATION_ERROR |
+| Consumer Category invalid | Consumer §2 | Consumer Category = 99999 | HTTP 201, consumer created | HTTP 400, VALIDATION_ERROR |
+| Billing Cycle invalid | Consumer §2 | Billing Cycle = 99999 | HTTP 201, consumer created | HTTP 400, VALIDATION_ERROR |
+| Connection Type invalid | Consumer §2 | Connection Type = 99999 | HTTP 201, consumer created | HTTP 400, VALIDATION_ERROR |
+| Connection Status invalid | Consumer §2 | Connection Status = 99999 | HTTP 201, consumer created | HTTP 400, VALIDATION_ERROR |
+| TOD invalid | Consumer §2 | TOD = 99999 | HTTP 201, consumer created | HTTP 400, VALIDATION_ERROR |
+| Sub Station invalid | Network hierarchy | Sub Station = SS_INVALID_XXXX | HTTP 201, consumer created | HTTP 400, VALIDATION_ERROR |
+| Feeder invalid | Network hierarchy | Feeder = FEEDER_INVALID_XXXX | HTTP 201, consumer created | HTTP 400, VALIDATION_ERROR |
+| DTR invalid | Network hierarchy | DTR = DTR_INVALID_XXXX | HTTP 201, consumer created | HTTP 400, VALIDATION_ERROR |
+| meter must exist | Consumer §3 | MSN = Z{random11} | HTTP 201, consumer created | HTTP 400, METER_NOT_FOUND |
+| Meter Phase invalid | Consumer §3 | Meter Phase = 99999 | HTTP 201, consumer created (+ profile 200) | HTTP 400, VALIDATION_ERROR |
+| Service Point ID mandatory | Consumer §3 | Service Point ID = "" | HTTP 201, consumer created (+ profile 200) | HTTP 400, VALIDATION_ERROR |
+| Meter Initial Reading zero | Consumer §3 | Meter Initial Reading = 0 | HTTP 201 (retry), 409 (first) | HTTP 400, VALIDATION_ERROR |
+| SIM Number mandatory | Consumer §4 | SIM No. = "" | HTTP 201, consumer created (+ profile 200) | HTTP 400, VALIDATION_ERROR |
+| IMSI must be numeric | Consumer §4 | IMSI No. = "IMSI-ABC-XYZ" | HTTP 201, consumer created (+ profile 200) | HTTP 400, VALIDATION_ERROR |
+| Meter Mobile 10 digits | Consumer §4 | Mobile No. (Meter) = "12345" | HTTP 201, consumer created (+ profile 200) | HTTP 400, VALIDATION_ERROR |
+| IP Address valid | Consumer §4 | IP Address = "not-an-ip" | HTTP 201, consumer created (+ profile 200) | HTTP 400, VALIDATION_ERROR |
+| Modem Serial mandatory | Consumer §4 | Modem Serial Number = "" | HTTP 201, consumer created (+ profile 200) | HTTP 400, VALIDATION_ERROR |
+
+--------------------------------------------------------------------------------
+FLAKY / CASCADE — Meter pool exhausted after defective 201 accepts assign pool MSN
+--------------------------------------------------------------------------------
+| Test | Reason |
+|------|--------|
+| create consumer success | HTTP 409 METER_ALREADY_ASSIGNED — pool MSN consumed by earlier defective accepts |
+| Nearest Account ID invalid | HTTP 409 METER_ALREADY_ASSIGNED (masked nearest-acct validation) |
+
+--------------------------------------------------------------------------------
+PASSED (6) — API correctly enforced rule
+--------------------------------------------------------------------------------
+| Test | Notes |
+|------|-------|
+| Consumer ID required | HTTP 400 |
+| existing Consumer ID rejected | HTTP 409 CONSUMER_CID_EXISTS |
+| MSN required | HTTP 400 |
+| meter must be active | HTTP 404 |
+| meter must not already be mapped | HTTP 409 |
+| (one additional negative in run order) | See HTML report |
+
+Action for dev: POST /indore/consumers validation is far weaker than bulk-upload-consumers and manual Consumer §1–§5. Reject invalid field/hierarchy/meter payloads before create (same pattern as bulk upload). Tests must stay failing until backend enforces rules.
+

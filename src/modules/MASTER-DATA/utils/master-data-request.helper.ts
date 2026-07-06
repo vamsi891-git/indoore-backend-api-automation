@@ -1,5 +1,8 @@
 import type { APIRequestContext, APIResponse } from "@playwright/test";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
+import {
+  getWithAutoRefresh,
+  postWithAutoRefresh,
+} from "../../../core/utils/authenticated.request";
 import { masterDataMaxResponseTimeMs } from "../Data/master-data.common.data";
 
 const MASTER_DATA_RETRY_STATUSES = new Set([429, 500, 502, 503, 504]);
@@ -29,7 +32,12 @@ function shouldRetryMasterDataAttempt(
   return isTransientMasterDataBody(bodyText);
 }
 
-function parseMasterDataJson<T>(path: string, response: APIResponse, text: string): T {
+function parseMasterDataJson<T>(
+  method: string,
+  path: string,
+  response: APIResponse,
+  text: string,
+): T {
   if (!text.trim()) {
     return null as T;
   }
@@ -37,7 +45,7 @@ function parseMasterDataJson<T>(path: string, response: APIResponse, text: strin
     return JSON.parse(text) as T;
   } catch {
     throw new Error(
-      `GET ${path} returned non-JSON (${response.status()}): ${text.slice(0, 200)}`,
+      `${method} ${path} returned non-JSON (${response.status()}): ${text.slice(0, 200)}`,
     );
   }
 }
@@ -93,7 +101,52 @@ export async function fetchMasterDataJson<T>(
   }
 
   const rawResponse = lastResponse!;
-  const responseBody = parseMasterDataJson<T>(path, rawResponse, lastText);
+  const responseBody = parseMasterDataJson<T>(
+    "GET",
+    path,
+    rawResponse,
+    lastText,
+  );
+
+  return {
+    rawResponse,
+    responseBody,
+    responseTime: Date.now() - start,
+  };
+}
+
+/** POST master-data endpoint with auth refresh, retries on 429/5xx, and safe JSON parsing. */
+export async function postMasterDataJsonWithRetry<T>(
+  request: APIRequestContext,
+  path: string,
+  options?: Parameters<typeof postWithAutoRefresh>[2],
+): Promise<MasterDataJsonResult<T>> {
+  const start = Date.now();
+  let lastResponse: APIResponse | undefined;
+  let lastText = "";
+
+  for (let attempt = 1; attempt <= MASTER_DATA_MAX_ATTEMPTS; attempt++) {
+    lastResponse = await postWithAutoRefresh(request, path, {
+      timeout: masterDataMaxResponseTimeMs,
+      ...options,
+    });
+    lastText = await lastResponse.text();
+
+    if (shouldRetryMasterDataAttempt(lastResponse.status(), lastText, attempt)) {
+      await sleep(MASTER_DATA_RETRY_DELAY_MS * attempt);
+      continue;
+    }
+
+    break;
+  }
+
+  const rawResponse = lastResponse!;
+  const responseBody = parseMasterDataJson<T>(
+    "POST",
+    path,
+    rawResponse,
+    lastText,
+  );
 
   return {
     rawResponse,

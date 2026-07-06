@@ -1,5 +1,9 @@
+import { istCalendarYear } from "../utils/dtr-backend.util";
+
 export const dtrDailyThresholdChartData = {
     dtrCode: "34SO21",
+    year: istCalendarYear(),
+    maxResponseTime: 60_000,
     expectedMonths: [
         "January",
         "February",

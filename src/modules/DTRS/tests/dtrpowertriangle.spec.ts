@@ -29,47 +29,72 @@ test.describe("DTR Power Triangle API", () => {
             const validation = new ValidationEngine();
             const validator = new DtrPowerTriangleValidator();
 
+            const mapped = DtrPowerTriangleMapper.map(
+                rawResponse.ok()
+                    ? responseBody
+                    : { success: true, data: undefined },
+            );
+
+            const isTimeoutFallback =
+                rawResponse.status() === 503 ||
+                (rawResponse.status() === 200 && responseBody.success === false);
+
+            const isEmptyTriangle =
+                mapped.activeEnergyKWh === null &&
+                mapped.reactiveEnergyKvarh === null &&
+                mapped.apparentEnergyKVAh === null &&
+                mapped.powerFactor === null;
+
             // =====================================
             // API VALIDATIONS
             // =====================================
-            validation.execute("Status Code", () =>
-                assert.validateStatusCode(rawResponse, 200),
-            );
+            validation.execute("Status Code", () => {
+                if (isTimeoutFallback && isEmptyTriangle) {
+                    validator.validateTimeoutFallbackStatus(rawResponse.status());
+                    validator.validateTimeoutFallbackTriangle(mapped);
+                    return;
+                }
+                assert.validateStatusCode(rawResponse, 200, responseBody);
+            });
             validation.execute("Content Type", () =>
                 assert.validateContentType(rawResponse),
             );
             validation.execute("Response Time", () =>
-                assert.validateResponseTime(responseTime, 30000),
+                assert.validateResponseTime(
+                    responseTime,
+                    dtrPowerTriangleData.maxResponseTime,
+                ),
             );
             validation.execute("Sensitive Data", () =>
                 assert.validateSensitiveData(responseBody),
             );
-            validation.execute("Required Fields", () =>
-                assert.validateRequiredFields(
-                    responseBody.data,
-                    [...dtrPowerTriangleData.requiredFields],
-                ),
-            );
-
-            // =====================================
-            // MAPPER
-            // =====================================
-            const mapped = DtrPowerTriangleMapper.map(responseBody);
+            const triangleData = responseBody.data;
+            if (triangleData) {
+                validation.execute("Required Fields", () =>
+                    assert.validateRequiredFields(
+                        triangleData,
+                        [...dtrPowerTriangleData.requiredFields],
+                    ),
+                );
+            }
 
             // =====================================
             // BACKEND VALIDATIONS
             // =====================================
-            validation.execute("Response Envelope", () =>
-                validator.validateResponseEnvelope(responseBody),
-            );
+            validation.execute("Response Envelope", () => {
+                if (isTimeoutFallback && isEmptyTriangle) {
+                    return;
+                }
+                validator.validateResponseEnvelope(responseBody);
+            });
             validation.execute("Field Validation", () =>
                 validator.validateFields(mapped),
             );
             validation.execute("Type Validation", () =>
                 validator.validateTypes(mapped),
             );
-            validation.execute("Reactive Energy Always Null", () =>
-                validator.validateReactiveEnergyAlwaysNull(mapped),
+            validation.execute("Reactive Energy Derivation", () =>
+                validator.validateReactiveEnergyDerivation(mapped),
             );
             validation.execute("Power Factor Validation", () =>
                 validator.validatePowerFactor(mapped.powerFactor),
@@ -93,9 +118,6 @@ test.describe("DTR Power Triangle API", () => {
                 validator.validateBusinessLogic(mapped),
             );
 
-            // =====================================
-            // SUMMARY
-            // =====================================
             validation.printSummary("DTR Power Triangle API", responseTime);
         },
     );

@@ -237,4 +237,175 @@ export type ParsedValidateDtrMeterSuccessResponse = z.infer<
   typeof ValidateDtrMeterSuccessResponseSchema
 >;
 
+export const CreateMeterDataSchema = z
+  .object({
+    meterTblRefId: z.number().int().positive(),
+    meterLookupTblRefId: z.number().int().positive(),
+    meterSerialNumber: z.string().min(1),
+    meterRapdrpCode: z.string().min(1),
+    assetId: z.string().min(1),
+    mf: z.number(),
+    deviceManufacturerTblRefId: z.number().int().positive(),
+    meterModelTblRefId: z.number().int().positive(),
+    meterStatus: z.boolean(),
+    dlmsNonDlms: z.string().min(1),
+  })
+  .passthrough();
+
+export const CreateMeterSuccessResponseSchema = z.object({
+  success: z.literal(true),
+  message: z.string().min(1),
+  data: CreateMeterDataSchema,
+});
+
+export type ParsedCreateMeterSuccessResponse = z.infer<
+  typeof CreateMeterSuccessResponseSchema
+>;
+
+export const BulkUploadMeterRowResultSchema = z
+  .object({
+    rowNumber: z.number().int().positive(),
+    meterSerialNumber: z.string(),
+    status: z.enum(["CREATED", "FAILED", "VALIDATION_FAILED"]),
+    message: z.string().optional(),
+    messages: z.array(z.string()).optional(),
+    meterTblRefId: z.number().int().positive().optional(),
+    meterLookupTblRefId: z.number().int().positive().optional(),
+  })
+  .passthrough();
+
+export const BulkUploadMetersDataSchema = z.object({
+  fileName: z.string().min(1),
+  totalRows: z.number().int().nonnegative(),
+  createdCount: z.number().int().nonnegative(),
+  failedCount: z.number().int().nonnegative(),
+  validationFailedCount: z.number().int().nonnegative(),
+  alreadyExistsCount: z.number().int().nonnegative().optional(),
+  batchesProcessed: z.number().int().nonnegative(),
+  batchSize: z.number().int().positive(),
+  rowResults: z.array(BulkUploadMeterRowResultSchema),
+});
+
+export const BulkUploadMetersSuccessResponseSchema = z.object({
+  success: z.literal(true),
+  message: z.string().min(1),
+  data: BulkUploadMetersDataSchema,
+});
+
+/** Row-level validation outcomes return success:false with data.rowResults. */
+export const BulkUploadMetersRowOutcomeResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string().min(1),
+  data: BulkUploadMetersDataSchema,
+});
+
+export type ParsedBulkUploadMetersSuccessResponse = z.infer<
+  typeof BulkUploadMetersSuccessResponseSchema
+>;
+
+export const BulkUploadDtrRowResultSchema = z
+  .object({
+    rowNumber: z.number().int().positive(),
+    dtrCode: z.string(),
+    meterSerialNumber: z.string(),
+    status: z.enum(["CREATED", "FAILED", "VALIDATION_FAILED"]),
+    message: z.string().optional(),
+    messages: z.array(z.string()).optional(),
+    networkLookupId: z.number().int().positive().optional(),
+    meterLookupId: z.number().int().positive().optional(),
+  })
+  .passthrough();
+
+export const BulkUploadDtrDataSchema = z.object({
+  fileName: z.string().min(1),
+  totalRows: z.number().int().nonnegative(),
+  createdCount: z.number().int().nonnegative(),
+  failedCount: z.number().int().nonnegative(),
+  validationFailedCount: z.number().int().nonnegative().optional(),
+  alreadyExistsCount: z.number().int().nonnegative().optional(),
+  batchesProcessed: z.number().int().nonnegative().optional(),
+  batchSize: z.number().int().positive().optional(),
+  rowResults: z.array(BulkUploadDtrRowResultSchema),
+});
+
+export const BulkUploadDtrSuccessResponseSchema = z.object({
+  success: z.literal(true),
+  message: z.string().min(1),
+  data: BulkUploadDtrDataSchema,
+});
+
+export const BulkUploadDtrRowOutcomeResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string().min(1),
+  data: BulkUploadDtrDataSchema,
+});
+
+export type ParsedBulkUploadDtrSuccessResponse = z.infer<
+  typeof BulkUploadDtrSuccessResponseSchema
+>;
+
+export const BulkUploadConsumersRowResultSchema = z
+  .object({
+    rowNumber: z.number().int().positive(),
+    consumerId: z.string(),
+    ivrsNumber: z.string(),
+    accountId: z.string(),
+    msn: z.string(),
+    status: z.enum(["CREATED", "FAILED", "VALIDATION_FAILED"]),
+    message: z.string().optional(),
+    messages: z.array(z.string()).optional(),
+  })
+  .passthrough();
+
+export const BulkUploadConsumersDataSchema = z.object({
+  fileName: z.string().min(1),
+  totalRows: z.number().int().nonnegative(),
+  createdCount: z.number().int().nonnegative(),
+  failedCount: z.number().int().nonnegative(),
+  validationFailedCount: z.number().int().nonnegative().optional(),
+  alreadyExistsCount: z.number().int().nonnegative().optional(),
+  rowResults: z.array(BulkUploadConsumersRowResultSchema),
+});
+
+export const BulkUploadConsumersSuccessResponseSchema = z.object({
+  success: z.literal(true),
+  message: z.string().min(1),
+  data: BulkUploadConsumersDataSchema,
+});
+
+export const BulkUploadConsumersRowOutcomeResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string().min(1),
+  data: BulkUploadConsumersDataSchema,
+});
+
+export type ParsedBulkUploadConsumersSuccessResponse = z.infer<
+  typeof BulkUploadConsumersSuccessResponseSchema
+>;
+
+export const CreateDtrDataSchema = z
+  .object({
+    networkLookupId: z.number().int().positive(),
+    meterLookupId: z.number().int().positive(),
+    "DTR Code": z.string().min(1),
+    "DTR Name": z.string().min(1),
+    "DTR Capacity (KVA)": z.number(),
+    Status: z.string().min(1),
+    MSN: z.string().min(1),
+    organisationLookupId: z.number().int().positive(),
+    feederNetworkLookupId: z.number().int().positive(),
+    subStationNetworkLookupId: z.number().int().positive(),
+  })
+  .passthrough();
+
+export const CreateDtrSuccessResponseSchema = z.object({
+  success: z.literal(true),
+  message: z.string().min(1),
+  data: CreateDtrDataSchema,
+});
+
+export type ParsedCreateDtrSuccessResponse = z.infer<
+  typeof CreateDtrSuccessResponseSchema
+>;
+
 export { ApiErrorResponseSchema as MasterDataErrorResponseSchema };

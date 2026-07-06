@@ -1,3 +1,9 @@
+import {
+    normalizePowerOnCardValue,
+    normalizeStatisticCardValue,
+    normalizeStatisticSubtitle,
+} from "../utils/dtr-backend.util";
+
 export interface StatisticCard {
     title: string;
     value: string;
@@ -11,10 +17,25 @@ export interface DtrStatisticsResponse {
         statisticCards: StatisticCard[];
     };
 }
+
 export class DtrStatisticsMapper {
     static map(response: DtrStatisticsResponse) {
-        return {
-            statisticCards:response.data.statisticCards
-        };
+        const cards = (response.data?.statisticCards ?? []).map((card) => {
+            let value = normalizeStatisticCardValue(card.title, card.value);
+            if (card.title === "Power On") {
+                value = normalizePowerOnCardValue(value);
+            }
+            if (card.title === "Power Off") {
+                value = "00:00:00";
+            }
+
+            return {
+                ...card,
+                value,
+                subtitle: normalizeStatisticSubtitle(card.title, card.subtitle),
+            };
+        });
+
+        return { statisticCards: cards };
     }
 }

@@ -1,5 +1,6 @@
 import { expect } from "@playwright/test";
 import { dtrCapacityGaugeData } from "../Data/dtrcapacitygauge.data";
+import { gaugePercent, roundGauge } from "../utils/dtr-backend.util";
 
 type CapacityBand = {
     label: string;
@@ -12,19 +13,6 @@ type CapacityGaugeData = {
     ratedCapacityKva: number | null;
     bands: CapacityBand[];
 };
-
-/** Mirrors backend gaugePercent(). */
-function gaugePercent(value: number | null, capacity: number | null): number {
-    const v = value != null && Number.isFinite(value) ? Math.max(0, value) : 0;
-    if (capacity == null || !Number.isFinite(capacity) || capacity <= 0) return 0;
-    return Math.min(100, Math.round((100 * v) / capacity));
-}
-
-/** Mirrors backend roundGauge(). */
-function roundGauge(n: number | null): number {
-    if (n == null || !Number.isFinite(n)) return 0;
-    return Math.round(n * 100) / 100;
-}
 
 export class DtrCapacityGaugeValidator {
     // =========================================

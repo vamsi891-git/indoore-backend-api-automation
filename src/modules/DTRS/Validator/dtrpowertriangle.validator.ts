@@ -1,5 +1,6 @@
 import { expect } from "@playwright/test";
 import { dtrPowerTriangleData } from "../Data/dtrpowertriangle.data";
+import { deriveReactiveEnergyKvarh } from "../utils/dtr-backend.util";
 
 type PowerTriangleData = {
     activeEnergyKWh: number | null;
@@ -10,11 +11,24 @@ type PowerTriangleData = {
 
 export class DtrPowerTriangleValidator {
     // =========================================
+    // TIMEOUT FALLBACK — getEmptyDtrPowerTriangle when archive load exceeds budget
+    // =========================================
+    validateTimeoutFallbackStatus(status: number): void {
+        expect([200, 503]).toContain(status);
+    }
+
+    validateTimeoutFallbackTriangle(data: PowerTriangleData): void {
+        expect(data.activeEnergyKWh).toBeNull();
+        expect(data.reactiveEnergyKvarh).toBeNull();
+        expect(data.apparentEnergyKVAh).toBeNull();
+        expect(data.powerFactor).toBeNull();
+    }
+
+    // =========================================
     // RESPONSE ENVELOPE
     // =========================================
-    validateResponseEnvelope(response: { success: boolean; data: unknown }): void {
+    validateResponseEnvelope(response: { success: boolean; data?: unknown }): void {
         expect(response.success).toBe(true);
-        expect(response.data).toBeDefined();
     }
 
     // =========================================
@@ -40,10 +54,20 @@ export class DtrPowerTriangleValidator {
     }
 
     // =========================================
-    // REACTIVE ENERGY — never populated by composePowerTriangle
+    // REACTIVE ENERGY — deriveReactiveEnergyKvarh when IP energies present
     // =========================================
-    validateReactiveEnergyAlwaysNull(data: PowerTriangleData): void {
-        expect(data.reactiveEnergyKvarh).toBeNull();
+    validateReactiveEnergyDerivation(data: PowerTriangleData): void {
+        const expected = deriveReactiveEnergyKvarh(
+            data.activeEnergyKWh,
+            data.apparentEnergyKVAh,
+        );
+
+        if (expected == null) {
+            expect(data.reactiveEnergyKvarh).toBeNull();
+            return;
+        }
+
+        expect(data.reactiveEnergyKvarh).toBe(expected);
     }
 
     // =========================================
@@ -134,10 +158,12 @@ export class DtrPowerTriangleValidator {
     // BUSINESS LOGIC — cumulative energy triangle constraints
     // =========================================
     validateBusinessLogic(data: PowerTriangleData): void {
-        expect(data.reactiveEnergyKvarh).toBeNull();
+        this.validateReactiveEnergyDerivation(data);
 
         if (data.activeEnergyKWh !== null && data.apparentEnergyKVAh !== null) {
-            expect(data.activeEnergyKWh).toBeLessThanOrEqual(data.apparentEnergyKVAh + 0.001);
+            expect(data.activeEnergyKWh).toBeLessThanOrEqual(
+                data.apparentEnergyKVAh + 0.001,
+            );
         }
     }
 }

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Developer Security Remediation Guide</title>
+  <style>
+    @page { margin: 18mm 14mm 20mm 14mm; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 10.5pt;
+      line-height: 1.45;
+      color: #1a1a1a;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    .cover {
+      border-bottom: 3px solid #1f4e78;
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+    }
+    .cover h1 {
+      color: #1f4e78;
+      font-size: 22pt;
+      margin: 0 0 8px 0;
+      line-height: 1.2;
+    }
+    .meta {
+      color: #555;
+      font-size: 10pt;
+      margin: 4px 0;
+    }
+    h1 { color: #1f4e78; font-size: 18pt; margin-top: 28px; }
+    h2 { color: #1f4e78; font-size: 14pt; margin-top: 22px; border-bottom: 1px solid #d9e1f2; padding-bottom: 4px; }
+    h3 { color: #2e5f8a; font-size: 12pt; margin-top: 16px; }
+    p { margin: 8px 0; }
+    blockquote {
+      border-left: 4px solid #1f4e78;
+      margin: 12px 0;
+      padding: 8px 12px;
+      background: #f5f8fc;
+      color: #333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 16px 0;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+    th {
+      background: #1f4e78;
+      color: #fff;
+      text-align: left;
+      padding: 7px 8px;
+      font-weight: 600;
+    }
+    td {
+      border: 1px solid #cfd8e3;
+      padding: 6px 8px;
+      vertical-align: top;
+    }
+    tr:nth-child(even) td { background: #f8fafc; }
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 9pt;
+      background: #eef2f7;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+    pre {
+      background: #f4f6f8;
+      padding: 10px;
+      overflow-x: auto;
+      font-size: 9pt;
+    }
+    ul, ol { margin: 8px 0 12px 20px; }
+    li { margin: 4px 0; }
+    hr { border: none; border-top: 1px solid #ccc; margin: 20px 0; }
+    .footer-note {
+      font-size: 9pt;
+      color: #666;
+      font-style: italic;
+      margin-top: 24px;
+    }
+    .page-footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 8pt;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="cover">
+    <h1>Developer Security Remediation Guide</h1>
+    <p class="meta"><strong>Indoore MDMS Backend API — Fix Before Production</strong></p>
+    <p class="meta">Project: Indoore MDMS Backend API Automation</p>
+    <p class="meta">Generated: 25 June 2026</p>
+  </div>
+  <h1>Developer Security Remediation Guide</h1>
+<p><strong>Indoore MDMS Backend API — Fix Before Production</strong></p>
+<table><thead><tr><th>Field</th><th>Detail</th></tr></thead><tbody>
+<tr><td><strong>Application</strong></td><td>Indoore MDM Backend API (<code>https://api.bestinfra.app/indore/*</code>)</td></tr>
+<tr><td><strong>Audience</strong></td><td>Backend, Frontend, DevOps developers</td></tr>
+<tr><td><strong>Purpose</strong></td><td>Actionable security fixes required before production deployment</td></tr>
+<tr><td><strong>Standard</strong></td><td>OWASP Top 10 (2021) · OWASP API Security Top 10</td></tr>
+<tr><td><strong>Date</strong></td><td>25 June 2026</td></tr>
+</tbody></table>
+<hr/>
+<h2>How to use this document</h2>
+<p>This is a <strong>developer implementation guide</strong>, not a QA test plan. Each section contains:</p>
+<ul>
+<li><strong>What is wrong</strong> — confirmed or high-risk gap on live API</li>
+<li><strong>What to build</strong> — concrete backend / gateway / frontend changes</li>
+<li><strong>Where to change</strong> — middleware, auth layer, repository, reverse proxy</li>
+<li><strong>Done when</strong> — verifiable acceptance criteria (curl, logs, headers)</li>
+</ul>
+<p>Work through <strong>P0 first</strong> — those block production. P1 before first customer. P2 within 30 days of release.</p>
+<hr/>
+<h2>Executive summary</h2>
+<p>The API already has strong foundations: JWT auth, CSRF on mutating routes, structured errors without stack traces, and RBAC on permissions endpoints. <strong>Before production</strong>, developers must close these gaps:</p>
+<table><thead><tr><th>Priority</th><th>Issue</th><th>Developer owner</th><th>Effort</th></tr></thead><tbody>
+<tr><td><strong>P0</strong></td><td>Login / refresh not rate-limited</td><td>Backend + Gateway</td><td>1–2 days</td></tr>
+<tr><td><strong>P0</strong></td><td>Data-scope / IDOR not enforced on all modules</td><td>Backend</td><td>3–5 days</td></tr>
+<tr><td><strong>P0</strong></td><td>CSRF cookie missing <code>HttpOnly</code></td><td>Backend (auth)</td><td>0.5 day</td></tr>
+<tr><td><strong>P1</strong></td><td>CSP allows <code>'unsafe-inline'</code></td><td>Gateway / Frontend</td><td>1–2 days</td></tr>
+<tr><td><strong>P1</strong></td><td>Session not invalidated after logout / force-logout</td><td>Backend (auth)</td><td>1 day</td></tr>
+<tr><td><strong>P1</strong></td><td>File upload validation incomplete</td><td>Backend (users)</td><td>1–2 days</td></tr>
+<tr><td><strong>P1</strong></td><td><code>Permissions-Policy</code> header missing</td><td>Gateway</td><td>0.5 day</td></tr>
+<tr><td><strong>P2</strong></td><td>User enumeration via distinct 404 messages</td><td>Backend</td><td>1 day</td></tr>
+<tr><td><strong>P2</strong></td><td>npm / Docker SCA in CI</td><td>DevOps</td><td>1 day</td></tr>
+<tr><td><strong>P2</strong></td><td>Security audit events not logged consistently</td><td>Backend</td><td>2 days</td></tr>
+</tbody></table>
+<p><strong>No Critical or High exploitable bugs were confirmed</strong> in API review. Risk is <strong>missing hardening and inconsistent access control</strong> — fixable before release.</p>
+<hr/>
+<h2>P0 — Must fix before production</h2>
+<hr/>
+<h3>DEV-01 — Rate limit authentication endpoints</h3>
+<p><strong>Problem</strong> <code>POST /indore/auth/login</code> accepts repeated failed attempts without returning <strong>429 Too Many Requests</strong>. Credential stuffing and password spraying are feasible. Invite endpoint may rate-limit; login does not.</p>
+<p><strong>What to build</strong></p>
+<p>Implement rate limiting at <strong>API gateway (preferred)</strong> or <strong>auth middleware</strong>:</p>
+<table><thead><tr><th>Endpoint</th><th>Suggested limit</th><th>Key</th></tr></thead><tbody>
+<tr><td><code>POST /auth/login</code></td><td>5–10 failures / IP / 15 min</td><td>IP + optional username</td></tr>
+<tr><td><code>POST /auth/refresh</code></td><td>30 / user / 15 min</td><td>User ID or session</td></tr>
+<tr><td><code>POST /auth/invite</code></td><td>10 / admin user / hour</td><td>Authenticated user ID</td></tr>
+<tr><td><code>POST /auth/invite/accept</code></td><td>5 / IP / hour</td><td>IP</td></tr>
+</tbody></table>
+<p><strong>Implementation (Express / Fastify middleware example)</strong></p>
+<pre><code>// Pseudocode — use redis-rate-limit or @fastify/rate-limit
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  keyGenerator: (req) =&gt; req.ip + (req.body?.email ?? req.body?.username ?? ""),
+  handler: (req, res) =&gt; res.status(429).json({
+    error: { code: "RATE_LIMIT_EXCEEDED", message: "Too many attempts. Try again later." }
+  }),
+});
+app.post("/indore/auth/login", loginLimiter, loginHandler);</code></pre>
+<p><strong>Gateway alternative (Nginx)</strong></p>
+<pre><code>limit_req_zone $binary_remote_addr zone=login_limit:10m rate=5r/m;
+location = /indore/auth/login {
+  limit_req zone=login_limit burst=3 nodelay;
+  proxy_pass http://api_upstream;
+}</code></pre>
+<p><strong>Also log</strong> rate-limit hits to audit log (IP, endpoint, user if known — never log password).</p>
+<p><strong>Done when</strong></p>
+<ul>
+<li>15+ failed logins from same IP within 1 minute → <strong>429</strong> with structured error</li>
+<li>Legitimate user can still login after window expires</li>
+<li>Response includes <code>Retry-After</code> header (recommended)</li>
+</ul>
+<hr/>
+<h3>DEV-02 — Enforce data scope on every object-level API (IDOR / BOLA)</h3>
+<p><strong>Problem</strong> Auth proves *who* the user is. Many endpoints do not consistently verify the user may access *this specific* DTR, consumer, meter, or billing record. Asset Management has scope logic; <strong>Consumers, DTRs, Billing, HES Commands, Master Data, Reports</strong> need the same pattern.</p>
+<p><strong>What to build</strong></p>
+<ol>
+<li><strong>Central scope service</strong> — resolve user's allowed org/network/DTR IDs from role + assignment tables (same source as UI filters).</li>
+<li><strong>Repository guard</strong> — every query that fetches by ID must filter by scope:</li>
+</ol>
+<pre><code>// BAD — trusts client-supplied ID only
+async getConsumerById(id: number) {
+  return prisma.consumer.findUnique({ where: { id } });
+}
+
+// GOOD — scope enforced in query
+async getConsumerById(id: number, scope: UserScope) {
+  return prisma.consumer.findFirst({
+    where: {
+      id,
+      orgId: { in: scope.orgIds },
+      // or networkLookupId in scope.networkIds
+    },
+  });
+}
+// Return 404 or 403 if null — pick one policy (see DEV-09)</code></pre>
+<ol>
+<li><strong>Middleware pattern</strong> — attach <code>req.scope</code> after JWT validation; reject early if route param ID ∉ scope.</li>
+</ol>
+<p><strong>Endpoints to audit (minimum)</strong></p>
+<table><thead><tr><th>Module</th><th>Routes</th><th>Scope field</th></tr></thead><tbody>
+<tr><td>Asset Management</td><td><code>/dtr/{id}</code>, hierarchies</td><td><code>networkLookupId</code>, org tree</td></tr>
+<tr><td>Consumers</td><td><code>/consumers/*</code></td><td><code>consumerId</code>, <code>orgId</code></td></tr>
+<tr><td>DTRs</td><td><code>/dtrs/*</code></td><td><code>dtrId</code>, feeder scope</td></tr>
+<tr><td>Billing</td><td><code>/billing/*</code></td><td><code>consumerId</code></td></tr>
+<tr><td>HES Commands</td><td><code>/hes/commands/*</code></td><td><code>meterId</code> / consumer link</td></tr>
+<tr><td>Users Admin</td><td><code>/users/{uuid}</code></td><td>same org only for non-super-admin</td></tr>
+<tr><td>Master Data</td><td>write endpoints</td><td>role + org</td></tr>
+<tr><td>Audit export</td><td><code>/audit-logs/export</code></td><td>admin-only + org scope</td></tr>
+</tbody></table>
+<p><strong>Mass assignment</strong> — use DTO allowlists on PATCH/PUT. Never bind raw body fields like <code>role</code>, <code>isSuperAdmin</code>, <code>permissions</code> from client without admin check:</p>
+<pre><code>// Reject or strip privileged fields for non-admin
+const allowedFields = viewerCanEdit ? ["displayName", "phone"] : [];</code></pre>
+<p><strong>Done when</strong></p>
+<ul>
+<li>Viewer token + Admin's DTR ID → <strong>403</strong> or empty result (document chosen policy)</li>
+<li>Operator cannot PATCH another org's consumer</li>
+<li>HES disconnect on out-of-scope meter → <strong>403</strong></li>
+<li>Code review checklist: no <code>findUnique({ where: { id } })</code> without scope filter</li>
+</ul>
+<hr/>
+<h3>DEV-03 — Set <code>HttpOnly</code> on CSRF cookie</h3>
+<p><strong>Problem</strong> Live probe: <code>Set-Cookie: csrf_token=...</code> has <code>Secure; SameSite=None</code> but <strong>no <code>HttpOnly</code></strong>. If XSS ever exists, JavaScript can read the CSRF cookie and forge mutating requests.</p>
+<p><strong>What to build</strong></p>
+<p>In auth login / CSRF token issuance:</p>
+<pre><code>res.cookie("csrf_token", token, {
+  httpOnly: true,   // ADD THIS
+  secure: true,
+  sameSite: "none", // re-evaluate: use "lax" or "strict" if no cross-site UI
+  path: "/",
+  maxAge: sessionTtlMs,
+});</code></pre>
+<p><strong>Important:</strong> Client must send CSRF via <strong><code>x-csrf-token</code> header</strong> (already supported). Do <strong>not</strong> rely on JS reading the cookie if HttpOnly is set — header-only is correct.</p>
+<p><strong>Re-evaluate <code>SameSite=None</code></strong> — required only if frontend is on a different site. If UI and API share parent domain, prefer <code>SameSite=Lax</code> or <code>Strict</code>.</p>
+<p><strong>Done when</strong></p>
+<ul>
+<li><code>curl -I https://api.bestinfra.app/indore/auth/login</code> → <code>Set-Cookie</code> includes <code>HttpOnly</code></li>
+<li>All mutating routes still pass with <code>x-csrf-token</code> header + cookie</li>
+<li>Frontend does not use <code>document.cookie</code> to read CSRF</li>
+</ul>
+<hr/>
+<h2>P1 — Fix before GA / first production customer</h2>
+<hr/>
+<h3>DEV-04 — Harden Content-Security-Policy</h3>
+<p><strong>Problem</strong> Current CSP: <code>script-src 'self' 'unsafe-inline'</code> and <code>style-src 'self' 'unsafe-inline'</code>. Weakens XSS protection on any HTML-serving routes.</p>
+<p><strong>What to build</strong></p>
+<p><strong>API-only JSON responses</strong> — minimal CSP is acceptable:</p>
+<pre><code>Content-Security-Policy: default-src 'none'; frame-ancestors 'none'</code></pre>
+<p><strong>If HTML error pages or Swagger UI exist</strong> — use nonces:</p>
+<pre><code>const nonce = crypto.randomBytes(16).toString("base64");
+res.setHeader("Content-Security-Policy",
+  `default-src 'self'; script-src 'self' 'nonce-${nonce}'; style-src 'self' 'nonce-${nonce}'`);</code></pre>
+<p>Remove <code>'unsafe-inline'</code> from gateway config (Nginx, Cloudflare, API middleware).</p>
+<p><strong>Done when</strong> Security header scan shows no <code>'unsafe-inline'</code> in <code>script-src</code> / <code>style-src</code>.</p>
+<hr/>
+<h3>DEV-05 — Invalidate sessions on logout and force-logout</h3>
+<p><strong>Problem</strong> After logout or admin force-logout, old access tokens may still work until JWT expiry.</p>
+<p><strong>What to build</strong></p>
+<ol>
+<li><strong>Session store</strong> (Redis recommended) — map <code>jti</code> or <code>sid</code> from JWT to active session.</li>
+<li><strong>On logout / force-logout</strong> — delete session / add <code>jti</code> to denylist until <code>exp</code>.</li>
+<li><strong>On every request</strong> — auth middleware checks denylist or session exists.</li>
+<li><strong>Refresh token rotation</strong> — issue new refresh token; invalidate previous on use (detect reuse → revoke all sessions for user).</li>
+</ol>
+<pre><code>async function authMiddleware(req, res, next) {
+  const payload = verifyJwt(req.headers.authorization);
+  if (await tokenDenylist.has(payload.jti)) {
+    return res.status(401).json({ error: { code: "SESSION_REVOKED" } });
+  }
+  next();
+}</code></pre>
+<p><strong>Done when</strong></p>
+<ul>
+<li>User logs out → same access token returns <strong>401</strong> immediately</li>
+<li>Admin force-logout → target user's token <strong>401</strong> on next request</li>
+<li>Reusing old refresh token → <strong>401</strong> and all sessions revoked (if rotation enabled)</li>
+</ul>
+<hr/>
+<h3>DEV-06 — File upload hardening (profile image / presigned URL)</h3>
+<p><strong>Problem</strong> <code>USERS-PROFILE-IMAGE</code> validates presence of fields but not abuse: dangerous extensions, path traversal, oversize files, SSRF URLs.</p>
+<p><strong>What to build</strong></p>
+<p>On <strong>presigned URL generation</strong> endpoint:</p>
+<table><thead><tr><th>Rule</th><th>Implementation</th></tr></thead><tbody>
+<tr><td>Allowlist extensions</td><td><code>.jpg</code>, <code>.jpeg</code>, <code>.png</code>, <code>.webp</code> only</td></tr>
+<tr><td>Block double extension</td><td>Reject if <code>fileName</code> matches `/\.(exe\</td><td>php\</td><td>svg\</td><td>html\</td><td>js)/i`</td></tr>
+<tr><td>Sanitize filename</td><td><code>path.basename(fileName)</code> — reject <code>..</code>, <code>/</code>, <code>\</code>, null bytes</td></tr>
+<tr><td>Max size</td><td>Enforce <code>fileSize</code> ≤ 5 MB (configurable) server-side</td></tr>
+<tr><td>Content-Type on S3 PUT</td><td>Presigned policy condition: <code>Content-Type</code> starts with <code>image/</code></td></tr>
+<tr><td>SSRF</td><td>If accepting URLs, block private IP ranges (10.x, 172.16–31, 127.x, 169.254.x)</td></tr>
+</tbody></table>
+<pre><code>const ALLOWED_EXT = new Set(["jpg", "jpeg", "png", "webp"]);
+function validateUpload(fileName: string, fileSize: number) {
+  const base = path.basename(fileName);
+  if (base !== fileName || base.includes("..")) throw validationError("Invalid file name");
+  const ext = base.split(".").pop()?.toLowerCase();
+  if (!ext || !ALLOWED_EXT.has(ext)) throw validationError("File type not allowed");
+  if (fileSize &gt; 5 * 1024 * 1024) throw validationError("File too large");
+}</code></pre>
+<p><strong>Done when</strong> <code>.exe</code>, <code>photo.jpg.exe</code>, <code>../../../x.png</code>, <code>fileSize: 999999999</code> all return <strong>400</strong> at URL generation.</p>
+<hr/>
+<h3>DEV-07 — Add security headers at gateway</h3>
+<p><strong>Problem</strong> <code>Permissions-Policy</code> header is missing. Other headers exist but should be centralized so they cannot drift per route.</p>
+<p><strong>What to build</strong></p>
+<p>Apply at <strong>reverse proxy / API global middleware</strong>:</p>
+<pre><code>Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+Content-Security-Policy: &lt;see DEV-04&gt;</code></pre>
+<p>Remove <code>X-Powered-By: Express</code> (or equivalent) — disable framework banner.</p>
+<p><strong>CORS</strong> — strict allowlist of frontend origins only; no <code>*</code> with credentials.</p>
+<p><strong>Done when</strong> All <code>/indore/*</code> responses include the header set above; OPTIONS preflight from unknown origin fails.</p>
+<hr/>
+<h2>P2 — Hardening (within 30 days of release)</h2>
+<hr/>
+<h3>DEV-08 — Input validation on all user-controlled parameters</h3>
+<p><strong>Problem</strong> Sample endpoints reject SQLi/XSS in path params (<code>400 VALIDATION_ERROR</code>). Not verified on all 115 API routes.</p>
+<p><strong>What to build</strong></p>
+<ol>
+<li><strong>Schema validation at boundary</strong> — Zod / Joi / class-validator on every query, path, body (already used in places — enforce globally).</li>
+<li><strong>Numeric IDs</strong> — coerce with <code>z.coerce.number().int().positive()</code>; reject strings with special chars before DB.</li>
+<li><strong>Search <code>q</code></strong> — max length, escape or parameterize; never concatenate into SQL.</li>
+<li><strong>Prisma / parameterized queries only</strong> — no raw <code>$queryRaw</code> with string interpolation.</li>
+<li><strong>Pagination caps</strong> — <code>limit</code> max 100 (or product default); reject <code>limit=999999</code>.</li>
+</ol>
+<p><strong>Done when</strong> Code review rule: no route handler reads <code>req.params</code> / <code>req.query</code> without schema validation.</p>
+<hr/>
+<h3>DEV-09 — Reduce user / resource enumeration</h3>
+<p><strong>Problem</strong> <code>GET /indore/users/{uuid}</code> returns <strong>404 USER_NOT_FOUND</strong> for unknown UUIDs. Attackers can distinguish valid vs invalid IDs.</p>
+<p><strong>What to build</strong></p>
+<p>For cross-tenant or unauthorized lookups, return <strong>403 Forbidden</strong> with generic message:</p>
+<pre><code>{ "error": { "code": "ACCESS_DENIED", "message": "You do not have access to this resource." } }</code></pre>
+<p>Use <strong>404</strong> only when user is authorized to know the resource namespace but item is missing. Apply same policy to consumers, DTRs, invites.</p>
+<p><strong>Done when</strong> Viewer querying random UUID gets same response shape as querying valid but out-of-scope UUID.</p>
+<hr/>
+<h3>DEV-10 — Security audit logging</h3>
+<p><strong>Problem</strong> Functional audit logs exist; security events are incomplete.</p>
+<p><strong>What to log (never log passwords or full tokens)</strong></p>
+<table><thead><tr><th>Event</th><th>Fields</th></tr></thead><tbody>
+<tr><td>Failed login</td><td>timestamp, IP, username/email hash, reason</td></tr>
+<tr><td>Rate limit hit</td><td>IP, endpoint, user ID if auth</td></tr>
+<tr><td>403 on protected resource</td><td>user ID, role, resource type, resource ID</td></tr>
+<tr><td>Force logout</td><td>admin ID, target user ID</td></tr>
+<tr><td>HES critical command</td><td>user ID, meter ID, command type, result</td></tr>
+<tr><td>Bulk export</td><td>user ID, module, row count, filters</td></tr>
+<tr><td>Role / permission change</td><td>admin ID, target, before/after</td></tr>
+</tbody></table>
+<p>Store in append-only audit table; restrict read to admin roles.</p>
+<p><strong>Done when</strong> Failed login attempt appears in audit logs within 1 minute; logs queryable from existing audit API.</p>
+<hr/>
+<h3>DEV-11 — Dependency and secret scanning (DevOps)</h3>
+<p><strong>What to build in CI pipeline</strong></p>
+<pre><code># Example GitHub Actions steps
+- run: npm audit --audit-level=high
+- uses: aquasecurity/trivy-action@master   # Docker image scan
+- uses: gitleaks/gitleaks-action@v2          # secret scan</code></pre>
+<p>Block merge on <strong>Critical</strong> CVE in production dependencies. Rotate any leaked secrets immediately.</p>
+<p><strong>Done when</strong> PR pipeline fails on Critical npm audit finding; no secrets in git history (scan clean).</p>
+<hr/>
+<h2>Module-by-module developer checklist</h2>
+<p>Use before marking a module "production ready":</p>
+<table><thead><tr><th>#</th><th>Check</th><th>Module owner</th></tr></thead><tbody>
+<tr><td>1</td><td>All routes require valid JWT except public auth/invite preview</td><td>☐</td></tr>
+<tr><td>2</td><td>Mutating routes validate CSRF header + cookie</td><td>☐</td></tr>
+<tr><td>3</td><td>Object IDs filtered by user scope in repository layer</td><td>☐</td></tr>
+<tr><td>4</td><td>Admin-only routes check role in middleware, not only UI</td><td>☐</td></tr>
+<tr><td>5</td><td>Request body uses allowlist DTO — no mass assignment</td><td>☐</td></tr>
+<tr><td>6</td><td>Query params validated with schema; <code>limit</code> capped</td><td>☐</td></tr>
+<tr><td>7</td><td>Errors return structured JSON — no stack, SQL, file paths</td><td>☐</td></tr>
+<tr><td>8</td><td>Response does not include password, refresh token, internal keys</td><td>☐</td></tr>
+<tr><td>9</td><td>PII fields appropriate for role (Viewer sees less than Admin)</td><td>☐</td></tr>
+<tr><td>10</td><td>File uploads validated (if module has uploads)</td><td>☐</td></tr>
+</tbody></table>
+<hr/>
+<h2>Confirmed findings — developer action summary</h2>
+<table><thead><tr><th>ID</th><th>Finding</th><th>Severity</th><th>Developer action</th></tr></thead><tbody>
+<tr><td>F-01</td><td>CSRF cookie missing HttpOnly</td><td>Medium</td><td>DEV-03</td></tr>
+<tr><td>F-02</td><td>CSP unsafe-inline</td><td>Medium</td><td>DEV-04</td></tr>
+<tr><td>F-03</td><td>IDOR / scope gaps</td><td>Medium</td><td>DEV-02</td></tr>
+<tr><td>F-04</td><td>No login rate limit</td><td>Medium</td><td>DEV-01</td></tr>
+<tr><td>F-05</td><td>Upload validation weak</td><td>Medium</td><td>DEV-06</td></tr>
+<tr><td>F-06</td><td>Permissions-Policy missing</td><td>Low</td><td>DEV-07</td></tr>
+<tr><td>F-07</td><td>User enumeration 404</td><td>Low</td><td>DEV-09</td></tr>
+<tr><td>F-08</td><td>PII in responses</td><td>Low (by design)</td><td>DEV-02 scope + field filtering</td></tr>
+<tr><td>F-09</td><td>Debug / verbose errors</td><td>Low</td><td>DEV-08 + <code>NODE_ENV=production</code></td></tr>
+<tr><td>F-10</td><td>Header config not centralized</td><td>Low</td><td>DEV-07</td></tr>
+</tbody></table>
+<hr/>
+<h2>OWASP mapping — what developers own</h2>
+<table><thead><tr><th>OWASP</th><th>Category</th><th>Developer responsibility</th></tr></thead><tbody>
+<tr><td>A01</td><td>Broken Access Control</td><td>DEV-02, DEV-09 — scope in every query</td></tr>
+<tr><td>A02</td><td>Cryptographic Failures</td><td>TLS at infra; never log tokens; bcrypt/argon2 passwords</td></tr>
+<tr><td>A03</td><td>Injection</td><td>DEV-08 — validation + parameterized queries</td></tr>
+<tr><td>A04</td><td>Insecure Design</td><td>DEV-01 rate limits; DEV-06 upload limits</td></tr>
+<tr><td>A05</td><td>Security Misconfiguration</td><td>DEV-03, DEV-04, DEV-07 — cookies &amp; headers</td></tr>
+<tr><td>A06</td><td>Vulnerable Components</td><td>DEV-11 — npm/Docker scan</td></tr>
+<tr><td>A07</td><td>Auth Failures</td><td>DEV-01, DEV-03, DEV-05 — rate limit, session revoke</td></tr>
+<tr><td>A08</td><td>Software Integrity</td><td>DEV-06 — upload validation; signed deployments</td></tr>
+<tr><td>A09</td><td>Logging Failures</td><td>DEV-10 — security audit events</td></tr>
+<tr><td>A10</td><td>SSRF</td><td>DEV-06 — block internal URLs in upload/webhook handlers</td></tr>
+</tbody></table>
+<hr/>
+<h2>Quick verification commands (after fixes)</h2>
+<p>Developers can verify locally or on staging:</p>
+<p><strong>Rate limit</strong></p>
+<pre><code>for i in {1..15}; do curl -s -o /dev/null -w "%{http_code}\n" \
+  -X POST https://api.bestinfra.app/indore/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"wrong@test.com","password":"wrong"}'; done
+# Expect 429 after threshold</code></pre>
+<p><strong>CSRF cookie flags</strong></p>
+<pre><code>curl -sI https://api.bestinfra.app/indore/auth/login | grep -i set-cookie
+# Expect HttpOnly on csrf_token</code></pre>
+<p><strong>Security headers</strong></p>
+<pre><code>curl -sI https://api.bestinfra.app/indore/auth/me | grep -iE "strict-transport|content-security|x-frame|permissions-policy"</code></pre>
+<p><strong>Session revoke</strong></p>
+<pre><code># 1. Login → save token
+# 2. POST logout
+# 3. GET /auth/me with old token → expect 401</code></pre>
+<hr/>
+<h2>Production merge gate (developer sign-off)</h2>
+<p>Before merging <code>release/*</code> to production:</p>
+<table><thead><tr><th>#</th><th>Item</th><th>Dev lead sign-off</th></tr></thead><tbody>
+<tr><td>1</td><td>DEV-01 rate limiting deployed</td><td>☐</td></tr>
+<tr><td>2</td><td>DEV-02 scope audit complete for all modules</td><td>☐</td></tr>
+<tr><td>3</td><td>DEV-03 HttpOnly CSRF cookie</td><td>☐</td></tr>
+<tr><td>4</td><td>DEV-05 logout invalidates token</td><td>☐</td></tr>
+<tr><td>5</td><td>DEV-06 upload validation</td><td>☐</td></tr>
+<tr><td>6</td><td>DEV-07 headers on all routes</td><td>☐</td></tr>
+<tr><td>7</td><td>DEV-08 pagination cap + input schemas</td><td>☐</td></tr>
+<tr><td>8</td><td>DEV-10 failed login in audit log</td><td>☐</td></tr>
+<tr><td>9</td><td>DEV-11 CI blocks Critical CVE</td><td>☐</td></tr>
+<tr><td>10</td><td>Staging pen-test or security review for open P0/P1</td><td>☐</td></tr>
+</tbody></table>
+<hr/>
+<p class="footer-note">This guide is based on live API assessment of <code>https://api.bestinfra.app/indore/*</code> (June 2026). Backend repository changes are required in the Indoore API codebase and gateway — not in the Playwright test framework.</p>
+</body>
+</html>

@@ -37,6 +37,7 @@ reports/ui-exploration.json
 reports/ui-login-*.png
 blob-report/
 playwright/.cache/
+.cache/
 /playwright-report/
 /blob-report/
 /test-results/

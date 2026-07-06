@@ -1,5 +1,6 @@
 import { expect } from "@playwright/test";
 import { dtrDailyThresholdChartData } from "../Data/dtrdailythresholdchart.data";
+import { deriveReactivePower } from "../utils/dtr-backend.util";
 
 type ThresholdPoint = {
     month: number;
@@ -19,7 +20,7 @@ export class DtrDailyThresholdChartValidator {
     // =====================================
     // RESPONSE ENVELOPE
     // =====================================
-    validateResponseEnvelope(response: { success: boolean; data: unknown }): void {
+    validateResponseEnvelope(response: { success: boolean; data?: unknown }): void {
         expect(response.success).toBe(true);
         expect(response.data).toBeDefined();
     }
@@ -135,6 +136,22 @@ export class DtrDailyThresholdChartValidator {
                     expect(value).toBeGreaterThanOrEqual(0);
                 }
             }
+        });
+    }
+
+    // =====================================
+    // REACTIVE POWER — deriveReactivePower when PF or triangle applies
+    // =====================================
+    validateReactivePowerDerivation(points: ThresholdPoint[]): void {
+        points.forEach((point) => {
+            if (point.reactivePower == null) return;
+            const expected = deriveReactivePower(
+                point.activePower,
+                point.apparentPower,
+                point.powerFactor,
+            );
+            if (expected == null) return;
+            expect(point.reactivePower).toBe(expected);
         });
     }
 

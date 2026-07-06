@@ -109,7 +109,7 @@ Generated: 2026-06-25T05:08:14.419Z
 | @power-factor | 1 |
 | @activation | 1 |
 | @billing-history | 1 |
-| @create-consumer | 1 |
+| @create-consumer | 28 |
 | @graph | 1 |
 | @flow | 1 |
 | @event-log-list | 1 |

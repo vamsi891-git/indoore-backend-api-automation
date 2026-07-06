@@ -1,0 +1,257 @@
+Bulk upload validations:
+
+
+
+File Validation:
+
+Only .xlsx files are allowed.
+File must be readable and follow the approved template.
+Required columns must be present.
+Duplicate column names are not allowed.
+File must contain at least one data row.
+Blank rows are ignored.
+
+Network Hierarchy Validation
+Zone must exist.
+Sub Station must exist and belong to the selected Zone.
+Feeder must exist and belong to the selected Sub Station .
+DTR must exist and belong to selected Feeder.
+
+
+Meter Bulk Upload Validations
+
+1. Meter Identification Validation
+Meter Serial Number is mandatory.
+Asset ID and RAPDRP Code should match Meter Serial Number or remain blank.
+Meter Serial Number must be unique.
+Duplicate Meter Serial Numbers within the upload file are not allowed.
+Existing meters cannot be uploaded again.
+
+2. Meter Master Validation
+Meter Manufacturer must exist.
+Meter Model must exist if provided.
+Meter Status must contain valid values.
+DLMS / Non-DLMS must contain valid values.
+
+3. Meter Configuration Validation
+MPTR, MCTR, LPTR, and LCTR must be valid integers.
+MF must be greater than zero.
+Display Digit must be a valid positive integer.
+
+4. Date Validation
+Meter PO Date must be valid.
+Meter Testing Date must be valid.
+Future dates are not allowed.
+Testing Date must be greater than or equal to PO Date.
+
+5. Field Length Validation
+Accuracy Class maximum 8 characters.
+Meter PO Number maximum 32 characters.
+Meter Version maximum 32 characters.
+Meter Rating maximum 15 characters.
+
+
+DTR Bulk Upload Validations:
+
+1. DTR Validation
+DTR Code is mandatory and unique.
+DTR Name is mandatory.
+DTR Capacity must be greater than zero.
+Status must contain valid values.
+Duplicate DTR Codes within the upload file are not allowed.
+
+2. Meter Mapping Validation
+Meter Serial Number is mandatory.
+Meter must exist.
+Meter must be active.
+Meter must not already be mapped to another DTR.
+Main/Sub Meter must contain valid values.
+Meter Phase must contain valid values.
+Service Point ID is mandatory.
+
+3. Communication Validation
+SIM Number is mandatory.
+IMSI Number must contain digits only.
+IP Address must be valid.
+Modem Serial Number is mandatory.
+Modem IMEI must contain 15 digits.
+
+4. Date Validation:
+Service Date and Installation Date must be valid.
+Future dates are not allowed.
+
+
+Consumer Bulk Validations:
+
+1.Consumer Validation
+Consumer ID is mandatory and unique.
+Nearest Account ID must be valid.
+
+
+2.Connection Validation
+Billing Cycle must be valid.
+Bill Day must be between 1 and 28.
+Consumer Category must be valid.
+Connection Type, Status, and TOD must be valid if provided.
+
+3.Meter Validation
+Main/Sub Meter must be valid.
+Meter Serial Number (MSN) is mandatory.
+Meter must be active.
+Meter must not already be mapped.
+Service Point ID is mandatory.
+Meter Phase must be valid.
+Meter Initial Reading must be greater than 0.
+
+4.Communication Validation
+SIM Number is mandatory.
+IMSI Number must be numeric.
+Meter Mobile Number must contain 10 digits.
+IP Address must be valid.
+Modem Serial Number is mandatory.
+
+
+5.Duplicate Validation
+Consumer ID must be unique.
+Meter Serial Number must be unique.
+
+
+================================================================================
+CREATE DTR API — AUTOMATION DEFECTS
+Endpoint: POST /indore/master-data/add-dtr
+Spec: src/modules/MASTER-DATA/tests/create-dtr.spec.ts
+Reference: DTR Bulk Upload Validations (sections 1–4 above) + Consumer Bulk §3 (Meter Initial Reading)
+Last run: 17 passed, 10 failed (failures = backend gaps; tests are correct)
+
+Rule: If API behaviour mismatches the validations above → test FAILS.
+      If API correctly rejects invalid data → test PASSES.
+
+--------------------------------------------------------------------------------
+FAILED — Backend accepts invalid payload (returns 201 instead of rejecting)
+--------------------------------------------------------------------------------
+
+1. DTR Capacity must be greater than zero
+   Manual ref: DTR Bulk Upload §1 — "DTR Capacity must be greater than zero"
+   Test payload: "DTR Capacity (KVA)" = 0
+   Expected: HTTP 400, success=false, validation error
+   Actual:   HTTP 201, DTR created successfully
+   Defect:   Zero capacity is accepted.
+
+2. Future Service Date rejected
+   Manual ref: DTR Bulk Upload §4 — "Future dates are not allowed"
+   Test payload: "Service Date" = 2099-01-01
+   Expected: HTTP 400, validation error for Service Date
+   Actual:   HTTP 201, DTR created with future date
+   Defect:   Future service date is accepted.
+
+3. Future Installation Date rejected
+   Manual ref: DTR Bulk Upload §4 — "Future dates are not allowed"
+   Test payload: "Installation Date" = 2099-01-01
+   Expected: HTTP 400, validation error for Installation Date
+   Actual:   HTTP 201, DTR created with future date
+   Defect:   Future installation date is accepted.
+
+4. Future Date Of Service rejected
+   Manual ref: DTR Bulk Upload §4 (Service Date rule applies to all service dates)
+   Test payload: "Date Of Service" = 2099-01-01
+   Expected: HTTP 400, validation error for Date Of Service
+   Actual:   HTTP 201, DTR created with future date
+   Defect:   Future date of service is accepted.
+
+5. Meter must exist
+   Manual ref: DTR Bulk Upload §2 — "Meter must exist"
+   Test payload: MSN = non-existent serial (e.g. Z{timestamp})
+   Expected: HTTP 404, error code METER_NOT_FOUND
+   Actual:   HTTP 201, DTR created without a valid meter
+   Defect:   Missing meter is not blocked before create.
+
+6. Meter must be active
+   Manual ref: DTR Bulk Upload §2 — "Meter must be active"
+   Test payload: MSN = VALIDATE_DTR_METER_INACTIVE_SERIAL (7060268)
+   Expected: HTTP 409, error code METER_INACTIVE
+   Actual:   METER_NOT_FOUND (or wrong error) — serial may be stale in .env
+   Defect:   Inactive meter not rejected correctly; refresh test serial if needed.
+
+7. Main/Sub Meter must be valid
+   Manual ref: DTR Bulk Upload §2 — "Main/Sub Meter must contain valid values"
+   Test payload: "Main/Sub Meter" = 99999999 (invalid lookup ID)
+   Expected: HTTP 400, validation error for Main/Sub Meter
+   Actual:   HTTP 201, DTR created
+   Defect:   Invalid Main/Sub Meter lookup is accepted.
+
+8. Meter Phase must be valid
+   Manual ref: DTR Bulk Upload §2 — "Meter Phase must contain valid values"
+   Test payload: "Meter Phase" = 99999999 (invalid lookup ID)
+   Expected: HTTP 400, validation error for Meter Phase
+   Actual:   HTTP 201, DTR created
+   Defect:   Invalid Meter Phase lookup is accepted.
+
+9. Modem IMEI must be 15 digits
+   Manual ref: DTR Bulk Upload §3 — "Modem IMEI must contain 15 digits"
+   Test payload: "Modem IMEI" = "12345" (5 digits)
+   Expected: HTTP 400, validation error for Modem IMEI
+   Actual:   HTTP 201, DTR created
+   Defect:   IMEI length/format is not enforced.
+
+10. Meter Initial Reading must be greater than zero
+    Manual ref: Consumer Bulk §3 — "Meter Initial Reading must be greater than 0"
+                  (same rule on Add DTR Step 3)
+    Test payload: "Meter Initial Reading" = 0
+    Expected: HTTP 400, validation error for Meter Initial Reading
+    Actual:   HTTP 201, DTR created
+    Defect:   Zero initial reading is accepted.
+
+--------------------------------------------------------------------------------
+PASSED — API correctly enforces (examples)
+--------------------------------------------------------------------------------
+- DTR Code / DTR Name required
+- DTR Code must be unique (409 when duplicate)
+- Date format YYYY-MM-DD (invalid format rejected)
+- MSN required
+- IMSI / Mobile / IP Address format validation
+- Latitude / Longitude numeric validation
+- Meter already on another DTR (409)
+- Meter already assigned to consumer (409)
+- Create DTR successfully (smoke, valid payload)
+
+--------------------------------------------------------------------------------
+ENV (create-dtr tests)
+--------------------------------------------------------------------------------
+CREATE_DTR_ORGANISATION_LOOKUP_ID=30      (Zone: Hawabangla)
+CREATE_DTR_SUBSTATION_NETWORK_LOOKUP_ID=3   (Sub Station: PragatiNagar)
+CREATE_DTR_FEEDER_NETWORK_LOOKUP_ID=4       (Feeder: PARMANU NAGAR(CHQ))
+CREATE_DTR_EXISTS_CODE=RJ662                (existing DTR for duplicate test)
+VALIDATE_DTR_METER_ON_DTR_SERIAL / INACTIVE / ASSIGNED — negative meter scenarios
+
+
+================================================================================
+BULK UPLOAD DTR API — AUTOMATION DEFECTS
+Endpoint: POST /indore/master-data/bulk-upload-dtr
+Spec: src/modules/MASTER-DATA/tests/bulk-upload-dtr.spec.ts
+Reference: DTR Bulk Upload Validations (sections 1–4 above)
+
+Rule: If API behaviour mismatches the validations above → test FAILS.
+      If API correctly rejects invalid data → test PASSES.
+
+--------------------------------------------------------------------------------
+FAILED — Backend defect (bulk-upload-dtr)
+--------------------------------------------------------------------------------
+
+1. Meter must be active
+   Manual ref: DTR Bulk Upload §2 — "Meter must be active"
+   Test payload: MSN = VALIDATE_DTR_METER_INACTIVE_SERIAL (7060268)
+   Expected: Row rejected with inactive/active error message
+   Actual:   "meter not found or not in your access scope"
+   Note:     GET validate-dtr-meter returns METER_INACTIVE for the same serial.
+
+--------------------------------------------------------------------------------
+ENV (bulk-upload-dtr tests)
+--------------------------------------------------------------------------------
+BULK_DTR_ZONE_NAME=Hawabangla
+BULK_DTR_SUBSTATION_NAME=PragatiNagar
+BULK_DTR_FEEDER_NAME=PARMANU NAGAR(CHQ)
+BULK_DTR_MAIN_SUB_METER=Main
+BULK_DTR_METER_PHASE=1 PH
+# Refresh after runs: VALIDATE_DTR_METER_VALID_SERIAL or BULK_DTR_METER_SERIALS
+
+

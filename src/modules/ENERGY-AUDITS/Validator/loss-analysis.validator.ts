@@ -276,7 +276,19 @@ export class LossAnalysisValidator {
     expect(feederNames[0]?.length).toBeGreaterThan(0);
   }
 
-  validateNoDuplicateDtrNames(rows: LossAnalysisRow[]): void {
+  /**
+   * DTR scope: one row per DTR — names must be unique on the page.
+   * Feeder scope: rows are meter-scoped; the same DTR can have multiple meters
+   * (uniqueness is enforced by validateNoDuplicateIds via dtrName::meterSerial).
+   */
+  validateNoDuplicateDtrNames(
+    rows: LossAnalysisRow[],
+    networkType: LossNetworkType,
+  ): void {
+    if (networkType === "feeder") {
+      return;
+    }
+
     const meterRows = rows.filter(isMeterScopedRow);
     const names = meterRows.map((row) => row.dtrName);
     expect(new Set(names).size).toBe(names.length);

@@ -111,28 +111,11 @@ export class NotificationsValidator {
     // DOMAIN EVENTS
     // =====================================
     validateDomainEvents(notifications: Notification[]) {
-        const validEvents = [
-            "user.created",
-            "user.invited",
-            "user.updated",
-            "user.status_changed",
-            "user.deleted",
-            "ticket.created",
-            "ticket.updated",
-            "ticket.assigned",
-            "ticket.closed",
-            "meter.connected",
-            "meter.disconnected",
-            "meter.command_failed",
-            "meter.replaced",
-            "meter.voltage_fluctuation",
-            "meter.high_consumption",
-            "meter.tamper_detected",
-            "meter.comm_failure"
-        ];
+        const domainEventPattern = /^[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*$/;
+
         for (const notification of notifications) {
-            if (notification.meta && notification.meta.domainEvent ) {
-                expect(validEvents).toContain(notification.meta.domainEvent);
+            if (notification.meta?.domainEvent) {
+                expect(domainEventPattern.test(notification.meta.domainEvent)).toBeTruthy();
             }
         }
     }

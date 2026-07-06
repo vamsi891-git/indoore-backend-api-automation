@@ -15,13 +15,14 @@ test.describe("DTR Daily Threshold Chart API", () => {
         },
         async ({ authenticatedApi }) => {
             const api = new DtrDailyThresholdChartApi(authenticatedApi);
+            const { dtrCode, year, maxResponseTime } = dtrDailyThresholdChartData;
             const { rawResponse, responseBody, responseTime } =
-                await api.getDailyThresholdChart(dtrDailyThresholdChartData.dtrCode);
+                await api.getDailyThresholdChart(dtrCode, year);
 
             await PerformanceTracker.track(
                 rawResponse,
                 "DTR Daily Threshold Chart API",
-                `${process.env.BASE_URL}/indore/dtr/${dtrDailyThresholdChartData.dtrCode}/daily-threshold-chart`,
+                `${process.env.BASE_URL}/indore/dtr/${dtrCode}/daily-threshold-chart?year=${year}`,
                 responseTime,
             );
 
@@ -39,19 +40,19 @@ test.describe("DTR Daily Threshold Chart API", () => {
                 assert.validateContentType(rawResponse),
             );
             validation.execute("Response Time", () =>
-                assert.validateResponseTime(responseTime, 30000),
+                assert.validateResponseTime(responseTime, maxResponseTime),
             );
             validation.execute("Sensitive Data", () =>
                 assert.validateSensitiveData(responseBody),
             );
             validation.execute("Required Fields", () =>
-                assert.validateRequiredFields(responseBody.data, ["year", "points"]),
+                assert.validateRequiredFields(responseBody.data ?? {}, ["points"]),
             );
 
             // =====================================
             // MAPPER
             // =====================================
-            const mapped = DtrDailyThresholdChartMapper.map(responseBody);
+            const mapped = DtrDailyThresholdChartMapper.map(responseBody, year);
 
             // =====================================
             // BACKEND VALIDATIONS
@@ -91,6 +92,9 @@ test.describe("DTR Daily Threshold Chart API", () => {
             );
             validation.execute("Non Negative Values Validation", () =>
                 validator.validateNonNegativeValues(mapped.points),
+            );
+            validation.execute("Reactive Power Derivation", () =>
+                validator.validateReactivePowerDerivation(mapped.points),
             );
             validation.execute("Empty Points State", () =>
                 validator.validateEmptyPointsState(mapped.points),

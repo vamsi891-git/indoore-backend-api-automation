@@ -8,9 +8,16 @@ export interface DtrDailyThresholdChartApiResult {
 }
 export class DtrDailyThresholdChartApi {
     constructor(private readonly authenticatedApi: APIRequestContext) { }
-    async getDailyThresholdChart(dtrCode: string): Promise<DtrDailyThresholdChartApiResult> {
+    async getDailyThresholdChart(
+        dtrCode: string,
+        year: number,
+    ): Promise<DtrDailyThresholdChartApiResult> {
         const start = Date.now();
-        const response =await getWithAutoRefresh(this.authenticatedApi,`/indore/dtr/${dtrCode}/daily-threshold-chart`);
+        const response = await getWithAutoRefresh(
+            this.authenticatedApi,
+            `/indore/dtr/${dtrCode}/daily-threshold-chart`,
+            { params: { year } },
+        );
         return {
             rawResponse: response,
             responseBody: await response.json(),

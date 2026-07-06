@@ -110,7 +110,7 @@ export function registerLossAnalysisTests(
             validator.validateNoDuplicateMeterSerials(view.rows, networkType),
           );
           validation.execute("Duplicate DTR Names", () =>
-            validator.validateNoDuplicateDtrNames(view.rows),
+            validator.validateNoDuplicateDtrNames(view.rows, networkType),
           );
           validation.execute("Loss Calculations", () =>
             validator.validateLossCalculations(view.rows),
