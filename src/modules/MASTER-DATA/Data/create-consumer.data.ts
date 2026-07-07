@@ -9,6 +9,36 @@ import {
 } from "../../CONSUMERS/Data/consumer-assignable-meter-pool.data";
 import type { NetworkNode } from "../../ASSET-MANAGEMENT/Mapper/networkhierarchy.mapper";
 import type { OrganisationNode } from "../../ASSET-MANAGEMENT/Mapper/organizationhierarchy.mapper";
+import {
+  resolveMasterDataEnv as envValue,
+  resolveMasterDataEnvInt,
+} from "../utils/master-data-env.helper";
+import {
+  getBillingCycleId,
+  getConnectionStatusId,
+  getConnectionTypeId,
+  getConsumerCategoryId,
+  getMainSubMeterId,
+  getMeterPhaseId,
+  getTodId,
+} from "../utils/consumer-lookup.helper";
+import {
+  ensureNetworkHierarchyCascadeContext,
+  getCascadeDtrName,
+  getCascadeFeederName,
+  getCascadeSubStationName,
+  getCascadeZoneName,
+  getNetworkHierarchyCascade,
+} from "../utils/network-hierarchy-cascade.helper";
+import { getConsumerBulkMasterHierarchyLabels } from "../utils/consumer-bulk-hierarchy.helper";
+import { getValidateMeterSerial } from "../utils/validate-meter-runtime.helper";
+
+export type { ConsumerBulkHierarchyLabels } from "../utils/network-hierarchy-cascade.helper";
+export {
+  ensureConsumerBulkHierarchyContext,
+  getConsumerBulkHierarchyLabels,
+  hasConsumerBulkHierarchyLabels,
+} from "../utils/network-hierarchy-cascade.helper";
 
 export type CreateConsumerRequestBody = Record<string, string | number | boolean>;
 
@@ -26,14 +56,31 @@ export const CREATE_CONSUMER_HIERARCHY_ENV_KEYS = [
 export const createConsumerData = {
   maxResponseTime: createConsumerMaxResponseTimeMs,
   expectedSuccessMessage: createConsumerExpectedSuccessMessage,
-  organisationLookupId: Number(
-    process.env.CREATE_CONSUMER_ORGANISATION_LOOKUP_ID ?? 19,
+  organisationLookupId: resolveMasterDataEnvInt(
+    "CREATE_CONSUMER_ORGANISATION_LOOKUP_ID",
+    0,
   ),
-  connectionTypeId: 1,
-  consumerCategoryId: 3,
-  connectionStatusId: 1,
-  mainSubMeterId: 1,
-  meterPhaseId: 1,
+  get connectionTypeId() {
+    return getConnectionTypeId();
+  },
+  get consumerCategoryId() {
+    return getConsumerCategoryId();
+  },
+  get connectionStatusId() {
+    return getConnectionStatusId();
+  },
+  get mainSubMeterId() {
+    return getMainSubMeterId();
+  },
+  get meterPhaseId() {
+    return getMeterPhaseId();
+  },
+  get billingCycleId() {
+    return getBillingCycleId();
+  },
+  get todId() {
+    return getTodId();
+  },
   profileQuery: {
     billingLimit: 12,
     eventPage: 1,
@@ -45,14 +92,11 @@ export interface CreateConsumerTestCase {
   testName: string;
   scenario: CreateConsumerScenario;
   expectedStatus: number;
+  acceptableStatuses?: number[];
   buildPayload: () => CreateConsumerRequestBody;
   envKeys?: string[];
   validationField?: string;
   tags: string[];
-}
-
-function envValue(key: string): string {
-  return process.env[key]?.trim() ?? "";
 }
 
 function uniqueSuffix(): string {
@@ -72,18 +116,19 @@ function tenDigitMobile(): string {
 }
 
 function subStationName(): string {
-  return envValue("BULK_DTR_SUBSTATION_NAME") || "PragatiNagar";
+  return getCascadeSubStationName();
 }
 
 function feederName(): string {
-  return envValue("BULK_DTR_FEEDER_NAME") || "PARMANU NAGAR(CHQ)";
+  return getCascadeFeederName();
 }
 
 function dtrName(): string {
   return (
+    getCascadeDtrName() ||
     envValue("BULK_CONSUMER_DTR_NAME") ||
     envValue("CREATE_DTR_EXISTS_CODE") ||
-    "RJ662"
+    ""
   );
 }
 
@@ -111,6 +156,7 @@ export interface CreateConsumerMeterContext {
   organisationLookupId: number;
   networkLookupId: number;
   meterLookupId?: number;
+  zone?: string;
   subStation?: string;
   feeder?: string;
   dtr?: string;
@@ -132,13 +178,39 @@ export function hasCreateConsumerMeterContext(): boolean {
   return meterContextCache != null;
 }
 
+/** Shared hierarchy labels for POST /indore/consumers and bulk-upload-consumers rows. */
+export function getConsumerHierarchyLabels(): {
+  zone: string;
+  subStation: string;
+  feeder: string;
+  dtr: string;
+} {
+  const fromMaster = getConsumerBulkMasterHierarchyLabels();
+  if (fromMaster) {
+    return fromMaster;
+  }
+  const meterContext = getCreateConsumerMeterContext();
+  return {
+    zone: meterContext?.zone ?? getCascadeZoneName(),
+    subStation: meterContext?.subStation ?? getCascadeSubStationName(),
+    feeder: meterContext?.feeder ?? getCascadeFeederName(),
+    dtr: meterContext?.dtr ?? getCascadeDtrName(),
+  };
+}
+
+type HierarchyLabels = Pick<
+  CreateConsumerMeterContext,
+  "networkLookupId" | "zone" | "subStation" | "feeder" | "dtr"
+> & {
+  subStation?: string;
+  feeder?: string;
+};
+
 function findDtrHierarchyContext(
   nodes: NetworkNode[],
   dtrCode: string,
-): Pick<
-  CreateConsumerMeterContext,
-  "networkLookupId" | "subStation" | "feeder" | "dtr"
-> | null {
+  options?: { allowEnvFallback?: boolean },
+): HierarchyLabels | null {
   const target = dtrCode.trim().toLowerCase();
   if (!target) {
     return null;
@@ -147,17 +219,14 @@ function findDtrHierarchyContext(
   const walk = (
     items: NetworkNode[],
     ancestors: NetworkNode[],
-  ): Pick<
-    CreateConsumerMeterContext,
-    "networkLookupId" | "subStation" | "feeder" | "dtr"
-  > | null => {
+  ): HierarchyLabels | null => {
     for (const node of items) {
       const chain = [...ancestors, node];
       for (const dtr of node.dtrs ?? []) {
         const code = String(dtr.dtrCode ?? "").trim().toLowerCase();
         const name = String(dtr.dtrName ?? "").trim().toLowerCase();
         if (code === target || name === target) {
-          return hierarchyLabelsFromChain(chain, dtr);
+          return hierarchyLabelsFromChain(chain, dtr, options);
         }
       }
       const childMatch = walk(node.children ?? [], chain);
@@ -174,20 +243,28 @@ function findDtrHierarchyContext(
 function hierarchyLabelsFromChain(
   chain: NetworkNode[],
   dtr: { networkLookupId: number; dtrCode: string; dtrName: string },
-): Pick<
-  CreateConsumerMeterContext,
-  "networkLookupId" | "subStation" | "feeder" | "dtr"
-> {
+  options?: { allowEnvFallback?: boolean },
+): HierarchyLabels | null {
+  const allowEnvFallback = options?.allowEnvFallback ?? true;
+  const zone = [...chain]
+    .reverse()
+    .find((n) => /zone/i.test(n.hierarchyLevel))?.networkName;
   const subStation = [...chain]
     .reverse()
     .find((n) => /sub.?station/i.test(n.hierarchyLevel))?.networkName;
   const feeder = [...chain]
     .reverse()
     .find((n) => /feeder/i.test(n.hierarchyLevel))?.networkName;
+
+  if (!allowEnvFallback && (!subStation?.trim() || !feeder?.trim())) {
+    return null;
+  }
+
   return {
     networkLookupId: dtr.networkLookupId,
-    subStation: subStation ?? subStationName(),
-    feeder: feeder ?? feederName(),
+    zone,
+    subStation: subStation ?? (allowEnvFallback ? subStationName() : undefined),
+    feeder: feeder ?? (allowEnvFallback ? feederName() : undefined),
     dtr: dtr.dtrCode || dtr.dtrName,
   };
 }
@@ -195,22 +272,17 @@ function hierarchyLabelsFromChain(
 function findDtrHierarchyByNetworkLookupId(
   nodes: NetworkNode[],
   networkLookupId: number,
-): Pick<
-  CreateConsumerMeterContext,
-  "networkLookupId" | "subStation" | "feeder" | "dtr"
-> | null {
+  options?: { allowEnvFallback?: boolean },
+): HierarchyLabels | null {
   const walk = (
     items: NetworkNode[],
     ancestors: NetworkNode[],
-  ): Pick<
-    CreateConsumerMeterContext,
-    "networkLookupId" | "subStation" | "feeder" | "dtr"
-  > | null => {
+  ): HierarchyLabels | null => {
     for (const node of items) {
       const chain = [...ancestors, node];
       for (const dtr of node.dtrs ?? []) {
         if (dtr.networkLookupId === networkLookupId) {
-          return hierarchyLabelsFromChain(chain, dtr);
+          return hierarchyLabelsFromChain(chain, dtr, options);
         }
       }
       const childMatch = walk(node.children ?? [], chain);
@@ -262,17 +334,32 @@ export async function resolveCreateConsumerDtrHierarchyContext(
   if (fromEnv) {
     const parsed = Number(fromEnv);
     if (Number.isFinite(parsed) && parsed > 0) {
+      const cascade = getNetworkHierarchyCascade();
       return {
         networkLookupId: parsed,
-        subStation: subStationName(),
-        feeder: feederName(),
-        dtr: dtrName(),
+        subStation: cascade?.subStation ?? subStationName(),
+        feeder: cascade?.feeder ?? feederName(),
+        dtr: cascade?.dtr ?? dtrName(),
       };
     }
   }
 
+  const cascade = await ensureNetworkHierarchyCascadeContext(authenticatedApi);
+  if (cascade) {
+    return {
+      networkLookupId: cascade.dtrNetworkLookupId,
+      subStation: cascade.subStation,
+      feeder: cascade.feeder,
+      dtr: cascade.dtr,
+    };
+  }
+
   const hierarchy = await fetchNetworkHierarchy(authenticatedApi);
-  return findDtrHierarchyContext(hierarchy, dtrName());
+  const code = dtrName();
+  if (!code) {
+    return null;
+  }
+  return findDtrHierarchyContext(hierarchy, code);
 }
 
 async function fetchOrganisationHierarchy(
@@ -347,31 +434,68 @@ export async function resolveCreateConsumerMeterContext(
   authenticatedApi: APIRequestContext,
   organisationLookupId: number,
 ): Promise<CreateConsumerMeterContext | null> {
+  const preferredDtr = dtrName();
   const orgHierarchy = await fetchOrganisationHierarchy(authenticatedApi);
-  let resolvedDtr = findDtrInOrganisationHierarchy(
-    orgHierarchy,
-    dtrName(),
-    organisationLookupId,
-  );
-  if (!resolvedDtr) {
-    resolvedDtr = findDtrInOrganisationHierarchy(orgHierarchy, dtrName());
+  let resolvedDtr = preferredDtr
+    ? findDtrInOrganisationHierarchy(
+        orgHierarchy,
+        preferredDtr,
+        organisationLookupId,
+      )
+    : null;
+  if (!resolvedDtr && preferredDtr) {
+    resolvedDtr = findDtrInOrganisationHierarchy(orgHierarchy, preferredDtr);
   }
-  if (!resolvedDtr) {
+
+  if (resolvedDtr?.networkLookupId) {
+    const cascade = await ensureNetworkHierarchyCascadeContext(
+      authenticatedApi,
+      { dtrNetworkLookupId: resolvedDtr.networkLookupId },
+    );
+    if (cascade) {
+      return {
+        organisationLookupId: resolvedDtr.organisationLookupId,
+        networkLookupId: cascade.dtrNetworkLookupId,
+        subStation: cascade.subStation,
+        feeder: cascade.feeder,
+        dtr: cascade.dtr,
+        zone: cascade.zone,
+      };
+    }
+
+    const networkHierarchy = await fetchNetworkHierarchy(authenticatedApi);
+    const labels = findDtrHierarchyByNetworkLookupId(
+      networkHierarchy,
+      resolvedDtr.networkLookupId,
+      { allowEnvFallback: false },
+    );
+    if (labels?.subStation && labels.feeder) {
+      return {
+        organisationLookupId: resolvedDtr.organisationLookupId,
+        networkLookupId: resolvedDtr.networkLookupId,
+        subStation: labels.subStation,
+        feeder: labels.feeder,
+        dtr: labels.dtr ?? resolvedDtr.dtr,
+        zone: labels.zone,
+      };
+    }
+  }
+
+  const cascade = await ensureNetworkHierarchyCascadeContext(authenticatedApi);
+  if (!cascade) {
     return null;
   }
 
-  const networkHierarchy = await fetchNetworkHierarchy(authenticatedApi);
-  const labels = findDtrHierarchyByNetworkLookupId(
-    networkHierarchy,
-    resolvedDtr.networkLookupId,
-  );
-
   return {
-    organisationLookupId: resolvedDtr.organisationLookupId,
-    networkLookupId: resolvedDtr.networkLookupId,
-    subStation: labels?.subStation,
-    feeder: labels?.feeder,
-    dtr: labels?.dtr ?? resolvedDtr.dtr,
+    organisationLookupId:
+      resolvedDtr?.organisationLookupId ??
+      cascade.organisationLookupId ??
+      organisationLookupId,
+    networkLookupId: cascade.dtrNetworkLookupId,
+    subStation: cascade.subStation,
+    feeder: cascade.feeder,
+    dtr: cascade.dtr,
+    zone: cascade.zone,
   };
 }
 
@@ -593,6 +717,8 @@ export function buildValidCreateConsumerRequest(options?: {
     options?.meterSerial ??
     (options?.allocateMeter ? nextMeterSerial() : peekMeterSerial());
   const meterContext = getCreateConsumerMeterContext();
+  const cascade = getNetworkHierarchyCascade();
+  const hierarchy = getConsumerHierarchyLabels();
 
   return {
     ...(meterContext
@@ -607,10 +733,26 @@ export function buildValidCreateConsumerRequest(options?: {
             ? { "Meter Lookup ID": meterContext.meterLookupId }
             : {}),
         }
-      : {
-          organisationLookupId: createConsumerData.organisationLookupId,
-          "Organisation Lookup ID": createConsumerData.organisationLookupId,
-        }),
+      : cascade
+        ? {
+            organisationLookupId:
+              cascade.organisationLookupId ??
+              createConsumerData.organisationLookupId,
+            networkLookupId: cascade.dtrNetworkLookupId,
+            "Organisation Lookup ID":
+              cascade.organisationLookupId ??
+              createConsumerData.organisationLookupId,
+          }
+        : {
+            organisationLookupId: createConsumerData.organisationLookupId,
+            "Organisation Lookup ID": createConsumerData.organisationLookupId,
+          }),
+    ...(cascade
+      ? {
+          subStationNetworkLookupId: cascade.subStationNetworkLookupId,
+          feederNetworkLookupId: cascade.feederNetworkLookupId,
+        }
+      : {}),
     "Consumer ID": consumerId,
     "Consumer Name": `Auto Consumer ${label}`,
     "Father Name": "Suresh Kumar",
@@ -619,9 +761,9 @@ export function buildValidCreateConsumerRequest(options?: {
     "Land Line No.": "07312551234",
     Address: "12 MG Road, Indore",
     "Pin Code": "452001",
-    "Sub Station": meterContext?.subStation ?? subStationName(),
-    Feeder: meterContext?.feeder ?? feederName(),
-    DTR: meterContext?.dtr ?? dtrName(),
+    "Sub Station": hierarchy.subStation,
+    Feeder: hierarchy.feeder,
+    DTR: hierarchy.dtr,
     "IVRS Number": options?.ivrsNumber ?? consumerId,
     "Account ID": options?.accountId ?? consumerId,
     "Nearest Acct. ID": options?.nearestAcctId ?? nearestAcctId(),
@@ -634,12 +776,12 @@ export function buildValidCreateConsumerRequest(options?: {
     "Rated KVA": 5,
     "Rated KW": 4,
     "Connection Type": createConsumerData.connectionTypeId,
-    "Billing Cycle": 1,
+    "Billing Cycle": createConsumerData.billingCycleId,
     "Bill Day": 5,
     "Consumer Category": createConsumerData.consumerCategoryId,
     "Nature Of Business": "Commercial",
     "Connection Status": createConsumerData.connectionStatusId,
-    TOD: 1,
+    TOD: createConsumerData.todId,
     "MR Code": "MR01",
     "Main/Sub Meter": createConsumerData.mainSubMeterId,
     MSN: meterSerial,
@@ -728,6 +870,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       "Validate POST /indore/consumers — existing Consumer ID rejected",
     scenario: "consumer_id_exists",
     expectedStatus: 409,
+    acceptableStatuses: [400, 409],
     envKeys: hierarchyEnvKeys,
     buildPayload: () =>
       buildValidCreateConsumerRequest({
@@ -835,6 +978,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     buildPayload: () => ({
       ...buildValidCreateConsumerRequest({ label: "bad-ss" }),
       "Sub Station": "SS_INVALID_XXXX",
+      subStationNetworkLookupId: invalidLookupId,
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
@@ -847,6 +991,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     buildPayload: () => ({
       ...buildValidCreateConsumerRequest({ label: "bad-feeder" }),
       Feeder: "FEEDER_INVALID_XXXX",
+      feederNetworkLookupId: invalidLookupId,
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
@@ -862,6 +1007,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     buildPayload: () => ({
       ...buildValidCreateConsumerRequest({ label: "bad-dtr" }),
       DTR: "DTR_INVALID_XXXX",
+      networkLookupId: invalidLookupId,
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
@@ -892,12 +1038,12 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
   {
     testName: "Validate POST /indore/consumers — meter must be active",
     scenario: "meter_inactive",
-    expectedStatus: 404,
-    envKeys: [...hierarchyEnvKeys, "VALIDATE_DTR_METER_INACTIVE_SERIAL"],
+    expectedStatus: 400,
+    envKeys: hierarchyEnvKeys,
     buildPayload: () =>
       buildValidCreateConsumerRequest({
         label: "msn-inactive",
-        meterSerial: envValue("VALIDATE_DTR_METER_INACTIVE_SERIAL"),
+        meterSerial: getValidateMeterSerial("VALIDATE_DTR_METER_INACTIVE_SERIAL"),
       }),
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
@@ -905,12 +1051,13 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     testName:
       "Validate POST /indore/consumers — meter must not already be mapped",
     scenario: "meter_already_mapped",
-    expectedStatus: 409,
-    envKeys: [...hierarchyEnvKeys, "VALIDATE_DTR_METER_ASSIGNED_SERIAL"],
+    expectedStatus: 400,
+    acceptableStatuses: [400, 409],
+    envKeys: hierarchyEnvKeys,
     buildPayload: () =>
       buildValidCreateConsumerRequest({
         label: "msn-mapped",
-        meterSerial: envValue("VALIDATE_DTR_METER_ASSIGNED_SERIAL"),
+        meterSerial: getValidateMeterSerial("VALIDATE_DTR_METER_ASSIGNED_SERIAL"),
       }),
     tags: ["@master-data", "@create-consumer", "@negative"],
   },

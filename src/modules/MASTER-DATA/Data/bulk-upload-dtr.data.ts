@@ -8,6 +8,13 @@ import {
   peekDtrAssignableMeterSerial,
   setDtrAssignableMeterPool,
 } from "./dtr-assignable-meter-pool.data";
+import { resolveMasterDataEnv as envValue } from "../utils/master-data-env.helper";
+import {
+  getCascadeFeederName,
+  getCascadeSubStationName,
+  getCascadeZoneName,
+} from "../utils/network-hierarchy-cascade.helper";
+import { getValidateMeterSerial } from "../utils/validate-meter-runtime.helper";
 
 export const bulkUploadDtrMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 
@@ -110,10 +117,6 @@ export function hasBulkDtrMeterPool(): boolean {
   return hasDtrAssignableMeterPool();
 }
 
-function envValue(key: string): string {
-  return process.env[key]?.trim() ?? "";
-}
-
 function uniqueSuffix(): string {
   return String(Date.now());
 }
@@ -122,9 +125,12 @@ function isoToday(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+let bulkDtrCodeSequence = 0;
+
 function uniqueDtrCode(): string {
-  const ts = `${Date.now()}${Math.floor(Math.random() * 1000)}`;
-  return `DTR${ts}`.slice(0, 16);
+  bulkDtrCodeSequence += 1;
+  const tail = `${Date.now()}${bulkDtrCodeSequence}${Math.floor(Math.random() * 100)}`.slice(-13);
+  return `DTR${tail}`.slice(0, 16);
 }
 
 function peekBulkDtrMeterSerial(): string {
@@ -144,15 +150,15 @@ function nextBulkDtrMeterSerial(): string {
 }
 
 function zoneName(): string {
-  return envValue("BULK_DTR_ZONE_NAME") || "Hawabangla";
+  return getCascadeZoneName();
 }
 
 function subStationName(): string {
-  return envValue("BULK_DTR_SUBSTATION_NAME") || "PragatiNagar";
+  return getCascadeSubStationName();
 }
 
 function feederName(): string {
-  return envValue("BULK_DTR_FEEDER_NAME") || "PARMANU NAGAR(CHQ)";
+  return getCascadeFeederName();
 }
 
 function mainSubMeterName(): string {
@@ -174,7 +180,7 @@ export function buildValidDtrBulkRow(
 ): DtrBulkUploadRow {
   const today = isoToday();
   const label = options?.label ?? uniqueSuffix();
-  const stamp = String(Date.now()).slice(-8);
+  const stamp = `${label}${String(Date.now()).slice(-6)}`;
   const meterSerial =
     options?.meterSerial ??
     (options?.allocateMeter ? nextBulkDtrMeterSerial() : peekBulkDtrMeterSerial());
@@ -496,27 +502,27 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       "Validate POST /indore/master-data/bulk-upload-dtr — meter must be active",
     scenario: "row_meter_inactive",
     expectedStatus: 400,
-    envKeys: [...hierarchyEnvKeys, "VALIDATE_DTR_METER_INACTIVE_SERIAL"],
+    envKeys: hierarchyEnvKeys,
     buildUpload: async () => {
       const row = buildValidDtrBulkRow({
         label: "msn-inactive",
-        meterSerial: envValue("VALIDATE_DTR_METER_INACTIVE_SERIAL"),
+        meterSerial: getValidateMeterSerial("VALIDATE_DTR_METER_INACTIVE_SERIAL"),
       });
       const buffer = await buildDtrBulkUploadXlsx([row]);
       return xlsxUpload(buffer);
     },
-    tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    tags: ["@master-data", "@bulk-upload-dtr", "@negative", "@backend-defect"],
   },
   {
     testName:
       "Validate POST /indore/master-data/bulk-upload-dtr — meter already on another DTR",
     scenario: "row_meter_on_dtr",
     expectedStatus: 400,
-    envKeys: [...hierarchyEnvKeys, "VALIDATE_DTR_METER_ON_DTR_SERIAL"],
+    envKeys: hierarchyEnvKeys,
     buildUpload: async () => {
       const row = buildValidDtrBulkRow({
         label: "msn-on-dtr",
-        meterSerial: envValue("VALIDATE_DTR_METER_ON_DTR_SERIAL"),
+        meterSerial: getValidateMeterSerial("VALIDATE_DTR_METER_ON_DTR_SERIAL"),
       });
       const buffer = await buildDtrBulkUploadXlsx([row]);
       return xlsxUpload(buffer);

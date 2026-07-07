@@ -11,6 +11,13 @@ import {
   hasBulkDtrMeterPool,
 } from "../Data/bulk-upload-dtr.data";
 import { ensureDtrAssignableMeterPool } from "../Data/dtr-assignable-meter-pool.data";
+import { shouldSkipMasterDataTestForEnv } from "../utils/master-data-env.helper";
+import { shouldSkipKnownBackendDefects } from "../utils/master-data-manual-validations.helper";
+import {
+  ensureDtrTestRuntimeContext,
+  getValidateMeterSerial,
+  runtimeMeterSerialEnvKey,
+} from "../utils/validate-meter-runtime.helper";
 import { BulkUploadDtrMapper } from "../Mapper/bulk-upload-dtr.mapper";
 import { BulkUploadDtrValidator } from "../Validator/bulk-upload-dtr.validator";
 import { MasterDataCommonValidator } from "../Validator/master-data-common.validator";
@@ -43,10 +50,17 @@ const METER_SCENARIO_SCENARIOS = new Set([
 function shouldSkipForEnv(
   testCase: (typeof bulkUploadDtrTestCases)[number],
 ): boolean {
-  if (!testCase.envKeys?.length) {
+  return shouldSkipMasterDataTestForEnv(testCase.envKeys);
+}
+
+function missingRuntimeMeterSerial(
+  scenario: (typeof bulkUploadDtrTestCases)[number]["scenario"],
+): boolean {
+  const envKey = runtimeMeterSerialEnvKey(scenario);
+  if (!envKey) {
     return false;
   }
-  return testCase.envKeys.some((key) => !process.env[key]?.trim());
+  return !getValidateMeterSerial(envKey);
 }
 
 function needsAssignableMeter(
@@ -59,13 +73,14 @@ function needsAssignableMeter(
 }
 
 test.describe("Bulk Upload DTR API", () => {
-  test.describe.configure({ retries: 1 });
+  test.describe.configure({ retries: 1, mode: "serial" });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
   test.beforeAll(async ({ authenticatedApi }) => {
     test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
+    await ensureDtrTestRuntimeContext(authenticatedApi);
     const pool = await ensureDtrAssignableMeterPool(authenticatedApi, {
-      targetCount: 4,
+      targetCount: 6,
       maxCreateAttempts: 15,
     });
     console.log(
@@ -86,6 +101,25 @@ test.describe("Bulk Upload DTR API", () => {
           test.skip(
             true,
             `Set ${testCase.envKeys?.join(", ") ?? "required env vars"} in .env`,
+          );
+          return;
+        }
+
+        if (
+          shouldSkipKnownBackendDefects() &&
+          testCase.tags.includes("@backend-defect")
+        ) {
+          test.skip(
+            true,
+            "Known backend defect — see Bulk upload validations.txt (BULK UPLOAD DTR)",
+          );
+          return;
+        }
+
+        if (missingRuntimeMeterSerial(testCase.scenario)) {
+          test.skip(
+            true,
+            `Could not resolve runtime meter serial for ${testCase.scenario}`,
           );
           return;
         }
@@ -114,7 +148,10 @@ test.describe("Bulk Upload DTR API", () => {
         const { rawResponse, responseBody, responseTime } =
           await api.bulkUploadDtr(upload);
 
-        if (testCase.scenario === "bulk_success") {
+        if (
+          testCase.scenario === "bulk_success" ||
+          testCase.scenario === "bulk_success_multi"
+        ) {
           console.log(JSON.stringify(responseBody, null, 2));
         }
 

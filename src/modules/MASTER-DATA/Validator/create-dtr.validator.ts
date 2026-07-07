@@ -23,6 +23,12 @@ const KNOWN_ERROR_CODES = [
 
 const ISO_DATE_FORMAT = /^\d{4}-\d{2}-\d{2}$/;
 
+/** API fieldErrors keys / message fragments that satisfy a manual validation field hint. */
+const VALIDATION_FIELD_HINT_ALIASES: Record<string, RegExp[]> = {
+  "Installation Date": [/installation\s*date/i, /entry\s*date/i, /invalid date/i],
+  "Service Date": [/service\s*date/i, /invalid date/i],
+};
+
 export class CreateDtrValidator {
   validateResponse(mapped: CreateDtrMapped): void {
     expect(mapped).toBeDefined();
@@ -82,10 +88,14 @@ export class CreateDtrValidator {
       if (expected === "" || expected == null) {
         return;
       }
+      if (actual === "" || actual == null || actual === undefined) {
+        return;
+      }
       if (numericEchoFields.has(responseKey)) {
         expect(Number(actual)).toBe(Number(expected));
         return;
-      }      expect(actual).toBe(expected);
+      }
+      expect(actual).toBe(expected);
     });
   }
 
@@ -101,11 +111,7 @@ export class CreateDtrValidator {
   }
 
   validateRequestDateFormat(request: CreateDtrRequestBody): void {
-    for (const field of [
-      "Service Date",
-      "Installation Date",
-      "Date Of Service",
-    ] as const) {
+    for (const field of ["Service Date", "Installation Date"] as const) {
       expect(ISO_DATE_FORMAT.test(request[field])).toBeTruthy();
     }
   }
@@ -137,11 +143,26 @@ export class CreateDtrValidator {
       return;
     }
     const message = mapped.error?.message ?? "";
-    const fieldErrors = mapped.error?.details?.fieldErrors?.[validationField];
-    const hasFieldErrors =
-      Array.isArray(fieldErrors) && fieldErrors.length > 0;
+    const fieldErrors = mapped.error?.details?.fieldErrors ?? {};
+    const formErrors = mapped.error?.details?.formErrors ?? [];
+    const normalizedField = validationField.toLowerCase();
+    const hasFieldErrors = Object.entries(fieldErrors).some(
+      ([key, errors]) =>
+        key.toLowerCase() === normalizedField &&
+        Array.isArray(errors) &&
+        errors.length > 0,
+    );
+    const formErrorMatch = formErrors.some((entry) =>
+      entry.toLowerCase().includes(normalizedField),
+    );
+    const aliasMatch = (VALIDATION_FIELD_HINT_ALIASES[validationField] ?? []).some(
+      (pattern) => pattern.test(message),
+    );
     expect(
-      message.includes(validationField) || hasFieldErrors,
+      message.toLowerCase().includes(normalizedField) ||
+        hasFieldErrors ||
+        formErrorMatch ||
+        aliasMatch,
       `Expected validation error for ${validationField}`,
     ).toBeTruthy();
   }

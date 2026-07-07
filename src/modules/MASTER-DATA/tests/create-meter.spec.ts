@@ -13,6 +13,8 @@ import { CreateMeterMapper } from "../Mapper/create-meter.mapper";
 import { CreateMeterValidator } from "../Validator/create-meter.validator";
 import { MasterDataCommonValidator } from "../Validator/master-data-common.validator";
 import { CreateMeterSuccessResponseSchema } from "../schemas/master-data.schemas";
+import { ensureMeterManufacturerContext } from "../utils/meter-manufacturer.helper";
+import { ensureValidateMeterRuntimeContext } from "../utils/validate-meter-runtime.helper";
 
 const SUCCESS_SCENARIOS = new Set([
   "success",
@@ -23,6 +25,12 @@ const SUCCESS_SCENARIOS = new Set([
 test.describe("Create Meter API", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
+
+  test.beforeAll(async ({ authenticatedApi }) => {
+    test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
+    await ensureMeterManufacturerContext(authenticatedApi);
+    await ensureValidateMeterRuntimeContext(authenticatedApi);
+  });
 
   test.afterEach(async () => {
     await new Promise<void>((resolve) => setTimeout(resolve, 500));
@@ -36,7 +44,10 @@ test.describe("Create Meter API", () => {
         const requestBody = testCase.buildPayload();
 
         if (testCase.envKey && !requestBody.meterSerialNumber) {
-          test.skip(true, `Set ${testCase.envKey} in .env`);
+          test.skip(
+            true,
+            `Could not resolve ${testCase.envKey} at runtime`,
+          );
           return;
         }
 

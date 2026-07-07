@@ -1,5 +1,10 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { CreateMeterScenario } from "../Mapper/create-meter.mapper";
+import {
+  getCreateMeterDeviceManufacturerId,
+  getCreateMeterModelId,
+} from "../utils/meter-manufacturer.helper";
+import { getValidateMeterSerial } from "../utils/validate-meter-runtime.helper";
 
 export const createMeterMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 
@@ -52,14 +57,8 @@ export interface CreateMeterTestCase {
   tags: string[];
 }
 
-const defaultManufacturerId = Number(
-  process.env.CREATE_METER_DEVICE_MANUFACTURER_TBL_REF_ID ?? 1,
-);
-const defaultModelId = Number(
-  process.env.CREATE_METER_METER_MODEL_TBL_REF_ID ?? 1,
-);
-
-const baseTemplate: Omit<CreateMeterRequestBody, "meterSerialNumber"> = {
+function buildBaseTemplate(): Omit<CreateMeterRequestBody, "meterSerialNumber"> {
+  return {
   meterRapdrpCode: process.env.CREATE_METER_RAPDRP_CODE?.trim() || "AUTO-RAP",
   assetId: process.env.CREATE_METER_ASSET_ID?.trim() || "AUTO-ASSET",
   mtr: 1,
@@ -72,29 +71,50 @@ const baseTemplate: Omit<CreateMeterRequestBody, "meterSerialNumber"> = {
   meterPoDate: "2026-06-01",
   meterTestingDate: "2026-06-15",
   displayDigitCount: 20,
-  deviceManufacturerTblRefId: defaultManufacturerId,
-  meterModelTblRefId: defaultModelId,
+  deviceManufacturerTblRefId: getCreateMeterDeviceManufacturerId(),
+  meterModelTblRefId: getCreateMeterModelId(),
   meterVersion: "v1",
-  meterStatus: false,
+  meterStatus: true,
   dlmsNonDlms: "NA",
   meterRating: "10-40A",
-};
-
-function envSerial(key: string): string {
-  return process.env[key]?.trim() ?? "";
+  };
 }
 
 function uniqueSuffix(): string {
   return String(Date.now());
 }
 
+/** ≤16 chars; asset/RAPDRP match serial (manual doc §1). */
+function buildMeterSerial(suffix: string = uniqueSuffix()): string {
+  const digits =
+    suffix.replace(/\D/g, "").slice(-10) || uniqueSuffix().slice(-10);
+  return `M${digits}`;
+}
+
+function applySerialToRequest(
+  body: CreateMeterRequestBody,
+  serial: string,
+): CreateMeterRequestBody {
+  return {
+    ...body,
+    meterSerialNumber: serial,
+    meterRapdrpCode: serial.slice(0, CREATE_METER_FIELD_LIMITS.meterRapdrpCode),
+    assetId: serial.slice(0, CREATE_METER_FIELD_LIMITS.assetId),
+    displayDigitCount: Math.min(serial.length, 20),
+  };
+}
+
 export function buildCreateMeterRequest(
   suffix: string = uniqueSuffix(),
 ): CreateMeterRequestBody {
-  return {
-    ...baseTemplate,
-    meterSerialNumber: `AUTO-${suffix}`,
-  };
+  const meterSerialNumber = buildMeterSerial(suffix);
+  return applySerialToRequest(
+    {
+      ...buildBaseTemplate(),
+      meterSerialNumber,
+    },
+    meterSerialNumber,
+  );
 }
 
 export const createMeterTestCases: CreateMeterTestCase[] = [
@@ -113,13 +133,8 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
     scenario: "success_matching_asset",
     expectedStatus: 201,
     buildPayload: () => {
-      const serial = `M${uniqueSuffix().slice(-10)}`;
-      return {
-        ...buildCreateMeterRequest(serial),
-        meterSerialNumber: serial,
-        assetId: serial,
-        meterRapdrpCode: serial,
-      };
+      const serial = buildMeterSerial(uniqueSuffix().slice(-10));
+      return applySerialToRequest(buildCreateMeterRequest(serial), serial);
     },
     tags: ["@master-data", "@create-meter", "@meter-master"],
   },
@@ -129,10 +144,10 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
     scenario: "already_exists",
     expectedStatus: 409,
     envKey: "VALIDATE_ADD_METER_EXISTS_SERIAL",
-    buildPayload: () => ({
-      ...buildCreateMeterRequest("dup"),
-      meterSerialNumber: envSerial("VALIDATE_ADD_METER_EXISTS_SERIAL"),
-    }),
+    buildPayload: () => {
+      const serial = getValidateMeterSerial("VALIDATE_ADD_METER_EXISTS_SERIAL");
+      return applySerialToRequest(buildCreateMeterRequest("dup"), serial);
+    },
     tags: ["@master-data", "@create-meter", "@negative"],
   },
   {
@@ -320,7 +335,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
     buildPayload: () => ({
       meterRapdrpCode: "",
       assetId: "",
-      meterSerialNumber: `AUTO-VAL-${uniqueSuffix()}`,
+      meterSerialNumber: `M${uniqueSuffix().slice(-10)}`,
       mtr: 0,
       mctr: 0,
       lptr: 0,

@@ -25,7 +25,15 @@ export function setConsumerAssignableMeterPool(serials: string[]): void {
 }
 
 export function hasConsumerAssignableMeterPool(): boolean {
-  return (assignableMeterPool?.length ?? 0) > 0;
+  if ((assignableMeterPool?.length ?? 0) > 0) {
+    return true;
+  }
+  const cached = loadCachedMeterPool();
+  if (cached?.length) {
+    setConsumerAssignableMeterPool(cached);
+    return true;
+  }
+  return false;
 }
 
 export function nextConsumerAssignableMeterSerial(options?: {
@@ -101,10 +109,7 @@ export async function provisionConsumerAssignableMeterPool(
           continue;
         }
         const mapped = ValidateMeterMapper.map(responseBody);
-        if (mapped.valid) {
-          return true;
-        }
-        return false;
+        return mapped.valid;
       } catch {
         await sleep(1000);
       }
@@ -235,23 +240,25 @@ export async function ensureConsumerAssignableMeterPool(
   authenticatedApi: APIRequestContext,
   options?: ProvisionConsumerAssignableMeterPoolOptions,
 ): Promise<string[]> {
-  if (hasConsumerAssignableMeterPool()) {
-    return assignableMeterPool ?? [];
+  const targetCount =
+    options?.targetCount ?? DEFAULT_CONSUMER_METER_POOL_TARGET;
+
+  let pool = assignableMeterPool ?? loadCachedMeterPool() ?? [];
+  if (pool.length) {
+    pool = await filterStillAssignableMeters(authenticatedApi, pool, options);
+    setConsumerAssignableMeterPool(pool);
   }
 
-  const cached = loadCachedMeterPool();
-  if (cached?.length) {
-    const stillAssignable = await filterStillAssignableMeters(
-      authenticatedApi,
-      cached,
-      options,
-    );
-    setConsumerAssignableMeterPool(stillAssignable);
+  if (pool.length >= targetCount) {
+    return pool;
   }
 
   const provisioned = await provisionConsumerAssignableMeterPool(
     authenticatedApi,
-    options,
+    {
+      ...options,
+      targetCount,
+    },
   );
   if (provisioned.length > 0) {
     saveCachedMeterPool(provisioned);

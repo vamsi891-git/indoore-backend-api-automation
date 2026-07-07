@@ -13,14 +13,30 @@ import {
   ensureBulkConsumerExistingCid,
   ensureBulkConsumerNearestAcctId,
   existingConsumerCid,
+  getConsumerHierarchyLabels,
   hasBulkConsumerExistingCid,
   hasBulkConsumerNearestAcctId,
   nearestAcctId,
 } from "./create-consumer.data";
+import {
+  getBillingCycleBulkValue,
+  getConnectionStatusBulkValue,
+  getConnectionTypeBulkValue,
+  getConsumerCategoryBulkValue,
+  getMainSubMeterBulkValue,
+  getMeterPhaseBulkValue,
+  getTodBulkValue,
+} from "../utils/consumer-lookup.helper";
+import { resolveMasterDataEnv as envValue } from "../utils/master-data-env.helper";
+import {
+  ensureConsumerBulkHierarchyContext,
+} from "../utils/network-hierarchy-cascade.helper";
+import { getValidateMeterSerial } from "../utils/validate-meter-runtime.helper";
 
 export {
   ensureBulkConsumerExistingCid,
   ensureBulkConsumerNearestAcctId,
+  ensureConsumerBulkHierarchyContext,
   hasBulkConsumerExistingCid,
   hasBulkConsumerNearestAcctId,
 };
@@ -156,10 +172,6 @@ export function hasBulkConsumerMeterPool(): boolean {
 export const bulkUploadConsumerOrganisationLookupId =
   createConsumerData.organisationLookupId;
 
-function envValue(key: string): string {
-  return process.env[key]?.trim() ?? "";
-}
-
 function uniqueSuffix(): string {
   return String(Date.now());
 }
@@ -168,8 +180,12 @@ function isoToday(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+let bulkConsumerIdSequence = 0;
+
 function uniqueConsumerId(): string {
-  return `CID-BULK-${Date.now()}${Math.floor(Math.random() * 1000)}`;
+  bulkConsumerIdSequence += 1;
+  const tail = `${Date.now()}${bulkConsumerIdSequence}${Math.floor(Math.random() * 100)}`.slice(-16);
+  return `CID${tail}`;
 }
 
 function peekBulkConsumerMeterSerial(): string {
@@ -189,23 +205,19 @@ function nextBulkConsumerMeterSerial(): string {
 }
 
 function zoneName(): string {
-  return envValue("BULK_DTR_ZONE_NAME") || "Hawabangla";
+  return getConsumerHierarchyLabels().zone;
 }
 
 function subStationName(): string {
-  return envValue("BULK_DTR_SUBSTATION_NAME") || "PragatiNagar";
+  return getConsumerHierarchyLabels().subStation;
 }
 
 function feederName(): string {
-  return envValue("BULK_DTR_FEEDER_NAME") || "PARMANU NAGAR(CHQ)";
+  return getConsumerHierarchyLabels().feeder;
 }
 
 function dtrName(): string {
-  return (
-    envValue("BULK_CONSUMER_DTR_NAME") ||
-    envValue("CREATE_DTR_EXISTS_CODE") ||
-    "RJ662"
-  );
+  return getConsumerHierarchyLabels().dtr;
 }
 
 function tenDigitMobile(): string {
@@ -213,11 +225,7 @@ function tenDigitMobile(): string {
 }
 
 function mainSubMeterName(): string {
-  return envValue("BULK_DTR_MAIN_SUB_METER") || "Main";
-}
-
-function meterPhaseName(): string {
-  return envValue("BULK_DTR_METER_PHASE") || "1 PH";
+  return getMainSubMeterBulkValue();
 }
 
 export function buildValidConsumerBulkRow(
@@ -233,7 +241,7 @@ export function buildValidConsumerBulkRow(
 ): ConsumerBulkUploadRow {
   const today = isoToday();
   const label = options?.label ?? uniqueSuffix();
-  const stamp = String(Date.now()).slice(-8);
+  const stamp = `${label}${String(Date.now()).slice(-6)}`;
   const consumerId = options?.consumerId ?? uniqueConsumerId();
   const meterSerial =
     options?.meterSerial ??
@@ -265,19 +273,19 @@ export function buildValidConsumerBulkRow(
     "Connected HP": 4.5,
     "Rated KVA": 5,
     "Rated KW": 4,
-    "Connection Type": createConsumerData.connectionTypeId,
-    "Billing Cycle": 1,
+    "Connection Type": getConnectionTypeBulkValue(),
+    "Billing Cycle": getBillingCycleBulkValue(),
     "Bill Day": 5,
-    "Consumer Category": createConsumerData.consumerCategoryId,
+    "Consumer Category": getConsumerCategoryBulkValue(),
     "Nature Of Business": "Commercial",
-    "Connection Status": createConsumerData.connectionStatusId,
-    TOD: 1,
+    "Connection Status": getConnectionStatusBulkValue(),
+    TOD: getTodBulkValue(),
     "MR Code": "MR01",
     "Main/Sub Meter": mainSubMeterName(),
     MSN: meterSerial,
     "Service Point ID": `SP${stamp}`,
     "Date Of Service": today,
-    "Meter Phase": meterPhaseName(),
+    "Meter Phase": getMeterPhaseBulkValue(),
     "Connected To DCU": true,
     "SIM No.": "9900000001",
     "IMSI No.": "404010123456789",
@@ -502,7 +510,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       const buffer = await buildConsumerBulkUploadXlsx([row]);
       return xlsxUpload(buffer);
     },
-    tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    tags: ["@master-data", "@bulk-upload-consumers", "@negative", "@backend-defect"],
   },
   {
     testName:
@@ -691,39 +699,39 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       const buffer = await buildConsumerBulkUploadXlsx([row]);
       return xlsxUpload(buffer);
     },
-    tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    tags: ["@master-data", "@bulk-upload-consumers", "@negative", "@backend-defect"],
   },
   {
     testName:
       "Validate POST /indore/master-data/bulk-upload-consumers — meter must be active",
     scenario: "row_meter_inactive",
     expectedStatus: 400,
-    envKeys: [...hierarchyEnvKeys, "VALIDATE_DTR_METER_INACTIVE_SERIAL"],
+    envKeys: hierarchyEnvKeys,
     buildUpload: async () => {
       const row = buildValidConsumerBulkRow({
         label: "msn-inactive",
-        meterSerial: envValue("VALIDATE_DTR_METER_INACTIVE_SERIAL"),
+        meterSerial: getValidateMeterSerial("VALIDATE_DTR_METER_INACTIVE_SERIAL"),
       });
       const buffer = await buildConsumerBulkUploadXlsx([row]);
       return xlsxUpload(buffer);
     },
-    tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    tags: ["@master-data", "@bulk-upload-consumers", "@negative", "@backend-defect"],
   },
   {
     testName:
       "Validate POST /indore/master-data/bulk-upload-consumers — meter must not already be mapped",
     scenario: "row_meter_already_mapped",
     expectedStatus: 400,
-    envKeys: [...hierarchyEnvKeys, "VALIDATE_DTR_METER_ASSIGNED_SERIAL"],
+    envKeys: hierarchyEnvKeys,
     buildUpload: async () => {
       const row = buildValidConsumerBulkRow({
         label: "msn-mapped",
-        meterSerial: envValue("VALIDATE_DTR_METER_ASSIGNED_SERIAL"),
+        meterSerial: getValidateMeterSerial("VALIDATE_DTR_METER_ASSIGNED_SERIAL"),
       });
       const buffer = await buildConsumerBulkUploadXlsx([row]);
       return xlsxUpload(buffer);
     },
-    tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    tags: ["@master-data", "@bulk-upload-consumers", "@negative", "@backend-defect"],
   },
   {
     testName:
@@ -863,7 +871,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       const buffer = await buildConsumerBulkUploadXlsx([row]);
       return xlsxUpload(buffer);
     },
-    tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    tags: ["@master-data", "@bulk-upload-consumers", "@negative", "@backend-defect"],
   },
   {
     testName:
@@ -892,7 +900,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       ]);
       return xlsxUpload(buffer);
     },
-    tags: ["@smoke", "@master-data", "@bulk-upload-consumers", "@consumer", "@positive"],
+    tags: ["@smoke", "@master-data", "@bulk-upload-consumers", "@consumer", "@positive", "@backend-defect"],
   },
   {
     testName:
@@ -907,7 +915,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       ]);
       return xlsxUpload(buffer);
     },
-    tags: ["@master-data", "@bulk-upload-consumers", "@consumer", "@positive"],
+    tags: ["@master-data", "@bulk-upload-consumers", "@consumer", "@positive", "@backend-defect"],
   },
   {
     testName:
@@ -945,6 +953,6 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       const arrayBuffer = await workbook.xlsx.writeBuffer();
       return xlsxUpload(Buffer.from(arrayBuffer));
     },
-    tags: ["@master-data", "@bulk-upload-consumers", "@consumer", "@positive"],
+    tags: ["@master-data", "@bulk-upload-consumers", "@consumer", "@positive", "@backend-defect"],
   },
 ];

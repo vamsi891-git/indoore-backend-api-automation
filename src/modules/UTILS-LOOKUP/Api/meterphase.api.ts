@@ -3,6 +3,7 @@ import {APIRequestContext,APIResponse} from "@playwright/test";
 
 import { MeterPhaseResponse}from "../Mapper/meterphase.mapper";
 import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
+import { parseLookupJsonResponse } from "../utils/lookup-api-parse.helper";
 export interface MeterPhaseApiResponse {
     rawResponse: APIResponse;
     responseBody: MeterPhaseResponse;
@@ -19,7 +20,10 @@ export class MeterPhaseApi {
             await getWithAutoRefresh(this.authenticatedApi,"/indore/utils/meter-phases");
         return {
             rawResponse,
-            responseBody: await rawResponse.json(),
+            responseBody: await parseLookupJsonResponse<MeterPhaseResponse>(
+                rawResponse,
+                "meter-phases",
+            ),
             responseTime: Date.now() - start
         };
     }

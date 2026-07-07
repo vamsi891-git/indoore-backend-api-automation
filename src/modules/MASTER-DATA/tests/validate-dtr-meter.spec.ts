@@ -6,33 +6,50 @@ import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeout
 import { ValidateDtrMeterApi } from "../Api/validate-dtr-meter.api";
 import {
   validateDtrMeterMaxResponseTimeMs,
+  validateDtrMeterNotFoundSerial,
   validateDtrMeterTestCases,
 } from "../Data/validate-dtr-meter.data";
 import { ValidateDtrMeterMapper } from "../Mapper/validate-dtr-meter.mapper";
 import { ValidateDtrMeterValidator } from "../Validator/validate-dtr-meter.validator";
+import {
+  ensureValidateMeterRuntimeContext,
+  getValidateDtrMeterSerialForScenario,
+} from "../utils/validate-meter-runtime.helper";
 
 test.describe("Validate DTR Meter API", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
+
+  test.beforeAll(async ({ authenticatedApi }) => {
+    test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
+    await ensureValidateMeterRuntimeContext(authenticatedApi);
+  });
 
   for (const testCase of validateDtrMeterTestCases) {
     test(
       testCase.testName,
       { tag: testCase.tags },
       async ({ authenticatedApi }) => {
-        if (!testCase.meterSerialNumber) {
-          test.skip(true, `Set ${testCase.envKey} in .env`);
+        const meterSerialNumber = getValidateDtrMeterSerialForScenario(
+          testCase.scenario,
+          validateDtrMeterNotFoundSerial,
+        );
+        if (!meterSerialNumber) {
+          test.skip(
+            true,
+            `Could not resolve ${testCase.envKey ?? "meter serial"} at runtime`,
+          );
           return;
         }
 
         const api = new ValidateDtrMeterApi(authenticatedApi);
         const { rawResponse, responseBody, responseTime } =
           await api.validateDtrMeter({
-            meterSerialNumber: testCase.meterSerialNumber,
+            meterSerialNumber,
           });
 
         const qs = new URLSearchParams({
-          meterSerialNumber: testCase.meterSerialNumber,
+          meterSerialNumber,
         }).toString();
 
         await PerformanceTracker.track(

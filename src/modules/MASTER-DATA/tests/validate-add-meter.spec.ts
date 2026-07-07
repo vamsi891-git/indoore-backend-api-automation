@@ -5,34 +5,45 @@ import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { ValidateAddMeterApi } from "../Api/validate-add-meter.api";
 import {
+  resolveValidateAddMeterSerial,
   validateAddMeterMaxResponseTimeMs,
   validateAddMeterTestCases,
 } from "../Data/validate-add-meter.data";
 import { ValidateAddMeterMapper } from "../Mapper/validate-add-meter.mapper";
 import { ValidateAddMeterValidator } from "../Validator/validate-add-meter.validator";
+import { ensureValidateMeterRuntimeContext } from "../utils/validate-meter-runtime.helper";
 
 test.describe("Validate Add Meter API", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
+
+  test.beforeAll(async ({ authenticatedApi }) => {
+    test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
+    await ensureValidateMeterRuntimeContext(authenticatedApi);
+  });
 
   for (const testCase of validateAddMeterTestCases) {
     test(
       testCase.testName,
       { tag: testCase.tags },
       async ({ authenticatedApi }) => {
-        if (!testCase.meterSerialNumber) {
-          test.skip(true, `Set ${testCase.envKey} in .env`);
+        const meterSerialNumber = resolveValidateAddMeterSerial(testCase.scenario);
+        if (!meterSerialNumber) {
+          test.skip(
+            true,
+            `Could not resolve ${testCase.envKey} at runtime (provision or set .env override)`,
+          );
           return;
         }
 
         const api = new ValidateAddMeterApi(authenticatedApi);
         const { rawResponse, responseBody, responseTime } =
           await api.validateAddMeter({
-            meterSerialNumber: testCase.meterSerialNumber,
+            meterSerialNumber,
           });
 
         const qs = new URLSearchParams({
-          meterSerialNumber: testCase.meterSerialNumber,
+          meterSerialNumber,
         }).toString();
 
         await PerformanceTracker.track(

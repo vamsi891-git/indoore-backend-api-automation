@@ -255,3 +255,62 @@ BULK_DTR_METER_PHASE=1 PH
 # Refresh after runs: VALIDATE_DTR_METER_VALID_SERIAL or BULK_DTR_METER_SERIALS
 
 
+================================================================================
+BULK UPLOAD CONSUMERS API — AUTOMATION DEFECTS
+Endpoint: POST /indore/master-data/bulk-upload-consumers
+Spec: src/modules/MASTER-DATA/tests/bulk-upload-consumers.spec.ts
+Reference: Consumer Bulk Validations (sections 1–5 above) + Network Hierarchy Validation
+
+Rule: If API behaviour mismatches the validations above → test FAILS.
+      If API correctly rejects invalid data → test PASSES.
+
+--------------------------------------------------------------------------------
+FAILED — Backend defect (bulk-upload-consumers success path)
+--------------------------------------------------------------------------------
+
+1. Valid hierarchy row does not create consumer (lookup IDs not resolved from Excel)
+   Manual ref: Network Hierarchy Validation — Zone / Sub Station / Feeder / DTR must exist
+               Consumer Bulk §1–§3 — valid row with assignable MSN should create consumer
+   Test payload: Valid row aligned with POST /indore/consumers (CM* MSN, OPH South →
+                 OPH EAST SS → DOULATGANG(CHQ) → 24SE1, numeric lookup IDs for Connection
+                 Type / Billing / TOD / Category / Status / Phase, valid Nearest Acct. ID)
+   Expected: HTTP 200, success=true, row status CREATED
+   Actual:   HTTP 400, row VALIDATION_FAILED:
+             "subStationNetworkLookupId is required feederNetworkLookupId is required"
+   Defect:   Bulk path does not map Excel hierarchy text to subStationNetworkLookupId and
+             feederNetworkLookupId before row validation (POST /indore/consumers works when
+             those IDs are sent in JSON). Same error with BULK_DTR_* (Hawabangla) hierarchy.
+
+2. Meter must exist (row_meter_not_found)
+   Manual ref: Consumer Bulk §3 — meter must be active / assignable
+   Test payload: MSN = non-existent serial
+   Expected: Row rejected (meter not found)
+   Actual:   Row may be accepted or wrong error (environment-dependent)
+   Note:     Documented from prior manual run; test kept as strict negative.
+
+3. Modem IMEI must be 15 digits (row_invalid_imei)
+   Manual ref: Consumer Bulk §4 — modem IMEI format
+   Test payload: "Modem IMEI" = "12345"
+   Expected: Row rejected with IMEI validation error
+   Actual:   Row may be accepted (backend gap)
+   Note:     Documented from prior manual run; test kept as strict negative.
+
+--------------------------------------------------------------------------------
+PASSED — API correctly enforces (examples)
+--------------------------------------------------------------------------------
+- File type / columns / duplicate columns / header-only
+- Zone must exist (invalid zone rejected)
+- Consumer ID required / duplicate within file
+- Nearest Account ID required / invalid
+- Bill Day range, category / billing / connection type / status / TOD invalid values
+- MSN required, duplicate MSN within file
+- Main/Sub Meter, Meter Phase, Service Point, SIM, IMSI, mobile, IP, modem serial invalid
+
+--------------------------------------------------------------------------------
+ENV (bulk-upload-consumers tests)
+--------------------------------------------------------------------------------
+CREATE_CONSUMER_ORGANISATION_LOOKUP_ID=30   # Hawabangla — same org as CREATE_DTR / BULK_DTR_*
+BULK_CONSUMER_DTR_NAME=RJ662                # fallback DTR name for cascade scoring
+BULK_DTR_ZONE_NAME / BULK_DTR_SUBSTATION_NAME / BULK_DTR_FEEDER_NAME  # hierarchy env keys
+# CM* meters provisioned via add-meter in beforeAll (consumer-assignable-meter-pool)
+

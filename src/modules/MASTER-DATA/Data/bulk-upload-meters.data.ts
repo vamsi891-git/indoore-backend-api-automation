@@ -3,6 +3,9 @@ import ExcelJS from "exceljs";
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import { CREATE_METER_FIELD_LIMITS } from "./create-meter.data";
 import type { BulkUploadMetersScenario } from "../Mapper/bulk-upload-meters.mapper";
+import { resolveMasterDataEnv as envValue } from "../utils/master-data-env.helper";
+import { getStaticMeterManufacturerName } from "../utils/meter-manufacturer.helper";
+import { getValidateMeterSerial } from "../utils/validate-meter-runtime.helper";
 
 export const bulkUploadMetersMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 
@@ -56,10 +59,6 @@ export interface BuildMeterBulkUploadOptions {
   duplicateColumn?: string;
 }
 
-function envValue(key: string): string {
-  return process.env[key]?.trim() ?? "";
-}
-
 function uniqueSuffix(): string {
   return String(Date.now());
 }
@@ -72,7 +71,7 @@ function buildBulkSerial(suffix: string = uniqueSuffix()): string {
 }
 
 function defaultManufacturerName(): string {
-  return envValue("BULK_METER_MANUFACTURER_NAME");
+  return getStaticMeterManufacturerName();
 }
 
 export function getBulkMeterManufacturerName(): string {
@@ -112,7 +111,7 @@ export function buildValidMeterBulkRow(
     "Meter Manufacturer": defaultManufacturerName(),
     "Meter Model": defaultModelName(),
     "Meter Version": "v1",
-    "Meter Status": "Disconnect",
+    "Meter Status": "Connect",
     "DLMS / Non-DLMS": "NA",
     "Meter Rating": "10-40A",
   };
@@ -330,9 +329,9 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       "Validate POST /indore/master-data/bulk-upload-meters — existing meter serial rejected",
     scenario: "row_already_exists",
     expectedStatus: 400,
-    envKeys: ["VALIDATE_ADD_METER_EXISTS_SERIAL", "BULK_METER_MANUFACTURER_NAME"],
+    envKeys: ["BULK_METER_MANUFACTURER_NAME"],
     buildUpload: async () => {
-      const serial = envValue("VALIDATE_ADD_METER_EXISTS_SERIAL");
+      const serial = getValidateMeterSerial("VALIDATE_ADD_METER_EXISTS_SERIAL");
       const row = buildValidMeterBulkRow("exists");
       applySerialToRow(row, serial);
       const buffer = await buildMeterBulkUploadXlsx([row]);

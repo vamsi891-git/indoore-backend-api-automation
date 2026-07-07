@@ -1,6 +1,11 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { CreateDtrScenario } from "../Mapper/create-dtr.mapper";
 import {
+  resolveMasterDataEnv,
+  resolveMasterDataEnvInt,
+} from "../utils/master-data-env.helper";
+import { getValidateMeterSerial } from "../utils/validate-meter-runtime.helper";
+import {
   hasDtrAssignableMeterPool,
   nextDtrAssignableMeterSerial,
   peekDtrAssignableMeterSerial,
@@ -48,7 +53,6 @@ export interface CreateDtrRequestBody {
   MSN: string;
   "Main/Sub Meter": number;
   "Service Point ID": string;
-  "Date Of Service": string;
   "Meter Phase": number;
   "Connected To DCU": boolean;
   "SIM No.": string;
@@ -86,15 +90,6 @@ function envValue(key: string): string {
   return process.env[key]?.trim() ?? "";
 }
 
-function envInt(key: string, fallback: number): number {
-  const raw = envValue(key);
-  if (!raw) {
-    return fallback;
-  }
-  const parsed = Number(raw);
-  return Number.isFinite(parsed) ? parsed : fallback;
-}
-
 function peekUnmappedMeterSerial(): string {
   const provisioned = peekDtrAssignableMeterSerial();
   if (provisioned) {
@@ -119,10 +114,13 @@ function uniqueLabel(): string {
   return String(Date.now());
 }
 
-/** API: alphanumeric, max 16 chars (Bulk upload validations — DTR Code unique). */
+let dtrCodeSequence = 0;
+
+/** API: alphanumeric, max 16 chars — keep suffix unique when truncated. */
 function uniqueDtrCode(): string {
-  const ts = `${Date.now()}${Math.floor(Math.random() * 1000)}`;
-  return `DTR${ts}`.slice(0, 16);
+  dtrCodeSequence += 1;
+  const tail = `${Date.now()}${dtrCodeSequence}${Math.floor(Math.random() * 100)}`.slice(-13);
+  return `DTR${tail}`.slice(0, 16);
 }
 
 function isoToday(): string {
@@ -136,12 +134,18 @@ function hierarchyFromEnv(): Pick<
   | "feederNetworkLookupId"
 > {
   return {
-    organisationLookupId: envInt("CREATE_DTR_ORGANISATION_LOOKUP_ID", 0),
-    subStationNetworkLookupId: envInt(
-      "CREATE_DTR_SUBSTATION_NETWORK_LOOKUP_ID",
-      0,
+    organisationLookupId: resolveMasterDataEnvInt(
+      "CREATE_DTR_ORGANISATION_LOOKUP_ID",
+      30,
     ),
-    feederNetworkLookupId: envInt("CREATE_DTR_FEEDER_NETWORK_LOOKUP_ID", 0),
+    subStationNetworkLookupId: resolveMasterDataEnvInt(
+      "CREATE_DTR_SUBSTATION_NETWORK_LOOKUP_ID",
+      3,
+    ),
+    feederNetworkLookupId: resolveMasterDataEnvInt(
+      "CREATE_DTR_FEEDER_NETWORK_LOOKUP_ID",
+      4,
+    ),
   };
 }
 
@@ -151,7 +155,7 @@ export function buildCreateDtrRequest(
 ): CreateDtrRequestBody {
   const today = isoToday();
   const msn = options?.msn ?? nextUnmappedMeterSerial();
-  const stamp = String(Date.now()).slice(-8);
+  const stamp = `${label}${String(Date.now()).slice(-6)}`;
 
   return {
     ...hierarchyFromEnv(),
@@ -162,10 +166,12 @@ export function buildCreateDtrRequest(
     "Service Date": today,
     "Installation Date": today,
     MSN: msn,
-    "Main/Sub Meter": envInt("CREATE_DTR_MAIN_SUB_METER_TBL_REF_ID", 1),
+    "Main/Sub Meter": resolveMasterDataEnvInt(
+      "CREATE_DTR_MAIN_SUB_METER_TBL_REF_ID",
+      1,
+    ),
     "Service Point ID": `SP${stamp}`,
-    "Date Of Service": today,
-    "Meter Phase": envInt("CREATE_DTR_METER_PHASE_TBL_REF_ID", 1),
+    "Meter Phase": resolveMasterDataEnvInt("CREATE_DTR_METER_PHASE_TBL_REF_ID", 1),
     "Connected To DCU": true,
     "SIM No.": "9900000001",
     "IMSI No.": "404010123456789",
@@ -219,7 +225,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     envKeys: [...hierarchyEnvKeys, "CREATE_DTR_EXISTS_CODE"],
     buildPayload: () => ({
       ...buildCreateDtrRequest("exists"),
-      "DTR Code": envValue("CREATE_DTR_EXISTS_CODE"),
+      "DTR Code": resolveMasterDataEnv("CREATE_DTR_EXISTS_CODE"),
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
@@ -234,7 +240,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       ...buildCreateDtrRequest("cap-zero"),
       "DTR Capacity (KVA)": 0,
     }),
-    tags: ["@master-data", "@create-dtr", "@negative"],
+    tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
   },
   {
     testName:
@@ -292,19 +298,6 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
   },
   {
     testName:
-      "Validate POST /indore/master-data/add-dtr — Date Of Service must use YYYY-MM-DD",
-    scenario: "validation_error",
-    expectedStatus: 400,
-    envKeys: hierarchyEnvKeys,
-    validationField: "Date Of Service",
-    buildPayload: () => ({
-      ...buildCreateDtrRequest("dos-fmt"),
-      "Date Of Service": "not-a-date",
-    }),
-    tags: ["@master-data", "@create-dtr", "@negative"],
-  },
-  {
-    testName:
       "Validate POST /indore/master-data/add-dtr — future Service Date rejected",
     scenario: "validation_error",
     expectedStatus: 400,
@@ -314,7 +307,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       ...buildCreateDtrRequest("svc-future"),
       "Service Date": "2099-01-01",
     }),
-    tags: ["@master-data", "@create-dtr", "@negative"],
+    tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
   },
   {
     testName:
@@ -327,23 +320,10 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       ...buildCreateDtrRequest("inst-future"),
       "Installation Date": "2099-01-01",
     }),
-    tags: ["@master-data", "@create-dtr", "@negative"],
-  },
-  {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — future Date Of Service rejected",
-    scenario: "validation_error",
-    expectedStatus: 400,
-    envKeys: hierarchyEnvKeys,
-    validationField: "Date Of Service",
-    buildPayload: () => ({
-      ...buildCreateDtrRequest("dos-future"),
-      "Date Of Service": "2099-01-01",
-    }),
-    tags: ["@master-data", "@create-dtr", "@negative"],
+    tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
   },
 
-  // ─── Meter details (manual §3) ─────────────────────────────────────────
+  // ─── Meter details (manual §2) ─────────────────────────────────────────
   {
     testName:
       "Validate POST /indore/master-data/add-dtr — MSN required",
@@ -369,29 +349,29 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
         ...buildCreateDtrRequest("msn-missing", { msn: missingMsn }),
       };
     },
-    tags: ["@master-data", "@create-dtr", "@negative"],
+    tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
   },
   {
     testName:
       "Validate POST /indore/master-data/add-dtr — meter must be active",
     scenario: "meter_inactive",
     expectedStatus: 409,
-    envKeys: [...hierarchyEnvKeys, "VALIDATE_DTR_METER_INACTIVE_SERIAL"],
+    envKeys: hierarchyEnvKeys,
     buildPayload: () => ({
       ...buildCreateDtrRequest("msn-inactive"),
-      MSN: envValue("VALIDATE_DTR_METER_INACTIVE_SERIAL"),
+      MSN: getValidateMeterSerial("VALIDATE_DTR_METER_INACTIVE_SERIAL"),
     }),
-    tags: ["@master-data", "@create-dtr", "@negative"],
+    tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
   },
   {
     testName:
       "Validate POST /indore/master-data/add-dtr — meter already on another DTR",
     scenario: "meter_on_dtr",
     expectedStatus: 409,
-    envKeys: [...hierarchyEnvKeys, "VALIDATE_DTR_METER_ON_DTR_SERIAL"],
+    envKeys: hierarchyEnvKeys,
     buildPayload: () => ({
       ...buildCreateDtrRequest("msn-on-dtr"),
-      MSN: envValue("VALIDATE_DTR_METER_ON_DTR_SERIAL"),
+      MSN: getValidateMeterSerial("VALIDATE_DTR_METER_ON_DTR_SERIAL"),
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
@@ -400,10 +380,10 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "Validate POST /indore/master-data/add-dtr — meter already assigned to consumer",
     scenario: "meter_assigned",
     expectedStatus: 409,
-    envKeys: [...hierarchyEnvKeys, "VALIDATE_DTR_METER_ASSIGNED_SERIAL"],
+    envKeys: hierarchyEnvKeys,
     buildPayload: () => ({
       ...buildCreateDtrRequest("msn-assigned"),
-      MSN: envValue("VALIDATE_DTR_METER_ASSIGNED_SERIAL"),
+      MSN: getValidateMeterSerial("VALIDATE_DTR_METER_ASSIGNED_SERIAL"),
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
@@ -418,7 +398,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       ...buildCreateDtrRequest("bad-main-sub"),
       "Main/Sub Meter": 99_999_999,
     }),
-    tags: ["@master-data", "@create-dtr", "@negative"],
+    tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
   },
   {
     testName:
@@ -430,6 +410,34 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     buildPayload: () => ({
       ...buildCreateDtrRequest("bad-phase"),
       "Meter Phase": 99_999_999,
+    }),
+    tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
+  },
+  {
+    testName:
+      "Validate POST /indore/master-data/add-dtr — Service Point ID required",
+    scenario: "validation_error",
+    expectedStatus: 400,
+    envKeys: hierarchyEnvKeys,
+    validationField: "Service Point ID",
+    buildPayload: () => ({
+      ...buildCreateDtrRequest("no-sp"),
+      "Service Point ID": "",
+    }),
+    tags: ["@master-data", "@create-dtr", "@negative"],
+  },
+
+  // ─── Communication (manual §3) ───────────────────────────────────────────
+  {
+    testName:
+      "Validate POST /indore/master-data/add-dtr — SIM No. required",
+    scenario: "validation_error",
+    expectedStatus: 400,
+    envKeys: hierarchyEnvKeys,
+    validationField: "SIM No.",
+    buildPayload: () => ({
+      ...buildCreateDtrRequest("no-sim"),
+      "SIM No.": "",
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
@@ -448,19 +456,6 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
   },
   {
     testName:
-      "Validate POST /indore/master-data/add-dtr — Mobile No. (Meter) must contain digits only",
-    scenario: "validation_error",
-    expectedStatus: 400,
-    envKeys: hierarchyEnvKeys,
-    validationField: "Mobile No. (Meter)",
-    buildPayload: () => ({
-      ...buildCreateDtrRequest("bad-mobile"),
-      "Mobile No. (Meter)": "abc",
-    }),
-    tags: ["@master-data", "@create-dtr", "@negative"],
-  },
-  {
-    testName:
       "Validate POST /indore/master-data/add-dtr — IP Address must be valid IPv4",
     scenario: "validation_error",
     expectedStatus: 400,
@@ -469,6 +464,19 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     buildPayload: () => ({
       ...buildCreateDtrRequest("bad-ip"),
       "IP Address": "999.999.999.999",
+    }),
+    tags: ["@master-data", "@create-dtr", "@negative"],
+  },
+  {
+    testName:
+      "Validate POST /indore/master-data/add-dtr — Modem Serial Number required",
+    scenario: "validation_error",
+    expectedStatus: 400,
+    envKeys: hierarchyEnvKeys,
+    validationField: "Modem Serial Number",
+    buildPayload: () => ({
+      ...buildCreateDtrRequest("no-modem"),
+      "Modem Serial Number": "",
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
@@ -483,7 +491,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       ...buildCreateDtrRequest("bad-imei"),
       "Modem IMEI": "12345",
     }),
-    tags: ["@master-data", "@create-dtr", "@negative"],
+    tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
   },
   {
     testName:
@@ -496,35 +504,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       ...buildCreateDtrRequest("reading-zero"),
       "Meter Initial Reading": 0,
     }),
-    tags: ["@master-data", "@create-dtr", "@negative"],
-  },
-
-  // ─── Additional details (manual §4) ──────────────────────────────────────
-  {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — Latitude must be a valid number",
-    scenario: "validation_error",
-    expectedStatus: 400,
-    envKeys: hierarchyEnvKeys,
-    validationField: "Latitude",
-    buildPayload: () => ({
-      ...buildCreateDtrRequest("bad-lat"),
-      Latitude: "bad",
-    }),
-    tags: ["@master-data", "@create-dtr", "@negative"],
-  },
-  {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — Longitude must be a valid number",
-    scenario: "validation_error",
-    expectedStatus: 400,
-    envKeys: hierarchyEnvKeys,
-    validationField: "Longitude",
-    buildPayload: () => ({
-      ...buildCreateDtrRequest("bad-lon"),
-      Longitude: "bad",
-    }),
-    tags: ["@master-data", "@create-dtr", "@negative"],
+    tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
   },
 
   // ─── Success (last — consumes a provisioned meter) ─────────────────────

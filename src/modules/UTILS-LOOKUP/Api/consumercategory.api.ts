@@ -3,6 +3,7 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
 import { ConsumerCategoryResponse } from "../Mapper/consumercategory.mapper";
 import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
+import { parseLookupJsonResponse } from "../utils/lookup-api-parse.helper";
 export interface ConsumerCategoryApiResponse {
   rawResponse: APIResponse;
   responseBody: ConsumerCategoryResponse;
@@ -15,7 +16,10 @@ export class ConsumerCategoryApi {
     const rawResponse = await getWithAutoRefresh(this.authenticatedApi,"/indore/utils/consumer-categories");
     return {
       rawResponse,
-      responseBody: await rawResponse.json(),
+      responseBody: await parseLookupJsonResponse<ConsumerCategoryResponse>(
+        rawResponse,
+        "consumer-categories",
+      ),
       responseTime: Date.now() - start
     };
   }

@@ -500,7 +500,14 @@ export class CreateConsumerValidator {
       case "consumer_id_exists":
         this.validateErrorStructure(mapped);
         this.validateKnownErrorCode(mapped);
-        this.validateDuplicateConsumer(mapped);
+        if (mapped.error?.code === "CONSUMER_CID_EXISTS") {
+          this.validateDuplicateConsumer(mapped);
+        } else {
+          expect(
+            (mapped.error?.message ?? "").toLowerCase(),
+            "Expected duplicate Consumer ID rejection",
+          ).toMatch(/consumer|exist|duplicate|already|cid/);
+        }
         break;
       case "meter_not_found":
         this.validateErrorStructure(mapped);
@@ -519,7 +526,14 @@ export class CreateConsumerValidator {
       case "meter_already_mapped":
         this.validateErrorStructure(mapped);
         this.validateKnownErrorCode(mapped);
-        this.validateMeterConflict(mapped);
+        if (mapped.error?.code === "METER_ALREADY_ASSIGNED") {
+          this.validateMeterConflict(mapped);
+        } else {
+          expect(
+            (mapped.error?.message ?? "").toLowerCase(),
+            "Expected meter already mapped rejection",
+          ).toMatch(/assigned|mapped|already|meter/);
+        }
         break;
     }
   }

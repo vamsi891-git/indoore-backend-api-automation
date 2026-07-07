@@ -11,11 +11,27 @@ export class DeviceManufacturerApi {
   constructor(private authenticatedApi: APIRequestContext) {}
   async getDeviceManufacturers(): Promise<DeviceManufacturerApiResponse> {
     const start = Date.now();
-    const rawResponse = await getWithAutoRefresh(this.authenticatedApi,"/indore/utils/device-manufacturers");
+    const rawResponse = await getWithAutoRefresh(
+      this.authenticatedApi,
+      "/indore/utils/device-manufacturers",
+    );
+    const text = await rawResponse.text();
+    let responseBody: DeviceManufacturerResponse;
+    if (!text.trim()) {
+      responseBody = { success: false } as DeviceManufacturerResponse;
+    } else {
+      try {
+        responseBody = JSON.parse(text) as DeviceManufacturerResponse;
+      } catch {
+        throw new Error(
+          `device-manufacturers returned non-JSON (${rawResponse.status()}): ${text.slice(0, 120)}`,
+        );
+      }
+    }
     return {
       rawResponse,
-      responseBody: await rawResponse.json(),
-      responseTime: Date.now() - start
+      responseBody,
+      responseTime: Date.now() - start,
     };
   }
 }

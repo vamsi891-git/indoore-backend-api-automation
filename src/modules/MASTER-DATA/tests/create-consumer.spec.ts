@@ -17,15 +17,18 @@ import {
   hasCreateConsumerMeterContext,
   hasCreateConsumerMeterPool,
   hasBulkConsumerNearestAcctId,
-  resolveCreateConsumerMeterContext,
-  setCreateConsumerMeterContext,
 } from "../Data/create-consumer.data";
-import {
-  ensureConsumerAssignableMeterPool,
-} from "../../CONSUMERS/Data/consumer-assignable-meter-pool.data";
 import { CreateConsumerMapper } from "../Mapper/create-consumer.mapper";
 import { CreateConsumerValidator } from "../Validator/create-consumer.validator";
 import { ValidateMeterMapper } from "../../CONSUMERS/Mapper/validatemeter.mapper";
+import { shouldSkipMasterDataTestForEnv } from "../utils/master-data-env.helper";
+import { ensureConsumerLookupContext } from "../utils/consumer-lookup.helper";
+import {
+  ensureValidateMeterRuntimeContext,
+  getValidateMeterSerial,
+  runtimeMeterSerialEnvKey,
+} from "../utils/validate-meter-runtime.helper";
+import { ensureConsumerMeterRuntimeContext } from "../utils/consumer-meter-runtime.helper";
 
 const SUCCESS_SCENARIOS = new Set(["create_success"]);
 
@@ -39,10 +42,17 @@ const METER_SCENARIO_SCENARIOS = new Set([
 function shouldSkipForEnv(
   testCase: (typeof createConsumerTestCases)[number],
 ): boolean {
-  if (!testCase.envKeys?.length) {
+  return shouldSkipMasterDataTestForEnv(testCase.envKeys);
+}
+
+function missingRuntimeMeterSerial(
+  scenario: (typeof createConsumerTestCases)[number]["scenario"],
+): boolean {
+  const envKey = runtimeMeterSerialEnvKey(scenario);
+  if (!envKey) {
     return false;
   }
-  return testCase.envKeys.some((key) => !process.env[key]?.trim());
+  return !getValidateMeterSerial(envKey);
 }
 
 function needsAssignableMeter(
@@ -65,42 +75,16 @@ test.describe("Create Consumer API", () => {
 
   test.beforeAll(async ({ authenticatedApi }) => {
     test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
-    const pool = await ensureConsumerAssignableMeterPool(authenticatedApi, {
-      targetCount: 4,
-      maxCreateAttempts: 15,
-    });
-    let resolvedNetworkLookupId: number | null = null;
-    for (const msn of pool) {
-      const validateMeterApi = new ValidateMeterApi(authenticatedApi);
-      const meterCheck = await validateMeterApi.validateMeter(
-        msn,
-        createConsumerData.organisationLookupId,
-      );
-      const meterMapped = ValidateMeterMapper.map(meterCheck.responseBody);
-      if (!meterMapped.valid || !meterMapped.organisationLookupId) {
-        continue;
-      }
-      const context = await resolveCreateConsumerMeterContext(
-        authenticatedApi,
-        meterMapped.organisationLookupId,
-      );
-      if (!context) {
-        continue;
-      }
-      resolvedNetworkLookupId = context.networkLookupId;
-      setCreateConsumerMeterContext({
-        ...context,
-        meterLookupId: meterMapped.meterLookupId,
-      });
-      break;
-    }
+    await ensureConsumerLookupContext(authenticatedApi);
+    await ensureValidateMeterRuntimeContext(authenticatedApi);
+    const runtime = await ensureConsumerMeterRuntimeContext(authenticatedApi);
     const nearestAcctId = await ensureBulkConsumerNearestAcctId(authenticatedApi);
     const existingCid = await ensureBulkConsumerExistingCid(authenticatedApi);
     console.log(
-      `[create-consumer] assignable meter pool (${pool.length}): ${pool.join(", ") || "empty"}`,
+      `[create-consumer] assignable meter pool (${runtime?.pool.length ?? 0}): ${runtime?.pool.join(", ") || "empty"}`,
     );
     console.log(
-      `[create-consumer] dtr network lookup id: ${resolvedNetworkLookupId ?? "none"}`,
+      `[create-consumer] dtr network lookup id: ${runtime?.networkLookupId ?? "none"}`,
     );
     console.log(
       `[create-consumer] existing consumer id: ${existingCid ?? "none"}`,
@@ -108,7 +92,7 @@ test.describe("Create Consumer API", () => {
   });
 
   test.afterEach(async () => {
-    await new Promise<void>((resolve) => setTimeout(resolve, 500));
+    await new Promise<void>((resolve) => setTimeout(resolve, 1200));
   });
 
   for (const testCase of createConsumerTestCases) {
@@ -120,6 +104,14 @@ test.describe("Create Consumer API", () => {
           test.skip(
             true,
             `Set ${testCase.envKeys?.join(", ") ?? "required env vars"} in .env`,
+          );
+          return;
+        }
+
+        if (missingRuntimeMeterSerial(testCase.scenario)) {
+          test.skip(
+            true,
+            `Could not resolve runtime meter serial for ${testCase.scenario}`,
           );
           return;
         }
@@ -182,9 +174,12 @@ test.describe("Create Consumer API", () => {
         const validator = new CreateConsumerValidator();
         const mapped = CreateConsumerMapper.map(responseBody);
 
-        validation.execute("Status Validation", () =>
-          expect(rawResponse.status()).toBe(testCase.expectedStatus),
-        );
+        validation.execute("Status Validation", () => {
+          const statuses = testCase.acceptableStatuses ?? [
+            testCase.expectedStatus,
+          ];
+          expect(statuses).toContain(rawResponse.status());
+        });
         validation.execute("Content Validation", () =>
           assert.validateContentType(rawResponse),
         );

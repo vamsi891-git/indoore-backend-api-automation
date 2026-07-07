@@ -16,6 +16,12 @@ import {
   BulkUploadMetersRowOutcomeResponseSchema,
   BulkUploadMetersSuccessResponseSchema,
 } from "../schemas/master-data.schemas";
+import { shouldSkipMasterDataTestForEnv } from "../utils/master-data-env.helper";
+import {
+  ensureValidateMeterRuntimeContext,
+  getValidateMeterSerial,
+  runtimeMeterSerialEnvKey,
+} from "../utils/validate-meter-runtime.helper";
 
 const FILE_ERROR_SCENARIOS = new Set([
   "file_invalid_type",
@@ -32,15 +38,27 @@ const BULK_SUCCESS_SCENARIOS = new Set([
 ]);
 
 function shouldSkipForEnv(testCase: (typeof bulkUploadMetersTestCases)[number]): boolean {
-  if (!testCase.envKeys?.length) {
+  return shouldSkipMasterDataTestForEnv(testCase.envKeys);
+}
+
+function missingRuntimeMeterSerial(
+  scenario: (typeof bulkUploadMetersTestCases)[number]["scenario"],
+): boolean {
+  const envKey = runtimeMeterSerialEnvKey(scenario);
+  if (!envKey) {
     return false;
   }
-  return testCase.envKeys.some((key) => !process.env[key]?.trim());
+  return !getValidateMeterSerial(envKey);
 }
 
 test.describe("Bulk Upload Meters API", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
+
+  test.beforeAll(async ({ authenticatedApi }) => {
+    test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
+    await ensureValidateMeterRuntimeContext(authenticatedApi);
+  });
 
   for (const testCase of bulkUploadMetersTestCases) {
     test(
@@ -51,6 +69,14 @@ test.describe("Bulk Upload Meters API", () => {
           test.skip(
             true,
             `Set ${testCase.envKeys?.join(", ") ?? "required env vars"} in .env`,
+          );
+          return;
+        }
+
+        if (missingRuntimeMeterSerial(testCase.scenario)) {
+          test.skip(
+            true,
+            `Could not resolve runtime meter serial for ${testCase.scenario}`,
           );
           return;
         }
