@@ -42,7 +42,37 @@ jobs:
       GMAIL_IMAP_USER: ${{ secrets.GMAIL_IMAP_USER }}
       GMAIL_IMAP_APP_PASSWORD: ${{ secrets.GMAIL_IMAP_APP_PASSWORD }}
       INVITE_INBOX_EMAIL: ${{ secrets.INVITE_INBOX_EMAIL }}
+      INVITE_ACCEPT_TOKEN: ${{ secrets.INVITE_ACCEPT_TOKEN }}
+      INVITE_E2E_EMAIL: ${{ secrets.INVITE_E2E_EMAIL }}
+      INVITE_E2E_INVITATION_ID: ${{ secrets.INVITE_E2E_INVITATION_ID }}
       REPORT_MAIL_TO: vamsibst@gmail.com
+      # PostgreSQL — optional API-vs-DB validation (set DB_* repository secrets)
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT || '5432' }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_NAME: ${{ secrets.DB_NAME || 'mdms_indore' }}
+      DB_SSL: ${{ secrets.DB_SSL || 'false' }}
+      DB_ARCHIVE_NAME: ${{ secrets.DB_ARCHIVE_NAME || 'mdms_indore_archive' }}
+      # Master Data — bulk upload / create (defaults from .env.example; override via secrets)
+      BULK_DTR_ZONE_NAME: ${{ secrets.BULK_DTR_ZONE_NAME || 'Hawabangla' }}
+      BULK_DTR_SUBSTATION_NAME: ${{ secrets.BULK_DTR_SUBSTATION_NAME || 'PragatiNagar' }}
+      BULK_DTR_FEEDER_NAME: ${{ secrets.BULK_DTR_FEEDER_NAME || 'PARMANU NAGAR(CHQ)' }}
+      BULK_DTR_MAIN_SUB_METER: ${{ secrets.BULK_DTR_MAIN_SUB_METER || 'Main' }}
+      BULK_DTR_METER_PHASE: ${{ secrets.BULK_DTR_METER_PHASE || '1 PH' }}
+      BULK_METER_MANUFACTURER_NAME: ${{ secrets.BULK_METER_MANUFACTURER_NAME || 'L&T' }}
+      BULK_CONSUMER_DTR_NAME: ${{ secrets.BULK_CONSUMER_DTR_NAME || 'RJ662' }}
+      CREATE_DTR_ORGANISATION_LOOKUP_ID: ${{ secrets.CREATE_DTR_ORGANISATION_LOOKUP_ID || '30' }}
+      CREATE_DTR_SUBSTATION_NETWORK_LOOKUP_ID: ${{ secrets.CREATE_DTR_SUBSTATION_NETWORK_LOOKUP_ID || '3' }}
+      CREATE_DTR_FEEDER_NETWORK_LOOKUP_ID: ${{ secrets.CREATE_DTR_FEEDER_NETWORK_LOOKUP_ID || '4' }}
+      CREATE_DTR_EXISTS_CODE: ${{ secrets.CREATE_DTR_EXISTS_CODE || 'RJ662' }}
+      # Master Data — validate-meter serials (environment-specific; set as repository secrets)
+      VALIDATE_DTR_METER_VALID_SERIAL: ${{ secrets.VALIDATE_DTR_METER_VALID_SERIAL }}
+      VALIDATE_DTR_METER_ON_DTR_SERIAL: ${{ secrets.VALIDATE_DTR_METER_ON_DTR_SERIAL }}
+      VALIDATE_DTR_METER_INACTIVE_SERIAL: ${{ secrets.VALIDATE_DTR_METER_INACTIVE_SERIAL }}
+      VALIDATE_DTR_METER_ASSIGNED_SERIAL: ${{ secrets.VALIDATE_DTR_METER_ASSIGNED_SERIAL }}
+      VALIDATE_ADD_METER_VALID_SERIAL: ${{ secrets.VALIDATE_ADD_METER_VALID_SERIAL }}
+      VALIDATE_ADD_METER_EXISTS_SERIAL: ${{ secrets.VALIDATE_ADD_METER_EXISTS_SERIAL }}
 
     steps:
       - name: Checkout
@@ -61,6 +91,24 @@ jobs:
             echo "See README.md → CI (GitHub Actions) for details."
             exit 1
           fi
+
+      - name: Log optional CI configuration
+        run: |
+          echo "=== Optional CI configuration ==="
+          optional_missing=""
+          [ -z "$DB_HOST" ] && optional_missing="$optional_missing DB_HOST DB_USER DB_PASSWORD"
+          [ -z "$VALIDATE_DTR_METER_VALID_SERIAL" ] && optional_missing="$optional_missing VALIDATE_DTR_METER_*"
+          [ -z "$VALIDATE_ADD_METER_VALID_SERIAL" ] && optional_missing="$optional_missing VALIDATE_ADD_METER_*"
+          if [ -z "$GMAIL_IMAP_USER" ] && [ -z "$INVITE_ACCEPT_TOKEN" ]; then
+            optional_missing="$optional_missing GMAIL_IMAP_* or INVITE_ACCEPT_TOKEN"
+          fi
+          if [ -n "$optional_missing" ]; then
+            echo "::notice title=Optional secrets not set::Tests that need these will skip:$optional_missing"
+          else
+            echo "All optional secrets configured."
+          fi
+          echo "Master Data hierarchy: zone=$BULK_DTR_ZONE_NAME substation=$BULK_DTR_SUBSTATION_NAME feeder=$BULK_DTR_FEEDER_NAME"
+          echo "Create DTR lookups: org=$CREATE_DTR_ORGANISATION_LOOKUP_ID substation=$CREATE_DTR_SUBSTATION_NETWORK_LOOKUP_ID feeder=$CREATE_DTR_FEEDER_NETWORK_LOOKUP_ID"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

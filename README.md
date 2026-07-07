@@ -244,6 +244,38 @@ CI does **not** use your local `.env` file. You must add secrets on GitHub:
 | `GMAIL_IMAP_USER` | No | Invite E2E auto-capture in CI |
 | `GMAIL_IMAP_APP_PASSWORD` | No | Gmail app password for invite tests |
 | `INVITE_INBOX_EMAIL` | No | Invite delivery inbox override |
+| `INVITE_ACCEPT_TOKEN` | No | Manual invite token (skips Gmail IMAP when set with E2E vars) |
+| `INVITE_E2E_EMAIL` | No | Paired with `INVITE_ACCEPT_TOKEN` for invite read-only specs |
+| `INVITE_E2E_INVITATION_ID` | No | Paired with `INVITE_ACCEPT_TOKEN` for invite E2E steps 3–5 |
+
+### Optional secrets (reduce skipped tests)
+
+Master Data onboarding tests skip when hierarchy env vars are unset. The workflow **defaults** these from `.env.example` (no secret required unless your QA values differ):
+
+| Variable | Workflow default |
+|----------|------------------|
+| `BULK_DTR_ZONE_NAME` | `Hawabangla` |
+| `BULK_DTR_SUBSTATION_NAME` | `PragatiNagar` |
+| `BULK_DTR_FEEDER_NAME` | `PARMANU NAGAR(CHQ)` |
+| `BULK_METER_MANUFACTURER_NAME` | `L&T` |
+| `CREATE_DTR_ORGANISATION_LOOKUP_ID` | `30` |
+| `CREATE_DTR_SUBSTATION_NETWORK_LOOKUP_ID` | `3` |
+| `CREATE_DTR_FEEDER_NETWORK_LOOKUP_ID` | `4` |
+
+Add these **repository secrets** to unlock remaining skipped suites (~20 tests):
+
+| Secret name | Unlocks |
+|-------------|---------|
+| `DB_HOST`, `DB_USER`, `DB_PASSWORD` | API-vs-DB specs (`@db`) — 11 tests |
+| `DB_NAME` | Optional; defaults to `mdms_indore` |
+| `VALIDATE_DTR_METER_VALID_SERIAL` | validate-dtr-meter positive case |
+| `VALIDATE_DTR_METER_ON_DTR_SERIAL` | DTR meter already mapped negative |
+| `VALIDATE_DTR_METER_INACTIVE_SERIAL` | inactive meter negative cases |
+| `VALIDATE_DTR_METER_ASSIGNED_SERIAL` | assigned meter negative cases |
+| `VALIDATE_ADD_METER_VALID_SERIAL` | validate-add-meter positive case |
+| `VALIDATE_ADD_METER_EXISTS_SERIAL` | create-meter duplicate + validate-add-meter negative |
+
+Override any Master Data default by setting the matching secret name (e.g. `BULK_DTR_ZONE_NAME` if your QA zone differs).
 
 ### Email report (Allure)
 
