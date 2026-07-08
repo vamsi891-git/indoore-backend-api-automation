@@ -621,6 +621,13 @@ async function fetchValidNearestAccountId(
     }
     if (body.data && typeof body.data === "object") {
       const record = body.data as Record<string, unknown>;
+      const nearestIds = record.nearestAccountIds;
+      if (Array.isArray(nearestIds) && nearestIds.length > 0) {
+        const first = nearestIds[0];
+        if (typeof first === "string" && first.trim()) {
+          return first.trim();
+        }
+      }
       for (const key of [
         "accountId",
         "nearestAccountId",

@@ -1,22 +1,28 @@
-import { APIRequestContext, APIResponse } from "@playwright/test";
+import { TimedApiClient } from "../../../core/base/timed-api.client";
+import { ApiCallResult } from "../../../core/models/api-result.model";
 import { RealTimePowerResponse } from "../Mapper/realtimepower.mapper";
-import { getConsumerWithRetry } from "../utils/consumer-request.helper";
-export interface RealTimePowerApiResult {
-    rawResponse: APIResponse;
-    responseBody: RealTimePowerResponse;
-    responseTime: number;
+
+export type RealTimePowerApiResult = ApiCallResult<RealTimePowerResponse>;
+
+export interface RealTimePowerQuery {
+  [key: string]: string | number | boolean | undefined;
 }
-export class RealTimePowerApi {
-    constructor(private readonly authenticatedApi: APIRequestContext) { }
-    async getRealTimePower(consumerNumber: string): Promise<RealTimePowerApiResult> {
-        const { rawResponse, responseTime } = await getConsumerWithRetry(
-            this.authenticatedApi,
-            `/indore/consumers/${consumerNumber}/real-time-power`,
-        );
-        return {
-            rawResponse,
-            responseBody: await rawResponse.json(),
-            responseTime,
-        };
+
+export class RealTimePowerApi extends TimedApiClient {
+  getRealTimePower(
+    consumerRef: string,
+    query: RealTimePowerQuery = {},
+  ): Promise<RealTimePowerApiResult> {
+    const params: Record<string, string | number | boolean> = {};
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined) {
+        params[key] = value;
+      }
     }
+
+    return this.getJson<RealTimePowerResponse>(
+      `/indore/consumers/${encodeURIComponent(consumerRef)}/real-time-power`,
+      Object.keys(params).length > 0 ? { params } : {},
+    );
+  }
 }

@@ -1,5 +1,27 @@
 export type ConsumerActivationStatus = "active" | "inactive";
 
+export type ActivationScenario =
+  | "activate"
+  | "deactivate"
+  | "activate_idempotent"
+  | "consumer_not_found"
+  | "meter_route_rejected"
+  | "invalid_status"
+  | "empty_status"
+  | "missing_status";
+
+export interface ActivationErrorResponse {
+  success: false;
+  error: {
+    code: string;
+    message: string;
+    details?: {
+      formErrors?: string[];
+      fieldErrors?: Record<string, string[]>;
+    };
+  };
+}
+
 export interface ActivationConsumer {
     cid: string;
     tblRefId: number;

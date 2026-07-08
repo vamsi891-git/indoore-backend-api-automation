@@ -2,7 +2,10 @@ import { expect } from "@playwright/test";
 import {
     ActivationConsumer,
     ActivationData,
+    ActivationErrorResponse,
+    ActivationScenario,
     ConsumerActivationStatus,
+    ConsumerActivationResponse,
 } from "../Mapper/activation.mapper";
 
 const CONSUMER_REQUIRED_FIELDS = ["cid", "tblRefId", "name", "status"] as const;
@@ -116,5 +119,64 @@ export class ActivationValidator {
         );
         this.validateNaNValues(data.consumer);
         this.validateBusinessRules(data.consumer);
+    }
+
+    validateResponse(response: ConsumerActivationResponse): void {
+        expect(response.success).toBeTruthy();
+        expect(response.data).toBeDefined();
+    }
+
+    validateIdempotentActivate(data: ActivationData): void {
+        expect(data.consumer.status.toLowerCase()).toBe("active");
+        expect(data.previousStatus.toLowerCase()).toBe("active");
+    }
+
+    validateConsumerNotFound(responseBody: ActivationErrorResponse): void {
+        expect(responseBody.success).toBeFalsy();
+        expect(responseBody.error.code).toBe("CONSUMER_NOT_FOUND");
+        expect(responseBody.error.message.toLowerCase()).toContain(
+            "consumer not found",
+        );
+    }
+
+    validateValidationError(
+        responseBody: ActivationErrorResponse,
+        field = "status",
+    ): void {
+        expect(responseBody.success).toBeFalsy();
+        expect(responseBody.error.code).toBe("VALIDATION_ERROR");
+        expect(responseBody.error.message.toLowerCase()).toContain(
+            field.toLowerCase(),
+        );
+        const fieldErrors = responseBody.error.details?.fieldErrors?.[field];
+        expect(Array.isArray(fieldErrors) && fieldErrors.length > 0).toBeTruthy();
+    }
+
+    validateScenario(
+        mapped: ActivationData & { success: boolean },
+        scenario: ActivationScenario,
+        consumerId: string,
+        requestStatus: ConsumerActivationStatus,
+    ): void {
+        switch (scenario) {
+            case "activate":
+            case "deactivate":
+                this.validateDataPresentBackendRules(
+                    mapped,
+                    consumerId,
+                    requestStatus,
+                );
+                break;
+            case "activate_idempotent":
+                this.validateDataPresentBackendRules(
+                    mapped,
+                    consumerId,
+                    requestStatus,
+                );
+                this.validateIdempotentActivate(mapped);
+                break;
+            default:
+                break;
+        }
     }
 }

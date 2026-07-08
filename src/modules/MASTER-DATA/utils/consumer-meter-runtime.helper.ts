@@ -81,12 +81,12 @@ export async function ensureConsumerMeterRuntimeContext(
     const validateMeterApi = new ValidateMeterApi(authenticatedApi);
 
     for (const serial of candidates) {
-      const meterMapped = ValidateMeterMapper.map(
+      const meterMapped = ValidateMeterMapper.mapData(
         (
           await validateMeterApi.validateMeter(serial, organisationLookupId)
         ).responseBody,
       );
-      if (!meterMapped.valid) {
+      if (!meterMapped.valid || meterMapped.meterExists !== true) {
         continue;
       }
 

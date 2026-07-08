@@ -3,44 +3,45 @@ import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
-import { RealTimePowerApi } from "../Api/realtimepower.api";
+import { CommunicationStatusApi } from "../Api/communicationstatus.api";
 import {
-  realTimePowerMaxResponseTimeMs,
-  realTimePowerTestCases,
-  resolveRealTimePowerContractBody,
-  resolveRealTimePowerQuery,
-  resolveRealTimePowerRef,
-} from "../Data/realtimepower.data";
+  communicationStatusMaxResponseTimeMs,
+  communicationStatusSampleDate,
+  communicationStatusTestCases,
+  resolveCommunicationStatusContractBody,
+  resolveCommunicationStatusQuery,
+  resolveCommunicationStatusRef,
+} from "../Data/communicationstatus.data";
 import {
-  RealTimePowerMapper,
-  type RealTimePowerErrorResponse,
-} from "../Mapper/realtimepower.mapper";
-import { RealTimePowerValidator } from "../Validator/realtimepower.validator";
+  CommunicationStatusMapper,
+  type CommunicationStatusErrorResponse,
+} from "../Mapper/communicationstatus.mapper";
+import { CommunicationStatusValidator } from "../Validator/communicationstatus.validator";
 
-test.describe("Real Time Power API", () => {
+test.describe("Communication Status API", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
-  for (const testCase of realTimePowerTestCases) {
+  for (const testCase of communicationStatusTestCases) {
     test(
       testCase.testName,
       { tag: testCase.tags },
       async ({ authenticatedApi }) => {
         const expectedStatus = testCase.expectedStatus ?? 200;
-        const validator = new RealTimePowerValidator();
+        const validator = new CommunicationStatusValidator();
         const assert = new AssertionEngine();
         const validation = new ValidationEngine();
 
         if (testCase.isContractFixture) {
-          const fixtureBody = resolveRealTimePowerContractBody(
+          const fixtureBody = resolveCommunicationStatusContractBody(
             testCase.scenario,
           );
           if (!fixtureBody) {
-            test.skip(true, "Missing contract fixture body");
+            test.skip(true, "Missing communication-status contract fixture body");
             return;
           }
 
-          const mapped = RealTimePowerMapper.map(fixtureBody);
+          const mapped = CommunicationStatusMapper.map(fixtureBody);
           validation.execute("Required Fields", () =>
             assert.validateRequiredFields(fixtureBody, ["success", "data"]),
           );
@@ -51,18 +52,18 @@ test.describe("Real Time Power API", () => {
           return;
         }
 
-        const api = new RealTimePowerApi(authenticatedApi);
-        const consumerRef = resolveRealTimePowerRef(testCase.scenario);
+        const api = new CommunicationStatusApi(authenticatedApi);
+        const consumerRef = resolveCommunicationStatusRef(testCase.scenario);
 
         if (!consumerRef) {
-          test.skip(true, "Could not resolve real-time-power route ref");
+          test.skip(true, "Could not resolve communication-status route ref");
           return;
         }
 
-        const query = resolveRealTimePowerQuery(testCase.scenario);
-        const endpoint = `/indore/consumers/${consumerRef}/real-time-power`;
+        const query = resolveCommunicationStatusQuery(testCase.scenario);
+        const endpoint = `/indore/consumers/${consumerRef}/communication-status`;
         const { rawResponse, responseBody, responseTime } =
-          await api.getRealTimePower(consumerRef, query);
+          await api.getCommunicationStatus(consumerRef, query);
 
         await PerformanceTracker.track(
           rawResponse,
@@ -80,7 +81,7 @@ test.describe("Real Time Power API", () => {
         validation.execute("Response Time", () =>
           assert.validateResponseTime(
             responseTime,
-            realTimePowerMaxResponseTimeMs,
+            communicationStatusMaxResponseTimeMs,
           ),
         );
         validation.execute("Sensitive Data", () =>
@@ -90,7 +91,7 @@ test.describe("Real Time Power API", () => {
         if (expectedStatus === 404) {
           validation.execute("Not Found Error", () =>
             validator.validateNotFoundError(
-              responseBody as RealTimePowerErrorResponse,
+              responseBody as CommunicationStatusErrorResponse,
             ),
           );
           validation.printSummary(testCase.testName, responseTime);
@@ -98,11 +99,19 @@ test.describe("Real Time Power API", () => {
         }
 
         if (expectedStatus === 400) {
-          validation.execute("Blank Ref Validation Error", () =>
-            validator.validateBlankRefError(
-              responseBody as RealTimePowerErrorResponse,
-            ),
-          );
+          if (testCase.scenario === "invalid_date") {
+            validation.execute("Invalid Date Validation Error", () =>
+              validator.validateInvalidDateError(
+                responseBody as CommunicationStatusErrorResponse,
+              ),
+            );
+          } else {
+            validation.execute("Blank Ref Validation Error", () =>
+              validator.validateBlankRefError(
+                responseBody as CommunicationStatusErrorResponse,
+              ),
+            );
+          }
           validation.printSummary(testCase.testName, responseTime);
           return;
         }
@@ -111,9 +120,16 @@ test.describe("Real Time Power API", () => {
           assert.validateRequiredFields(responseBody, ["success", "data"]),
         );
 
-        const mapped = RealTimePowerMapper.map(responseBody);
-        validation.execute("Real Time Power Scenario", () =>
-          validator.validateScenario(mapped, testCase.scenario),
+        const mapped = CommunicationStatusMapper.map(responseBody);
+        const expectedDate =
+          testCase.scenario === "status_default_today"
+            ? undefined
+            : (typeof query.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(query.date)
+                ? query.date
+                : communicationStatusSampleDate);
+
+        validation.execute("Communication Status Scenario", () =>
+          validator.validateScenario(mapped, testCase.scenario, expectedDate),
         );
 
         validation.printSummary(testCase.testName, responseTime);

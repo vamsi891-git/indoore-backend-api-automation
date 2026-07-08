@@ -1,100 +1,107 @@
-import { test }  from "../../../../src/fixtures/api.fixture";
-import { ConsumerProfileApi } from "../Api/consumerprofile.api";
-import { consumerProfileData }  from "../Data/consumerprofile.data";
-import { ConsumerProfileMapper } from "../Mapper/consumerprofile.mapper";
-import { ConsumerProfileValidator } from "../Validator/consumerprofile.validator";
+import { test } from "../../../fixtures/api.fixture";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../../src/core/utils/performancetracker";
-test.describe("Consumer Profile API",() => {
-        test("Validate Consumer Profile API",
-            {
-                tag: [
-                    "@consumer",
-                    "@profile",
-                    "@smoke"
-                ]
-            },
-            async ({authenticatedApi}) => {
-                const api =new ConsumerProfileApi(authenticatedApi);
-                const {
-                    rawResponse,
-                    responseBody,
-                    responseTime
-                } = await api.getConsumerProfile(consumerProfileData.consumerNumber,consumerProfileData.query);
-                await PerformanceTracker.track(rawResponse,"Consumer Profile API",`${process.env.BASE_URL}/indore/consumers/${consumerProfileData.consumerNumber}/profile`,responseTime);
-                const assert =new AssertionEngine();
-                const validation =new ValidationEngine();
-                //======================================
-                // BASE API VALIDATIONS
-                //======================================
-                validation.execute("Status Validation",() =>
-                    assert.validateStatusCode(rawResponse,200)
-                );
-                validation.execute("Content Type",() =>
-                        assert.validateContentType(rawResponse)
-                );
-                validation.execute("Response Time",() =>
-                        assert.validateResponseTime(responseTime,60000)
-                );
-                validation.execute("Sensitive Data",() =>
-                        assert.validateSensitiveData(responseBody)
-                );
-                validation.execute("Required Fields",() =>
-                        assert.validateRequiredFields(responseBody,["success","data"])
-                );
+import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
+import { ConsumerProfileApi } from "../Api/consumerprofile.api";
+import {
+  consumerProfileMaxResponseTimeMs,
+  consumerProfileTestCases,
+  resolveConsumerProfileQuery,
+  resolveConsumerProfileRef,
+} from "../Data/consumerprofile.data";
+import {
+  ConsumerProfileMapper,
+  type ConsumerProfileErrorResponse,
+} from "../Mapper/consumerprofile.mapper";
+import { ConsumerProfileValidator } from "../Validator/consumerprofile.validator";
 
-                //======================================
-                // MAPPER
-                //======================================
-                const data =ConsumerProfileMapper.map(responseBody);
-                validation.execute("Mapped Required Fields",() =>
-                        assert.validateRequiredFields(data,["consumerName","consumerNumber","uniqueId","meterSerialNumber","connectionDetails","connectionMeterDetails","latestActivities"])
-                );
-                const validator =new ConsumerProfileValidator();
-                //=====================================
-                // BACKEND VALIDATIONS
-                //======================================
-                validation.execute("Consumer Name",() =>
-                        validator.validateConsumerName(data)
-                );
-                validation.execute("Consumer Number",() =>
-                        validator.validateConsumerNumber(data)
-                );
-                validation.execute("Unique Id",() =>
-                        validator.validateUniqueId(data)
-                );
-                validation.execute("Occupancy Validation",() =>
-                        validator.validateOccupancy(data)
-                );
-                validation.execute("Address Validation",() =>
-                        validator.validateAddress(data)
-                );
-                validation.execute("Connection Details",() =>
-                        validator.validateConnectionDetails(data)
-                );
-                validation.execute("Meter Details",() =>
-                        validator.validateMeterDetails(data)
-                );
-                validation.execute("Sanctioned Load",() =>
-                        validator.validateSanctionedLoad(data)
-                );
-                validation.execute("Phase Validation",() =>
-                        validator.validatePhase(data)
-                );
-                validation.execute("Email Validation",() =>
-                        validator.validateEmail(data)
-                );
-                validation.execute("Activities Validation",() =>
-                        validator.validateActivities(data)
-                );
-                validation.execute("Business Rules",() =>
-                        validator.validateBusinessRules(data)
-                );
-                //======================================
-                // SUMMARY
-                //======================================
-                validation.printSummary("Consumer Profile API",responseTime);
-            }
+test.describe("Consumer Profile API", () => {
+  test.describe.configure({ retries: 1 });
+  test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
+
+  for (const testCase of consumerProfileTestCases) {
+    test(
+      testCase.testName,
+      { tag: testCase.tags },
+      async ({ authenticatedApi }) => {
+        const expectedStatus = testCase.expectedStatus ?? 200;
+        const api = new ConsumerProfileApi(authenticatedApi);
+        const validator = new ConsumerProfileValidator();
+        const consumerRef = resolveConsumerProfileRef(testCase.scenario);
+
+        if (!consumerRef) {
+          test.skip(true, "Could not resolve consumer profile route ref");
+          return;
+        }
+
+        const query = resolveConsumerProfileQuery(testCase.scenario);
+        const endpoint = `/indore/consumers/${consumerRef}/profile`;
+        const {
+          rawResponse,
+          responseBody,
+          responseTime,
+        } = await api.getConsumerProfile(consumerRef, query);
+
+        await PerformanceTracker.track(
+          rawResponse,
+          testCase.testName,
+          `${process.env.BASE_URL}${endpoint}`,
+          responseTime,
         );
-    });
+
+        const assert = new AssertionEngine();
+        const validation = new ValidationEngine();
+
+        validation.execute("Status Validation", () =>
+          assert.validateStatusCode(rawResponse, expectedStatus, responseBody),
+        );
+        validation.execute("Content Type", () =>
+          assert.validateContentType(rawResponse),
+        );
+        validation.execute("Response Time", () =>
+          assert.validateResponseTime(
+            responseTime,
+            consumerProfileMaxResponseTimeMs,
+          ),
+        );
+        validation.execute("Sensitive Data", () =>
+          assert.validateSensitiveData(responseBody),
+        );
+
+        if (expectedStatus !== 200) {
+          validation.execute("Not Found Error", () =>
+            validator.validateNotFoundError(
+              responseBody as ConsumerProfileErrorResponse,
+            ),
+          );
+          validation.printSummary(testCase.testName, responseTime);
+          return;
+        }
+
+        validation.execute("Required Fields", () =>
+          assert.validateRequiredFields(responseBody, ["success", "data"]),
+        );
+
+        const mapped = ConsumerProfileMapper.map(responseBody);
+        const identityOptions =
+          testCase.scenario === "profile_found" ||
+          testCase.scenario === "profile_no_query"
+            ? { routeRef: consumerRef, expectedUniqueId: consumerRef }
+            : testCase.scenario === "profile_by_ivrs"
+              ? { routeRef: consumerRef, expectedConsumerNumber: consumerRef }
+              : { routeRef: consumerRef };
+
+        validation.execute("Profile Scenario", () =>
+          validator.validateScenario(
+            mapped,
+            testCase.scenario,
+            identityOptions,
+          ),
+        );
+
+        validation.printSummary(testCase.testName, responseTime);
+      },
+    );
+  }
+});

@@ -108,8 +108,8 @@ export async function provisionConsumerAssignableMeterPool(
           await sleep(5000);
           continue;
         }
-        const mapped = ValidateMeterMapper.map(responseBody);
-        return mapped.valid;
+        const mapped = ValidateMeterMapper.mapData(responseBody);
+        return mapped.valid === true && mapped.meterExists === true;
       } catch {
         await sleep(1000);
       }
@@ -190,8 +190,12 @@ async function filterStillAssignableMeters(
           await sleep(5000);
           continue;
         }
-        const mapped = ValidateMeterMapper.map(responseBody);
-        if (mapped.valid && !stillAssignable.includes(serial)) {
+        const mapped = ValidateMeterMapper.mapData(responseBody);
+        if (
+          mapped.valid &&
+          mapped.meterExists === true &&
+          !stillAssignable.includes(serial)
+        ) {
           stillAssignable.push(serial);
         }
         break;

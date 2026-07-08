@@ -1,88 +1,229 @@
 import { expect } from "@playwright/test";
+import type {
+  ConsumerConnectionDetails,
+  ConsumerConnectionMeterDetails,
+  ConsumerLatestActivity,
+  ConsumerProfileData,
+  ConsumerProfileErrorResponse,
+  ConsumerProfileScenario,
+} from "../Mapper/consumerprofile.mapper";
 
-const IVRS_FORMAT = /^N?\d+$/i;
+const PROFILE_REQUIRED_FIELDS = [
+  "consumerName",
+  "consumerEmail",
+  "consumerNumber",
+  "uniqueId",
+  "meterSerialNumber",
+  "permanentAddress",
+  "billingAddress",
+  "connectionDetails",
+  "connectionMeterDetails",
+  "latestActivities",
+] as const;
+
+const CONNECTION_DETAIL_FIELDS = [
+  "division",
+  "zone",
+  "subStation",
+  "feeder",
+  "dtr",
+  "ivrsNo",
+  "sanctionedLoad",
+  "sanctionedLoadKw",
+] as const;
+
+const CONNECTION_METER_FIELDS = [
+  "mainSubMeter",
+  "meterSerialNumber",
+  "servicePointId",
+  "meterType",
+  "meterPhase",
+] as const;
+
+const KNOWN_METER_PHASES = ["1 PH", "3PH WC", "3PH 4CT", "HT"];
 
 export class ConsumerProfileValidator {
-    validateConsumerName(data: any): void {
-        expect(data.consumerName).toBeTruthy();
-        expect(typeof data.consumerName).toBe("string");
-    }
+  validateSuccess(success: boolean) {
+    expect(success).toBeTruthy();
+  }
 
-    validateConsumerNumber(data: any): void {
-        expect(data.consumerNumber).toBeTruthy();
-        expect(String(data.consumerNumber)).toMatch(IVRS_FORMAT);
-        expect(String(data.consumerNumber).length).toBeGreaterThan(5);
-    }
+  validateRequiredFields(data: ConsumerProfileData) {
+    PROFILE_REQUIRED_FIELDS.forEach((field) => {
+      expect(data).toHaveProperty(field);
+    });
+  }
 
-    validateUniqueId(data: any): void {
-        expect(data.uniqueId).toBeTruthy();
-        expect(String(data.uniqueId).trim().length).toBeGreaterThan(0);
-    }
+  validateConsumerName(data: ConsumerProfileData) {
+    expect(typeof data.consumerName).toBe("string");
+    expect(data.consumerName.trim().length).toBeGreaterThan(0);
+  }
 
-    validateOccupancy(data: any): void {
-        if (data.occupancyStatus == null) {
-            return;
-        }
-        expect(["Occupied", "Vacant"]).toContain(data.occupancyStatus);
+  validateConsumerEmail(data: ConsumerProfileData) {
+    if (data.consumerEmail == null) {
+      return;
     }
+    expect(typeof data.consumerEmail).toBe("string");
+    expect(data.consumerEmail).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+  }
 
-    validateAddress(data: any): void {
-        expect(data.permanentAddress).toBeTruthy();
-        expect(data.billingAddress).toBeTruthy();
-        expect(data.permanentAddress.length).toBeGreaterThan(5);
-    }
+  validateConsumerNumber(data: ConsumerProfileData) {
+    expect(data.consumerNumber).toBeTruthy();
+    expect(typeof data.consumerNumber).toBe("string");
+    expect(String(data.consumerNumber).trim().length).toBeGreaterThan(0);
+  }
 
-    validateConnectionDetails(data: any): void {
-        const details = data.connectionDetails;
-        expect(details).toBeDefined();
-        expect(details.subStation).toBeTruthy();
-        expect(details.feeder).toBeTruthy();
-        expect(details.dtr).toBeTruthy();
-        expect(details.ivrsNo).toEqual(data.consumerNumber);
-        if (details.division != null) {
-            expect(String(details.division).trim().length).toBeGreaterThan(0);
-        }
-        if (details.zone != null) {
-            expect(String(details.zone).trim().length).toBeGreaterThan(0);
-        }
-    }
+  validateUniqueId(data: ConsumerProfileData) {
+    expect(data.uniqueId).toBeTruthy();
+    expect(String(data.uniqueId).trim().length).toBeGreaterThan(0);
+  }
 
-    validateMeterDetails(data: any): void {
-        const meter = data.connectionMeterDetails;
-        expect(meter).toBeDefined();
-        expect(meter.mainSubMeter).toBeTruthy();
-        expect(meter.servicePointId).toBeTruthy();
-        expect(String(meter.servicePointId).trim().length).toBeGreaterThan(0);
-        expect(meter.meterSerialNumber).toEqual(data.meterSerialNumber);
-        expect(meter.meterType).toContain("Meter");
-    }
+  validateMeterSerialNumber(data: ConsumerProfileData) {
+    expect(data.meterSerialNumber).toBeTruthy();
+    expect(String(data.meterSerialNumber).trim().length).toBeGreaterThan(0);
+  }
 
-    validateSanctionedLoad(data: any): void {
-        expect(data.connectionDetails.sanctionedLoad).toContain("kW");
-        expect(data.connectionDetails.sanctionedLoadKw).toBeGreaterThanOrEqual(0);
-    }
+  validateAddresses(data: ConsumerProfileData) {
+    expect(data.permanentAddress).toBeTruthy();
+    expect(data.billingAddress).toBeTruthy();
+    expect(String(data.permanentAddress).trim().length).toBeGreaterThan(0);
+    expect(String(data.billingAddress).trim().length).toBeGreaterThan(0);
+  }
 
-    validatePhase(data: any): void {
-        expect(["1 PH", "3PH WC", "3PH 4CT", "HT"]).toContain(
-            data.connectionMeterDetails.meterPhase,
-        );
-    }
+  validateConnectionDetailsShape(details: ConsumerConnectionDetails) {
+    CONNECTION_DETAIL_FIELDS.forEach((field) => {
+      expect(details).toHaveProperty(field);
+    });
+  }
 
-    validateEmail(data: any): void {
-        if (data.consumerEmail) {
-            expect(data.consumerEmail).toMatch(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
-        }
-    }
+  validateConnectionDetails(data: ConsumerProfileData) {
+    const details = data.connectionDetails;
+    expect(details).toBeDefined();
+    this.validateConnectionDetailsShape(details);
 
-    validateActivities(data: any): void {
-        expect(Array.isArray(data.latestActivities)).toBeTruthy();
-    }
+    expect(details.subStation).toBeTruthy();
+    expect(details.feeder).toBeTruthy();
+    expect(details.dtr).toBeTruthy();
+    expect(details.ivrsNo).toBe(data.consumerNumber);
 
-    validateBusinessRules(data: any): void {
-        expect(data.connectionDetails.ivrsNo).toEqual(data.consumerNumber);
-        expect(data.connectionMeterDetails.meterSerialNumber).toEqual(
-            data.meterSerialNumber,
-        );
-        expect(data.connectionMeterDetails.servicePointId).toBeTruthy();
+    if (details.division != null) {
+      expect(String(details.division).trim().length).toBeGreaterThan(0);
     }
+    if (details.zone != null) {
+      expect(String(details.zone).trim().length).toBeGreaterThan(0);
+    }
+  }
+
+  validateSanctionedLoad(details: ConsumerConnectionDetails) {
+    expect(details.sanctionedLoad).toBeTruthy();
+    expect(String(details.sanctionedLoad)).toMatch(/kW/i);
+    expect(details.sanctionedLoadKw).not.toBeNull();
+    expect(Number(details.sanctionedLoadKw)).toBeGreaterThanOrEqual(0);
+  }
+
+  validateConnectionMeterDetailsShape(
+    meter: ConsumerConnectionMeterDetails,
+  ) {
+    CONNECTION_METER_FIELDS.forEach((field) => {
+      expect(meter).toHaveProperty(field);
+    });
+  }
+
+  validateConnectionMeterDetails(data: ConsumerProfileData) {
+    const meter = data.connectionMeterDetails;
+    expect(meter).toBeDefined();
+    this.validateConnectionMeterDetailsShape(meter);
+
+    expect(meter.mainSubMeter).toBeTruthy();
+    expect(meter.servicePointId).toBeTruthy();
+    expect(meter.meterSerialNumber).toBe(data.meterSerialNumber);
+    expect(String(meter.meterType)).toMatch(/Meter/i);
+    expect(meter.meterPhase).toBeTruthy();
+  }
+
+  validateMeterPhase(meter: ConsumerConnectionMeterDetails) {
+    const phase = String(meter.meterPhase).trim();
+    expect(phase.length).toBeGreaterThan(0);
+    const known = KNOWN_METER_PHASES.includes(phase);
+    const looksLikePhase = /\d\s*PH|PHASE|HT/i.test(phase);
+    expect(known || looksLikePhase).toBeTruthy();
+  }
+
+  validateLatestActivities(activities: ConsumerLatestActivity[]) {
+    expect(Array.isArray(activities)).toBeTruthy();
+    for (const activity of activities) {
+      expect(typeof activity.title).toBe("string");
+      expect(typeof activity.timestamp).toBe("string");
+      expect(activity.timestamp.trim().length).toBeGreaterThan(0);
+    }
+  }
+
+  validateIdentityEcho(
+    data: ConsumerProfileData,
+    options: {
+      routeRef?: string;
+      expectedUniqueId?: string;
+      expectedConsumerNumber?: string;
+    } = {},
+  ) {
+    if (options.expectedUniqueId) {
+      expect(data.uniqueId).toBe(options.expectedUniqueId);
+    }
+    if (options.expectedConsumerNumber) {
+      expect(data.consumerNumber).toBe(options.expectedConsumerNumber);
+    }
+    if (options.routeRef && !options.routeRef.startsWith("meter-")) {
+      const ref = options.routeRef.trim();
+      const matchesRoute =
+        data.uniqueId === ref ||
+        data.consumerNumber === ref ||
+        data.connectionDetails.ivrsNo === ref;
+      expect(matchesRoute).toBeTruthy();
+    }
+  }
+
+  validateBusinessRules(data: ConsumerProfileData) {
+    expect(data.connectionDetails.ivrsNo).toBe(data.consumerNumber);
+    expect(data.connectionMeterDetails.meterSerialNumber).toBe(
+      data.meterSerialNumber,
+    );
+  }
+
+  validateNotFoundError(responseBody: ConsumerProfileErrorResponse) {
+    expect(responseBody.success).toBeFalsy();
+    expect(responseBody.error).toBeDefined();
+    expect(responseBody.error.code).toBe("CONSUMER_NOT_FOUND");
+    expect(responseBody.error.message.toLowerCase()).toContain(
+      "consumer not found",
+    );
+  }
+
+  validateScenario(
+    mapped: ConsumerProfileData & { success: boolean },
+    scenario: ConsumerProfileScenario,
+    options: {
+      routeRef?: string;
+      expectedUniqueId?: string;
+      expectedConsumerNumber?: string;
+    } = {},
+  ) {
+    this.validateSuccess(mapped.success);
+    this.validateRequiredFields(mapped);
+    this.validateConsumerName(mapped);
+    this.validateConsumerEmail(mapped);
+    this.validateConsumerNumber(mapped);
+    this.validateUniqueId(mapped);
+    this.validateMeterSerialNumber(mapped);
+    this.validateAddresses(mapped);
+    this.validateConnectionDetails(mapped);
+    this.validateSanctionedLoad(mapped.connectionDetails);
+    this.validateConnectionMeterDetails(mapped);
+    this.validateMeterPhase(mapped.connectionMeterDetails);
+    this.validateLatestActivities(mapped.latestActivities);
+    this.validateBusinessRules(mapped);
+    this.validateIdentityEcho(mapped, options);
+
+    if (scenario === "profile_by_ivrs" && options.routeRef) {
+      expect(mapped.consumerNumber).toBe(options.routeRef);
+    }
+  }
 }

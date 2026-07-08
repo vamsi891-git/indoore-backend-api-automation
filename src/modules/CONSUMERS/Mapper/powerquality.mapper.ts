@@ -1,39 +1,68 @@
-export interface Metric {
-    title: string;
-    value: number | null;
-    unit: string;
-    /** Optional display label; backend may return null when UI derives subtitles locally */
-    subtitle: string | null;
-}
-export interface PowerQualityResponse {
-    success: boolean;
-    data?: {
-        overallPf: Metric;
-        frequency: Metric;
-        neutralCurrent: Metric;
-        mdKw: Metric;
-        mdKva: Metric;
-    }
+export type PowerQualityScenario =
+  | "pq_by_ivrs"
+  | "pq_by_account"
+  | "pq_by_meter"
+  | "pq_ignore_unknown_query"
+  | "consumer_not_found"
+  | "meter_not_found"
+  | "empty_consumer_ref"
+  | "contract_null_data"
+  | "contract_sp_metrics"
+  | "contract_tp_metrics";
+
+export interface PowerQualityErrorResponse {
+  success: false;
+  error: {
+    code: string;
+    message: string;
+    details?: {
+      formErrors?: string[];
+      fieldErrors?: Record<string, string[]>;
+    };
+  };
 }
 
-const EMPTY_POWER_QUALITY_DATA = {
-    overallPf: { title: "Overall PF", value: null, unit: "", subtitle: null },
-    frequency: { title: "Frequency", value: null, unit: "", subtitle: null },
-    neutralCurrent: { title: "Neutral Current", value: null, unit: "", subtitle: null },
-    mdKw: { title: "MD kW", value: null, unit: "", subtitle: null },
-    mdKva: { title: "MD kVA", value: null, unit: "", subtitle: null },
-} satisfies PowerQualityResponse["data"];
+export interface PowerQualityMetric {
+  title: string;
+  value: number | null;
+  unit: string;
+  subtitle: string | null;
+}
+
+export interface PowerQualityData {
+  overallPf: PowerQualityMetric;
+  frequency: PowerQualityMetric;
+  neutralCurrent: PowerQualityMetric;
+  mdKw: PowerQualityMetric;
+  mdKva: PowerQualityMetric;
+}
+
+export interface PowerQualityResponse {
+  success: boolean;
+  data?: PowerQualityData | null;
+}
+
+export interface MappedPowerQuality {
+  success: boolean;
+  data: PowerQualityData | null;
+  overallPf: PowerQualityMetric | null;
+  frequency: PowerQualityMetric | null;
+  neutralCurrent: PowerQualityMetric | null;
+  mdKw: PowerQualityMetric | null;
+  mdKva: PowerQualityMetric | null;
+}
 
 export class PowerQualityMapper {
-    static map(response: PowerQualityResponse) {
-        const data = response.data ?? EMPTY_POWER_QUALITY_DATA;
-        return {
-            success:response.success,
-            overallPf:data.overallPf,
-            frequency:data.frequency,
-            neutralCurrent:data.neutralCurrent,
-            mdKw:data.mdKw,
-            mdKva:data.mdKva
-        };
-    }
+  static map(response: PowerQualityResponse): MappedPowerQuality {
+    const data = response.data ?? null;
+    return {
+      success: response.success,
+      data,
+      overallPf: data?.overallPf ?? null,
+      frequency: data?.frequency ?? null,
+      neutralCurrent: data?.neutralCurrent ?? null,
+      mdKw: data?.mdKw ?? null,
+      mdKva: data?.mdKva ?? null,
+    };
+  }
 }
