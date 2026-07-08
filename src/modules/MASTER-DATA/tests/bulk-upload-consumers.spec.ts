@@ -140,6 +140,35 @@ function shouldSkipTestCase(testCase: BulkUploadConsumersTestCase): string | nul
   return null;
 }
 
+async function ensureBulkUploadConsumerTestReady(
+  authenticatedApi: APIRequestContext,
+  testCase: BulkUploadConsumersTestCase,
+): Promise<void> {
+  if (missingRuntimeMeterSerial(testCase.scenario)) {
+    await ensureValidateMeterRuntimeContext(authenticatedApi);
+  }
+
+  if (
+    BULK_SUCCESS_SCENARIOS.has(testCase.scenario) ||
+    needsAssignableMeter(testCase)
+  ) {
+    if (!hasBulkConsumerMeterPool()) {
+      await ensureConsumerMeterRuntimeContext(authenticatedApi);
+    }
+  }
+
+  if (needsNearestAcctId(testCase) && !hasBulkConsumerNearestAcctId()) {
+    await ensureBulkConsumerNearestAcctId(authenticatedApi);
+  }
+
+  if (
+    testCase.scenario === "row_consumer_id_exists" &&
+    !hasBulkConsumerExistingCid()
+  ) {
+    await ensureBulkConsumerExistingCid(authenticatedApi);
+  }
+}
+
 async function runBulkUploadConsumerTestCase(
   authenticatedApi: APIRequestContext,
   testCase: BulkUploadConsumersTestCase,
@@ -233,6 +262,7 @@ function registerBulkUploadConsumerTests(
       testCase.testName,
       { tag: testCase.tags },
       async ({ authenticatedApi }) => {
+        await ensureBulkUploadConsumerTestReady(authenticatedApi, testCase);
         const skipReason = shouldSkipTestCase(testCase);
         if (skipReason) {
           test.skip(true, skipReason);
@@ -296,12 +326,12 @@ test.describe("Bulk Upload Consumers API", () => {
   });
 
   test.describe("manual enforcement", () => {
-    test.describe.configure({ retries: 1, mode: "serial" });
+    test.describe.configure({ retries: 1 });
     registerBulkUploadConsumerTests(enforcementTestCases);
   });
 
   test.describe("known backend defects", () => {
-    test.describe.configure({ retries: 1, mode: "serial" });
+    test.describe.configure({ retries: 1 });
     registerBulkUploadConsumerTests(backendDefectTestCases, {
       expectKnownDefect: !shouldSkipKnownBackendDefects(),
     });

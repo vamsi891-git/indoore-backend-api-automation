@@ -46,6 +46,24 @@ export function nextDtrAssignableMeterSerial(options?: {
   return serial;
 }
 
+/**
+ * Take N unique serials from the pool without wrapping (for multi-row bulk uploads).
+ * Returns fewer than count when the pool is exhausted.
+ */
+export function takeDistinctDtrAssignableMeterSerials(count: number): string[] {
+  const serials: string[] = [];
+  const seen = new Set<string>();
+  for (let i = 0; i < count; i += 1) {
+    const serial = nextDtrAssignableMeterSerial({ wrap: false });
+    if (!serial || seen.has(serial)) {
+      break;
+    }
+    seen.add(serial);
+    serials.push(serial);
+  }
+  return serials;
+}
+
 /** First pool entry — used by bulk-upload field rows that reuse one meter when API rejects. */
 export function peekDtrAssignableMeterSerial(): string | null {
   return assignableMeterPool?.[0] ?? null;
@@ -256,4 +274,88 @@ export async function ensureDtrAssignableMeterPool(
     saveCachedMeterPool(provisioned);
   }
   return provisioned;
+}
+
+/** Refresh assignable meters and provision until at least minCount free serials exist. */
+export async function ensureMinDtrAssignableMeters(
+  authenticatedApi: APIRequestContext,
+  minCount: number,
+  options?: ProvisionDtrAssignableMeterPoolOptions,
+): Promise<string[]> {
+  const current = assignableMeterPool ?? [];
+  const stillAssignable = await filterStillAssignableMeters(
+    authenticatedApi,
+    current,
+    options,
+  );
+  setDtrAssignableMeterPool(stillAssignable);
+
+  if (stillAssignable.length >= minCount) {
+    return stillAssignable;
+  }
+
+  const targetCount = Math.max(
+    minCount,
+    options?.targetCount ?? DEFAULT_DTR_METER_POOL_TARGET,
+    stillAssignable.length + (minCount - stillAssignable.length),
+  );
+  const provisioned = await provisionDtrAssignableMeterPool(authenticatedApi, {
+    ...options,
+    targetCount,
+  });
+  if (provisioned.length > 0) {
+    saveCachedMeterPool(provisioned);
+  }
+  return provisioned;
+}
+
+/** Create one new assignable meter not already in the pool. */
+export async function createOneFreshDtrAssignableMeter(
+  authenticatedApi: APIRequestContext,
+  options?: ProvisionDtrAssignableMeterPoolOptions,
+): Promise<string | null> {
+  const before = new Set(assignableMeterPool ?? []);
+  const targetCount = (assignableMeterPool?.length ?? 0) + 1;
+  await provisionDtrAssignableMeterPool(authenticatedApi, {
+    ...options,
+    targetCount,
+    maxCreateAttempts: options?.maxCreateAttempts ?? 6,
+  });
+
+  for (const serial of assignableMeterPool ?? []) {
+    if (before.has(serial)) {
+      continue;
+    }
+    const ok = await filterStillAssignableMeters(authenticatedApi, [serial], options);
+    if (ok.includes(serial)) {
+      return serial;
+    }
+  }
+  return null;
+}
+
+/** Create exactly `count` new assignable meters (for multi-row bulk uploads). */
+export async function provisionFreshDtrAssignableMeters(
+  authenticatedApi: APIRequestContext,
+  count: number,
+  options?: ProvisionDtrAssignableMeterPoolOptions,
+): Promise<string[]> {
+  const fresh: string[] = [];
+  const maxAttempts =
+    count * (options?.maxCreateAttempts ?? DEFAULT_DTR_METER_MAX_CREATE_ATTEMPTS);
+  let attempts = 0;
+
+  while (fresh.length < count && attempts < maxAttempts) {
+    attempts += 1;
+    const serial = await createOneFreshDtrAssignableMeter(authenticatedApi, options);
+    if (serial && !fresh.includes(serial)) {
+      fresh.push(serial);
+    }
+    await new Promise<void>((resolve) => setTimeout(resolve, 800));
+  }
+
+  if (fresh.length > 0) {
+    saveCachedMeterPool(assignableMeterPool ?? fresh);
+  }
+  return fresh;
 }

@@ -25,7 +25,7 @@ import {
 } from "../Db/master-data.db";
 
 apiDbTest.describe("Master Data — DB validation", () => {
-  apiDbTest.describe.configure({ retries: 1, mode: "serial" });
+  apiDbTest.describe.configure({ retries: 1 });
   apiDbTest.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
   apiDbTest(

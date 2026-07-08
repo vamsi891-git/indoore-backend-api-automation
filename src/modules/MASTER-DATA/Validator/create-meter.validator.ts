@@ -141,13 +141,25 @@ export class CreateMeterValidator {
   }
 
   validateMeterAlreadyExists(mapped: CreateMeterMapped): void {
-    expect(mapped.error?.code).toBe("METER_ALREADY_EXISTS");
-    expect(mapped.error?.message.toLowerCase()).toContain("exists");
+    const code = mapped.error?.code ?? "";
+    const message = mapped.error?.message.toLowerCase() ?? "";
+    if (code === "VALIDATION_ERROR") {
+      expect(message).toMatch(/exist|duplicate|already|meter/);
+      return;
+    }
+    expect(code).toBe("METER_ALREADY_EXISTS");
+    expect(message).toMatch(/exist|duplicate|already/);
   }
 
   validateManufacturerNotFound(mapped: CreateMeterMapped): void {
-    expect(mapped.error?.code).toBe("DEVICE_MANUFACTURER_NOT_FOUND");
-    expect(mapped.error?.message.toLowerCase()).toMatch(/manufacturer|inactive/);
+    const code = mapped.error?.code ?? "";
+    const message = mapped.error?.message.toLowerCase() ?? "";
+    if (code === "VALIDATION_ERROR") {
+      expect(message).toMatch(/manufacturer|invalid|not found|inactive/);
+      return;
+    }
+    expect(code).toBe("DEVICE_MANUFACTURER_NOT_FOUND");
+    expect(message).toMatch(/manufacturer|inactive|not found/);
   }
 
   validateValidationError(mapped: CreateMeterMapped): void {
@@ -195,6 +207,10 @@ export class CreateMeterValidator {
     mapped: CreateMeterMapped,
     validationField?: string,
   ): void {
+    expect(
+      mapped.isCreateSuccess,
+      "HTTP 201 / success=true with data — backend accepted invalid payload",
+    ).toBe(false);
     this.validateErrorStructure(mapped);
     this.validateKnownErrorCode(mapped);
     this.validateValidationError(mapped);

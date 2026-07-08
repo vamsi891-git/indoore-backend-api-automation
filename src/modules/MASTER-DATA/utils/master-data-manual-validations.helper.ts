@@ -14,8 +14,6 @@ export function shouldSkipKnownBackendDefects(): boolean {
 /** create-dtr.spec — API accepts invalid payload (returns 201). See manual doc §CREATE DTR. */
 export const CREATE_DTR_BACKEND_DEFECT_SCENARIOS = new Set([
   "validation_error:cap-zero",
-  "validation_error:svc-future",
-  "validation_error:inst-future",
   "meter_not_found",
   "meter_inactive",
   "validation_error:bad-main-sub",
@@ -86,12 +84,6 @@ export function createDtrDefectKeyFromTestCase(testCase: {
   if (testCase.scenario === "validation_error") {
     if (payload["DTR Capacity (KVA)"] === 0) {
       return "validation_error:cap-zero";
-    }
-    if (payload["Service Date"] === "2099-01-01") {
-      return "validation_error:svc-future";
-    }
-    if (payload["Installation Date"] === "2099-01-01") {
-      return "validation_error:inst-future";
     }
     if (payload["Main/Sub Meter"] === 99_999_999) {
       return "validation_error:bad-main-sub";

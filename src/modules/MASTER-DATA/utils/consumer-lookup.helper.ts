@@ -96,8 +96,9 @@ import {
  * ISSUE 6 — CREATE DTR accepts invalid payloads (uses same lookup ids)
  * -----------------------------------------------------------------------------
  * POST /indore/master-data/add-dtr returns HTTP 201 for:
- *   DTR Capacity = 0, future Service/Installation dates, non-existent MSN,
- *   invalid Main/Sub Meter / Meter Phase ids, IMEI "12345", reading = 0
+ *   DTR Capacity = 0, non-existent MSN, invalid Main/Sub Meter / Meter Phase ids,
+ *   IMEI "12345", reading = 0
+ * Future Service/Installation dates are correctly rejected (HTTP 400).
  * See Bulk upload validations.txt §CREATE DTR DEFECTS.
  *
  * -----------------------------------------------------------------------------

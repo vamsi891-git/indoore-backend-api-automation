@@ -1,4 +1,5 @@
 import path from "path";
+import { randomBytes } from "crypto";
 import ExcelJS from "exceljs";
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { BulkUploadDtrScenario } from "../Mapper/bulk-upload-dtr.mapper";
@@ -7,6 +8,7 @@ import {
   nextDtrAssignableMeterSerial,
   peekDtrAssignableMeterSerial,
   setDtrAssignableMeterPool,
+  takeDistinctDtrAssignableMeterSerials,
 } from "./dtr-assignable-meter-pool.data";
 import { resolveMasterDataEnv as envValue } from "../utils/master-data-env.helper";
 import {
@@ -117,6 +119,21 @@ export function hasBulkDtrMeterPool(): boolean {
   return hasDtrAssignableMeterPool();
 }
 
+let bulkMultiRowMeterSerials: string[] | null = null;
+
+export function setBulkDtrMultiRowMeterSerials(serials: string[]): void {
+  bulkMultiRowMeterSerials = serials;
+}
+
+function resolveBulkMultiRowMeterSerials(): string[] {
+  if (bulkMultiRowMeterSerials?.length) {
+    const serials = bulkMultiRowMeterSerials;
+    bulkMultiRowMeterSerials = null;
+    return serials;
+  }
+  return takeDistinctBulkDtrMeterSerials(2);
+}
+
 function uniqueSuffix(): string {
   return String(Date.now());
 }
@@ -126,11 +143,21 @@ function isoToday(): string {
 }
 
 let bulkDtrCodeSequence = 0;
+let bulkDtrRowSequence = 0;
 
 function uniqueDtrCode(): string {
   bulkDtrCodeSequence += 1;
   const tail = `${Date.now()}${bulkDtrCodeSequence}${Math.floor(Math.random() * 100)}`.slice(-13);
   return `DTR${tail}`.slice(0, 16);
+}
+
+function hashSeed(seed: string): number {
+  let hash = 2_166_136_261;
+  for (let i = 0; i < seed.length; i += 1) {
+    hash ^= seed.charCodeAt(i);
+    hash = Math.imul(hash, 1_677_761_9);
+  }
+  return hash >>> 0;
 }
 
 function peekBulkDtrMeterSerial(): string {
@@ -147,6 +174,52 @@ function nextBulkDtrMeterSerial(): string {
     return provisioned;
   }
   return peekBulkDtrMeterSerial();
+}
+
+/** Two+ row bulk success uploads need distinct assignable meters (no pool wrap). */
+export function takeDistinctBulkDtrMeterSerials(count: number): string[] {
+  return takeDistinctDtrAssignableMeterSerials(count);
+}
+
+function uniqueFifteenDigitId(seed: string): string {
+  const digits = `${seed}${Date.now()}${Math.floor(Math.random() * 10000)}`.replace(
+    /\D/g,
+    "",
+  );
+  return digits.padEnd(15, "7").slice(0, 15);
+}
+
+function uniqueSimNumber(seed: string): string {
+  const hash = hashSeed(seed);
+  return `99${String(hash % 100_000_000).padStart(8, "0")}`;
+}
+
+function uniqueModemIdentity(seed: string): {
+  servicePointId: string;
+  simNumber: string;
+  imsiNumber: string;
+  ipAddress: string;
+  modemSerial: string;
+  modemImei: string;
+} {
+  const nonce = randomBytes(6).toString("hex");
+  const identitySeed = `${seed}-${nonce}`;
+  return {
+    servicePointId: `SP${hashSeed(identitySeed).toString(36)}${nonce}`.slice(0, 24),
+    simNumber: uniqueSimNumber(identitySeed),
+    imsiNumber: uniqueFifteenDigitId(`imsi-${identitySeed}`),
+    ipAddress: uniqueIpAddress(identitySeed),
+    modemSerial: `MOD${nonce}${String(hashSeed(`${identitySeed}-modem`) % 1_000_000).padStart(6, "0")}`,
+    modemImei: uniqueFifteenDigitId(`imei-${identitySeed}`),
+  };
+}
+
+function uniqueIpAddress(seed: string): string {
+  const hash = hashSeed(seed);
+  const oct2 = 20 + (hash % 30);
+  const oct3 = 10 + ((hash >>> 8) % 200);
+  const oct4 = 10 + ((hash >>> 16) % 200);
+  return `10.${oct2}.${oct3}.${oct4}`;
 }
 
 function zoneName(): string {
@@ -180,10 +253,13 @@ export function buildValidDtrBulkRow(
 ): DtrBulkUploadRow {
   const today = isoToday();
   const label = options?.label ?? uniqueSuffix();
-  const stamp = `${label}${String(Date.now()).slice(-6)}`;
+  bulkDtrRowSequence += 1;
   const meterSerial =
     options?.meterSerial ??
     (options?.allocateMeter ? nextBulkDtrMeterSerial() : peekBulkDtrMeterSerial());
+  const rowSeed = `${label}-${meterSerial}-${bulkDtrRowSequence}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  const modem = uniqueModemIdentity(rowSeed);
+  const locationOffset = bulkDtrRowSequence * 0.0001;
 
   return {
     Zone: zoneName(),
@@ -197,18 +273,18 @@ export function buildValidDtrBulkRow(
     EntryDateTime: today,
     "Meter Serial Number": meterSerial,
     "Main/Sub Meter": mainSubMeterName(),
-    "Service Point ID": `SP${stamp}`,
+    "Service Point ID": modem.servicePointId,
     "Meter Phase": meterPhaseName(),
     "Connected To DCU": true,
-    "SIM No.": "9900000001",
-    "IMSI No.": "404010123456789",
-    "IP Address": "192.168.1.100",
-    "Modem Serial Number": `MOD${stamp}`,
-    "Modem IMEI": "359072069367200",
+    "SIM No.": modem.simNumber,
+    "IMSI No.": modem.imsiNumber,
+    "IP Address": modem.ipAddress,
+    "Modem Serial Number": modem.modemSerial,
+    "Modem IMEI": modem.modemImei,
     "Meter Initial Reading": 1,
-    Latitude: "22.7196",
-    Longitude: "75.8577",
-    "DTR Address": "Test address",
+    Latitude: String(22.7196 + locationOffset),
+    Longitude: String(75.8577 + locationOffset),
+    "DTR Address": `Test address ${rowSeed.slice(0, 16)}`,
     Remarks: "Automation bulk-upload-dtr",
   };
 }
@@ -666,7 +742,10 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
     buildUpload: async () => {
-      const row = buildValidDtrBulkRow({ label: "future-svc" });
+      const row = buildValidDtrBulkRow({
+        label: "future-svc",
+        allocateMeter: true,
+      });
       row["Service Date"] = "2099-01-01";
       const buffer = await buildDtrBulkUploadXlsx([row]);
       return xlsxUpload(buffer);
@@ -680,7 +759,10 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
     buildUpload: async () => {
-      const row = buildValidDtrBulkRow({ label: "future-entry" });
+      const row = buildValidDtrBulkRow({
+        label: "future-entry",
+        allocateMeter: true,
+      });
       row.EntryDateTime = "2099-01-01";
       const buffer = await buildDtrBulkUploadXlsx([row]);
       return xlsxUpload(buffer);
@@ -702,7 +784,35 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
 
-  // ─── Success (run after negatives so assignable meters are not consumed early) ─
+  // ─── Success (multi-row first — needs two fresh meters before single-row consumes pool) ─
+  {
+    testName:
+      "Validate POST /indore/master-data/bulk-upload-dtr — two unique DTRs created",
+    scenario: "bulk_success_multi",
+    expectedStatus: 200,
+    envKeys: hierarchyEnvKeys,
+    buildUpload: async () => {
+      const meters = resolveBulkMultiRowMeterSerials();
+      if (meters.length < 2) {
+        throw new Error(
+          `bulk_success_multi requires 2 distinct assignable meters; pool returned ${meters.length}`,
+        );
+      }
+      const runId = Date.now();
+      const row1 = buildValidDtrBulkRow({
+        label: `multi-a-${runId}`,
+        meterSerial: meters[0],
+      });
+      await new Promise<void>((resolve) => setTimeout(resolve, 25));
+      const row2 = buildValidDtrBulkRow({
+        label: `multi-b-${runId}`,
+        meterSerial: meters[1],
+      });
+      const buffer = await buildDtrBulkUploadXlsx([row1, row2]);
+      return xlsxUpload(buffer);
+    },
+    tags: ["@master-data", "@bulk-upload-dtr"],
+  },
   {
     testName:
       "Validate POST /indore/master-data/bulk-upload-dtr — bulk create one DTR",
@@ -716,21 +826,6 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@smoke", "@master-data", "@bulk-upload-dtr", "@dtr-master"],
-  },
-  {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — two unique DTRs created",
-    scenario: "bulk_success_multi",
-    expectedStatus: 200,
-    envKeys: hierarchyEnvKeys,
-    buildUpload: async () => {
-      const buffer = await buildDtrBulkUploadXlsx([
-        buildValidDtrBulkRow({ label: "multi-1", allocateMeter: true }),
-        buildValidDtrBulkRow({ label: "multi-2", allocateMeter: true }),
-      ]);
-      return xlsxUpload(buffer);
-    },
-    tags: ["@master-data", "@bulk-upload-dtr"],
   },
   {
     testName:

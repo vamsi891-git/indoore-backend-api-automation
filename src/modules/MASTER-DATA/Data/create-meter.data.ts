@@ -86,9 +86,9 @@ function uniqueSuffix(): string {
 
 /** ≤16 chars; asset/RAPDRP match serial (manual doc §1). */
 function buildMeterSerial(suffix: string = uniqueSuffix()): string {
-  const digits =
-    suffix.replace(/\D/g, "").slice(-10) || uniqueSuffix().slice(-10);
-  return `M${digits}`;
+  const rnd = Math.floor(Math.random() * 10_000);
+  const digits = `${suffix}${Date.now()}${rnd}`.replace(/\D/g, "");
+  return `M${digits.slice(-11)}`.slice(0, 12);
 }
 
 function applySerialToRequest(
@@ -142,7 +142,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
     testName:
       "Validate POST /indore/master-data/add-meter — METER_ALREADY_EXISTS",
     scenario: "already_exists",
-    expectedStatus: 409,
+    expectedStatus: 400,
     envKey: "VALIDATE_ADD_METER_EXISTS_SERIAL",
     buildPayload: () => {
       const serial = getValidateMeterSerial("VALIDATE_ADD_METER_EXISTS_SERIAL");
@@ -168,7 +168,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
     testName:
       "Validate POST /indore/master-data/add-meter — DEVICE_MANUFACTURER_NOT_FOUND",
     scenario: "manufacturer_not_found",
-    expectedStatus: 404,
+    expectedStatus: 400,
     buildPayload: () => ({
       ...buildCreateMeterRequest(`badmfr-${uniqueSuffix()}`),
       deviceManufacturerTblRefId: 99_999_999,

@@ -46,6 +46,7 @@ jobs:
       INVITE_E2E_EMAIL: ${{ secrets.INVITE_E2E_EMAIL }}
       INVITE_E2E_INVITATION_ID: ${{ secrets.INVITE_E2E_INVITATION_ID }}
       REPORT_MAIL_TO: vamsibst@gmail.com
+      MASTER_DATA_SKIP_BACKEND_DEFECTS: ${{ vars.MASTER_DATA_SKIP_BACKEND_DEFECTS || '0' }}
       # PostgreSQL — optional API-vs-DB validation (set DB_* repository secrets)
       DB_HOST: ${{ secrets.DB_HOST }}
       DB_PORT: ${{ secrets.DB_PORT || '5432' }}
@@ -109,6 +110,10 @@ jobs:
           fi
           echo "Master Data hierarchy: zone=$BULK_DTR_ZONE_NAME substation=$BULK_DTR_SUBSTATION_NAME feeder=$BULK_DTR_FEEDER_NAME"
           echo "Create DTR lookups: org=$CREATE_DTR_ORGANISATION_LOOKUP_ID substation=$CREATE_DTR_SUBSTATION_NETWORK_LOOKUP_ID feeder=$CREATE_DTR_FEEDER_NETWORK_LOOKUP_ID"
+          echo "MASTER_DATA_SKIP_BACKEND_DEFECTS=${MASTER_DATA_SKIP_BACKEND_DEFECTS:-0}"
+          if [ -z "$DB_HOST" ]; then
+            echo "::notice title=DB tests will skip::Add DB_HOST, DB_USER, DB_PASSWORD secrets to run master-data.db.spec.ts (@db)"
+          fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

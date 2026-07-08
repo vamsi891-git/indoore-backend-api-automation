@@ -292,12 +292,18 @@ export class BulkUploadMetersValidator {
           "meter configuration integers",
         );
         break;
-      case "row_invalid_po_date":
-      case "row_invalid_testing_date":
       case "row_future_date":
         this.validateRowMessageMatches(
           mapped,
-          /date|yyyy|valid|future|calendar|po|testing/,
+          /future|po date|testing date/i,
+          "future meter dates not allowed",
+        );
+        break;
+      case "row_invalid_po_date":
+      case "row_invalid_testing_date":
+        this.validateRowMessageMatches(
+          mapped,
+          /date|yyyy|valid|calendar|po|testing/,
           "meter date validation",
         );
         break;

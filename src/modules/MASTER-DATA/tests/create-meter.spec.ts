@@ -15,6 +15,7 @@ import { MasterDataCommonValidator } from "../Validator/master-data-common.valid
 import { CreateMeterSuccessResponseSchema } from "../schemas/master-data.schemas";
 import { ensureMeterManufacturerContext } from "../utils/meter-manufacturer.helper";
 import { ensureValidateMeterRuntimeContext } from "../utils/validate-meter-runtime.helper";
+import { assertNegativeMasterDataHttpStatus } from "../utils/master-data-negative-outcome.helper";
 
 const SUCCESS_SCENARIOS = new Set([
   "success",
@@ -69,9 +70,16 @@ test.describe("Create Meter API", () => {
         const validator = new CreateMeterValidator();
         const mapped = CreateMeterMapper.map(responseBody);
 
-        validation.execute("Status Validation", () =>
-          expect(rawResponse.status()).toBe(testCase.expectedStatus),
-        );
+        validation.execute("Status Validation", () => {
+          if (SUCCESS_SCENARIOS.has(testCase.scenario)) {
+            expect(rawResponse.status()).toBe(testCase.expectedStatus);
+            return;
+          }
+          assertNegativeMasterDataHttpStatus(
+            rawResponse,
+            testCase.expectedStatus,
+          );
+        });
         validation.execute("Content Validation", () =>
           assert.validateContentType(rawResponse),
         );

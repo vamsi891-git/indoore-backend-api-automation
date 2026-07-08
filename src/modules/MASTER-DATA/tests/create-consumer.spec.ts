@@ -109,11 +109,19 @@ test.describe("Create Consumer API", () => {
         }
 
         if (missingRuntimeMeterSerial(testCase.scenario)) {
+          await ensureValidateMeterRuntimeContext(authenticatedApi);
+        }
+
+        if (missingRuntimeMeterSerial(testCase.scenario)) {
           test.skip(
             true,
             `Could not resolve runtime meter serial for ${testCase.scenario}`,
           );
           return;
+        }
+
+        if (needsAssignableMeter(testCase) && !hasCreateConsumerMeterPool()) {
+          await ensureConsumerMeterRuntimeContext(authenticatedApi);
         }
 
         if (needsAssignableMeter(testCase) && !hasCreateConsumerMeterPool()) {
@@ -125,6 +133,10 @@ test.describe("Create Consumer API", () => {
         }
 
         if (needsAssignableMeter(testCase) && !hasCreateConsumerMeterContext()) {
+          await ensureConsumerMeterRuntimeContext(authenticatedApi);
+        }
+
+        if (needsAssignableMeter(testCase) && !hasCreateConsumerMeterContext()) {
           test.skip(
             true,
             "validate-meter did not return organisationLookupId/networkLookupId for meter context",
@@ -133,11 +145,22 @@ test.describe("Create Consumer API", () => {
         }
 
         if (needsNearestAcctId(testCase) && !hasBulkConsumerNearestAcctId()) {
+          await ensureBulkConsumerNearestAcctId(authenticatedApi);
+        }
+
+        if (needsNearestAcctId(testCase) && !hasBulkConsumerNearestAcctId()) {
           test.skip(
             true,
             "No valid Nearest Acct. ID resolved from consumer master or env",
           );
           return;
+        }
+
+        if (
+          testCase.scenario === "consumer_id_exists" &&
+          !hasBulkConsumerExistingCid()
+        ) {
+          await ensureBulkConsumerExistingCid(authenticatedApi);
         }
 
         if (

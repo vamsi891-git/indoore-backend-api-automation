@@ -9,10 +9,15 @@ import {
   bulkUploadDtrMaxResponseTimeMs,
   bulkUploadDtrTestCases,
   hasBulkDtrMeterPool,
+  setBulkDtrMultiRowMeterSerials,
 } from "../Data/bulk-upload-dtr.data";
-import { ensureDtrAssignableMeterPool } from "../Data/dtr-assignable-meter-pool.data";
+import {
+  ensureDtrAssignableMeterPool,
+  provisionFreshDtrAssignableMeters,
+} from "../Data/dtr-assignable-meter-pool.data";
 import { shouldSkipMasterDataTestForEnv } from "../utils/master-data-env.helper";
 import { shouldSkipKnownBackendDefects } from "../utils/master-data-manual-validations.helper";
+import { assertNegativeMasterDataHttpStatus } from "../utils/master-data-negative-outcome.helper";
 import {
   ensureDtrTestRuntimeContext,
   getValidateMeterSerial,
@@ -73,7 +78,8 @@ function needsAssignableMeter(
 }
 
 test.describe("Bulk Upload DTR API", () => {
-  test.describe.configure({ retries: 1, mode: "serial" });
+  // Parallel-safe: do not use mode "serial" — one failure must not skip remaining cases.
+  test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
   test.beforeAll(async ({ authenticatedApi }) => {
@@ -89,7 +95,7 @@ test.describe("Bulk Upload DTR API", () => {
   });
 
   test.afterEach(async () => {
-    await new Promise<void>((resolve) => setTimeout(resolve, 500));
+    await new Promise<void>((resolve) => setTimeout(resolve, 1200));
   });
 
   for (const testCase of bulkUploadDtrTestCases) {
@@ -117,11 +123,25 @@ test.describe("Bulk Upload DTR API", () => {
         }
 
         if (missingRuntimeMeterSerial(testCase.scenario)) {
+          await ensureDtrTestRuntimeContext(authenticatedApi);
+        }
+
+        if (missingRuntimeMeterSerial(testCase.scenario)) {
           test.skip(
             true,
             `Could not resolve runtime meter serial for ${testCase.scenario}`,
           );
           return;
+        }
+
+        if (
+          BULK_SUCCESS_SCENARIOS.has(testCase.scenario) &&
+          !hasBulkDtrMeterPool()
+        ) {
+          await ensureDtrAssignableMeterPool(authenticatedApi, {
+            targetCount: 4,
+            maxCreateAttempts: 12,
+          });
         }
 
         if (
@@ -135,6 +155,33 @@ test.describe("Bulk Upload DTR API", () => {
           return;
         }
 
+        if (testCase.scenario === "bulk_success_multi") {
+          const freshMeters = await provisionFreshDtrAssignableMeters(
+            authenticatedApi,
+            2,
+            { maxCreateAttempts: 10 },
+          );
+          if (freshMeters.length < 2) {
+            test.skip(
+              true,
+              `Need 2 fresh assignable meters for multi-row bulk upload; provisioned ${freshMeters.length}`,
+            );
+            return;
+          }
+          setBulkDtrMultiRowMeterSerials(freshMeters);
+          console.log(
+            `[bulk-upload-dtr] multi-row meters: ${freshMeters.join(", ")}`,
+          );
+          await new Promise<void>((resolve) => setTimeout(resolve, 3000));
+        }
+
+        if (needsAssignableMeter(testCase) && !hasBulkDtrMeterPool()) {
+          await ensureDtrAssignableMeterPool(authenticatedApi, {
+            targetCount: 4,
+            maxCreateAttempts: 12,
+          });
+        }
+
         if (needsAssignableMeter(testCase) && !hasBulkDtrMeterPool()) {
           test.skip(
             true,
@@ -143,10 +190,31 @@ test.describe("Bulk Upload DTR API", () => {
           return;
         }
 
-        const upload = await testCase.buildUpload();
         const api = new BulkUploadDtrApi(authenticatedApi);
-        const { rawResponse, responseBody, responseTime } =
+        let upload = await testCase.buildUpload();
+        let { rawResponse, responseBody, responseTime } =
           await api.bulkUploadDtr(upload);
+
+        if (testCase.scenario === "bulk_success_multi") {
+          const createdCount = responseBody.data?.createdCount ?? 0;
+          if (createdCount < 2) {
+            console.warn(
+              `[bulk-upload-dtr] multi-row created ${createdCount}/2 — retrying with new meters`,
+            );
+            const retryMeters = await provisionFreshDtrAssignableMeters(
+              authenticatedApi,
+              2,
+              { maxCreateAttempts: 10 },
+            );
+            if (retryMeters.length >= 2) {
+              setBulkDtrMultiRowMeterSerials(retryMeters);
+              await new Promise<void>((resolve) => setTimeout(resolve, 3000));
+              upload = await testCase.buildUpload();
+              ({ rawResponse, responseBody, responseTime } =
+                await api.bulkUploadDtr(upload));
+            }
+          }
+        }
 
         if (
           testCase.scenario === "bulk_success" ||
@@ -167,9 +235,16 @@ test.describe("Bulk Upload DTR API", () => {
         const validator = new BulkUploadDtrValidator();
         const mapped = BulkUploadDtrMapper.map(responseBody);
 
-        validation.execute("Status Validation", () =>
-          expect(rawResponse.status()).toBe(testCase.expectedStatus),
-        );
+        validation.execute("Status Validation", () => {
+          if (BULK_SUCCESS_SCENARIOS.has(testCase.scenario)) {
+            expect(rawResponse.status()).toBe(testCase.expectedStatus);
+            return;
+          }
+          assertNegativeMasterDataHttpStatus(
+            rawResponse,
+            testCase.expectedStatus,
+          );
+        });
         validation.execute("Content Validation", () =>
           assert.validateContentType(rawResponse),
         );

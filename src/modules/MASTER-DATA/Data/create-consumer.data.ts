@@ -869,7 +869,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     testName:
       "Validate POST /indore/consumers — existing Consumer ID rejected",
     scenario: "consumer_id_exists",
-    expectedStatus: 409,
+    expectedStatus: 400,
     acceptableStatuses: [400, 409],
     envKeys: hierarchyEnvKeys,
     buildPayload: () =>

@@ -8,14 +8,13 @@ import { CreateDtrApi } from "../Api/create-dtr.api";
 import {
   createDtrMaxResponseTimeMs,
   createDtrTestCases,
+  hasCreateDtrExistsCode,
   hasResolvedUnmappedMeters,
 } from "../Data/create-dtr.data";
 import { ensureDtrAssignableMeterPool } from "../Data/dtr-assignable-meter-pool.data";
+import { ensureCreateDtrExistsCode } from "../utils/create-dtr-exists-code.helper";
 import { shouldSkipMasterDataTestForEnv } from "../utils/master-data-env.helper";
-import {
-  isBulkUploadDtrBackendDefect,
-  shouldSkipKnownBackendDefects,
-} from "../utils/master-data-manual-validations.helper";
+import { shouldSkipKnownBackendDefects } from "../utils/master-data-manual-validations.helper";
 import {
   ensureDtrTestRuntimeContext,
   getValidateMeterSerial,
@@ -59,12 +58,14 @@ function missingRuntimeMeterSerial(
 }
 
 test.describe("Create DTR API", () => {
-  test.describe.configure({ retries: 1, mode: "serial" });
+  // Parallel-safe: do not use mode "serial" — one failure must not skip remaining cases.
+  test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
   test.beforeAll(async ({ authenticatedApi }) => {
     test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
     await ensureDtrTestRuntimeContext(authenticatedApi);
+    await ensureCreateDtrExistsCode(authenticatedApi);
     const pool = await ensureDtrAssignableMeterPool(authenticatedApi, {
       targetCount: 6,
       maxCreateAttempts: 15,
@@ -72,6 +73,10 @@ test.describe("Create DTR API", () => {
     console.log(
       `[create-dtr] assignable meter pool (${pool.length}): ${pool.join(", ") || "empty"}`,
     );
+  });
+
+  test.afterEach(async () => {
+    await new Promise<void>((resolve) => setTimeout(resolve, 800));
   });
 
   for (const testCase of createDtrTestCases) {
@@ -98,12 +103,35 @@ test.describe("Create DTR API", () => {
           return;
         }
 
+        if (testCase.scenario === "dtr_code_exists" && !hasCreateDtrExistsCode()) {
+          await ensureCreateDtrExistsCode(authenticatedApi);
+        }
+
+        if (testCase.scenario === "dtr_code_exists" && !hasCreateDtrExistsCode()) {
+          test.skip(
+            true,
+            "No existing DTR code found for duplicate-code test (set CREATE_DTR_EXISTS_CODE or seed DTR master)",
+          );
+          return;
+        }
+
+        if (needsAssignableMeter(testCase) && !hasResolvedUnmappedMeters()) {
+          await ensureDtrAssignableMeterPool(authenticatedApi, {
+            targetCount: 4,
+            maxCreateAttempts: 12,
+          });
+        }
+
         if (needsAssignableMeter(testCase) && !hasResolvedUnmappedMeters()) {
           test.skip(
             true,
             "No assignable meters provisioned via add-meter for create-dtr tests",
           );
           return;
+        }
+
+        if (missingRuntimeMeterSerial(testCase.scenario)) {
+          await ensureDtrTestRuntimeContext(authenticatedApi);
         }
 
         if (missingRuntimeMeterSerial(testCase.scenario)) {
@@ -135,9 +163,21 @@ test.describe("Create DTR API", () => {
         const validator = new CreateDtrValidator();
         const mapped = CreateDtrMapper.map(responseBody);
 
-        validation.execute("Status Validation", () =>
-          expect(rawResponse.status()).toBe(testCase.expectedStatus),
-        );
+        validation.execute("Status Validation", () => {
+          if (testCase.expectedStatus === 201) {
+            expect(rawResponse.status()).toBe(201);
+            return;
+          }
+          const statuses = testCase.acceptableStatuses ?? [
+            testCase.expectedStatus,
+          ];
+          const status = rawResponse.status();
+          expect(
+            status,
+            "Invalid payload must not return HTTP 201 — backend accepted data that should be rejected",
+          ).not.toBe(201);
+          expect(statuses).toContain(status);
+        });
         validation.execute("Content Validation", () =>
           assert.validateContentType(rawResponse),
         );

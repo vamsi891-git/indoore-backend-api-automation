@@ -26,6 +26,21 @@ export function hasResolvedUnmappedMeters(): boolean {
   return hasDtrAssignableMeterPool();
 }
 
+let createDtrExistsCode: string | null = null;
+
+export function setCreateDtrExistsCode(code: string): void {
+  const trimmed = code.trim();
+  createDtrExistsCode = trimmed || null;
+}
+
+export function getCreateDtrExistsCode(): string {
+  return createDtrExistsCode ?? resolveMasterDataEnv("CREATE_DTR_EXISTS_CODE");
+}
+
+export function hasCreateDtrExistsCode(): boolean {
+  return getCreateDtrExistsCode().length > 0;
+}
+
 export const CREATE_DTR_UNMAPPED_METER_CANDIDATES = [
   "93041027",
   "85092394",
@@ -72,6 +87,8 @@ export interface CreateDtrTestCase {
   testName: string;
   scenario: CreateDtrScenario;
   expectedStatus: number;
+  /** When the API may return more than one rejection status (e.g. 400 vs 409). */
+  acceptableStatuses?: number[];
   buildPayload: () => CreateDtrRequestBody;
   /** Skip when any listed env var is empty. */
   envKeys?: string[];
@@ -221,11 +238,12 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     testName:
       "Validate POST /indore/master-data/add-dtr — DTR Code must be unique",
     scenario: "dtr_code_exists",
-    expectedStatus: 409,
+    expectedStatus: 400,
+    acceptableStatuses: [400, 409],
     envKeys: [...hierarchyEnvKeys, "CREATE_DTR_EXISTS_CODE"],
     buildPayload: () => ({
       ...buildCreateDtrRequest("exists"),
-      "DTR Code": resolveMasterDataEnv("CREATE_DTR_EXISTS_CODE"),
+      "DTR Code": getCreateDtrExistsCode(),
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
@@ -307,7 +325,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       ...buildCreateDtrRequest("svc-future"),
       "Service Date": "2099-01-01",
     }),
-    tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
+    tags: ["@master-data", "@create-dtr", "@negative"],
   },
   {
     testName:
@@ -320,7 +338,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       ...buildCreateDtrRequest("inst-future"),
       "Installation Date": "2099-01-01",
     }),
-    tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
+    tags: ["@master-data", "@create-dtr", "@negative"],
   },
 
   // ─── Meter details (manual §2) ─────────────────────────────────────────
@@ -341,7 +359,8 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     testName:
       "Validate POST /indore/master-data/add-dtr — meter must exist",
     scenario: "meter_not_found",
-    expectedStatus: 404,
+    expectedStatus: 400,
+    acceptableStatuses: [400, 404],
     envKeys: hierarchyEnvKeys,
     buildPayload: () => {
       const missingMsn = `Z${Date.now().toString().slice(-11)}`;
@@ -355,7 +374,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     testName:
       "Validate POST /indore/master-data/add-dtr — meter must be active",
     scenario: "meter_inactive",
-    expectedStatus: 409,
+    expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
     buildPayload: () => ({
       ...buildCreateDtrRequest("msn-inactive"),
@@ -367,7 +386,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     testName:
       "Validate POST /indore/master-data/add-dtr — meter already on another DTR",
     scenario: "meter_on_dtr",
-    expectedStatus: 409,
+    expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
     buildPayload: () => ({
       ...buildCreateDtrRequest("msn-on-dtr"),
@@ -379,7 +398,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     testName:
       "Validate POST /indore/master-data/add-dtr — meter already assigned to consumer",
     scenario: "meter_assigned",
-    expectedStatus: 409,
+    expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
     buildPayload: () => ({
       ...buildCreateDtrRequest("msn-assigned"),

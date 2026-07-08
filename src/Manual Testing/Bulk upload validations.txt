@@ -123,9 +123,10 @@ Spec: src/modules/MASTER-DATA/tests/create-dtr.spec.ts
 Reference: DTR Bulk Upload Validations (sections 1–4 above) + Consumer Bulk §3 (Meter Initial Reading)
 Last run: automation aligned to DTR Bulk §1–§4; @backend-defect cases fail only when API accepts invalid data.
 
-Rule: If API behaviour mismatches the validations above → test FAILS (@backend-defect).
-      If API correctly rejects invalid data → test PASSES.
-      Set MASTER_DATA_SKIP_BACKEND_DEFECTS=1 to skip known-defect cases for a green automation run.
+Rule: Negative test → PASS when API rejects (HTTP 400/404/409, success=false, validation error).
+      Negative test → FAIL only when API accepts invalid data (HTTP 201, success=true, row CREATED).
+      Current/today dates are valid; future dates (e.g. 2099-01-01) must be rejected.
+      Set MASTER_DATA_SKIP_BACKEND_DEFECTS=1 to skip @backend-defect cases for a green automation run.
 
 --------------------------------------------------------------------------------
 FAILED — Backend accepts invalid payload (returns 201 instead of rejecting)
@@ -139,23 +140,7 @@ FAILED — Backend accepts invalid payload (returns 201 instead of rejecting)
    Defect:   Zero capacity is accepted.
    Tag:      @backend-defect
 
-2. Future Service Date rejected
-   Manual ref: DTR Bulk Upload §4 — "Future dates are not allowed"
-   Test payload: "Service Date" = 2099-01-01
-   Expected: HTTP 400, validation error for Service Date
-   Actual:   HTTP 201, DTR created with future date
-   Defect:   Future service date is accepted.
-   Tag:      @backend-defect
-
-3. Future Installation Date rejected
-   Manual ref: DTR Bulk Upload §4 — "Future dates are not allowed"
-   Test payload: "Installation Date" = 2099-01-01
-   Expected: HTTP 400, validation error for Installation Date
-   Actual:   HTTP 201, DTR created with future date
-   Defect:   Future installation date is accepted.
-   Tag:      @backend-defect
-
-4. Meter must exist
+2. Meter must exist
    Manual ref: DTR Bulk Upload §2 — "Meter must exist"
    Test payload: MSN = non-existent serial (e.g. Z{timestamp})
    Expected: HTTP 404, error code METER_NOT_FOUND
@@ -215,6 +200,8 @@ PASSED — API correctly enforces (examples)
 - Service Point ID required
 - SIM No. / Modem Serial Number required
 - Date format YYYY-MM-DD (invalid format rejected)
+- Future Service Date rejected (2099-01-01 → HTTP 400, "Service Date must not be a future date")
+- Future Installation Date rejected (2099-01-01 → HTTP 400)
 - MSN required
 - IMSI / IP Address format validation
 - Meter already on another DTR (409)
@@ -240,8 +227,16 @@ Endpoint: POST /indore/master-data/bulk-upload-dtr
 Spec: src/modules/MASTER-DATA/tests/bulk-upload-dtr.spec.ts
 Reference: DTR Bulk Upload Validations (sections 1–4 above)
 
-Rule: If API behaviour mismatches the validations above → test FAILS.
-      If API correctly rejects invalid data → test PASSES.
+Rule: Negative test → PASS when API rejects (HTTP 400, success=false, row VALIDATION_FAILED).
+      Negative test → FAIL only when API accepts invalid data (HTTP 201, createdCount > 0).
+      Current/today Service Date is valid; future dates must be rejected.
+
+--------------------------------------------------------------------------------
+PASSED — API correctly enforces (bulk-upload-dtr)
+--------------------------------------------------------------------------------
+- Future Service Date rejected — "Service Date" = 2099-01-01 → HTTP 400, row VALIDATION_FAILED
+- Future EntryDateTime rejected — EntryDateTime = 2099-01-01 → HTTP 400, row VALIDATION_FAILED
+- Invalid Service Date format rejected
 
 --------------------------------------------------------------------------------
 FAILED — Backend defect (bulk-upload-dtr)

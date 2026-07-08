@@ -17,6 +17,7 @@ import {
   BulkUploadMetersSuccessResponseSchema,
 } from "../schemas/master-data.schemas";
 import { shouldSkipMasterDataTestForEnv } from "../utils/master-data-env.helper";
+import { assertNegativeMasterDataHttpStatus } from "../utils/master-data-negative-outcome.helper";
 import {
   ensureValidateMeterRuntimeContext,
   getValidateMeterSerial,
@@ -58,6 +59,10 @@ test.describe("Bulk Upload Meters API", () => {
   test.beforeAll(async ({ authenticatedApi }) => {
     test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
     await ensureValidateMeterRuntimeContext(authenticatedApi);
+  });
+
+  test.afterEach(async () => {
+    await new Promise<void>((resolve) => setTimeout(resolve, 1200));
   });
 
   for (const testCase of bulkUploadMetersTestCases) {
@@ -102,9 +107,16 @@ test.describe("Bulk Upload Meters API", () => {
         const validator = new BulkUploadMetersValidator();
         const mapped = BulkUploadMetersMapper.map(responseBody);
 
-        validation.execute("Status Validation", () =>
-          expect(rawResponse.status()).toBe(testCase.expectedStatus),
-        );
+        validation.execute("Status Validation", () => {
+          if (BULK_SUCCESS_SCENARIOS.has(testCase.scenario)) {
+            expect(rawResponse.status()).toBe(testCase.expectedStatus);
+            return;
+          }
+          assertNegativeMasterDataHttpStatus(
+            rawResponse,
+            testCase.expectedStatus,
+          );
+        });
         validation.execute("Content Validation", () =>
           assert.validateContentType(rawResponse),
         );

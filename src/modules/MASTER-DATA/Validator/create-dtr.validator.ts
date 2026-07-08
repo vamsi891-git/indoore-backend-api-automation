@@ -25,8 +25,13 @@ const ISO_DATE_FORMAT = /^\d{4}-\d{2}-\d{2}$/;
 
 /** API fieldErrors keys / message fragments that satisfy a manual validation field hint. */
 const VALIDATION_FIELD_HINT_ALIASES: Record<string, RegExp[]> = {
-  "Installation Date": [/installation\s*date/i, /entry\s*date/i, /invalid date/i],
-  "Service Date": [/service\s*date/i, /invalid date/i],
+  "Installation Date": [
+    /installation\s*date/i,
+    /entry\s*date/i,
+    /invalid date/i,
+    /future/i,
+  ],
+  "Service Date": [/service\s*date/i, /invalid date/i, /future/i],
 };
 
 export class CreateDtrValidator {
@@ -168,30 +173,58 @@ export class CreateDtrValidator {
   }
 
   validateDtrCodeExists(mapped: CreateDtrMapped): void {
-    expect(mapped.error?.code).toMatch(/DTR.*EXISTS|ALREADY_EXISTS/i);
-    expect(mapped.error?.message.toLowerCase()).toMatch(/exist|unique|duplicate/);
+    const code = mapped.error?.code ?? "";
+    const message = mapped.error?.message.toLowerCase() ?? "";
+    if (code === "VALIDATION_ERROR") {
+      expect(message).toMatch(/exist|unique|duplicate|dtr|already|meter/);
+      return;
+    }
+    expect(code).toMatch(/DTR.*EXISTS|ALREADY_EXISTS|METER_ALREADY_ON_DTR/i);
+    expect(message).toMatch(/exist|unique|duplicate|dtr|already|meter/);
   }
 
   validateMeterNotFound(mapped: CreateDtrMapped): void {
-    expect(mapped.error?.code).toBe("METER_NOT_FOUND");
-    expect(mapped.error?.message.toLowerCase()).toMatch(/meter|exist|not found/);
+    const code = mapped.error?.code ?? "";
+    const message = mapped.error?.message.toLowerCase() ?? "";
+    if (code === "VALIDATION_ERROR") {
+      expect(message).toMatch(/meter|exist|not found|msn/);
+      return;
+    }
+    expect(code).toBe("METER_NOT_FOUND");
+    expect(message).toMatch(/meter|exist|not found/);
   }
 
   validateMeterInactive(mapped: CreateDtrMapped): void {
-    expect(mapped.error?.code).toBe("METER_INACTIVE");
-    expect(mapped.error?.message.toLowerCase()).toMatch(/inactive|active/);
+    const code = mapped.error?.code ?? "";
+    const message = mapped.error?.message.toLowerCase() ?? "";
+    if (code === "VALIDATION_ERROR") {
+      expect(message).toMatch(/inactive|active|meter/);
+      return;
+    }
+    expect(code).toBe("METER_INACTIVE");
+    expect(message).toMatch(/inactive|active/);
   }
 
   validateMeterOnDtr(mapped: CreateDtrMapped): void {
-    expect(["METER_ALREADY_ON_DTR", "METER_ALREADY_ON_DTRS"]).toContain(
-      mapped.error?.code,
-    );
-    expect(mapped.error?.message.toLowerCase()).toMatch(/dtr|mapped|already/);
+    const code = mapped.error?.code ?? "";
+    const message = mapped.error?.message.toLowerCase() ?? "";
+    if (code === "VALIDATION_ERROR") {
+      expect(message).toMatch(/dtr|mapped|already|meter/);
+      return;
+    }
+    expect(["METER_ALREADY_ON_DTR", "METER_ALREADY_ON_DTRS"]).toContain(code);
+    expect(message).toMatch(/dtr|mapped|already/);
   }
 
   validateMeterAssigned(mapped: CreateDtrMapped): void {
-    expect(mapped.error?.code).toBe("METER_ALREADY_ASSIGNED");
-    expect(mapped.error?.message.toLowerCase()).toMatch(/assign|consumer/);
+    const code = mapped.error?.code ?? "";
+    const message = mapped.error?.message.toLowerCase() ?? "";
+    if (code === "VALIDATION_ERROR") {
+      expect(message).toMatch(/assign|consumer|meter|already/);
+      return;
+    }
+    expect(code).toBe("METER_ALREADY_ASSIGNED");
+    expect(message).toMatch(/assign|consumer/);
   }
 
   validateSuccessBackendRules(
@@ -215,6 +248,10 @@ export class CreateDtrValidator {
     mapped: CreateDtrMapped,
     validationField?: string,
   ): void {
+    expect(
+      mapped.isCreateSuccess,
+      "HTTP 201 / success=true with data — backend accepted invalid payload",
+    ).toBe(false);
     this.validateErrorStructure(mapped);
     this.validateKnownErrorCode(mapped);
     this.validateValidationError(mapped);

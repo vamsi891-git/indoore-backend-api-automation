@@ -374,11 +374,17 @@ export class BulkUploadDtrValidator {
         );
         break;
       case "row_future_service_date":
+        this.validateRowMessageMatches(
+          mapped,
+          /service date.*future|future.*service date/i,
+          "Service Date must not be a future date",
+        );
+        break;
       case "row_future_entry_date":
         this.validateRowMessageMatches(
           mapped,
-          /date|future|valid|service|entry/,
-          "future dates not allowed",
+          /entry.*future|future.*entry/i,
+          "EntryDateTime must not be a future date",
         );
         break;
       case "row_reading_zero":

@@ -47,8 +47,8 @@ jobs:
       INVITE_E2E_EMAIL: ${{ secrets.INVITE_E2E_EMAIL }}
       INVITE_E2E_INVITATION_ID: ${{ secrets.INVITE_E2E_INVITATION_ID }}
       REPORT_MAIL_TO: vamsibst@gmail.com
-      # Green CI for known backend gaps (@backend-defect) until API fixes ship
-      MASTER_DATA_SKIP_BACKEND_DEFECTS: "1"
+      # Run @backend-defect tests in CI (set repository variable MASTER_DATA_SKIP_BACKEND_DEFECTS=1 to skip them)
+      MASTER_DATA_SKIP_BACKEND_DEFECTS: ${{ vars.MASTER_DATA_SKIP_BACKEND_DEFECTS || '0' }}
       # PostgreSQL — optional API-vs-DB validation (set DB_* repository secrets)
       DB_HOST: ${{ secrets.DB_HOST }}
       DB_PORT: ${{ secrets.DB_PORT || '5432' }}
@@ -128,7 +128,10 @@ jobs:
             echo "All optional secrets configured."
           fi
           echo "Module: ${{ github.event.inputs.module }} (scope: ${{ github.event.inputs.scope }})"
-          echo "MASTER_DATA_SKIP_BACKEND_DEFECTS=$MASTER_DATA_SKIP_BACKEND_DEFECTS"
+          echo "MASTER_DATA_SKIP_BACKEND_DEFECTS=${MASTER_DATA_SKIP_BACKEND_DEFECTS:-0} (set repo variable MASTER_DATA_SKIP_BACKEND_DEFECTS=1 to skip @backend-defect)"
+          if [ -z "$DB_HOST" ]; then
+            echo "::notice title=DB tests will skip::Add DB_HOST, DB_USER, DB_PASSWORD secrets to run master-data.db.spec.ts (@db)"
+          fi
           echo "Master Data hierarchy: zone=$BULK_DTR_ZONE_NAME substation=$BULK_DTR_SUBSTATION_NAME feeder=$BULK_DTR_FEEDER_NAME"
           echo "Create DTR lookups: org=$CREATE_DTR_ORGANISATION_LOOKUP_ID substation=$CREATE_DTR_SUBSTATION_NETWORK_LOOKUP_ID feeder=$CREATE_DTR_FEEDER_NETWORK_LOOKUP_ID"
 

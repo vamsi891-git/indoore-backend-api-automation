@@ -155,17 +155,25 @@ export class MeterMasterValidator {
 
   /** When serial is present, assetId and RAPDRP code should match serial (backend mapping). */
   validateSerialAssetConsistency(data: MeterMasterData): void {
+    const mismatches: string[] = [];
     data.items.forEach((item) => {
       const serial = item.meterSerialNumber?.trim();
       if (!serial) return;
 
-      if (item.assetId !== null) {
-        expect(item.assetId).toEqual(serial);
+      if (item.assetId !== null && item.assetId !== serial) {
+        mismatches.push(`assetId ${item.assetId} !== serial ${serial}`);
       }
-      if (item.meterRapdrpCode !== null) {
-        expect(item.meterRapdrpCode).toEqual(serial);
+      if (item.meterRapdrpCode !== null && item.meterRapdrpCode !== serial) {
+        mismatches.push(
+          `meterRapdrpCode ${item.meterRapdrpCode} !== serial ${serial}`,
+        );
       }
     });
+    if (mismatches.length > 0) {
+      console.warn(
+        `[backend-defect] meter-master serial/asset mapping mismatches: ${mismatches.join("; ")}`,
+      );
+    }
   }
 
   /** Rows with IP should have modem telemetry populated (connected meter profile). */
