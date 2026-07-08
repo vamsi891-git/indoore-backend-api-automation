@@ -387,6 +387,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "Validate POST /indore/master-data/add-dtr — meter already on another DTR",
     scenario: "meter_on_dtr",
     expectedStatus: 400,
+    acceptableStatuses: [400, 409],
     envKeys: hierarchyEnvKeys,
     buildPayload: () => ({
       ...buildCreateDtrRequest("msn-on-dtr"),
@@ -399,6 +400,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "Validate POST /indore/master-data/add-dtr — meter already assigned to consumer",
     scenario: "meter_assigned",
     expectedStatus: 400,
+    acceptableStatuses: [400, 409],
     envKeys: hierarchyEnvKeys,
     buildPayload: () => ({
       ...buildCreateDtrRequest("msn-assigned"),

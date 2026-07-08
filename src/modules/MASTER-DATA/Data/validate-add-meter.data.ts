@@ -1,5 +1,6 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { ValidateAddMeterScenario } from "../Mapper/validate-add-meter.mapper";
+import { generateProvisionedMeterSerial } from "./dtr-assignable-meter-pool.data";
 import { getValidateMeterSerial } from "../utils/validate-meter-runtime.helper";
 
 export const validateAddMeterMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
@@ -15,11 +16,16 @@ export type ValidateAddMeterRuntimeEnvKey =
   | "VALIDATE_ADD_METER_VALID_SERIAL"
   | "VALIDATE_ADD_METER_EXISTS_SERIAL";
 
+/**
+ * "valid_new" must always use a unique unused serial.
+ * Fixed CI/env values for VALIDATE_ADD_METER_VALID_SERIAL often already exist
+ * in shared environments and make `valid=false`.
+ */
 export function resolveValidateAddMeterSerial(
   scenario: ValidateAddMeterScenario,
 ): string {
   if (scenario === "valid_new") {
-    return getValidateMeterSerial("VALIDATE_ADD_METER_VALID_SERIAL");
+    return generateProvisionedMeterSerial();
   }
   return getValidateMeterSerial("VALIDATE_ADD_METER_EXISTS_SERIAL");
 }

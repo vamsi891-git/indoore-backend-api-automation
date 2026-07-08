@@ -196,23 +196,33 @@ test.describe("Bulk Upload DTR API", () => {
           await api.bulkUploadDtr(upload);
 
         if (testCase.scenario === "bulk_success_multi") {
-          const createdCount = responseBody.data?.createdCount ?? 0;
-          if (createdCount < 2) {
+          for (let attempt = 1; attempt <= 2; attempt += 1) {
+            const createdCount = responseBody.data?.createdCount ?? 0;
+            if (createdCount >= 2) {
+              break;
+            }
+            const failedRows = (responseBody.data?.rowResults ?? [])
+              .filter((row) => row.status !== "CREATED")
+              .map(
+                (row) =>
+                  `row ${row.rowNumber} ${row.meterSerialNumber}: ${row.message ?? row.status}`,
+              );
             console.warn(
-              `[bulk-upload-dtr] multi-row created ${createdCount}/2 — retrying with new meters`,
+              `[bulk-upload-dtr] multi-row created ${createdCount}/2 (attempt ${attempt}/2): ${failedRows.join("; ") || "no row detail"} — retrying with new meters`,
             );
             const retryMeters = await provisionFreshDtrAssignableMeters(
               authenticatedApi,
               2,
-              { maxCreateAttempts: 10 },
+              { maxCreateAttempts: 12 },
             );
-            if (retryMeters.length >= 2) {
-              setBulkDtrMultiRowMeterSerials(retryMeters);
-              await new Promise<void>((resolve) => setTimeout(resolve, 3000));
-              upload = await testCase.buildUpload();
-              ({ rawResponse, responseBody, responseTime } =
-                await api.bulkUploadDtr(upload));
+            if (retryMeters.length < 2) {
+              break;
             }
+            setBulkDtrMultiRowMeterSerials(retryMeters);
+            await new Promise<void>((resolve) => setTimeout(resolve, 4000));
+            upload = await testCase.buildUpload();
+            ({ rawResponse, responseBody, responseTime } =
+              await api.bulkUploadDtr(upload));
           }
         }
 
