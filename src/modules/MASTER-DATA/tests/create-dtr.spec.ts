@@ -11,7 +11,10 @@ import {
   hasCreateDtrExistsCode,
   hasResolvedUnmappedMeters,
 } from "../Data/create-dtr.data";
-import { ensureDtrAssignableMeterPool } from "../Data/dtr-assignable-meter-pool.data";
+import {
+  ensureDtrAssignableMeterPool,
+  provisionFreshDtrAssignableMeters,
+} from "../Data/dtr-assignable-meter-pool.data";
 import { ensureCreateDtrExistsCode } from "../utils/create-dtr-exists-code.helper";
 import { shouldSkipMasterDataTestForEnv } from "../utils/master-data-env.helper";
 import { shouldSkipKnownBackendDefects } from "../utils/master-data-manual-validations.helper";
@@ -142,10 +145,58 @@ test.describe("Create DTR API", () => {
           return;
         }
 
-        const requestBody = testCase.buildPayload();
+        let requestBody = testCase.buildPayload();
+
+        // Success must use a brand-new assignable meter — pool meters can be
+        // consumed/stale after earlier negatives (esp. @backend-defect creates).
+        if (testCase.scenario === "success") {
+          const fresh = await provisionFreshDtrAssignableMeters(
+            authenticatedApi,
+            1,
+            { maxCreateAttempts: 10 },
+          );
+          if (!fresh[0]) {
+            test.skip(
+              true,
+              "Could not provision a fresh assignable meter for create-dtr success",
+            );
+            return;
+          }
+          requestBody = {
+            ...requestBody,
+            MSN: fresh[0],
+          };
+          console.log(`[create-dtr] success meter: ${fresh[0]}`);
+          await new Promise<void>((resolve) => setTimeout(resolve, 1500));
+        }
+
         const api = new CreateDtrApi(authenticatedApi);
-        const { rawResponse, responseBody, responseTime } =
+        let { rawResponse, responseBody, responseTime } =
           await api.createDtr(requestBody);
+
+        // One retry on 409 for success — usually modem/SIM collision from prior runs.
+        if (
+          testCase.scenario === "success" &&
+          rawResponse.status() === 409
+        ) {
+          console.warn(
+            `[create-dtr] success got 409 — reprovisioning meter and unique modem fields`,
+          );
+          const retryMeters = await provisionFreshDtrAssignableMeters(
+            authenticatedApi,
+            1,
+            { maxCreateAttempts: 10 },
+          );
+          if (retryMeters[0]) {
+            requestBody = {
+              ...testCase.buildPayload(),
+              MSN: retryMeters[0],
+            };
+            await new Promise<void>((resolve) => setTimeout(resolve, 2000));
+            ({ rawResponse, responseBody, responseTime } =
+              await api.createDtr(requestBody));
+          }
+        }
 
         if (testCase.scenario === "success") {
           console.log(JSON.stringify(responseBody, null, 2));

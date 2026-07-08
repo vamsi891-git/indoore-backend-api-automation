@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto";
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { CreateDtrScenario } from "../Mapper/create-dtr.mapper";
 import {
@@ -144,6 +145,47 @@ function isoToday(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+function hashSeed(seed: string): number {
+  let hash = 2_166_136_261;
+  for (let i = 0; i < seed.length; i += 1) {
+    hash ^= seed.charCodeAt(i);
+    hash = Math.imul(hash, 1_677_761_9);
+  }
+  return hash >>> 0;
+}
+
+function uniqueFifteenDigitId(seed: string): string {
+  const digits = `${seed}${Date.now()}${Math.floor(Math.random() * 10000)}`.replace(
+    /\D/g,
+    "",
+  );
+  return digits.padEnd(15, "7").slice(0, 15);
+}
+
+/** Per-request modem identity — hardcoded SIM/IP/IMEI caused 409 collisions in CI. */
+function uniqueModemFields(seed: string): {
+  servicePointId: string;
+  simNumber: string;
+  imsiNumber: string;
+  mobileNumber: string;
+  ipAddress: string;
+  modemSerial: string;
+  modemImei: string;
+} {
+  const nonce = randomBytes(6).toString("hex");
+  const identitySeed = `${seed}-${nonce}`;
+  const hash = hashSeed(identitySeed);
+  return {
+    servicePointId: `SP${hash.toString(36)}${nonce}`.slice(0, 24),
+    simNumber: `99${String(hash % 100_000_000).padStart(8, "0")}`,
+    imsiNumber: uniqueFifteenDigitId(`imsi-${identitySeed}`),
+    mobileNumber: `9${String((hash % 1_000_000_000) + 100_000_000).slice(0, 9)}`,
+    ipAddress: `10.${20 + (hash % 30)}.${10 + ((hash >>> 8) % 200)}.${10 + ((hash >>> 16) % 200)}`,
+    modemSerial: `MOD${nonce}${String(hash % 1_000_000).padStart(6, "0")}`,
+    modemImei: uniqueFifteenDigitId(`imei-${identitySeed}`),
+  };
+}
+
 function hierarchyFromEnv(): Pick<
   CreateDtrRequestBody,
   | "organisationLookupId"
@@ -172,12 +214,13 @@ export function buildCreateDtrRequest(
 ): CreateDtrRequestBody {
   const today = isoToday();
   const msn = options?.msn ?? nextUnmappedMeterSerial();
-  const stamp = `${label}${String(Date.now()).slice(-6)}`;
+  const stamp = `${label}${Date.now()}${Math.floor(Math.random() * 1000)}`;
+  const modem = uniqueModemFields(`${label}-${msn}-${stamp}`);
 
   return {
     ...hierarchyFromEnv(),
     "DTR Code": uniqueDtrCode(),
-    "DTR Name": `Auto DTR ${label}`,
+    "DTR Name": `Auto DTR ${stamp}`,
     "DTR Capacity (KVA)": 25,
     Status: "active",
     "Service Date": today,
@@ -187,19 +230,19 @@ export function buildCreateDtrRequest(
       "CREATE_DTR_MAIN_SUB_METER_TBL_REF_ID",
       1,
     ),
-    "Service Point ID": `SP${stamp}`,
+    "Service Point ID": modem.servicePointId,
     "Meter Phase": resolveMasterDataEnvInt("CREATE_DTR_METER_PHASE_TBL_REF_ID", 1),
     "Connected To DCU": true,
-    "SIM No.": "9900000001",
-    "IMSI No.": "404010123456789",
-    "Mobile No. (Meter)": "9876543210",
-    "IP Address": "192.168.1.100",
-    "Modem Serial Number": `MOD${stamp}`,
-    "Modem IMEI": "359072069367200",
+    "SIM No.": modem.simNumber,
+    "IMSI No.": modem.imsiNumber,
+    "Mobile No. (Meter)": modem.mobileNumber,
+    "IP Address": modem.ipAddress,
+    "Modem Serial Number": modem.modemSerial,
+    "Modem IMEI": modem.modemImei,
     "Meter Initial Reading": 1,
-    Latitude: "22.7196",
-    Longitude: "75.8577",
-    "DTR Address": "Test address",
+    Latitude: `22.${String(710_000 + (hashSeed(stamp) % 90_000)).padStart(6, "0")}`,
+    Longitude: `75.${String(850_000 + (hashSeed(`${stamp}-lng`) % 50_000)).padStart(6, "0")}`,
+    "DTR Address": `Test address ${stamp.slice(0, 16)}`,
     Remarks: "Automation create-dtr",
   };
 }
