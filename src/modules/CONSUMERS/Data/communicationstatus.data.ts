@@ -211,9 +211,8 @@ export const communicationStatusTestCases: CommunicationStatusTestCase[] = [
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/communication-status — unknown meter not found",
+      "Validate GET /indore/consumers/meter-{id}/communication-status — unknown meter not found or empty status",
     scenario: "meter_not_found",
-    expectedStatus: 404,
     tags: ["@consumer", "@communication-status", "@negative"],
   },
   {

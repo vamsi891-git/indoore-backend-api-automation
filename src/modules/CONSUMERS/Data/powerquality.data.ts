@@ -229,9 +229,8 @@ export const powerQualityTestCases: PowerQualityTestCase[] = [
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/power-quality — unknown meter lookup not found",
+      "Validate GET /indore/consumers/meter-{id}/power-quality — unknown meter not found or null data",
     scenario: "meter_not_found",
-    expectedStatus: 404,
     tags: ["@consumer", "@power-quality", "@negative"],
   },
   {

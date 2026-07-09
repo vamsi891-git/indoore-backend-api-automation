@@ -141,9 +141,10 @@ export class CommunicationStatusValidator {
     this.validateStatusData(mapped.data as CommunicationStatusData, expectedDate);
   }
 
-  validateZeroIntervalsContract(mapped: MappedCommunicationStatus) {
-    this.validateLiveOk(mapped, "2026-06-22");
-    const data = mapped.data as CommunicationStatusData;
+  validateZeroIntervals(data: CommunicationStatusData, expectedDate?: string) {
+    if (expectedDate) {
+      expect(data.date).toBe(expectedDate);
+    }
     expect(data.intervals.receivedToday).toBe(0);
     expect(data.intervals.display).toBe("00:00 (0%)");
     expect(data.intervals.subtitle).toBe("Intervals (0/96 Per Day)");
@@ -151,6 +152,23 @@ export class CommunicationStatusValidator {
     expect(data.delayed.display).toBe("00:00");
     expect(data.delayed.delaySeconds).toBe(0);
     expect(data.latestReadingDateTime).toBeUndefined();
+  }
+
+  validateZeroIntervalsContract(mapped: MappedCommunicationStatus) {
+    this.validateLiveOk(mapped, "2026-06-22");
+    this.validateZeroIntervals(mapped.data as CommunicationStatusData, "2026-06-22");
+  }
+
+  /**
+   * Widget resilience — unknown meter routes return HTTP 200 with
+   * getEmptyConsumerCommunicationStatus (zero intervals / no readings).
+   */
+  validateGracefulEmptyFallback(
+    mapped: MappedCommunicationStatus,
+    expectedDate?: string,
+  ) {
+    this.validateLiveOk(mapped, expectedDate);
+    this.validateZeroIntervals(mapped.data as CommunicationStatusData, expectedDate);
   }
 
   validateWithReadingsContract(mapped: MappedCommunicationStatus) {
@@ -184,6 +202,9 @@ export class CommunicationStatusValidator {
         break;
       case "status_default_today":
         this.validateLiveOk(mapped);
+        break;
+      case "meter_not_found":
+        this.validateGracefulEmptyFallback(mapped, expectedDate);
         break;
       default:
         break;

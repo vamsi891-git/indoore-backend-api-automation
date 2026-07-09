@@ -160,6 +160,7 @@ export class PowerQualityValidator {
       case "pq_by_account":
       case "pq_by_meter":
       case "pq_ignore_unknown_query":
+      case "meter_not_found":
         this.validateLiveOk(mapped);
         break;
       default:

@@ -1,20 +1,28 @@
-import { APIRequestContext,  APIResponse } from "@playwright/test";
+import { TimedApiClient } from "../../../core/base/timed-api.client";
+import { ApiCallResult } from "../../../core/models/api-result.model";
 import { EventLogCardsResponse } from "../Mapper/eventlogcards.mapper";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
-export interface EventLogCardsApiResult {
-    rawResponse: APIResponse;
-    responseBody: EventLogCardsResponse;
-    responseTime: number;
+
+export type EventLogCardsApiResult = ApiCallResult<EventLogCardsResponse>;
+
+export interface EventLogCardsQuery {
+  [key: string]: string | number | boolean | undefined;
 }
-export class EventLogCardsApi {
-    constructor(private readonly authenticatedApi: APIRequestContext) { }
-    async getEventLogCards(consumerNumber: string): Promise<EventLogCardsApiResult> {
-        const start = Date.now();
-        const response =await getWithAutoRefresh(this.authenticatedApi,`/indore/consumers/${consumerNumber}/event-log/cards`);
-        return {
-            rawResponse: response,
-            responseBody: await response.json(),
-            responseTime: Date.now() - start
-        };
+
+export class EventLogCardsApi extends TimedApiClient {
+  getEventLogCards(
+    consumerRef: string,
+    query: EventLogCardsQuery = {},
+  ): Promise<EventLogCardsApiResult> {
+    const params: Record<string, string | number | boolean> = {};
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined) {
+        params[key] = value;
+      }
     }
+
+    return this.getJson<EventLogCardsResponse>(
+      `/indore/consumers/${encodeURIComponent(consumerRef)}/event-log/cards`,
+      Object.keys(params).length > 0 ? { params } : {},
+    );
+  }
 }

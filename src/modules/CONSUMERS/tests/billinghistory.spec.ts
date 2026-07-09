@@ -1,118 +1,173 @@
-import { test } from "../../../../src/fixtures/api.fixture";
-import { BillingHistoryApi } from "../Api/billinghistory.api";
-import { billingHistoryData } from "../Data/billinghistory.data";
-import { BillingHistoryMapper } from "../Mapper/billinghistory.mapper";
-import { BillingHistoryValidator } from "../Validator/billinghistory.validator";
+import { expect } from "@playwright/test";
+import { test } from "../../../fixtures/api.fixture";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../../src/core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
+import { BillingHistoryApi } from "../Api/billinghistory.api";
+import {
+  billingHistoryMaxResponseTimeMs,
+  billingHistoryTestCases,
+  resolveBillingHistoryContractBody,
+  resolveBillingHistoryExpectedLimit,
+  resolveBillingHistoryQuery,
+  resolveBillingHistoryRef,
+} from "../Data/billinghistory.data";
+import {
+  BillingHistoryMapper,
+  type BillingHistoryErrorResponse,
+} from "../Mapper/billinghistory.mapper";
+import { BillingHistoryValidator } from "../Validator/billinghistory.validator";
 
 test.describe("Billing History API", () => {
+  test.describe.configure({ retries: 1 });
+  test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
+
+  for (const testCase of billingHistoryTestCases) {
     test(
-        "Validate Billing History API",
-        {
-            tag: ["@consumer", "@billing", "@billing-history", "@smoke"],
-        },
-        async ({ authenticatedApi }) => {
-            const api = new BillingHistoryApi(authenticatedApi);
-            const { consumerNumber, maxResponseTime } = billingHistoryData;
+      testCase.testName,
+      { tag: testCase.tags },
+      async ({ authenticatedApi }) => {
+        const expectedStatus = testCase.expectedStatus ?? 200;
+        const validator = new BillingHistoryValidator();
+        const assert = new AssertionEngine();
+        const validation = new ValidationEngine();
+        const billingLimit = resolveBillingHistoryExpectedLimit(testCase.scenario);
 
-            const { rawResponse, responseBody, responseTime } =
-                await api.getBillingHistory(consumerNumber);
+        if (testCase.isContractFixture) {
+          const fixtureBody = resolveBillingHistoryContractBody(testCase.scenario);
+          if (!fixtureBody) {
+            test.skip(true, "Missing billing-history contract fixture body");
+            return;
+          }
 
-            await PerformanceTracker.track(
-                rawResponse,
-                "Billing History API",
-                `${process.env.BASE_URL}/indore/consumers/${consumerNumber}/billing-history`,
-                responseTime,
-            );
+          const mapped = BillingHistoryMapper.map(fixtureBody);
+          validation.execute("Required Fields", () =>
+            assert.validateRequiredFields(fixtureBody, ["success", "data"]),
+          );
+          validation.execute("Contract Scenario", () =>
+            validator.validateScenario(mapped, testCase.scenario, billingLimit),
+          );
+          validation.printSummary(testCase.testName, 0);
+          return;
+        }
 
-            const assert = new AssertionEngine();
-            const validation = new ValidationEngine();
-            const validator = new BillingHistoryValidator();
+        const api = new BillingHistoryApi(authenticatedApi);
+        const consumerRef = resolveBillingHistoryRef(testCase.scenario);
 
-            validation.execute("Status", () =>
-                assert.validateStatusCode(rawResponse, 200, responseBody),
-            );
-            validation.execute("Content Type", () =>
-                assert.validateContentType(rawResponse),
-            );
-            validation.execute("Response Time", () =>
-                assert.validateResponseTime(responseTime, maxResponseTime),
-            );
-            validation.execute("Sensitive Data", () =>
-                assert.validateSensitiveData(responseBody),
-            );
-            validation.execute("Required Fields", () =>
-                assert.validateRequiredFields(responseBody, ["success", "data"]),
-            );
+        if (!consumerRef) {
+          test.skip(true, "Could not resolve billing-history route ref");
+          return;
+        }
 
-            const mapped = BillingHistoryMapper.map(responseBody);
-            const { items } = mapped;
+        const query = resolveBillingHistoryQuery(testCase.scenario);
+        const queryString = new URLSearchParams(
+          Object.entries(query).reduce<Record<string, string>>(
+            (acc, [key, value]) => {
+              if (value !== undefined) {
+                acc[key] = String(value);
+              }
+              return acc;
+            },
+            {},
+          ),
+        ).toString();
+        const endpoint = `/indore/consumers/${consumerRef}/billing-history${
+          queryString ? `?${queryString}` : ""
+        }`;
 
-            validation.execute("Success", () =>
-                validator.validateSuccess(mapped.success),
-            );
-            validation.execute("Root Structure", () =>
-                validator.validateRootStructure(items),
-            );
-            validation.execute("Empty Scenario", () =>
-                validator.validateEmptyScenario(items),
-            );
-            validation.execute("Items Present When Non Empty", () =>
-                validator.validateItemsPresentWhenNonEmpty(items),
-            );
+        const { rawResponse, responseBody, responseTime } =
+          await api.getBillingHistory(consumerRef, query);
 
-            validation.execute("Data Present Contract", () =>
-                validator.validateDataPresentContract(items),
-            );
-            validation.execute("Row Required Fields", () =>
-                validator.validateRowRequiredFields(items),
-            );
-            validation.execute("Row Structure", () =>
-                validator.validateRowStructure(items),
-            );
-            validation.execute("Period Label", () =>
-                validator.validatePeriodLabel(items),
-            );
-            validation.execute("Consumption Kwh", () =>
-                validator.validateConsumptionKwh(items),
-            );
-            validation.execute("Bill Amount Stub", () =>
-                validator.validateBillAmountStub(items),
-            );
-            validation.execute("Payment Status Stub", () =>
-                validator.validatePaymentStatusStub(items),
-            );
-            validation.execute("Consumption Summary Text", () =>
-                validator.validateConsumptionSummaryText(items),
-            );
-            validation.execute("Summary Exact Backend Format", () =>
-                validator.validateSummaryExactBackendFormat(items),
-            );
-            validation.execute("Summary Matches Consumption", () =>
-                validator.validateSummaryMatchesConsumption(items),
-            );
-            validation.execute("Oldest Billing Period Rule", () =>
-                validator.validateOldestBillingPeriodRule(items),
-            );
-            validation.execute("Unique Period Labels", () =>
-                validator.validateUniquePeriodLabels(items),
-            );
-            validation.execute("Descending Period Order", () =>
-                validator.validateDescendingPeriodOrder(items),
-            );
-            validation.execute("NaN Values", () =>
-                validator.validateNaNValues(items),
-            );
-            validation.execute("Business Rules", () =>
-                validator.validateBusinessRules(items),
-            );
-            validation.execute("Data Present Backend Rules", () =>
-                validator.validateDataPresentBackendRules(items),
-            );
+        await PerformanceTracker.track(
+          rawResponse,
+          testCase.testName,
+          `${process.env.BASE_URL}${endpoint}`,
+          responseTime,
+        );
 
-            validation.printSummary("Billing History API", responseTime);
-        },
+        validation.execute("Status Validation", () => {
+          if (
+            testCase.scenario === "meter_not_found" ||
+            testCase.scenario === "consumer_not_found"
+          ) {
+            expect([200, 404]).toContain(rawResponse.status());
+            return;
+          }
+          assert.validateStatusCode(rawResponse, expectedStatus, responseBody);
+        });
+        validation.execute("Content Type", () =>
+          assert.validateContentType(rawResponse),
+        );
+        validation.execute("Response Time", () =>
+          assert.validateResponseTime(
+            responseTime,
+            billingHistoryMaxResponseTimeMs,
+          ),
+        );
+        validation.execute("Sensitive Data", () =>
+          assert.validateSensitiveData(responseBody),
+        );
+
+        if (expectedStatus === 404) {
+          validation.execute("Not Found Error", () =>
+            validator.validateNotFoundError(
+              responseBody as BillingHistoryErrorResponse,
+            ),
+          );
+          validation.printSummary(testCase.testName, responseTime);
+          return;
+        }
+
+        if (testCase.scenario === "meter_not_found" && rawResponse.status() === 404) {
+          validation.execute("Not Found Error", () =>
+            validator.validateNotFoundError(
+              responseBody as BillingHistoryErrorResponse,
+            ),
+          );
+          validation.printSummary(testCase.testName, responseTime);
+          return;
+        }
+
+        if (testCase.scenario === "consumer_not_found" && rawResponse.status() === 404) {
+          validation.execute("Not Found Error", () =>
+            validator.validateNotFoundError(
+              responseBody as BillingHistoryErrorResponse,
+            ),
+          );
+          validation.printSummary(testCase.testName, responseTime);
+          return;
+        }
+
+        if (expectedStatus === 400) {
+          if (testCase.scenario === "invalid_billing_limit") {
+            validation.execute("Invalid Billing Limit Error", () =>
+              validator.validateInvalidBillingLimitError(
+                responseBody as BillingHistoryErrorResponse,
+              ),
+            );
+          } else {
+            validation.execute("Blank Ref Validation Error", () =>
+              validator.validateBlankRefError(
+                responseBody as BillingHistoryErrorResponse,
+              ),
+            );
+          }
+          validation.printSummary(testCase.testName, responseTime);
+          return;
+        }
+
+        validation.execute("Required Fields", () =>
+          assert.validateRequiredFields(responseBody, ["success", "data"]),
+        );
+
+        const mapped = BillingHistoryMapper.map(responseBody);
+        validation.execute("Billing History Scenario", () =>
+          validator.validateScenario(mapped, testCase.scenario, billingLimit),
+        );
+
+        validation.printSummary(testCase.testName, responseTime);
+      },
     );
+  }
 });

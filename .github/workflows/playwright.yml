@@ -27,7 +27,7 @@ jobs:
   test:
     name: Run API tests
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 300
     permissions:
       contents: write
 

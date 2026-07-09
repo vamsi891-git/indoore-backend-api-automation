@@ -1,87 +1,171 @@
-import { test } from "../../../../src/fixtures/api.fixture";
-import { EventLogCardsApi } from "../Api/eventlogcards.api";
-import { eventLogCardsData } from "../Data/eventlogcards.data";
-import { EventLogCardsMapper } from "../Mapper/eventlogcards.mapper";
-import { EventLogCardsValidator } from "../Validator/eventlogcards.validator";
+import { expect } from "@playwright/test";
+import { test } from "../../../fixtures/api.fixture";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker} from "../../../../src/core/utils/performancetracker";
-test.describe("Event Log Cards API",() => {
-        test("Validate Event Log Cards API",
-            {
-                tag: [
-                    "@consumer",
-                    "@event-log",
-                    "@smoke"
-                ]
+import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
+import { EventLogCardsApi } from "../Api/eventlogcards.api";
+import {
+  eventLogCardsMaxResponseTimeMs,
+  eventLogCardsTestCases,
+  resolveEventLogCardsContractBody,
+  resolveEventLogCardsQuery,
+  resolveEventLogCardsRef,
+} from "../Data/eventlogcards.data";
+import {
+  EventLogCardsMapper,
+  type EventLogCardsErrorResponse,
+} from "../Mapper/eventlogcards.mapper";
+import { EventLogCardsValidator } from "../Validator/eventlogcards.validator";
+
+test.describe("Event Log Cards API", () => {
+  test.describe.configure({ retries: 1 });
+  test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
+
+  for (const testCase of eventLogCardsTestCases) {
+    test(
+      testCase.testName,
+      { tag: testCase.tags },
+      async ({ authenticatedApi }) => {
+        const expectedStatus = testCase.expectedStatus ?? 200;
+        const validator = new EventLogCardsValidator();
+        const assert = new AssertionEngine();
+        const validation = new ValidationEngine();
+
+        if (testCase.isContractFixture) {
+          const fixtureBody = resolveEventLogCardsContractBody(
+            testCase.scenario,
+          );
+          if (!fixtureBody) {
+            test.skip(true, "Missing event-log cards contract fixture body");
+            return;
+          }
+
+          const mapped = EventLogCardsMapper.map(fixtureBody);
+          validation.execute("Required Fields", () =>
+            assert.validateRequiredFields(fixtureBody, ["success", "data"]),
+          );
+          validation.execute("Contract Scenario", () =>
+            validator.validateScenario(mapped, testCase.scenario),
+          );
+          validation.printSummary(testCase.testName, 0);
+          return;
+        }
+
+        const api = new EventLogCardsApi(authenticatedApi);
+        const consumerRef = resolveEventLogCardsRef(testCase.scenario);
+
+        if (!consumerRef) {
+          test.skip(true, "Could not resolve event-log cards route ref");
+          return;
+        }
+
+        const query = resolveEventLogCardsQuery(testCase.scenario);
+        const queryString = new URLSearchParams(
+          Object.entries(query).reduce<Record<string, string>>(
+            (acc, [key, value]) => {
+              if (value !== undefined) {
+                acc[key] = String(value);
+              }
+              return acc;
             },
-            async ({authenticatedApi}) => {
-                const api =new EventLogCardsApi(authenticatedApi);
-                const {
-                    rawResponse,
-                    responseBody,
-                    responseTime
-                } =await api.getEventLogCards(eventLogCardsData.consumerNumber);
-                await PerformanceTracker.track(
-                    rawResponse,
-                    "Event Log Cards API",
-                    `${process.env.BASE_URL}/indore/consumers/${eventLogCardsData.consumerNumber}/event-log/cards`,
-                    responseTime
-                );
-                const assert = new AssertionEngine();
-                const validation = new ValidationEngine();
-                // =====================================
-                // BASE API VALIDATIONS
-                // =====================================
-                validation.execute("Status Validation",() =>
-                        assert.validateStatusCode(rawResponse,200)
-                );
-                validation.execute("Content Type",() =>
-                        assert.validateContentType(rawResponse)
-                );
-                validation.execute("Response Time",() =>
-                        assert.validateResponseTime(responseTime,30000)
-                );
-                validation.execute("Sensitive Data",() =>
-                        assert.validateSensitiveData(responseBody)
-                );
-                validation.execute("Required Fields",() =>
-                        assert.validateRequiredFields(responseBody,["success","data"])
-                );
-                // =====================================
-                // MAPPER
-                // =====================================
-                const data =EventLogCardsMapper.map(responseBody);
-                validation.execute("Mapped Required Fields",() =>
-                        assert.validateRequiredFields(data,["resolvedEvents","pendingEvents","avgResolutionTime"])
-                );
-                const validator = new EventLogCardsValidator();
-                // ====================================
-                // BACKEND VALIDATIONS
-                // =====================================
-                validation.execute("Resolved Events",() =>
-                        validator.validateResolvedEvents(data)
-                );
-                validation.execute("Pending Events",() =>
-                        validator.validatePendingEvents(data)
-                );
-                validation.execute("Average Resolution Time",() =>
-                        validator.validateAvgResolutionTime(data)
-                );
-                validation.execute("Fallback Logic",() =>
-                        validator.validateFallbackLogic(data)
-                );
-                validation.execute("Trend Validation",() =>
-                        validator.validateTrendPercent(data)
-                );
-                validation.execute("Business Rules",() =>
-                        validator.validateBusinessRules(data)
-                );
-                // =====================================
-                // SUMMARY
-                // =====================================
-                validation.printSummary("Event Log Cards API",responseTime);
-            }
+            {},
+          ),
+        ).toString();
+        const endpoint = `/indore/consumers/${consumerRef}/event-log/cards${
+          queryString ? `?${queryString}` : ""
+        }`;
+
+        const { rawResponse, responseBody, responseTime } =
+          await api.getEventLogCards(consumerRef, query);
+
+        await PerformanceTracker.track(
+          rawResponse,
+          testCase.testName,
+          `${process.env.BASE_URL}${endpoint}`,
+          responseTime,
         );
-    }
-);
+
+        validation.execute("Status Validation", () => {
+          if (
+            testCase.scenario === "meter_not_found" ||
+            testCase.scenario === "consumer_not_found"
+          ) {
+            expect([200, 404]).toContain(rawResponse.status());
+            return;
+          }
+          assert.validateStatusCode(rawResponse, expectedStatus, responseBody);
+        });
+        validation.execute("Content Type", () =>
+          assert.validateContentType(rawResponse),
+        );
+        validation.execute("Response Time", () =>
+          assert.validateResponseTime(
+            responseTime,
+            eventLogCardsMaxResponseTimeMs,
+          ),
+        );
+        validation.execute("Sensitive Data", () =>
+          assert.validateSensitiveData(responseBody),
+        );
+
+        if (expectedStatus === 404) {
+          validation.execute("Not Found Error", () =>
+            validator.validateNotFoundError(
+              responseBody as EventLogCardsErrorResponse,
+            ),
+          );
+          validation.printSummary(testCase.testName, responseTime);
+          return;
+        }
+
+        if (
+          testCase.scenario === "meter_not_found" &&
+          rawResponse.status() === 404
+        ) {
+          validation.execute("Not Found Error", () =>
+            validator.validateNotFoundError(
+              responseBody as EventLogCardsErrorResponse,
+            ),
+          );
+          validation.printSummary(testCase.testName, responseTime);
+          return;
+        }
+
+        if (
+          testCase.scenario === "consumer_not_found" &&
+          rawResponse.status() === 404
+        ) {
+          validation.execute("Not Found Error", () =>
+            validator.validateNotFoundError(
+              responseBody as EventLogCardsErrorResponse,
+            ),
+          );
+          validation.printSummary(testCase.testName, responseTime);
+          return;
+        }
+
+        if (expectedStatus === 400) {
+          validation.execute("Blank Ref Validation Error", () =>
+            validator.validateBlankRefError(
+              responseBody as EventLogCardsErrorResponse,
+            ),
+          );
+          validation.printSummary(testCase.testName, responseTime);
+          return;
+        }
+
+        validation.execute("Required Fields", () =>
+          assert.validateRequiredFields(responseBody, ["success", "data"]),
+        );
+
+        const mapped = EventLogCardsMapper.map(responseBody);
+        validation.execute("Event Log Cards Scenario", () =>
+          validator.validateScenario(mapped, testCase.scenario),
+        );
+
+        validation.printSummary(testCase.testName, responseTime);
+      },
+    );
+  }
+});

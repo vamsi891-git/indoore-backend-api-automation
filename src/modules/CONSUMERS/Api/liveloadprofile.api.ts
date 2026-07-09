@@ -1,22 +1,28 @@
-import { APIRequestContext, APIResponse } from "@playwright/test";
+import { TimedApiClient } from "../../../core/base/timed-api.client";
+import { ApiCallResult } from "../../../core/models/api-result.model";
 import { LiveLoadProfileResponse } from "../Mapper/liveloadprofile.mapper";
-import { getConsumerWithRetry } from "../utils/consumer-request.helper";
-export interface LiveLoadProfileApiResult {
-    rawResponse: APIResponse;
-    responseBody:LiveLoadProfileResponse;
-    responseTime: number;
+
+export type LiveLoadProfileApiResult = ApiCallResult<LiveLoadProfileResponse>;
+
+export interface LiveLoadProfileQuery {
+  [key: string]: string | number | boolean | undefined;
 }
-export class LiveLoadProfileApi {
-    constructor(private readonly authenticatedApi:APIRequestContext) { }
-    async getLiveLoadProfile(consumerNumber: string): Promise<LiveLoadProfileApiResult> {
-        const { rawResponse, responseTime } = await getConsumerWithRetry(
-            this.authenticatedApi,
-            `/indore/consumers/${consumerNumber}/live-load-profile`,
-        );
-        return {
-            rawResponse,
-            responseBody: await rawResponse.json(),
-            responseTime,
-        };
+
+export class LiveLoadProfileApi extends TimedApiClient {
+  getLiveLoadProfile(
+    consumerRef: string,
+    query: LiveLoadProfileQuery = {},
+  ): Promise<LiveLoadProfileApiResult> {
+    const params: Record<string, string | number | boolean> = {};
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined) {
+        params[key] = value;
+      }
     }
+
+    return this.getJson<LiveLoadProfileResponse>(
+      `/indore/consumers/${encodeURIComponent(consumerRef)}/live-load-profile`,
+      Object.keys(params).length > 0 ? { params } : {},
+    );
+  }
 }

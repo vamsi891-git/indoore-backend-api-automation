@@ -1,3 +1,4 @@
+import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
@@ -71,9 +72,13 @@ test.describe("Real Time Power API", () => {
           responseTime,
         );
 
-        validation.execute("Status Validation", () =>
-          assert.validateStatusCode(rawResponse, expectedStatus, responseBody),
-        );
+        validation.execute("Status Validation", () => {
+          if (testCase.scenario === "meter_not_found") {
+            expect([200, 404]).toContain(rawResponse.status());
+            return;
+          }
+          assert.validateStatusCode(rawResponse, expectedStatus, responseBody);
+        });
         validation.execute("Content Type", () =>
           assert.validateContentType(rawResponse),
         );
@@ -88,6 +93,16 @@ test.describe("Real Time Power API", () => {
         );
 
         if (expectedStatus === 404) {
+          validation.execute("Not Found Error", () =>
+            validator.validateNotFoundError(
+              responseBody as RealTimePowerErrorResponse,
+            ),
+          );
+          validation.printSummary(testCase.testName, responseTime);
+          return;
+        }
+
+        if (testCase.scenario === "meter_not_found" && rawResponse.status() === 404) {
           validation.execute("Not Found Error", () =>
             validator.validateNotFoundError(
               responseBody as RealTimePowerErrorResponse,

@@ -1,7 +1,11 @@
 import { expect } from "@playwright/test";
-import {
+import { eventLogListContractPaginationMeta } from "../Data/eventloglist.data";
+import type {
     EventLogListData,
+    EventLogListErrorResponse,
+    EventLogListScenario,
     EventLogRow,
+    MappedEventLogList,
 } from "../Mapper/eventloglist.mapper";
 
 const ALLOWED_STATUSES = ["Resolved", "Pending"] as const;
@@ -28,6 +32,24 @@ function parseEventDateTime(value: string): number | null {
 export class EventLogListValidator {
     validateSuccess(success: boolean) {
         expect(success).toBeTruthy();
+    }
+
+    validateNotFoundError(responseBody: EventLogListErrorResponse) {
+        expect(responseBody.success).toBeFalsy();
+        expect(responseBody.error).toBeDefined();
+        expect(responseBody.error.code).toBe("CONSUMER_NOT_FOUND");
+        expect(responseBody.error.message.toLowerCase()).toContain(
+            "consumer not found",
+        );
+    }
+
+    validateBlankRefError(responseBody: EventLogListErrorResponse) {
+        expect(responseBody.success).toBeFalsy();
+        expect(responseBody.error).toBeDefined();
+        expect(responseBody.error.code).toBe("VALIDATION_ERROR");
+        expect(responseBody.error.message.toLowerCase()).toContain("ivrsno");
+        const fieldErrors = responseBody.error.details?.fieldErrors?.ivrsNo;
+        expect(Array.isArray(fieldErrors) && fieldErrors.length > 0).toBeTruthy();
     }
 
     validateRootStructure(data: EventLogListData) {
@@ -238,5 +260,114 @@ export class EventLogListValidator {
         expect(data).toHaveProperty("pageSize");
         expect(data).toHaveProperty("totalCount");
         expect(data).toHaveProperty("totalPages");
+    }
+
+    validateLiveOk(mapped: MappedEventLogList) {
+        this.validateSuccess(mapped.success);
+        this.validateRootStructure(mapped);
+        this.validatePaginationBounds(mapped);
+        this.validatePaginationMath(mapped);
+        this.validateEmptyScenario(mapped);
+        this.validateRowsPresentWhenTotalPositive(mapped);
+        this.validateBusinessRules(mapped);
+
+        if (mapped.rows.length > 0) {
+            this.validateDataPresentPagination(mapped);
+            this.validateRowRequiredFields(mapped.rows);
+            this.validateRowStructure(mapped.rows);
+            this.validateSerialSequence(mapped.rows, mapped.page, mapped.pageSize);
+            this.validateUniqueSerialNumbers(mapped.rows);
+            this.validateStatusRules(mapped.rows);
+            this.validateStatusDistribution(mapped.rows);
+            this.validateMeterNo(mapped.rows);
+            this.validateMeterNoConsistency(mapped.rows);
+            this.validateDescription(mapped.rows);
+            this.validateDateTimeFormat(mapped.rows);
+            this.validateDurationDisplayFormat(mapped.rows);
+            this.validateRestoreAfterOccurrence(mapped.rows);
+            this.validateChronologicalOrder(mapped.rows);
+        }
+    }
+
+    /**
+     * Widget resilience — unknown routes may return HTTP 200 with
+     * getEmptyEventLogPage (rows=[], totalCount=0, totalPages=0).
+     */
+    validateGracefulEmptyFallback(
+        mapped: MappedEventLogList,
+        eventPage: number,
+        eventPageSize: number,
+    ) {
+        this.validateLiveOk(mapped);
+        expect(mapped.rows.length).toBe(0);
+        expect(mapped.totalCount).toBe(0);
+        expect(mapped.totalPages).toBe(0);
+        expect(mapped.page).toBe(eventPage);
+        expect(mapped.pageSize).toBe(eventPageSize);
+    }
+
+    validateEmptyContract(mapped: MappedEventLogList) {
+        this.validateGracefulEmptyFallback(mapped, 1, 10);
+    }
+
+    validatePaginationContract(mapped: MappedEventLogList) {
+        this.validateLiveOk(mapped);
+        const meta = eventLogListContractPaginationMeta;
+        expect(mapped.page).toBe(meta.page);
+        expect(mapped.pageSize).toBe(meta.pageSize);
+        expect(mapped.totalCount).toBe(meta.totalCount);
+        expect(mapped.totalPages).toBe(meta.expectedTotalPages);
+        expect(mapped.rows.length).toBe(5);
+        expect(mapped.rows[0]?.serialNo).toBe(meta.expectedSerialStart);
+    }
+
+    validateResolvedPendingContract(mapped: MappedEventLogList) {
+        this.validateLiveOk(mapped);
+        expect(mapped.rows.length).toBe(2);
+
+        const resolved = mapped.rows.find((row) => row.status === "Resolved");
+        const pending = mapped.rows.find((row) => row.status === "Pending");
+        expect(resolved).toBeDefined();
+        expect(pending).toBeDefined();
+        expect(resolved!.restoreDateTime).toBeTruthy();
+        expect(resolved!.durationDisplay).toBeTruthy();
+        expect(pending!.restoreDateTime).toBeNull();
+    }
+
+    validateScenario(
+        mapped: MappedEventLogList,
+        scenario: EventLogListScenario,
+        query: { eventPage: number; eventPageSize: number },
+    ) {
+        switch (scenario) {
+            case "contract_empty_list":
+                this.validateEmptyContract(mapped);
+                break;
+            case "contract_pagination":
+                this.validatePaginationContract(mapped);
+                break;
+            case "contract_resolved_pending_rows":
+                this.validateResolvedPendingContract(mapped);
+                break;
+            case "ell_by_ivrs":
+            case "ell_by_account":
+            case "ell_by_meter":
+            case "ell_page_2":
+            case "ell_with_search":
+            case "ell_ignore_unknown_query":
+                this.validateLiveOk(mapped);
+                this.validateQueryEcho(mapped, query.eventPage, query.eventPageSize);
+                break;
+            case "meter_not_found":
+            case "consumer_not_found":
+                this.validateGracefulEmptyFallback(
+                    mapped,
+                    query.eventPage,
+                    query.eventPageSize,
+                );
+                break;
+            default:
+                break;
+        }
     }
 }

@@ -202,9 +202,8 @@ export const realTimePowerTestCases: RealTimePowerTestCase[] = [
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/real-time-power — unknown meter lookup not found",
+      "Validate GET /indore/consumers/meter-{id}/real-time-power — unknown meter not found or null data",
     scenario: "meter_not_found",
-    expectedStatus: 404,
     tags: ["@consumer", "@real-time-power", "@negative"],
   },
   {

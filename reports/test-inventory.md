@@ -1,35 +1,35 @@
 # API Test Inventory
 
-Generated: 2026-06-25T05:08:14.419Z
+Generated: 2026-07-09T08:45:35.357Z
 
 ## Summary
 
 | Metric | Count |
 |--------|------:|
 | Modules | 23 |
-| API files | 115 |
-| Spec files | 148 |
-| Test cases | 300 |
+| API files | 124 |
+| Spec files | 160 |
+| Test cases | 339 |
 | APIs without spec | 9 |
-| Specs without API | 43 |
+| Specs without API | 46 |
 
 ## By module
 
 | Module | APIs | Specs | Tests | API coverage | Missing specs |
 |--------|-----:|------:|------:|-------------:|--------------:|
-| ASSET-MANAGEMENT | 3 | 5 | 21 | 67% | 1 |
+| ASSET-MANAGEMENT | 3 | 8 | 10 | 67% | 1 |
 | AUDIT-LOGS | 2 | 2 | 4 | 100% | 0 |
 | AUTH | 3 | 14 | 51 | 0% | 3 |
 | BILLING | 2 | 3 | 2 | 100% | 0 |
 | COMMERICIAL-ANALYSIS | 7 | 6 | 6 | 100% | 0 |
-| CONSUMERS | 13 | 13 | 13 | 100% | 0 |
+| CONSUMERS | 14 | 14 | 38 | 100% | 0 |
 | CONSUMPTION | 3 | 5 | 5 | 67% | 1 |
 | DASHBOARD | 5 | 5 | 5 | 100% | 0 |
 | DTRS | 7 | 7 | 7 | 100% | 0 |
 | ENERGY-AUDITS | 5 | 7 | 0 | 60% | 2 |
 | FEEDER | 4 | 4 | 4 | 100% | 0 |
 | HES-COMMANDS | 14 | 14 | 35 | 100% | 0 |
-| MASTER-DATA | 6 | 7 | 35 | 83% | 1 |
+| MASTER-DATA | 14 | 15 | 60 | 93% | 1 |
 | MIS-DASHBOARD | 16 | 16 | 18 | 100% | 0 |
 | MODULES-PERMISSIONS | 1 | 4 | 20 | 100% | 0 |
 | NOTIFICATIONS | 1 | 2 | 2 | 100% | 0 |
@@ -45,47 +45,42 @@ Generated: 2026-06-25T05:08:14.419Z
 
 | Tag | Tests |
 |-----|------:|
-| @smoke | 174 |
+| @smoke | 151 |
 | @negative | 86 |
 | @auth | 56 |
 | @permissions | 42 |
 | @invite | 35 |
 | @commands | 35 |
 | @hes | 35 |
-| @master-data | 35 |
 | @e2e | 32 |
-| @dtr | 27 |
+| @master-data | 25 |
 | @users-admin | 23 |
 | @role-permissions | 22 |
-| @asset-management | 21 |
-| @hierarchy | 20 |
 | @modules-permissions | 20 |
-| @consumer | 14 |
-| @edge | 13 |
+| @dtr | 14 |
+| @asset-management | 10 |
 | @meter-communication | 10 |
+| @hierarchy | 7 |
 | @dashboard | 6 |
 | @users-profile-image | 6 |
 | @consumption | 5 |
 | @commands-history | 5 |
-| @consumer-master | 5 |
 | @dtr-master | 5 |
 | @feeder-master | 5 |
-| @meter-master | 5 |
 | @substation-master | 5 |
-| @audit | 4 |
-| @billing | 4 |
 | @feeder | 4 |
-| @profile | 3 |
+| @audit | 3 |
+| @export | 3 |
+| @billing | 3 |
 | @commands-meter-alarms | 3 |
 | @commands-meter-location | 3 |
 | @commands-meter-samples | 3 |
 | @commands-search-meters | 3 |
 | @reports | 3 |
-| @export | 2 |
-| @energy | 2 |
-| @event-log | 2 |
-| @power | 2 |
+| @coverage | 2 |
+| @consumer | 2 |
 | @daily-consumption | 2 |
+| @profile | 2 |
 | @commands-billing | 2 |
 | @commands-demand-config | 2 |
 | @commands-load-curtailment | 2 |
@@ -100,6 +95,8 @@ Generated: 2026-06-25T05:08:14.419Z
 | @eventpriority | 2 |
 | @notifications | 2 |
 | @network | 2 |
+| @production | 1 |
+| @scope | 1 |
 | @commercial | 1 |
 | @commercial-summary | 1 |
 | @consumption-compare | 1 |
@@ -107,14 +104,6 @@ Generated: 2026-06-25T05:08:14.419Z
 | @lf-analysis | 1 |
 | @md-analysis | 1 |
 | @power-factor | 1 |
-| @activation | 1 |
-| @billing-history | 1 |
-| @create-consumer | 28 |
-| @graph | 1 |
-| @flow | 1 |
-| @event-log-list | 1 |
-| @live-load | 1 |
-| @validate-meter | 1 |
 | @comparison | 1 |
 | @last-three-months | 1 |
 | @monthly-net-meter | 1 |
@@ -150,6 +139,8 @@ Generated: 2026-06-25T05:08:14.419Z
 | @payment | 1 |
 | @organization | 1 |
 | @db | 0 |
+| @meter-master | 0 |
+| @consumer-master | 0 |
 
 ## APIs missing tests
 
@@ -167,8 +158,11 @@ Generated: 2026-06-25T05:08:14.419Z
 
 _Often multi-API flows (e.g. AUTH invite) or renamed APIs._
 
+- **ASSET-MANAGEMENT** — `src/modules/ASSET-MANAGEMENT/tests/asset-management-coverage.spec.ts`
 - **ASSET-MANAGEMENT** — `src/modules/ASSET-MANAGEMENT/tests/asset-management-edge.spec.ts`
 - **ASSET-MANAGEMENT** — `src/modules/ASSET-MANAGEMENT/tests/asset-management-negative.spec.ts`
+- **ASSET-MANAGEMENT** — `src/modules/ASSET-MANAGEMENT/tests/asset-management-scope.spec.ts`
+- **ASSET-MANAGEMENT** — `src/modules/ASSET-MANAGEMENT/tests/asset-management.db.spec.ts`
 - **ASSET-MANAGEMENT** — `src/modules/ASSET-MANAGEMENT/tests/dtrId.spec.ts`
 - **AUTH** — `src/modules/AUTH/tests/00-invite-setup.spec.ts`
 - **AUTH** — `src/modules/AUTH/tests/10-invite-preview.spec.ts`

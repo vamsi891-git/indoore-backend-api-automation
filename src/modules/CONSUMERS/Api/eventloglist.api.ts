@@ -1,36 +1,31 @@
-import { APIRequestContext, APIResponse } from "@playwright/test";
+import { TimedApiClient } from "../../../core/base/timed-api.client";
+import { ApiCallResult } from "../../../core/models/api-result.model";
 import { EventLogListResponse } from "../Mapper/eventloglist.mapper";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
 
-export interface EventLogListApiResult {
-    rawResponse: APIResponse;
-    responseBody: EventLogListResponse;
-    responseTime: number;
+export type EventLogListApiResult = ApiCallResult<EventLogListResponse>;
+
+export interface EventLogListQuery {
+  eventPage?: number;
+  eventPageSize?: number;
+  eventSearch?: string;
+  [key: string]: string | number | boolean | undefined;
 }
 
-export class EventLogListApi {
-    constructor(private readonly authenticatedApi: APIRequestContext) {}
-
-    async getEventLogList(
-        consumerNumber: string,
-        eventPage: number,
-        eventPageSize: number,
-    ): Promise<EventLogListApiResult> {
-        const start = Date.now();
-        const response = await getWithAutoRefresh(
-            this.authenticatedApi,
-            `/indore/consumers/${consumerNumber}/event-log/list`,
-            {
-                params: {
-                    eventPage,
-                    eventPageSize,
-                },
-            },
-        );
-        return {
-            rawResponse: response,
-            responseBody: await response.json(),
-            responseTime: Date.now() - start,
-        };
+export class EventLogListApi extends TimedApiClient {
+  getEventLogList(
+    consumerRef: string,
+    query: EventLogListQuery = {},
+  ): Promise<EventLogListApiResult> {
+    const params: Record<string, string | number | boolean> = {};
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined) {
+        params[key] = value;
+      }
     }
+
+    return this.getJson<EventLogListResponse>(
+      `/indore/consumers/${encodeURIComponent(consumerRef)}/event-log/list`,
+      Object.keys(params).length > 0 ? { params } : {},
+    );
+  }
 }
