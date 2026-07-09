@@ -63,6 +63,28 @@ export function deriveReactivePower(
     return Math.round(reactive * 100) / 100;
 }
 
+/** Mirrors backend `normalizeEnergyDelta()`. */
+export function normalizeEnergyDelta(delta: number | null): number | null {
+    if (delta == null || !Number.isFinite(delta) || delta < 0) return null;
+    return Math.round(delta * 100) / 100;
+}
+
+/** Mirrors backend `derivePowerFactorFromEnergy()`. */
+export function derivePowerFactorFromEnergy(
+    activeEnergyKwh: number | null,
+    apparentEnergyKvah: number | null,
+): number | null {
+    if (
+        activeEnergyKwh == null ||
+        apparentEnergyKvah == null ||
+        apparentEnergyKvah <= 0
+    ) {
+        return null;
+    }
+    const pf = Math.abs(activeEnergyKwh) / Math.abs(apparentEnergyKvah);
+    return pf <= 1 ? Math.round(pf * 100) / 100 : null;
+}
+
 /** Mirrors backend `deriveReactiveEnergyKvarh()`. */
 export function deriveReactiveEnergyKvarh(
     activeEnergyKWh: number | null,

@@ -1,36 +1,35 @@
-import { APIRequestContext, APIResponse } from "@playwright/test";
+import { TimedApiClient } from "../../../core/base/timed-api.client";
+import { ApiCallResult } from "../../../core/models/api-result.model";
+import { MASTER_DATA_REQUEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { DtrEventsResponse } from "../Mapper/dtrevents.mapper";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
 
-export interface DtrEventsApiResult {
-    rawResponse: APIResponse;
-    responseBody: DtrEventsResponse;
-    responseTime: number;
+export type DtrEventsApiResult = ApiCallResult<DtrEventsResponse>;
+
+export interface DtrEventsQuery {
+    page?: number;
+    limit?: number;
+    q?: string;
+    [key: string]: string | number | boolean | undefined;
 }
 
-export class DtrEventsApi {
-    constructor(private readonly authenticatedApi: APIRequestContext) {}
-
-    async getEvents(
+export class DtrEventsApi extends TimedApiClient {
+    getEvents(
         dtrCode: string,
-        page: number,
-        limit: number,
+        query: DtrEventsQuery = {},
     ): Promise<DtrEventsApiResult> {
-        const start = Date.now();
-        const response = await getWithAutoRefresh(
-            this.authenticatedApi,
-            `/indore/dtr/${dtrCode}/events`,
+        const params: Record<string, string | number | boolean> = {};
+        for (const [key, value] of Object.entries(query)) {
+            if (value !== undefined) {
+                params[key] = value;
+            }
+        }
+
+        return this.getJson<DtrEventsResponse>(
+            `/indore/dtr/${encodeURIComponent(dtrCode)}/events`,
             {
-                params: {
-                    page,
-                    limit,
-                },
+                timeout: MASTER_DATA_REQUEST_TIMEOUT_MS,
+                ...(Object.keys(params).length > 0 ? { params } : {}),
             },
         );
-        return {
-            rawResponse: response,
-            responseBody: await response.json(),
-            responseTime: Date.now() - start,
-        };
     }
 }

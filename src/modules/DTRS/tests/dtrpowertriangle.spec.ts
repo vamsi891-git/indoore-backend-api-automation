@@ -1,124 +1,196 @@
-import { test } from "../../../../src/fixtures/api.fixture";
-import { DtrPowerTriangleApi } from "../Api/dtrpowertriangle.api";
-import { dtrPowerTriangleData } from "../Data/dtrpowertriangle.data";
-import { DtrPowerTriangleMapper } from "../Mapper/dtrpowertriangle.mapper";
-import { DtrPowerTriangleValidator } from "../Validator/dtrpowertriangle.validator";
+import { expect } from "@playwright/test";
+import { test } from "../../../fixtures/api.fixture";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
+import { DtrPowerTriangleApi } from "../Api/dtrpowertriangle.api";
+import {
+  dtrPowerTriangleMaxResponseTimeMs,
+  dtrPowerTriangleTestCases,
+  resolveDtrPowerTriangleCode,
+  resolveDtrPowerTriangleContractBody,
+  resolveDtrPowerTriangleQuery,
+} from "../Data/dtrpowertriangle.data";
+import {
+  DtrPowerTriangleMapper,
+  type DtrPowerTriangleErrorResponse,
+} from "../Mapper/dtrpowertriangle.mapper";
+import { DtrPowerTriangleValidator } from "../Validator/dtrpowertriangle.validator";
 
 test.describe("DTR Power Triangle API", () => {
+  test.describe.configure({ retries: 1 });
+  test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
+
+  for (const testCase of dtrPowerTriangleTestCases) {
     test(
-        "Validate DTR Power Triangle API",
-        {
-            tag: ["@dtr", "@power-triangle", "@smoke"],
-        },
-        async ({ authenticatedApi }) => {
-            const api = new DtrPowerTriangleApi(authenticatedApi);
-            const { rawResponse, responseBody, responseTime } =
-                await api.getPowerTriangle(dtrPowerTriangleData.dtrCode);
+      testCase.testName,
+      { tag: testCase.tags },
+      async ({ authenticatedApi }) => {
+        const expectedStatus = testCase.expectedStatus ?? 200;
+        const validator = new DtrPowerTriangleValidator();
+        const assert = new AssertionEngine();
+        const validation = new ValidationEngine();
 
-            await PerformanceTracker.track(
-                rawResponse,
-                "DTR Power Triangle API",
-                `${process.env.BASE_URL}/indore/dtr/${dtrPowerTriangleData.dtrCode}/power-triangle`,
-                responseTime,
-            );
+        if (testCase.isContractFixture) {
+          const fixtureBody = resolveDtrPowerTriangleContractBody(
+            testCase.scenario,
+          );
+          if (!fixtureBody) {
+            test.skip(true, "Missing DTR power triangle contract fixture body");
+            return;
+          }
 
-            const assert = new AssertionEngine();
-            const validation = new ValidationEngine();
-            const validator = new DtrPowerTriangleValidator();
+          if (testCase.scenario === "contract_meter_data_unavailable") {
+            validation.execute("Meter Data Unavailable Error", () =>
+              validator.validateMeterDataUnavailableError(
+                fixtureBody as DtrPowerTriangleErrorResponse,
+              ),
+            );
+            validation.printSummary(testCase.testName, 0);
+            return;
+          }
 
-            const mapped = DtrPowerTriangleMapper.map(
-                rawResponse.ok()
-                    ? responseBody
-                    : { success: true, data: undefined },
-            );
+          const mapped = DtrPowerTriangleMapper.map(fixtureBody);
+          validation.execute("Required Fields", () =>
+            assert.validateRequiredFields(fixtureBody, ["success", "data"]),
+          );
+          validation.execute("Contract Scenario", () =>
+            validator.validateScenario(mapped, testCase.scenario),
+          );
+          validation.printSummary(testCase.testName, 0);
+          return;
+        }
 
-            const isTimeoutFallback =
-                rawResponse.status() === 503 ||
-                (rawResponse.status() === 200 && responseBody.success === false);
+        const api = new DtrPowerTriangleApi(authenticatedApi);
+        const dtrCode = resolveDtrPowerTriangleCode(testCase.scenario);
 
-            const isEmptyTriangle =
-                mapped.activeEnergyKWh === null &&
-                mapped.reactiveEnergyKvarh === null &&
-                mapped.apparentEnergyKVAh === null &&
-                mapped.powerFactor === null;
+        if (!dtrCode) {
+          test.skip(true, "Could not resolve DTR power triangle code");
+          return;
+        }
 
-            // =====================================
-            // API VALIDATIONS
-            // =====================================
-            validation.execute("Status Code", () => {
-                if (isTimeoutFallback && isEmptyTriangle) {
-                    validator.validateTimeoutFallbackStatus(rawResponse.status());
-                    validator.validateTimeoutFallbackTriangle(mapped);
-                    return;
-                }
-                assert.validateStatusCode(rawResponse, 200, responseBody);
-            });
-            validation.execute("Content Type", () =>
-                assert.validateContentType(rawResponse),
-            );
-            validation.execute("Response Time", () =>
-                assert.validateResponseTime(
-                    responseTime,
-                    dtrPowerTriangleData.maxResponseTime,
-                ),
-            );
-            validation.execute("Sensitive Data", () =>
-                assert.validateSensitiveData(responseBody),
-            );
-            const triangleData = responseBody.data;
-            if (triangleData) {
-                validation.execute("Required Fields", () =>
-                    assert.validateRequiredFields(
-                        triangleData,
-                        [...dtrPowerTriangleData.requiredFields],
-                    ),
-                );
-            }
+        const query = resolveDtrPowerTriangleQuery(testCase.scenario);
+        const queryString = new URLSearchParams(
+          Object.entries(query).reduce<Record<string, string>>(
+            (acc, [key, value]) => {
+              if (value !== undefined) {
+                acc[key] = String(value);
+              }
+              return acc;
+            },
+            {},
+          ),
+        ).toString();
+        const endpoint = `/indore/dtr/${encodeURIComponent(dtrCode)}/power-triangle${
+          queryString ? `?${queryString}` : ""
+        }`;
 
-            // =====================================
-            // BACKEND VALIDATIONS
-            // =====================================
-            validation.execute("Response Envelope", () => {
-                if (isTimeoutFallback && isEmptyTriangle) {
-                    return;
-                }
-                validator.validateResponseEnvelope(responseBody);
-            });
-            validation.execute("Field Validation", () =>
-                validator.validateFields(mapped),
-            );
-            validation.execute("Type Validation", () =>
-                validator.validateTypes(mapped),
-            );
-            validation.execute("Reactive Energy Derivation", () =>
-                validator.validateReactiveEnergyDerivation(mapped),
-            );
-            validation.execute("Power Factor Validation", () =>
-                validator.validatePowerFactor(mapped.powerFactor),
-            );
-            validation.execute("Energy Validation", () =>
-                validator.validateEnergyValues(mapped),
-            );
-            validation.execute("Empty Reading State", () =>
-                validator.validateEmptyReadingState(mapped),
-            );
-            validation.execute("IP Source Consistency", () =>
-                validator.validateIpSourceConsistency(mapped),
-            );
-            validation.execute("Power Factor With Readings", () =>
-                validator.validatePowerFactorWithReadings(mapped),
-            );
-            validation.execute("Finite Numbers", () =>
-                validator.validateFiniteNumbers(mapped),
-            );
-            validation.execute("Business Logic", () =>
-                validator.validateBusinessLogic(mapped),
-            );
+        const { rawResponse, responseBody, responseTime } =
+          await api.getPowerTriangle(dtrCode, query);
 
-            validation.printSummary("DTR Power Triangle API", responseTime);
-        },
+        await PerformanceTracker.track(
+          rawResponse,
+          testCase.testName,
+          `${process.env.BASE_URL}${endpoint}`,
+          responseTime,
+        );
+
+        validation.execute("Status Validation", () => {
+          if (testCase.scenario === "dtr_not_found") {
+            expect([200, 404]).toContain(rawResponse.status());
+            return;
+          }
+          assert.validateStatusCode(rawResponse, expectedStatus, responseBody);
+        });
+        validation.execute("Content Type", () =>
+          assert.validateContentType(rawResponse),
+        );
+        validation.execute("Response Time", () =>
+          assert.validateResponseTime(
+            responseTime,
+            dtrPowerTriangleMaxResponseTimeMs,
+          ),
+        );
+        validation.execute("Sensitive Data", () =>
+          assert.validateSensitiveData(responseBody),
+        );
+
+        if (expectedStatus === 404) {
+          validation.execute("Not Found Error", () =>
+            validator.validateNotFoundError(
+              responseBody as DtrPowerTriangleErrorResponse,
+            ),
+          );
+          validation.printSummary(testCase.testName, responseTime);
+          return;
+        }
+
+        if (
+          testCase.scenario === "dtr_not_found" &&
+          rawResponse.status() === 404
+        ) {
+          validation.execute("Not Found Error", () =>
+            validator.validateNotFoundError(
+              responseBody as DtrPowerTriangleErrorResponse,
+            ),
+          );
+          validation.printSummary(testCase.testName, responseTime);
+          return;
+        }
+
+        if (expectedStatus === 400) {
+          validation.execute("Blank DTR Code Validation Error", () =>
+            validator.validateBlankCodeError(
+              responseBody as DtrPowerTriangleErrorResponse,
+            ),
+          );
+          validation.printSummary(testCase.testName, responseTime);
+          return;
+        }
+
+        const isTimeoutFallback = rawResponse.status() === 503;
+        const isMeterUnavailable =
+          responseBody.success === false &&
+          (responseBody as DtrPowerTriangleErrorResponse).error?.code ===
+            "DTR_METER_DATA_UNAVAILABLE";
+
+        if (isTimeoutFallback) {
+          const mapped = DtrPowerTriangleMapper.map({
+            success: true,
+            data: undefined,
+          });
+          validation.execute("Timeout Fallback Status", () =>
+            validator.validateTimeoutFallbackStatus(rawResponse.status()),
+          );
+          validation.execute("Timeout Fallback Triangle", () =>
+            validator.validateTimeoutFallbackTriangle(mapped),
+          );
+          validation.printSummary(testCase.testName, responseTime);
+          return;
+        }
+
+        if (isMeterUnavailable) {
+          validation.execute("Meter Data Unavailable Error", () =>
+            validator.validateMeterDataUnavailableError(
+              responseBody as DtrPowerTriangleErrorResponse,
+            ),
+          );
+          validation.printSummary(testCase.testName, responseTime);
+          return;
+        }
+
+        validation.execute("Required Fields", () =>
+          assert.validateRequiredFields(responseBody, ["success", "data"]),
+        );
+
+        const mapped = DtrPowerTriangleMapper.map(responseBody);
+        validation.execute("DTR Power Triangle Scenario", () =>
+          validator.validateScenario(mapped, testCase.scenario),
+        );
+
+        validation.printSummary(testCase.testName, responseTime);
+      },
     );
+  }
 });

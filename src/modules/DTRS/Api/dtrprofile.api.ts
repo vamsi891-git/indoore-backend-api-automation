@@ -1,20 +1,32 @@
-import { APIRequestContext, APIResponse } from "@playwright/test";
+import { TimedApiClient } from "../../../core/base/timed-api.client";
+import { ApiCallResult } from "../../../core/models/api-result.model";
+import { MASTER_DATA_REQUEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { DtrProfileResponse } from "../Mapper/dtrprofile.mapper";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
-export interface DtrProfileApiResult {
-    rawResponse: APIResponse;
-    responseBody: DtrProfileResponse;
-    responseTime: number;
+
+export type DtrProfileApiResult = ApiCallResult<DtrProfileResponse>;
+
+export interface DtrProfileQuery {
+  [key: string]: string | number | boolean | undefined;
 }
-export class DtrProfileApi {
-    constructor(private readonly authenticatedApi: APIRequestContext) { }
-    async getProfile(dtrCode: string): Promise<DtrProfileApiResult> {
-        const start = Date.now();
-        const response =await getWithAutoRefresh(this.authenticatedApi,`/indore/dtr/${dtrCode}/profile`);
-        return {
-            rawResponse: response,
-            responseBody: await response.json(),
-            responseTime: Date.now() - start
-        };
+
+export class DtrProfileApi extends TimedApiClient {
+  getProfile(
+    dtrCode: string,
+    query: DtrProfileQuery = {},
+  ): Promise<DtrProfileApiResult> {
+    const params: Record<string, string | number | boolean> = {};
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined) {
+        params[key] = value;
+      }
     }
+
+    return this.getJson<DtrProfileResponse>(
+      `/indore/dtr/${encodeURIComponent(dtrCode)}/profile`,
+      {
+        timeout: MASTER_DATA_REQUEST_TIMEOUT_MS,
+        ...(Object.keys(params).length > 0 ? { params } : {}),
+      },
+    );
+  }
 }

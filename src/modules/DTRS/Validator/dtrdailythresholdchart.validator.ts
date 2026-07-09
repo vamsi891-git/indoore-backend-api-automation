@@ -1,108 +1,127 @@
 import { expect } from "@playwright/test";
-import { dtrDailyThresholdChartData } from "../Data/dtrdailythresholdchart.data";
-import { deriveReactivePower } from "../utils/dtr-backend.util";
+import {
+    dtrDailyThresholdContractPfMeta,
+    dtrDailyThresholdContractReactiveMeta,
+    dtrDailyThresholdEnergyFields,
+    dtrDailyThresholdPeriodPointCounts,
+    dtrDailyThresholdPeriods,
+    dtrDailyThresholdPointFields,
+} from "../Data/dtrdailythresholdchart.data";
+import type {
+    DtrDailyThresholdChartErrorResponse,
+    DtrDailyThresholdChartResponse,
+    DtrDailyThresholdChartScenario,
+    DtrDailyThresholdPeriod,
+    MappedDtrDailyThresholdChart,
+    ThresholdChartPoint,
+} from "../Mapper/dtrdailythresholdchart.mapper";
+import {
+    derivePowerFactorFromEnergy,
+    deriveReactiveEnergyKvarh,
+} from "../utils/dtr-backend.util";
 
-type ThresholdPoint = {
-    month: number;
-    monthLabel: string;
-    activePower: number | null;
-    reactivePower: number | null;
-    apparentPower: number | null;
-    powerFactor: number | null;
-};
-
-type ChartData = {
-    year: number;
-    points: ThresholdPoint[];
+const LABEL_PATTERNS: Record<DtrDailyThresholdPeriod, RegExp> = {
+    hourly: /^\d{2}:\d{2}$/,
+    daily: /^\d{1,2}\s+\w{3}$/,
+    weekly: /^W\d+$/,
+    monthly: /^\w+\s+\d{4}$/,
+    yearly: /^\d{4}$/,
 };
 
 export class DtrDailyThresholdChartValidator {
-    // =====================================
-    // RESPONSE ENVELOPE
-    // =====================================
-    validateResponseEnvelope(response: { success: boolean; data?: unknown }): void {
+    validateSuccess(success: boolean): void {
+        expect(success).toBeTruthy();
+    }
+
+    validateNotFoundError(
+        responseBody: DtrDailyThresholdChartErrorResponse,
+    ): void {
+        expect(responseBody.success).toBeFalsy();
+        expect(responseBody.error).toBeDefined();
+        expect(responseBody.error.code).toBe("DTR_NOT_FOUND");
+        expect(responseBody.error.message.toLowerCase()).toContain("dtr not found");
+    }
+
+    validateBlankCodeError(
+        responseBody: DtrDailyThresholdChartErrorResponse,
+    ): void {
+        expect(responseBody.success).toBeFalsy();
+        expect(responseBody.error).toBeDefined();
+        expect(responseBody.error.code).toBe("VALIDATION_ERROR");
+        expect(responseBody.error.message.toLowerCase()).toMatch(
+            /dtr|network|code/i,
+        );
+    }
+
+    validateInvalidPeriodError(
+        responseBody: DtrDailyThresholdChartErrorResponse,
+    ): void {
+        expect(responseBody.success).toBeFalsy();
+        expect(responseBody.error).toBeDefined();
+        expect(responseBody.error.code).toBe("VALIDATION_ERROR");
+        expect(responseBody.error.message.toLowerCase()).toMatch(/period/i);
+    }
+
+    validateResponseEnvelope(response: DtrDailyThresholdChartResponse): void {
         expect(response.success).toBe(true);
         expect(response.data).toBeDefined();
     }
 
-    // =====================================
-    // ROOT FIELDS — year + points
-    // =====================================
-    validateFields(data: ChartData): void {
-        expect(data).toHaveProperty("year");
+    validateFields(data: MappedDtrDailyThresholdChart): void {
+        expect(data).toHaveProperty("period");
         expect(data).toHaveProperty("points");
-        expect(typeof data.year).toBe("number");
         expect(Array.isArray(data.points)).toBeTruthy();
     }
 
-    // =====================================
-    // YEAR — calendar year for chart query
-    // =====================================
-    validateYear(year: number): void {
-        expect(Number.isInteger(year)).toBeTruthy();
-        expect(year).toBeGreaterThan(2020);
-        expect(year).toBeLessThan(2100);
-    }
-
-    // =====================================
-    // POINTS LENGTH — MONTH_INDEXES (12 months)
-    // =====================================
-    validatePointsLength(points: ThresholdPoint[]): void {
-        expect(points.length).toBe(dtrDailyThresholdChartData.pointsCount);
-    }
-
-    // =====================================
-    // MONTH + LABEL — MONTH_LABELS[month - 1]
-    // =====================================
-    validateMonthStructure(
-        points: ThresholdPoint[],
-        expectedMonths: readonly string[],
+    validatePeriod(
+        period: DtrDailyThresholdPeriod,
+        expected?: DtrDailyThresholdPeriod,
     ): void {
-        points.forEach((point, index) => {
-            expect(point.month).toBe(index + 1);
-            expect(point.monthLabel).toBe(expectedMonths[index]);
-        });
+        expect(dtrDailyThresholdPeriods).toContain(period);
+        if (expected) {
+            expect(period).toBe(expected);
+        }
     }
 
-    // =====================================
-    // POINT STRUCTURE — exactly 6 fields
-    // =====================================
-    validatePointStructure(points: ThresholdPoint[]): void {
+    validatePointsLength(
+        period: DtrDailyThresholdPeriod,
+        points: ThresholdChartPoint[],
+    ): void {
+        expect(points.length).toBe(dtrDailyThresholdPeriodPointCounts[period]);
+    }
+
+    validatePointStructure(points: ThresholdChartPoint[]): void {
         points.forEach((point) => {
             expect(Object.keys(point).sort()).toEqual(
-                [...dtrDailyThresholdChartData.pointFields].sort(),
+                [...dtrDailyThresholdPointFields].sort(),
             );
+            expect(typeof point.label).toBe("string");
+            expect(point.label.trim().length).toBeGreaterThan(0);
         });
     }
 
-    // =====================================
-    // MONTH RANGE — 1..12
-    // =====================================
-    validateMonthRange(points: ThresholdPoint[]): void {
+    validateLabelPatterns(
+        period: DtrDailyThresholdPeriod,
+        points: ThresholdChartPoint[],
+    ): void {
+        const pattern = LABEL_PATTERNS[period];
         points.forEach((point) => {
-            expect(point.month).toBeGreaterThanOrEqual(1);
-            expect(point.month).toBeLessThanOrEqual(12);
+            expect(pattern.test(point.label.trim())).toBeTruthy();
         });
     }
 
-    // =====================================
-    // NUMERIC / NULL — toNumber() mapping
-    // =====================================
-    validateNumericOrNull(points: ThresholdPoint[]): void {
+    validateNumericOrNull(points: ThresholdChartPoint[]): void {
         points.forEach((point) => {
-            for (const field of dtrDailyThresholdChartData.powerFields) {
+            for (const field of dtrDailyThresholdEnergyFields) {
                 const value = point[field];
                 expect(value === null || typeof value === "number").toBeTruthy();
             }
         });
     }
 
-    // =====================================
-    // FINITE NUMBERS — no NaN
-    // =====================================
-    validateFiniteNumbers(points: ThresholdPoint[]): void {
+    validateFiniteNumbers(points: ThresholdChartPoint[]): void {
         points.forEach((point) => {
-            for (const field of dtrDailyThresholdChartData.powerFields) {
+            for (const field of dtrDailyThresholdEnergyFields) {
                 const value = point[field];
                 if (typeof value === "number") {
                     expect(Number.isFinite(value)).toBeTruthy();
@@ -112,24 +131,21 @@ export class DtrDailyThresholdChartValidator {
         });
     }
 
-    // =====================================
-    // POWER FACTOR RANGE
-    // =====================================
-    validatePowerFactorRange(points: ThresholdPoint[]): void {
+    validatePowerFactorRange(points: ThresholdChartPoint[]): void {
         points.forEach((point) => {
             if (point.powerFactor !== null) {
-                expect(point.powerFactor).toBeGreaterThanOrEqual(-1);
-                expect(point.powerFactor).toBeLessThanOrEqual(1);
+                expect(Math.abs(point.powerFactor)).toBeLessThanOrEqual(1);
             }
         });
     }
 
-    // =====================================
-    // NON-NEGATIVE POWERS
-    // =====================================
-    validateNonNegativeValues(points: ThresholdPoint[]): void {
+    validateNonNegativeEnergy(points: ThresholdChartPoint[]): void {
         points.forEach((point) => {
-            const fields = ["activePower", "reactivePower", "apparentPower"] as const;
+            const fields = [
+                "activeEnergyKwh",
+                "reactiveEnergyKvarh",
+                "apparentEnergyKvah",
+            ] as const;
             for (const field of fields) {
                 const value = point[field];
                 if (value !== null) {
@@ -139,71 +155,192 @@ export class DtrDailyThresholdChartValidator {
         });
     }
 
-    // =====================================
-    // REACTIVE POWER — deriveReactivePower when PF or triangle applies
-    // =====================================
-    validateReactivePowerDerivation(points: ThresholdPoint[]): void {
+    validateEnergyTriangle(points: ThresholdChartPoint[]): void {
         points.forEach((point) => {
-            if (point.reactivePower == null) return;
-            const expected = deriveReactivePower(
-                point.activePower,
-                point.apparentPower,
-                point.powerFactor,
+            if (
+                point.activeEnergyKwh !== null &&
+                point.apparentEnergyKvah !== null
+            ) {
+                expect(point.apparentEnergyKvah + 0.001).toBeGreaterThanOrEqual(
+                    point.activeEnergyKwh,
+                );
+            }
+        });
+    }
+
+    validateReactiveDerivation(points: ThresholdChartPoint[]): void {
+        points.forEach((point) => {
+            const expected = deriveReactiveEnergyKvarh(
+                point.activeEnergyKwh,
+                point.apparentEnergyKvah,
             );
-            if (expected == null) return;
-            expect(point.reactivePower).toBe(expected);
+            if (expected == null) {
+                expect(point.reactiveEnergyKvarh).toBeNull();
+                return;
+            }
+            expect(point.reactiveEnergyKvarh).toBe(expected);
         });
     }
 
-    // =====================================
-    // EMPTY POINTS — no archive data → all null (emptyPoints())
-    // =====================================
-    validateEmptyPointsState(points: ThresholdPoint[]): void {
-        const allNull = points.every(
-            (p) =>
-                p.activePower === null &&
-                p.reactivePower === null &&
-                p.apparentPower === null &&
-                p.powerFactor === null,
+    validatePowerFactorDerivation(points: ThresholdChartPoint[]): void {
+        points.forEach((point) => {
+            if (point.powerFactor == null) return;
+            const fromEnergy = derivePowerFactorFromEnergy(
+                point.activeEnergyKwh,
+                point.apparentEnergyKvah,
+            );
+            if (fromEnergy == null) return;
+            expect(point.powerFactor).toBe(fromEnergy);
+        });
+    }
+
+    validateUniqueLabels(points: ThresholdChartPoint[]): void {
+        const labels = points.map((p) => p.label);
+        expect(new Set(labels).size).toBe(labels.length);
+    }
+
+    validateAllNullPoints(points: ThresholdChartPoint[]): void {
+        points.forEach((point) => {
+            expect(point.activeEnergyKwh).toBeNull();
+            expect(point.reactiveEnergyKvarh).toBeNull();
+            expect(point.apparentEnergyKvah).toBeNull();
+            expect(point.powerFactor).toBeNull();
+        });
+    }
+
+    validateLiveOk(
+        mapped: MappedDtrDailyThresholdChart,
+        expectedPeriod: DtrDailyThresholdPeriod,
+    ): void {
+        this.validateSuccess(mapped.success);
+        this.validateFields(mapped);
+        this.validatePeriod(mapped.period, expectedPeriod);
+        this.validatePointsLength(mapped.period, mapped.points);
+        this.validatePointStructure(mapped.points);
+        this.validateLabelPatterns(mapped.period, mapped.points);
+        this.validateNumericOrNull(mapped.points);
+        this.validateFiniteNumbers(mapped.points);
+        this.validatePowerFactorRange(mapped.points);
+        this.validateNonNegativeEnergy(mapped.points);
+        this.validateEnergyTriangle(mapped.points);
+        this.validateReactiveDerivation(mapped.points);
+        this.validateUniqueLabels(mapped.points);
+    }
+
+    validateNullHourlyContract(mapped: MappedDtrDailyThresholdChart): void {
+        this.validateLiveOk(mapped, "hourly");
+        this.validateAllNullPoints(mapped.points);
+        expect(mapped.points[0].label).toBe("06:00");
+        expect(mapped.points[mapped.points.length - 1].label).toBe("17:00");
+    }
+
+    validateNullDailyContract(mapped: MappedDtrDailyThresholdChart): void {
+        this.validateLiveOk(mapped, "daily");
+        this.validateAllNullPoints(mapped.points);
+    }
+
+    validateNullWeeklyContract(mapped: MappedDtrDailyThresholdChart): void {
+        this.validateLiveOk(mapped, "weekly");
+        this.validateAllNullPoints(mapped.points);
+        expect(mapped.points.map((p) => p.label)).toEqual([
+            "W1",
+            "W2",
+            "W3",
+            "W4",
+            "W5",
+            "W6",
+            "W7",
+            "W8",
+        ]);
+    }
+
+    validateNullMonthlyContract(mapped: MappedDtrDailyThresholdChart): void {
+        this.validateLiveOk(mapped, "monthly");
+        this.validateAllNullPoints(mapped.points);
+        expect(mapped.points[0].label).toBe("Aug 2025");
+    }
+
+    validateNullYearlyContract(mapped: MappedDtrDailyThresholdChart): void {
+        this.validateLiveOk(mapped, "yearly");
+        this.validateAllNullPoints(mapped.points);
+        expect(mapped.points[0].label).toBe("2015");
+        expect(mapped.points[mapped.points.length - 1].label).toBe("2026");
+    }
+
+    validatePopulatedContract(mapped: MappedDtrDailyThresholdChart): void {
+        this.validateLiveOk(mapped, "daily");
+        expect(mapped.points[0].activeEnergyKwh).toBe(15.5);
+        expect(mapped.points[0].powerFactor).toBe(0.89);
+        expect(mapped.points[1].reactiveEnergyKvarh).toBe(15);
+    }
+
+    validateReactiveContract(mapped: MappedDtrDailyThresholdChart): void {
+        this.validateLiveOk(mapped, "hourly");
+        const meta = dtrDailyThresholdContractReactiveMeta;
+        expect(mapped.points[0].reactiveEnergyKvarh).toBe(
+            meta.expectedReactiveKvarh,
         );
-        if (allNull) {
-            expect(points.length).toBe(12);
+        expect(mapped.points[0].reactiveEnergyKvarh).toBe(
+            deriveReactiveEnergyKvarh(
+                meta.activeEnergyKwh,
+                meta.apparentEnergyKvah,
+            ),
+        );
+    }
+
+    validatePfContract(mapped: MappedDtrDailyThresholdChart): void {
+        this.validateLiveOk(mapped, "weekly");
+        const meta = dtrDailyThresholdContractPfMeta;
+        expect(mapped.points[0].powerFactor).toBe(meta.expectedPowerFactor);
+        expect(mapped.points[0].powerFactor).toBe(
+            derivePowerFactorFromEnergy(
+                meta.activeEnergyKwh,
+                meta.apparentEnergyKvah,
+            ),
+        );
+    }
+
+    validateScenario(
+        mapped: MappedDtrDailyThresholdChart,
+        scenario: DtrDailyThresholdChartScenario,
+        expectedPeriod?: DtrDailyThresholdPeriod,
+    ): void {
+        switch (scenario) {
+            case "contract_null_hourly":
+                this.validateNullHourlyContract(mapped);
+                break;
+            case "contract_null_daily":
+                this.validateNullDailyContract(mapped);
+                break;
+            case "contract_null_weekly":
+                this.validateNullWeeklyContract(mapped);
+                break;
+            case "contract_null_monthly":
+                this.validateNullMonthlyContract(mapped);
+                break;
+            case "contract_null_yearly":
+                this.validateNullYearlyContract(mapped);
+                break;
+            case "contract_populated_energy":
+                this.validatePopulatedContract(mapped);
+                break;
+            case "contract_reactive_derivation":
+                this.validateReactiveContract(mapped);
+                break;
+            case "contract_pf_from_energy":
+                this.validatePfContract(mapped);
+                break;
+            case "ddt_by_code_primary_hourly":
+            case "ddt_by_code_primary_daily":
+            case "ddt_by_code_primary_weekly":
+            case "ddt_by_code_primary_monthly":
+            case "ddt_by_code_primary_yearly":
+            case "ddt_by_code_alt":
+            case "ddt_ignore_unknown_query":
+                this.validateLiveOk(mapped, expectedPeriod!);
+                break;
+            default:
+                break;
         }
-    }
-
-    // =====================================
-    // MONTH LABELS — non-empty strings
-    // =====================================
-    validateMonthLabelsNotEmpty(points: ThresholdPoint[]): void {
-        points.forEach((point) => {
-            expect(point.monthLabel.trim().length).toBeGreaterThan(0);
-        });
-    }
-
-    // =====================================
-    // UNIQUE MONTHS
-    // =====================================
-    validateUniqueMonths(points: ThresholdPoint[]): void {
-        const months = points.map((x) => x.month);
-        expect(new Set(months).size).toBe(dtrDailyThresholdChartData.pointsCount);
-    }
-
-    // =====================================
-    // CHRONOLOGICAL ORDER — MONTH_INDEXES 1..12
-    // =====================================
-    validateMonthOrder(points: ThresholdPoint[]): void {
-        for (let i = 1; i < points.length; i++) {
-            expect(points[i].month).toBe(points[i - 1].month + 1);
-        }
-    }
-
-    // =====================================
-    // POINT TYPES
-    // =====================================
-    validatePointTypes(points: ThresholdPoint[]): void {
-        points.forEach((point) => {
-            expect(typeof point.month).toBe("number");
-            expect(typeof point.monthLabel).toBe("string");
-        });
     }
 }

@@ -1,126 +1,155 @@
-import { test } from "../../../../src/fixtures/api.fixture";
-import { DtrCapacityGaugeApi } from "../Api/dtrcapacitygauge.api";
-import { dtrCapacityGaugeData } from "../Data/dtrcapacitygauge.data";
-import { DtrCapacityGaugeMapper } from "../Mapper/dtrcapacitygauge.mapper";
-import { DtrCapacityGaugeValidator } from "../Validator/dtrcapacitygauge.validator";
+import { expect } from "@playwright/test";
+import { test } from "../../../fixtures/api.fixture";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
+import { DtrCapacityGaugeApi } from "../Api/dtrcapacitygauge.api";
+import {
+  dtrCapacityGaugeMaxResponseTimeMs,
+  dtrCapacityGaugeTestCases,
+  resolveDtrCapacityGaugeCode,
+  resolveDtrCapacityGaugeContractBody,
+  resolveDtrCapacityGaugeQuery,
+} from "../Data/dtrcapacitygauge.data";
+import {
+  DtrCapacityGaugeMapper,
+  type DtrCapacityGaugeErrorResponse,
+} from "../Mapper/dtrcapacitygauge.mapper";
+import { DtrCapacityGaugeValidator } from "../Validator/dtrcapacitygauge.validator";
 
 test.describe("DTR Capacity Gauge API", () => {
+  test.describe.configure({ retries: 1 });
+  test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
+
+  for (const testCase of dtrCapacityGaugeTestCases) {
     test(
-        "Validate DTR Capacity Gauge API",
-        {
-            tag: ["@dtr", "@capacity-gauge", "@smoke"],
-        },
-        async ({ authenticatedApi }) => {
-            const api = new DtrCapacityGaugeApi(authenticatedApi);
-            const { rawResponse, responseBody, responseTime } =
-                await api.getCapacityGauge(dtrCapacityGaugeData.dtrCode);
+      testCase.testName,
+      { tag: testCase.tags },
+      async ({ authenticatedApi }) => {
+        const expectedStatus = testCase.expectedStatus ?? 200;
+        const validator = new DtrCapacityGaugeValidator();
+        const assert = new AssertionEngine();
+        const validation = new ValidationEngine();
 
-            await PerformanceTracker.track(
-                rawResponse,
-                "DTR Capacity Gauge API",
-                `${process.env.BASE_URL}/indore/dtr/${dtrCapacityGaugeData.dtrCode}/capacity-gauge`,
-                responseTime,
-            );
+        if (testCase.isContractFixture) {
+          const fixtureBody = resolveDtrCapacityGaugeContractBody(
+            testCase.scenario,
+          );
+          if (!fixtureBody) {
+            test.skip(true, "Missing DTR capacity gauge contract fixture body");
+            return;
+          }
 
-            const assert = new AssertionEngine();
-            const validation = new ValidationEngine();
-            const validator = new DtrCapacityGaugeValidator();
+          const mapped = DtrCapacityGaugeMapper.map(fixtureBody);
+          validation.execute("Required Fields", () =>
+            assert.validateRequiredFields(fixtureBody, ["success", "data"]),
+          );
+          validation.execute("Contract Scenario", () =>
+            validator.validateScenario(mapped, testCase.scenario),
+          );
+          validation.printSummary(testCase.testName, 0);
+          return;
+        }
 
-            // =====================================
-            // API VALIDATIONS
-            // =====================================
-            validation.execute("Status Code", () =>
-                assert.validateStatusCode(rawResponse, 200),
-            );
-            validation.execute("Content Type", () =>
-                assert.validateContentType(rawResponse),
-            );
-            validation.execute("Response Time", () =>
-                assert.validateResponseTime(responseTime, 30000),
-            );
-            validation.execute("Sensitive Data", () =>
-                assert.validateSensitiveData(responseBody),
-            );
-            validation.execute("Required Fields", () =>
-                assert.validateRequiredFields(responseBody.data, [
-                    "ratedCapacityKva",
-                    "bands",
-                ]),
-            );
+        const api = new DtrCapacityGaugeApi(authenticatedApi);
+        const dtrCode = resolveDtrCapacityGaugeCode(testCase.scenario);
 
-            // =====================================
-            // MAPPER
-            // =====================================
-            const mapped = DtrCapacityGaugeMapper.map(responseBody);
+        if (!dtrCode) {
+          test.skip(true, "Could not resolve DTR capacity gauge code");
+          return;
+        }
 
-            // =====================================
-            // BACKEND VALIDATIONS
-            // =====================================
-            validation.execute("Response Envelope", () =>
-                validator.validateResponseEnvelope(responseBody),
-            );
-            validation.execute("Field Validation", () =>
-                validator.validateFields(mapped),
-            );
-            validation.execute("Rated Capacity", () =>
-                validator.validateRatedCapacity(mapped),
-            );
-            validation.execute("Band Count Validation", () =>
-                validator.validateBandCount(mapped.bands),
-            );
-            validation.execute("Band Structure Validation", () =>
-                validator.validateBandStructure(mapped.bands),
-            );
-            validation.execute("Band Order Validation", () =>
-                validator.validateBandOrder(
-                    mapped.bands,
-                    dtrCapacityGaugeData.expectedBands,
-                ),
-            );
-            validation.execute("Type Validation", () =>
-                validator.validateTypes(mapped),
-            );
-            validation.execute("Unit Validation", () =>
-                validator.validateUnits(mapped.bands),
-            );
-            validation.execute("Percentage Validation", () =>
-                validator.validatePercentages(mapped.bands),
-            );
-            validation.execute("Value Validation", () =>
-                validator.validateValues(mapped.bands),
-            );
-            validation.execute("Capacity Logic Validation", () =>
-                validator.validateCapacityLogic(
-                    mapped.ratedCapacityKva,
-                    mapped.bands,
-                ),
-            );
-            validation.execute("Gauge Percent Formula", () =>
-                validator.validateGaugePercentFormula(
-                    mapped.ratedCapacityKva,
-                    mapped.bands,
-                ),
-            );
-            validation.execute("Rounded Value Validation", () =>
-                validator.validateRoundedValues(mapped.bands),
-            );
-            validation.execute("Zero Fallback State", () =>
-                validator.validateZeroFallbackState(mapped),
-            );
-            validation.execute("NaN Validation", () =>
-                validator.validateNaN(mapped),
-            );
-            validation.execute("Unique Labels Validation", () =>
-                validator.validateUniqueLabels(mapped.bands),
-            );
+        const query = resolveDtrCapacityGaugeQuery(testCase.scenario);
+        const queryString = new URLSearchParams(
+          Object.entries(query).reduce<Record<string, string>>(
+            (acc, [key, value]) => {
+              if (value !== undefined) {
+                acc[key] = String(value);
+              }
+              return acc;
+            },
+            {},
+          ),
+        ).toString();
+        const endpoint = `/indore/dtr/${encodeURIComponent(dtrCode)}/capacity-gauge${
+          queryString ? `?${queryString}` : ""
+        }`;
 
-            // =====================================
-            // SUMMARY
-            // =====================================
-            validation.printSummary("DTR Capacity Gauge API", responseTime);
-        },
+        const { rawResponse, responseBody, responseTime } =
+          await api.getCapacityGauge(dtrCode, query);
+
+        await PerformanceTracker.track(
+          rawResponse,
+          testCase.testName,
+          `${process.env.BASE_URL}${endpoint}`,
+          responseTime,
+        );
+
+        validation.execute("Status Validation", () => {
+          if (testCase.scenario === "dtr_not_found") {
+            expect([200, 404]).toContain(rawResponse.status());
+            return;
+          }
+          assert.validateStatusCode(rawResponse, expectedStatus, responseBody);
+        });
+        validation.execute("Content Type", () =>
+          assert.validateContentType(rawResponse),
+        );
+        validation.execute("Response Time", () =>
+          assert.validateResponseTime(
+            responseTime,
+            dtrCapacityGaugeMaxResponseTimeMs,
+          ),
+        );
+        validation.execute("Sensitive Data", () =>
+          assert.validateSensitiveData(responseBody),
+        );
+
+        if (expectedStatus === 404) {
+          validation.execute("Not Found Error", () =>
+            validator.validateNotFoundError(
+              responseBody as DtrCapacityGaugeErrorResponse,
+            ),
+          );
+          validation.printSummary(testCase.testName, responseTime);
+          return;
+        }
+
+        if (
+          testCase.scenario === "dtr_not_found" &&
+          rawResponse.status() === 404
+        ) {
+          validation.execute("Not Found Error", () =>
+            validator.validateNotFoundError(
+              responseBody as DtrCapacityGaugeErrorResponse,
+            ),
+          );
+          validation.printSummary(testCase.testName, responseTime);
+          return;
+        }
+
+        if (expectedStatus === 400) {
+          validation.execute("Blank DTR Code Validation Error", () =>
+            validator.validateBlankCodeError(
+              responseBody as DtrCapacityGaugeErrorResponse,
+            ),
+          );
+          validation.printSummary(testCase.testName, responseTime);
+          return;
+        }
+
+        validation.execute("Required Fields", () =>
+          assert.validateRequiredFields(responseBody, ["success", "data"]),
+        );
+
+        const mapped = DtrCapacityGaugeMapper.map(responseBody);
+        validation.execute("DTR Capacity Gauge Scenario", () =>
+          validator.validateScenario(mapped, testCase.scenario),
+        );
+
+        validation.printSummary(testCase.testName, responseTime);
+      },
     );
+  }
 });

@@ -1,8 +1,19 @@
 import { expect } from "@playwright/test";
-import { dtrEventsData } from "../Data/dtrevents.data";
-import { DtrEventRow, DtrEventsData } from "../Mapper/dtrevents.mapper";
+import {
+    dtrEventsAllowedStatuses,
+    dtrEventsDataFields,
+    dtrEventsRowFields,
+} from "../Data/dtrevents.data";
+import type {
+    DtrEventRow,
+    DtrEventsData,
+    DtrEventsErrorResponse,
+    DtrEventsResponse,
+    DtrEventsScenario,
+    MappedDtrEvents,
+} from "../Mapper/dtrevents.mapper";
 
-const ALLOWED_STATUSES = dtrEventsData.allowedStatuses;
+const ALLOWED_STATUSES = dtrEventsAllowedStatuses;
 
 // Backend formatDurationHuman: e.g. "0m 10s", "1m 47s", "2h 5m 30s"
 const HUMAN_DURATION =
@@ -16,10 +27,33 @@ function parseEventDateTime(value: string): number | null {
 }
 
 export class DtrEventsValidator {
+    validateNotFoundError(responseBody: DtrEventsErrorResponse): void {
+        expect(responseBody.success).toBeFalsy();
+        expect(responseBody.error).toBeDefined();
+        expect(responseBody.error.code).toBe("DTR_NOT_FOUND");
+        expect(responseBody.error.message.toLowerCase()).toContain("dtr not found");
+    }
+
+    validateBlankCodeError(responseBody: DtrEventsErrorResponse): void {
+        expect(responseBody.success).toBeFalsy();
+        expect(responseBody.error).toBeDefined();
+        expect(responseBody.error.code).toBe("VALIDATION_ERROR");
+        expect(responseBody.error.message.toLowerCase()).toMatch(
+            /dtr|network|code/i,
+        );
+    }
+
+    validateInvalidPageError(responseBody: DtrEventsErrorResponse): void {
+        expect(responseBody.success).toBeFalsy();
+        expect(responseBody.error).toBeDefined();
+        expect(responseBody.error.code).toBe("VALIDATION_ERROR");
+        expect(responseBody.error.message.toLowerCase()).toMatch(/page/i);
+    }
+
     // =====================================
     // RESPONSE ENVELOPE
     // =====================================
-    validateResponseEnvelope(response: { success: boolean; data: unknown }): void {
+    validateResponseEnvelope(response: DtrEventsResponse): void {
         expect(response.success).toBe(true);
         expect(response.data).toBeDefined();
     }
@@ -94,10 +128,18 @@ export class DtrEventsValidator {
     }
 
     validateRowsPresentWhenTotalPositive(data: DtrEventsData): void {
-        if (data.totalCount > 0) {
-            expect(data.rows.length).toBeGreaterThan(0);
-            expect(data.totalPages).toBeGreaterThan(0);
+        if (data.totalCount === 0) {
+            return;
         }
+
+        const offset = (data.page - 1) * data.pageSize;
+        if (data.totalCount <= offset) {
+            expect(data.rows.length).toBe(0);
+            return;
+        }
+
+        expect(data.rows.length).toBeGreaterThan(0);
+        expect(data.totalPages).toBeGreaterThan(0);
     }
 
     validateDataPresentPagination(data: DtrEventsData): void {
@@ -113,11 +155,11 @@ export class DtrEventsValidator {
     // =====================================
     validateRowRequiredFields(rows: DtrEventRow[]): void {
         rows.forEach((row) => {
-            for (const field of dtrEventsData.rowFields) {
+            for (const field of dtrEventsRowFields) {
                 expect(row).toHaveProperty(field);
             }
             expect(Object.keys(row).sort()).toEqual(
-                [...dtrEventsData.rowFields].sort(),
+                [...dtrEventsRowFields].sort(),
             );
         });
     }
@@ -257,5 +299,111 @@ export class DtrEventsValidator {
         rows.forEach((row) => {
             expect([...ALLOWED_STATUSES]).toContain(row.status);
         });
+    }
+
+    validateDataFields(data: DtrEventsData): void {
+        for (const field of dtrEventsDataFields) {
+            expect(data).toHaveProperty(field);
+        }
+    }
+
+    validateLiveOk(
+        mapped: MappedDtrEvents,
+        page: number,
+        limit: number,
+    ): void {
+        this.validateSuccess(mapped.success);
+        this.validateRootStructure(mapped);
+        this.validateDataFields(mapped);
+        this.validateQueryEcho(mapped, page, limit);
+        this.validatePaginationBounds(mapped);
+        this.validatePaginationMath(mapped);
+        this.validateApproximateTotalCount(mapped);
+        this.validateEmptyScenario(mapped);
+        this.validateRowsPresentWhenTotalPositive(mapped);
+
+        const { rows } = mapped;
+        if (rows.length > 0) {
+            this.validateDataPresentPagination(mapped);
+            this.validateRowRequiredFields(rows);
+            this.validateRowStructure(rows);
+            this.validateSerialSequence(rows, mapped.page, mapped.pageSize);
+            this.validateUniqueSerialNumbers(rows);
+            this.validateStatusRules(rows);
+            this.validateStatusDistribution(rows);
+            this.validateMeterSlNo(rows);
+            this.validateMeterSlNoConsistency(rows);
+            this.validateDescription(rows);
+            this.validateDateTimeFormat(rows);
+            this.validateDurationFormat(rows);
+            this.validateRestoreAfterOccurrence(rows);
+            this.validateChronologicalOrder(rows);
+        }
+    }
+
+    validateEmptyPageContract(mapped: MappedDtrEvents): void {
+        this.validateSuccess(mapped.success);
+        this.validateRootStructure(mapped);
+        expect(mapped.rows).toEqual([]);
+        expect(mapped.page).toBe(1);
+        expect(mapped.pageSize).toBe(20);
+        expect(mapped.totalCount).toBe(0);
+        expect(mapped.totalPages).toBe(0);
+    }
+
+    validateResolvedRowContract(mapped: MappedDtrEvents): void {
+        this.validateLiveOk(mapped, 1, 20);
+        expect(mapped.rows.length).toBe(1);
+        expect(mapped.rows[0].status).toBe("Resolved");
+        expect(mapped.rows[0].duration).toBe("5m 10s");
+        expect(mapped.rows[0].restoredDateTime).toBe("09-07-2026 14:35:25");
+    }
+
+    validatePendingRowContract(mapped: MappedDtrEvents): void {
+        this.validateLiveOk(mapped, 1, 20);
+        expect(mapped.rows.length).toBe(1);
+        expect(mapped.rows[0].status).toBe("Pending");
+        expect(mapped.rows[0].restoredDateTime).toBeNull();
+        expect(mapped.rows[0].duration).toBeNull();
+    }
+
+    validatePageTwoContract(mapped: MappedDtrEvents): void {
+        this.validateLiveOk(mapped, 2, 20);
+        expect(mapped.page).toBe(2);
+        expect(mapped.rows[0].serialNo).toBe(21);
+        expect(mapped.totalCount).toBe(25);
+        expect(mapped.totalPages).toBe(2);
+    }
+
+    validateScenario(
+        mapped: MappedDtrEvents,
+        scenario: DtrEventsScenario,
+        page: number,
+        limit: number,
+    ): void {
+        switch (scenario) {
+            case "contract_empty_page":
+                this.validateEmptyPageContract(mapped);
+                break;
+            case "contract_resolved_row":
+                this.validateResolvedRowContract(mapped);
+                break;
+            case "contract_pending_row":
+                this.validatePendingRowContract(mapped);
+                break;
+            case "contract_pagination_page_two":
+                this.validatePageTwoContract(mapped);
+                break;
+            case "dev_by_code_primary":
+            case "dev_by_code_alt":
+            case "dev_page_two":
+            case "dev_custom_limit":
+            case "dev_ignore_unknown_query":
+            case "dev_with_search_query":
+                this.validateLiveOk(mapped, page, limit);
+                break;
+            default:
+                break;
+        }
     }
 }
