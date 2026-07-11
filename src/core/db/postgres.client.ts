@@ -14,11 +14,19 @@ const TRANSIENT_DB_ERROR_CODES = new Set([
   "ECONNREFUSED",
   "ETIMEDOUT",
   "EPIPE",
+  "53300", // too_many_connections
   "57P01", // admin_shutdown
   "57P03", // cannot_connect_now
   "08006", // connection_failure
   "08001", // sqlclient_unable_to_establish_sqlconnection
 ]);
+
+/** Prisma P2028/P2024 equivalents for node-pg pool exhaustion / acquire timeout. */
+const POOL_EXHAUSTION_PATTERN =
+  /timeout exceeded when trying to connect|timeout acquiring a connection|pool is full|too many clients already/i;
+
+const DEFAULT_PG_POOL_MAX = 5;
+const PG_POOL_HEADROOM = 3;
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -32,8 +40,26 @@ function isTransientDbError(error: unknown): boolean {
   const message = "message" in error ? String(error.message) : "";
   return (
     TRANSIENT_DB_ERROR_CODES.has(code) ||
-    /ECONNRESET|connection terminated|Connection terminated/i.test(message)
+    /ECONNRESET|connection terminated|Connection terminated/i.test(message) ||
+    POOL_EXHAUSTION_PATTERN.test(message)
   );
+}
+
+/**
+ * Size pg pool for parallel Playwright workers (+ headroom for archive + main pools).
+ * Override with PG_POOL_MAX when needed.
+ */
+export function resolvePgPoolMax(): number {
+  const explicit = Number(process.env.PG_POOL_MAX);
+  if (Number.isFinite(explicit) && explicit > 0) {
+    return explicit;
+  }
+
+  const workers = Number(process.env.PLAYWRIGHT_WORKERS ?? "1");
+  const workerCount =
+    Number.isFinite(workers) && workers > 0 ? workers : 1;
+
+  return Math.max(DEFAULT_PG_POOL_MAX, workerCount + PG_POOL_HEADROOM);
 }
 
 /** PostgreSQL stores unquoted database names as lowercase. */
@@ -101,15 +127,20 @@ export function readDbConfig(): DbConfig {
 }
 
 export function createPgPool(config: DbConfig = readDbConfig()): pg.Pool {
+  const poolMax = resolvePgPoolMax();
+  const connectionTimeoutMillis = Number(
+    process.env.PG_POOL_CONNECTION_TIMEOUT_MS ?? 20_000,
+  );
+
   return new pg.Pool({
     host: config.host,
     port: config.port,
     user: config.user,
     password: config.password,
     database: config.database,
-    max: 2,
+    max: poolMax,
     idleTimeoutMillis: 30_000,
-    connectionTimeoutMillis: 20_000,
+    connectionTimeoutMillis,
     keepAlive: true,
     ...(config.ssl ? { ssl: { rejectUnauthorized: false } } : {}),
   });

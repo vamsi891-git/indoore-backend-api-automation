@@ -5,6 +5,11 @@ import {
     DtrBillingRow,
 } from "../Mapper/dtrbilling.mapper";
 
+export interface DtrBillingErrorBody {
+    success: boolean;
+    error?: { code?: string; message?: string };
+}
+
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const DMY_DATE_TIME = /^\d{2}-\d{2}-\d{4} \d{2}:\d{2}$/;
 
@@ -25,6 +30,20 @@ function parseNumericString(value: string): number {
 }
 
 export class DtrBillingValidator {
+    validateValidationError(responseBody: DtrBillingErrorBody): void {
+        expect(responseBody.success).toBeFalsy();
+        expect(responseBody.error).toBeDefined();
+        expect(responseBody.error?.code).toBe("VALIDATION_ERROR");
+        expect(responseBody.error?.message).toBeTruthy();
+    }
+
+    validateApiError(responseBody: DtrBillingErrorBody): void {
+        expect(responseBody.success).toBeFalsy();
+        expect(responseBody.error).toBeDefined();
+        expect(responseBody.error?.code).toBeTruthy();
+        expect(responseBody.error?.message).toBeTruthy();
+    }
+
     validateSuccess(response: DtrBillingResponse) {
         expect(response.success).toBeTruthy();
     }

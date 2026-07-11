@@ -34,7 +34,10 @@
     "db:list": "node scripts/list-databases.mjs",
     "manual:workbook": "node scripts/build-manual-testing-workbook.mjs",
     "manual:populate": "node scripts/populate-module-test-cases.mjs",
-    "manual:add-dtr-pack": "node scripts/build-add-dtr-test-pack.mjs"
+    "manual:add-dtr-pack": "node scripts/build-add-dtr-test-pack.mjs",
+    "docs:swagger": "node scripts/open-swagger.mjs",
+    "docs:swagger:open": "node scripts/open-swagger.mjs --open",
+    "test:unit": "playwright test src/core/__tests__"
   },
   "keywords": [],
   "author": "",

@@ -35,6 +35,34 @@ Backend API test automation with [Playwright Test](https://playwright.dev/) and 
 
 Do not commit `.env` or anything under `playwright/.auth/`.
 
+## Local Dev
+
+### Swagger / API docs
+
+The Swagger UI URL is derived from your environment — not hardcoded to `localhost`:
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `BASE_URL` | (required) | API base; Swagger defaults to `{BASE_URL}/indore/api-docs/` |
+| `SWAGGER_URL` | — | Full override, e.g. `http://localhost:3000/indore/api-docs/` |
+| `SWAGGER_PATH` | `/indore/api-docs/` | Path appended to `BASE_URL` when `SWAGGER_URL` is unset |
+
+```bash
+# Print resolved URL (uses .env BASE_URL)
+npm run docs:swagger
+
+# Open in default browser (Windows/macOS/Linux)
+npm run docs:swagger:open
+```
+
+For local backend on port 3000, set in `.env`:
+
+```bash
+BASE_URL=http://localhost:3000
+# or override explicitly:
+SWAGGER_URL=http://localhost:3000/indore/api-docs/
+```
+
 ## Commands
 
 | Command | Description |
