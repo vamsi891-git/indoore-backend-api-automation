@@ -1,22 +1,32 @@
-import { APIRequestContext, APIResponse} from "@playwright/test";
-import { DtrConsumptionResponse} from "../Mapper/dtrconsumption.mapper";
-export interface DtrConsumptionApiResponse {
-    rawResponse: APIResponse;
-    responseBody: DtrConsumptionResponse;
-    responseTime: number;
+import { TimedApiClient } from "../../../core/base/timed-api.client";
+import { ApiCallResult } from "../../../core/models/api-result.model";
+import { MASTER_DATA_REQUEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
+import { DtrConsumptionResponse } from "../Mapper/dtrconsumption.mapper";
+
+export type DtrConsumptionApiResult = ApiCallResult<DtrConsumptionResponse>;
+
+export interface DtrConsumptionQuery {
+    period?: string;
+    [key: string]: string | number | boolean | undefined;
 }
-export class DtrConsumptionApi {
-    constructor(private request: APIRequestContext) { }
-    async getDtrConsumption():
-        Promise<DtrConsumptionApiResponse> {
-        const start = Date.now();
-        const rawResponse =await this.request.get("/indore/dashboard/dtr/consumption");
-        const responseBody =await rawResponse.json();
-        const responseTime =Date.now() - start;
-        return {
-            rawResponse,
-            responseBody,
-            responseTime
-        };
+
+export class DtrConsumptionApi extends TimedApiClient {
+    getDtrConsumption(
+        query: DtrConsumptionQuery = {},
+    ): Promise<DtrConsumptionApiResult> {
+        const params: Record<string, string | number | boolean> = {};
+        for (const [key, value] of Object.entries(query)) {
+            if (value !== undefined) {
+                params[key] = value;
+            }
+        }
+
+        return this.getJson<DtrConsumptionResponse>(
+            "/indore/dashboard/dtr/consumption",
+            {
+                timeout: MASTER_DATA_REQUEST_TIMEOUT_MS,
+                ...(Object.keys(params).length > 0 ? { params } : {}),
+            },
+        );
     }
 }

@@ -6,20 +6,26 @@ export interface TechnicalSummaryReport {
     domesticCount: number;
     nonDomesticCount: number;
 }
+export interface TechnicalSummaryData {
+    month: number;
+    year: number;
+    reports: TechnicalSummaryReport[];
+}
+
 export interface TechnicalSummaryResponse {
     success: boolean;
-    data: {
-        month: number;
-        year: number;
-        reports: TechnicalSummaryReport[];
-    };
+    data?: TechnicalSummaryData;
+    error?: { code?: string; message?: string };
 }
+
 export class TechnicalSummaryMapper {
     static map(response: TechnicalSummaryResponse) {
+        const data = response.data ?? ({} as TechnicalSummaryData);
         return {
-            month:response.data.month,
-            year:response.data.year,
-            reports:response.data.reports
+            success: response.success,
+            month: data.month ?? 1,
+            year: data.year ?? new Date().getFullYear(),
+            reports: data.reports ?? [],
         };
     }
 }

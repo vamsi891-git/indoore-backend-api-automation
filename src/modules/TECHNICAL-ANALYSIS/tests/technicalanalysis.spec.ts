@@ -1,223 +1,295 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
 import { TechnicalReportApi } from "../Api/technicalanalysis.api";
-import { TechnicalAnalysisData, type TechnicalAnalysisConfig,} from "../Data/technicalanalysis.data";
-import { TechnicalReportMapper} from "../Mapper/technicalanalysis.mapper";
-import {  TechnicalReportValidator} from "../Validator/technical-analysis.shared";
+import {
+  getTechnicalReportLiveConfig,
+  resolveTechnicalReportContractBody,
+  resolveTechnicalReportQuery,
+  technicalReportTestCases,
+  type TechnicalAnalysisLiveConfig,
+} from "../Data/technicalanalysis.data";
+import {
+  TechnicalReportMapper,
+  type TechnicalReportMapped,
+} from "../Mapper/technicalanalysis.mapper";
+import { TechnicalReportValidator } from "../Validator/technical-analysis.shared";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker }  from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { BackendResponse } from "../../../core/utils/backend-response.util";
-import { TECHNICAL_ANALYSIS_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
+import {
+  TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
+  TECHNICAL_ANALYSIS_TEST_TIMEOUT_MS,
+} from "../../../core/constants/api-timeouts";
 
-test.describe("Technical Analysis Report API",() => {
-        test.describe.configure({ mode: "serial", retries: 2 });
-        test.setTimeout(TECHNICAL_ANALYSIS_TEST_TIMEOUT_MS);
+function runLiveReportValidations(
+  validation: ValidationEngine,
+  validator: TechnicalReportValidator,
+  mapped: TechnicalReportMapped,
+  liveConfig: TechnicalAnalysisLiveConfig,
+): void {
+  validation.execute("Response Structure Validation", () =>
+    validator.validateResponseStructure(mapped),
+  );
+  validation.execute("Analysis Type Validation", () =>
+    validator.validateAnalysisType(
+      mapped.analysisType,
+      liveConfig.analysisType,
+    ),
+  );
+  validation.execute("Month Validation", () =>
+    validator.validateMonth(mapped.month, liveConfig.month),
+  );
+  validation.execute("Year Validation", () =>
+    validator.validateYear(mapped.year, liveConfig.year),
+  );
+  validation.execute("Pagination Validation", () =>
+    validator.validatePagination(mapped),
+  );
+  validation.execute("Pagination Consistency Validation", () =>
+    validator.validatePaginationConsistency(mapped),
+  );
+  validation.execute("Cross Field Validation", () =>
+    validator.validateCrossFieldLogic(mapped),
+  );
 
-        TechnicalAnalysisData.forEach(
-            (report: TechnicalAnalysisConfig) => {
-                test(`${report.analysisType} Report Validation`,
-                    {
-                        tag: [
-                            "@technical-analysis",
-                            "@report",
-                            "@smoke"
-                        ]
-                    },
-                    async ({authenticatedApi}) => {
-                        const api =new TechnicalReportApi(authenticatedApi);
-                        const {
-                            rawResponse,
-                            responseBody,
-                            responseTime
-                        } = await api.getTechnicalReport(report.analysisType,report.month,report.year,report.pageSize);
-                        await PerformanceTracker.track(
-                            rawResponse,
-                            `Technical Analysis - ${report.analysisType}`,
-                            `${process.env.BASE_URL}/indore/analysis/technical/report?analysisType=${report.analysisType}&month=${report.month}&year=${report.year}&category=total&pageSize=${report.pageSize}`,
-                            responseTime
-                        );
+  if (!liveConfig.hasData) {
+    validation.execute("No Data Validation", () =>
+      validator.validateNoDataScenario(mapped),
+    );
+    return;
+  }
 
-                        if (BackendResponse.isServerError(rawResponse.status())) {
-                            BackendResponse.logFinding(
-                                `Technical Analysis - ${report.analysisType}`,
-                                rawResponse.status(),
-                                responseBody,
-                            );
-                        }
+  mapped.rows.forEach((row, index) => {
+    validation.execute(`Row ${index + 1} Structure Validation`, () =>
+      validator.validateRowStructure(row),
+    );
+    validation.execute(`Row ${index + 1} Type Validation`, () =>
+      validator.validateRowTypes(row),
+    );
+    validation.execute(`Row ${index + 1} Null Validation`, () =>
+      validator.validateNulls(row),
+    );
+    validation.execute(`Row ${index + 1} Undefined Validation`, () =>
+      validator.validateUndefined(row),
+    );
+    validation.execute(`Row ${index + 1} Empty Validation`, () =>
+      validator.validateEmptyStrings(row),
+    );
+    validation.execute(`Row ${index + 1} NaN Validation`, () =>
+      validator.validateNaN(row),
+    );
+  });
 
-                        const assert = new AssertionEngine();
-                        const validation = new ValidationEngine();
-                        // =====================================
-                        // API VALIDATIONS
-                        // =====================================
-                        validation.execute("Status Code Validation",() =>
-                                assert.validateStatusCode(rawResponse,200)
-                        );
-                        validation.execute("Content Type Validation",() =>
-                                assert.validateContentType(rawResponse)
-                        );
-                        validation.execute("Response Time Validation",() =>
-                                assert.validateResponseTime(responseTime,report.maxResponseTime)
-                        );
-                        validation.execute("Sensitive Data Validation",() =>
-                                assert.validateSensitiveData(responseBody)
-                        );
-                        // =====================================
-                        // SUCCESS VALIDATION
-                        // =====================================
-                        validation.execute("Success Validation",() => {
-                                expect(responseBody.success,"API Success Validation",).toBeTruthy();
-                            },
-                        );
+  validation.execute("Duplicate Meter Id Validation", () =>
+    validator.validateDuplicateMeterIds(mapped.rows),
+  );
+  validation.execute("Duplicate MSN Validation", () =>
+    validator.validateDuplicateMSN(mapped.rows),
+  );
+  validation.execute("Duplicate IVRS Validation", () =>
+    validator.validateDuplicateIVRS(mapped.rows),
+  );
+  validation.execute("Duplicate Meter Event Validation", () =>
+    validator.validateDuplicateMeterEvent(mapped.rows),
+  );
+  validation.execute("Duplicate Row Validation", () =>
+    validator.validateDuplicateRows(mapped.rows),
+  );
 
-                        if (rawResponse.status() !== 200 || !responseBody.success) {
-                            validation.printSummary(
-                                `${report.analysisType} Report API`,
-                                responseTime,
-                            );
-                            return;
-                        }
+  switch (liveConfig.validationType) {
+    case "duration100":
+      validation.execute("Duration Type Validation", () =>
+        validator.validateDurationType(mapped.rows),
+      );
+      validation.execute("Duration > 100 Validation", () =>
+        validator.validateDuration100(mapped.rows),
+      );
+      break;
+    case "duration12":
+      validation.execute("Duration Type Validation", () =>
+        validator.validateDurationType(mapped.rows),
+      );
+      validation.execute("Duration >= 12 Validation", () =>
+        validator.validateDuration12(mapped.rows),
+      );
+      break;
+    case "duration10":
+      validation.execute("Duration Type Validation", () =>
+        validator.validateDurationType(mapped.rows),
+      );
+      validation.execute("Duration >= 10 Validation", () =>
+        validator.validateDuration10(mapped.rows),
+      );
+      break;
+    case "count":
+    case "phase":
+      validation.execute("Count Report Validation", () =>
+        validator.validateCountReport(mapped.rows),
+      );
+      break;
+  }
+}
 
-                        // =====================================
-                        // MAPPER
-                        // =====================================
-                        const mapped = TechnicalReportMapper.map(responseBody, {
-                            analysisType: report.analysisType,
-                            month: report.month,
-                            year: report.year,
-                            pageSize: report.pageSize,
-                            category: "total",
-                        });
-                        const validator =new TechnicalReportValidator();
-                        // =====================================
-                        // ROOT VALIDATIONS
-                        // =====================================
-                        validation.execute("Response Structure Validation",() =>
-                                validator.validateResponseStructure(mapped)
-                        );
-                        validation.execute("Analysis Type Validation",() =>
-                                validator.validateAnalysisType(mapped.analysisType,report.analysisType,)
-                        );
-                        validation.execute("Month Validation",() =>
-                                validator.validateMonth(mapped.month,report.month)
-                        );
-                        validation.execute("Year Validation",() =>
-                                validator.validateYear(mapped.year,report.year)
-                        );
-                        validation.execute("Pagination Validation",() =>
-                                validator.validatePagination(mapped)
-                        );
-                        validation.execute("Pagination Consistency Validation",() =>
-                                validator.validatePaginationConsistency(mapped)
-                        );
-                        validation.execute("Cross Field Validation",() =>
-                                validator.validateCrossFieldLogic(mapped )
-                        );
-                        // =====================================
-                        // NO DATA SCENARIO
-                        // =====================================
-                        if (!report.hasData) {
-                            validation.execute("No Data Validation",() =>
-                                    validator.validateNoDataScenario(mapped)
-                            );
-                            validation.printSummary(`${report.analysisType} Report API`,responseTime);
-                            return;
-                        }
-                        // =====================================
-                        // ROW VALIDATIONS
-                        // =====================================
-                        mapped.rows.forEach((row,index) => {
-                                validation.execute(`Row ${index + 1} Structure Validation`,() =>
-                                        validator.validateRowStructure(row)
-                                );
-                                validation.execute(`Row ${index + 1} Type Validation`,() =>
-                                        validator.validateRowTypes(row)
-                                );
-                                validation.execute(`Row ${index + 1} Null Validation`,() =>
-                                        validator.validateNulls(row)
-                                );
+test.describe("Technical Analysis Report API", () => {
+  test.describe.configure({ mode: "serial", retries: 1 });
+  test.setTimeout(TECHNICAL_ANALYSIS_TEST_TIMEOUT_MS);
 
-                                validation.execute(`Row ${index + 1} Undefined Validation`,() =>
-                                        validator.validateUndefined(row)
-                                );
-                                validation.execute(`Row ${index + 1} Empty Validation`,() =>
-                                        validator.validateEmptyStrings(row)
-                                );
-                                validation.execute(`Row ${index + 1} NaN Validation`,() =>
-                                        validator.validateNaN(row)
-                                );
-                            }
-                        );
-                        // =====================================
-                        // DUPLICATE VALIDATIONS
-                        // =====================================
-                        validation.execute("Duplicate Meter Id Validation",() =>
-                                validator.validateDuplicateMeterIds(mapped.rows)
-                        );
-                        validation.execute("Duplicate MSN Validation",() =>
-                                validator.validateDuplicateMSN(mapped.rows)
-                        );
-                        validation.execute("Duplicate IVRS Validation",() =>
-                                validator.validateDuplicateIVRS(mapped.rows)
-                        );
-                        validation.execute("Duplicate Meter Event Validation",() =>
-                                validator.validateDuplicateMeterEvent(mapped.rows)
-                        );
-                        validation.execute("Duplicate Row Validation",() =>
-                                validator.validateDuplicateRows(mapped.rows)
-                        );
-                        // =====================================
-                        // BUSINESS RULE VALIDATIONS
-                        // =====================================
-                        switch (
-                            report.validationType
-                        ) {
-                            case "duration100":
-                                validation.execute("Duration Type Validation",() =>
-                                        validator.validateDurationType(mapped.rows)
-                                );
-                                validation.execute("Duration > 100 Validation",() =>
-                                        validator.validateDuration100(mapped.rows)
-                                );
-                                break;
-                            case "duration12":
-                                validation.execute("Duration Type Validation",() =>
-                                        validator.validateDurationType(mapped.rows)
-                                );
-                                validation.execute("Duration >= 12 Validation",() =>
-                                        validator.validateDuration12(mapped.rows)
-                                );
-                                break;
-                            case "duration10":
-                                validation.execute("Duration Type Validation",() =>
-                                        validator.validateDurationType(mapped.rows)
-                                );
-                                validation.execute("Duration >= 10 Validation",() =>
-                                        validator.validateDuration10(mapped.rows)
-                                );
-                                break;
-                            case "count":
-                                validation.execute("Count Report Validation",() =>
-                                        validator.validateCountReport(mapped.rows)
-                                );
-                                break;
-                            case "phase":
-                                validation.execute("Phase Report Validation",() =>
-                                        validator.validateCountReport(mapped.rows)
-                                );
-                                break;
-                        }
-                        // =====================================
-                        // SUMMARY
-                        // =====================================
-                        validation.printSummary(
-                            `${report.analysisType} Report API`,
-                            responseTime
-                        );
-                    }
-                );
-            }
+  for (const testCase of technicalReportTestCases) {
+    test(
+      testCase.testName,
+      { tag: testCase.tags },
+      async ({ authenticatedApi }) => {
+        const expectedStatus = testCase.expectedStatus ?? 200;
+        const validator = new TechnicalReportValidator();
+        const assert = new AssertionEngine();
+        const validation = new ValidationEngine();
+        const liveConfig = getTechnicalReportLiveConfig(testCase);
+
+        if (testCase.isContractFixture) {
+          const fixtureBody = resolveTechnicalReportContractBody(
+            testCase.scenario,
+          );
+          if (!fixtureBody) {
+            test.skip(true, "Missing technical report contract body");
+            return;
+          }
+
+          const query = resolveTechnicalReportQuery(testCase.scenario);
+          const mapped = TechnicalReportMapper.map(fixtureBody, {
+            analysisType:
+              query.analysisType ?? "power_failure",
+            month: query.month ?? 12,
+            year: query.year ?? 2025,
+            pageSize: query.pageSize ?? 10,
+            category: query.category,
+            page: query.page,
+          });
+
+          validation.execute("Contract Scenario", () =>
+            validator.validateScenario(mapped, testCase.scenario),
+          );
+          validation.finalize(testCase.testName, 0);
+          return;
+        }
+
+        const query = resolveTechnicalReportQuery(
+          testCase.scenario,
+          liveConfig,
         );
-    }
-);
+        const queryString = new URLSearchParams(
+          Object.entries(query).reduce<Record<string, string>>(
+            (acc, [key, value]) => {
+              if (value !== undefined) {
+                acc[key] = String(value);
+              }
+              return acc;
+            },
+            {},
+          ),
+        ).toString();
+        const endpoint = `/indore/analysis/technical/report${
+          queryString ? `?${queryString}` : ""
+        }`;
+
+        const api = new TechnicalReportApi(authenticatedApi);
+        const { rawResponse, responseBody, responseTime } =
+          await api.getTechnicalReport(query);
+
+        await PerformanceTracker.track(
+          rawResponse,
+          testCase.testName,
+          `${process.env.BASE_URL}${endpoint}`,
+          responseTime,
+        );
+
+        if (BackendResponse.isServerError(rawResponse.status())) {
+          BackendResponse.logFinding(
+            testCase.testName,
+            rawResponse.status(),
+            responseBody,
+          );
+        }
+
+        try {
+          validation.execute("Status Code Validation", () =>
+            assert.validateStatusCode(
+              rawResponse,
+              expectedStatus,
+              responseBody,
+            ),
+          );
+          validation.execute("Content Type Validation", () =>
+            assert.validateContentType(rawResponse),
+          );
+          validation.execute("Response Time Validation", () =>
+            assert.validateResponseTime(
+              responseTime,
+              liveConfig?.maxResponseTime ??
+                TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
+            ),
+          );
+          validation.execute("Sensitive Data Validation", () =>
+            assert.validateSensitiveData(responseBody),
+          );
+
+          if (expectedStatus !== 200) {
+            validation.execute("Validation Error", () =>
+              validator.validateValidationError(responseBody),
+            );
+            return;
+          }
+
+          validation.execute("Success Validation", () => {
+            expect(responseBody.success).toBeTruthy();
+          });
+
+          if (!responseBody.success) {
+            validation.execute("Error Envelope", () =>
+              validator.validateValidationError(responseBody),
+            );
+            return;
+          }
+
+          const mapped = TechnicalReportMapper.map(responseBody, {
+            analysisType: query.analysisType ?? "power_failure",
+            month: query.month ?? 12,
+            year: query.year ?? 2025,
+            pageSize: query.pageSize ?? 100,
+            category: query.category,
+            page: query.page,
+          });
+
+          if (testCase.scenario === "dev_live_report" && liveConfig) {
+            runLiveReportValidations(
+              validation,
+              validator,
+              mapped,
+              liveConfig,
+            );
+            return;
+          }
+
+          validation.execute("Response Structure Validation", () =>
+            validator.validateResponseStructure(mapped),
+          );
+          validation.execute("Pagination Validation", () =>
+            validator.validatePagination(mapped),
+          );
+          validation.execute("Cross Field Validation", () =>
+            validator.validateCrossFieldLogic(mapped),
+          );
+          validation.execute("Scenario Validation", () =>
+            validator.validateScenario(
+              mapped,
+              testCase.scenario,
+              query.page,
+            ),
+          );
+        } finally {
+          validation.finalize(testCase.testName, responseTime);
+        }
+      },
+    );
+  }
+});

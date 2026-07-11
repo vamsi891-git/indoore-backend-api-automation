@@ -1,87 +1,113 @@
-import { test } from "../../../../src/fixtures/api.fixture";
-
-import { DashboardMetricsApi } from "../Api/dashboardmetrics.api";
-
-import { DashboardMetricsData } from "../Data/dashboardmetrics.data";
-
-import { DashboardMetricsMapper } from "../Mapper/dashboardmetrics.mapper";
-
-import { DashboardMetricsValidator } from "../Validator/dashboardmetrics.validator";
+import { test } from "../../../fixtures/api.fixture";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
-import {  PerformanceTracker } from "../../../../src/core/utils/performancetracker";
-test.describe( "Dashboard Metrics API", () => {
-        test( "Validate Dashboard Metrics API",
-            {
-                tag: [
-                    "@dashboard",
-                    "@smoke",
-                    "@metrics"
-                ]
-            },
-            async ({authenticatedApi}) => {
-                const api =new DashboardMetricsApi(authenticatedApi);
-                const {
-                    rawResponse,
-                    responseBody,
-                    responseTime
-                }  = await api.getDashboardMetrics();
+import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
+import { DashboardMetricsApi } from "../Api/dashboardmetrics.api";
+import {
+    dashboardMetricsMaxResponseTimeMs,
+    dashboardMetricsTestCases,
+    resolveDashboardMetricsContractBody,
+    resolveDashboardMetricsQuery,
+} from "../Data/dashboardmetrics.data";
+import { DashboardMetricsMapper } from "../Mapper/dashboardmetrics.mapper";
+import { DashboardMetricsValidator } from "../Validator/dashboardmetrics.validator";
+
+test.describe("Dashboard Metrics API", () => {
+    test.describe.configure({ retries: 1 });
+    test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
+
+    for (const testCase of dashboardMetricsTestCases) {
+        test(
+            testCase.testName,
+            { tag: testCase.tags },
+            async ({ authenticatedApi }) => {
+                const validator = new DashboardMetricsValidator();
+                const assert = new AssertionEngine();
+                const validation = new ValidationEngine();
+
+                if (testCase.isContractFixture) {
+                    const fixtureBody = resolveDashboardMetricsContractBody(
+                        testCase.scenario,
+                    );
+                    if (!fixtureBody) {
+                        test.skip(true, "Missing dashboard metrics contract body");
+                        return;
+                    }
+
+                    const mapped = DashboardMetricsMapper.map(fixtureBody);
+                    validation.execute("Required Fields", () =>
+                        assert.validateRequiredFields(fixtureBody, [
+                            "success",
+                            "data",
+                        ]),
+                    );
+                    validation.execute("Contract Scenario", () =>
+                        validator.validateScenario(mapped, testCase.scenario),
+                    );
+                    validation.printSummary(testCase.testName, 0);
+                    return;
+                }
+
+                const api = new DashboardMetricsApi(authenticatedApi);
+                const query = resolveDashboardMetricsQuery(testCase.scenario);
+                const queryString = new URLSearchParams(
+                    Object.entries(query).reduce<Record<string, string>>(
+                        (acc, [key, value]) => {
+                            if (value !== undefined) {
+                                acc[key] = String(value);
+                            }
+                            return acc;
+                        },
+                        {},
+                    ),
+                ).toString();
+                const endpoint = `/indore/dashboard/metrics${
+                    queryString ? `?${queryString}` : ""
+                }`;
+
+                const { rawResponse, responseBody, responseTime } =
+                    await api.getDashboardMetrics(query);
+
                 await PerformanceTracker.track(
                     rawResponse,
-                    "Dashboard Metrics API",
-                    `${process.env.BASE_URL}/indore/dashboard/metrics`,
-                    responseTime
+                    testCase.testName,
+                    `${process.env.BASE_URL}${endpoint}`,
+                    responseTime,
                 );
-                const assert =new AssertionEngine();
-                const validation =new ValidationEngine();
-                validation.execute("Status Validation",() =>
-                        assert.validateStatusCode(rawResponse,200)
+
+                validation.execute("Status Validation", () =>
+                    assert.validateStatusCode(rawResponse, 200, responseBody),
                 );
-                validation.execute("Content Validation",() =>
-                        assert.validateContentType(rawResponse)
+                validation.execute("Content Type", () =>
+                    assert.validateContentType(rawResponse),
                 );
-                validation.execute("Response Time",() =>
-                        assert.validateResponseTime(responseTime,60000)
+                validation.execute("Response Time", () =>
+                    assert.validateResponseTime(
+                        responseTime,
+                        dashboardMetricsMaxResponseTimeMs,
+                    ),
                 );
-                validation.execute("Security Validation",() =>
-                        assert.validateSensitiveData(responseBody)
+                validation.execute("Sensitive Data", () =>
+                    assert.validateSensitiveData(responseBody),
                 );
-                const data =DashboardMetricsMapper.mapData(responseBody.data);
-                const validator =new DashboardMetricsValidator();
-                validation.execute("Timestamp",() =>
-                        validator.validateTimestamp(data)
+                validation.execute("Required Fields", () =>
+                    assert.validateRequiredFields(responseBody, [
+                        "success",
+                        "data",
+                    ]),
                 );
-                validation.execute("Connection Status",() =>
-                        validator.validateMetricGroup(data.connectionStatus)
+
+                const mapped = DashboardMetricsMapper.map(responseBody);
+                validation.execute("Response Envelope", () =>
+                    validator.validateResponseEnvelope(responseBody),
                 );
-                validation.execute("Category Wise",() =>
-                        validator.validateMetricGroup(data.categoryWiseConsumer)
+                validation.execute("Dashboard Metrics Scenario", () =>
+                    validator.validateScenario(mapped, testCase.scenario),
                 );
-                validation.execute("Phase Wise",() =>
-                        validator.validateMetricGroup(data.phaseWiseConsumer)
-                );
-                validation.execute("OEM Wise",() =>
-                        validator.validateMetricGroup(data.oemWiseConsumer)
-                );
-                validation.execute("Consumer Type",() =>
-                        validator.validateMetricGroup(data.consumerType)
-                );
-                validation.execute("Network Details",() =>
-                        validator.validateMetricGroup(data.networkDetails)
-                );
-                validation.execute("Sparkline Validation",() =>
-                        validator.validateSparkline(data.consumerType,DashboardMetricsData.sparklineLength
-                            )
-                );
-                validation.execute("Trend Validation",() =>
-                        validator.validateTrend(data.consumerType)
-                );
-                validation.execute("Connection Percentage",() =>
-                        validator.validateConnectionPercentageTotal(data)
-                );
-                validation.printSummary("Dashboard Metrics API",
-                    responseTime
-                );
-            }
+
+                validation.printSummary(testCase.testName, responseTime);
+            },
         );
-    });
+    }
+});

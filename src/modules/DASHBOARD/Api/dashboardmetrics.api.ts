@@ -1,22 +1,28 @@
-import { APIRequestContext,  APIResponse } from "@playwright/test";
+import { TimedApiClient } from "../../../core/base/timed-api.client";
+import { ApiCallResult } from "../../../core/models/api-result.model";
+import { MASTER_DATA_REQUEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { DashboardMetricsResponse } from "../Mapper/dashboardmetrics.mapper";
-export interface DashboardMetricsApiResponse {
-    rawResponse: APIResponse;
-    responseBody: DashboardMetricsResponse;
-    responseTime: number;
+
+export type DashboardMetricsApiResult = ApiCallResult<DashboardMetricsResponse>;
+
+export interface DashboardMetricsQuery {
+    [key: string]: string | number | boolean | undefined;
 }
-export class DashboardMetricsApi {
-    constructor(private request: APIRequestContext) { }
-    async getDashboardMetrics():
-        Promise<DashboardMetricsApiResponse> {
-        const start = Date.now();
-        const rawResponse =await this.request.get("/indore/dashboard/metrics");
-        const responseBody =await rawResponse.json();
-        const responseTime = Date.now() - start;
-        return {
-            rawResponse,
-            responseBody,
-            responseTime
-        };
+
+export class DashboardMetricsApi extends TimedApiClient {
+    getDashboardMetrics(
+        query: DashboardMetricsQuery = {},
+    ): Promise<DashboardMetricsApiResult> {
+        const params: Record<string, string | number | boolean> = {};
+        for (const [key, value] of Object.entries(query)) {
+            if (value !== undefined) {
+                params[key] = value;
+            }
+        }
+
+        return this.getJson<DashboardMetricsResponse>("/indore/dashboard/metrics", {
+            timeout: MASTER_DATA_REQUEST_TIMEOUT_MS,
+            ...(Object.keys(params).length > 0 ? { params } : {}),
+        });
     }
 }

@@ -138,6 +138,11 @@ export class DtrEventsValidator {
             return;
         }
 
+        if (data.totalPages > 0 && data.page > data.totalPages) {
+            expect(data.rows.length).toBe(0);
+            return;
+        }
+
         expect(data.rows.length).toBeGreaterThan(0);
         expect(data.totalPages).toBeGreaterThan(0);
     }

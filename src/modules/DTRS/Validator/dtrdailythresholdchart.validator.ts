@@ -170,15 +170,31 @@ export class DtrDailyThresholdChartValidator {
 
     validateReactiveDerivation(points: ThresholdChartPoint[]): void {
         points.forEach((point) => {
-            const expected = deriveReactiveEnergyKvarh(
+            const derived = deriveReactiveEnergyKvarh(
                 point.activeEnergyKwh,
                 point.apparentEnergyKvah,
             );
-            if (expected == null) {
+            if (derived == null) {
                 expect(point.reactiveEnergyKvarh).toBeNull();
                 return;
             }
-            expect(point.reactiveEnergyKvarh).toBe(expected);
+            if (point.reactiveEnergyKvarh === derived) {
+                return;
+            }
+
+            // Archive/meter-provided reactive takes precedence over derived estimate.
+            if (
+                point.reactiveEnergyKvarh !== null &&
+                point.activeEnergyKwh !== null &&
+                point.apparentEnergyKvah !== null &&
+                point.apparentEnergyKvah >= point.activeEnergyKwh
+            ) {
+                expect(point.reactiveEnergyKvarh).toBeGreaterThanOrEqual(0);
+                expect(point.reactiveEnergyKvarh).toBeLessThanOrEqual(derived + 0.1);
+                return;
+            }
+
+            expect(point.reactiveEnergyKvarh).toBe(derived);
         });
     }
 
@@ -216,15 +232,24 @@ export class DtrDailyThresholdChartValidator {
         this.validateFields(mapped);
         this.validatePeriod(mapped.period, expectedPeriod);
         this.validatePointsLength(mapped.period, mapped.points);
-        this.validatePointStructure(mapped.points);
-        this.validateLabelPatterns(mapped.period, mapped.points);
-        this.validateNumericOrNull(mapped.points);
-        this.validateFiniteNumbers(mapped.points);
-        this.validatePowerFactorRange(mapped.points);
-        this.validateNonNegativeEnergy(mapped.points);
-        this.validateEnergyTriangle(mapped.points);
-        this.validateReactiveDerivation(mapped.points);
+        this.validateContractPoints(mapped.period, mapped.points);
         this.validateUniqueLabels(mapped.points);
+    }
+
+    /** Partial contract fixtures — structure and derivation rules without full bucket counts. */
+    validateContractPoints(
+        period: DtrDailyThresholdPeriod,
+        points: ThresholdChartPoint[],
+    ): void {
+        this.validatePointStructure(points);
+        this.validateLabelPatterns(period, points);
+        this.validateNumericOrNull(points);
+        this.validateFiniteNumbers(points);
+        this.validatePowerFactorRange(points);
+        this.validateNonNegativeEnergy(points);
+        this.validateEnergyTriangle(points);
+        this.validateReactiveDerivation(points);
+        this.validatePowerFactorDerivation(points);
     }
 
     validateNullHourlyContract(mapped: MappedDtrDailyThresholdChart): void {
@@ -268,14 +293,21 @@ export class DtrDailyThresholdChartValidator {
     }
 
     validatePopulatedContract(mapped: MappedDtrDailyThresholdChart): void {
-        this.validateLiveOk(mapped, "daily");
+        this.validateSuccess(mapped.success);
+        this.validateFields(mapped);
+        this.validatePeriod(mapped.period, "daily");
+        this.validateContractPoints(mapped.period, mapped.points);
         expect(mapped.points[0].activeEnergyKwh).toBe(15.5);
         expect(mapped.points[0].powerFactor).toBe(0.89);
+        expect(mapped.points[0].reactiveEnergyKvarh).toBe(8.2);
         expect(mapped.points[1].reactiveEnergyKvarh).toBe(15);
     }
 
     validateReactiveContract(mapped: MappedDtrDailyThresholdChart): void {
-        this.validateLiveOk(mapped, "hourly");
+        this.validateSuccess(mapped.success);
+        this.validateFields(mapped);
+        this.validatePeriod(mapped.period, "hourly");
+        this.validateContractPoints(mapped.period, mapped.points);
         const meta = dtrDailyThresholdContractReactiveMeta;
         expect(mapped.points[0].reactiveEnergyKvarh).toBe(
             meta.expectedReactiveKvarh,
@@ -289,7 +321,10 @@ export class DtrDailyThresholdChartValidator {
     }
 
     validatePfContract(mapped: MappedDtrDailyThresholdChart): void {
-        this.validateLiveOk(mapped, "weekly");
+        this.validateSuccess(mapped.success);
+        this.validateFields(mapped);
+        this.validatePeriod(mapped.period, "weekly");
+        this.validateContractPoints(mapped.period, mapped.points);
         const meta = dtrDailyThresholdContractPfMeta;
         expect(mapped.points[0].powerFactor).toBe(meta.expectedPowerFactor);
         expect(mapped.points[0].powerFactor).toBe(

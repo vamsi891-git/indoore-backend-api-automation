@@ -1,16 +1,31 @@
-export interface EventDetailAppliedFilters {
-    organisationLookupId: number | null;
-    networkLookupId: number | null;
-    servicePointMeterPhaseTblRefId: number | null;
-    categoryTblRefId: number | null;
-    priorityTblRefId: number | null;
-    eventClassificationTblRefId: number | null;
-    eventTblRefId: number | null;
-    meterSerialNumber: string | null;
-    ivrsNumber: string | null;
+export const eventDetailColumnKeys = [
+    "slNo",
+    "division",
+    "zone",
+    "feeder",
+    "dtr",
+    "name",
+    "address",
+    "ivrsNumber",
+    "tariff",
+    "msn",
+    "phase",
+    "eventClassificationName",
+    "eventId",
+    "eventName",
+    "eventCount",
+    "durationHhMm",
+] as const;
+
+export type EventDetailColumnKey = (typeof eventDetailColumnKeys)[number];
+
+export interface EventDetailColumn {
+    key: string;
+    header: string;
 }
 
 export interface EventDetailRow {
+    id: string;
     slNo: number;
     division: string;
     zone: string;
@@ -29,52 +44,72 @@ export interface EventDetailRow {
     durationHhMm: string;
 }
 
-export interface EventDetailReportData {
-    fromDate: string;
-    toDate: string;
+export interface EventDetailPagination {
+    page: number;
     limit: number;
-    scopedMeterCount: number;
-    totalRowCount: number;
-    truncated: boolean;
-    previewNote: string;
-    appliedFilters: EventDetailAppliedFilters;
+    total: number;
+    totalPages: number;
+}
+
+export interface EventDetailDataModel {
+    columns: EventDetailColumn[];
     rows: EventDetailRow[];
+    pagination: EventDetailPagination;
+}
+
+export interface EventDetailErrorBody {
+    success: boolean;
+    error?: {
+        code: string;
+        message: string;
+    };
 }
 
 export interface EventDetailResponse {
     success: boolean;
-    data: EventDetailReportData;
+    data?: EventDetailDataModel | null;
+    message?: string;
+    error?: EventDetailErrorBody["error"];
 }
 
+export interface MappedEventDetail {
+    success: boolean;
+    columns: EventDetailColumn[];
+    rows: EventDetailRow[];
+    pagination: EventDetailPagination;
+}
+
+export type EventDetailScenario =
+    | "dev_live_primary"
+    | "dev_live_page_beyond"
+    | "dev_ignore_unknown_query"
+    | "contract_live_full"
+    | "contract_empty_page"
+    | "invalid_date_range"
+    | "invalid_date_format"
+    | "missing_from_date";
+
+const EMPTY_PAGINATION: EventDetailPagination = {
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 0,
+};
+
 export class EventDetailMapper {
-    static map(response: any): EventDetailResponse {
-        const data = response.data ?? {};
-        const filters = data.appliedFilters ?? {};
+    static map(response: EventDetailResponse): MappedEventDetail {
+        const data = response.data ?? ({} as EventDetailDataModel);
+        const pagination = data.pagination ?? EMPTY_PAGINATION;
 
         return {
             success: response.success,
-            data: {
-                fromDate: data.fromDate,
-                toDate: data.toDate,
-                limit: data.limit,
-                scopedMeterCount: data.scopedMeterCount,
-                totalRowCount: data.totalRowCount,
-                truncated: data.truncated,
-                previewNote: data.previewNote ?? "",
-                appliedFilters: {
-                    organisationLookupId: filters.organisationLookupId ?? null,
-                    networkLookupId: filters.networkLookupId ?? null,
-                    servicePointMeterPhaseTblRefId:
-                        filters.servicePointMeterPhaseTblRefId ?? null,
-                    categoryTblRefId: filters.categoryTblRefId ?? null,
-                    priorityTblRefId: filters.priorityTblRefId ?? null,
-                    eventClassificationTblRefId:
-                        filters.eventClassificationTblRefId ?? null,
-                    eventTblRefId: filters.eventTblRefId ?? null,
-                    meterSerialNumber: filters.meterSerialNumber ?? null,
-                    ivrsNumber: filters.ivrsNumber ?? null,
-                },
-                rows: data.rows ?? [],
+            columns: data.columns ?? [],
+            rows: data.rows ?? [],
+            pagination: {
+                page: Number(pagination.page ?? 1),
+                limit: Number(pagination.limit ?? 10),
+                total: Number(pagination.total ?? 0),
+                totalPages: Number(pagination.totalPages ?? 0),
             },
         };
     }

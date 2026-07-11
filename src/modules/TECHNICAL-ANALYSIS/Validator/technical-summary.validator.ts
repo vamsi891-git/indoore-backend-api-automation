@@ -1,5 +1,42 @@
 import { expect } from "@playwright/test";
+import type { TechnicalAnalysisErrorBody } from "./technical-analysis.shared";
+
 export class TechnicalSummaryValidator {
+    validateValidationError(responseBody: TechnicalAnalysisErrorBody): void {
+        expect(responseBody.success).toBeFalsy();
+        expect(responseBody.error).toBeDefined();
+        expect(responseBody.error?.code).toBe("VALIDATION_ERROR");
+        expect(responseBody.error?.message).toBeTruthy();
+    }
+
+    validateApiError(responseBody: TechnicalAnalysisErrorBody): void {
+        expect(responseBody.success).toBeFalsy();
+        expect(responseBody.error).toBeDefined();
+        expect(responseBody.error?.code).toBeTruthy();
+        expect(responseBody.error?.message).toBeTruthy();
+    }
+
+    validateQueryEcho(
+        month: number,
+        year: number,
+        expectedMonth: number,
+        expectedYear: number,
+    ): void {
+        expect(month).toBe(expectedMonth);
+        expect(year).toBe(expectedYear);
+    }
+
+    validateExpectedAnalysisTypes(
+        reports: Array<{ analysisType: string }>,
+        expectedTypes: readonly string[],
+    ): void {
+        const actualTypes = reports.map((report) => report.analysisType);
+        for (const expectedType of expectedTypes) {
+            expect(actualTypes, `Missing analysis type: ${expectedType}`).toContain(
+                expectedType,
+            );
+        }
+    }
     validateMonth(month: number): void {
         expect(month).toBeGreaterThanOrEqual(1);
         expect(month).toBeLessThanOrEqual(12);

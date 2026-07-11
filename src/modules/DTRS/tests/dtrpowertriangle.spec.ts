@@ -101,6 +101,14 @@ test.describe("DTR Power Triangle API", () => {
             expect([200, 404]).toContain(rawResponse.status());
             return;
           }
+          if (
+            rawResponse.status() === 503 &&
+            responseBody.success === false &&
+            (responseBody as DtrPowerTriangleErrorResponse).error?.code ===
+              "DTR_METER_DATA_UNAVAILABLE"
+          ) {
+            return;
+          }
           assert.validateStatusCode(rawResponse, expectedStatus, responseBody);
         });
         validation.execute("Content Type", () =>

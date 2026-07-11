@@ -8,37 +8,40 @@ export interface TechnicalReportApiResult {
   responseTime: number;
 }
 
+export interface TechnicalReportQuery {
+  analysisType?: string;
+  month?: number;
+  year?: number;
+  category?: string;
+  pageSize?: number;
+  page?: number;
+  [key: string]: string | number | boolean | undefined;
+}
+
 export class TechnicalReportApi {
   constructor(private readonly authenticatedApi: APIRequestContext) {}
 
   async getTechnicalReport(
-    analysisType: string,
-    month: number,
-    year: number,
-    pageSize: number = 100,
+    query: TechnicalReportQuery,
   ): Promise<TechnicalReportApiResult> {
+    const params: Record<string, string | number | boolean> = {};
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined) {
+        params[key] = value;
+      }
+    }
+
     const { response, responseTime } = await getTechnicalReportWithRetry(
       this.authenticatedApi,
       "/indore/analysis/technical/report",
-      {
-        params: {
-          analysisType,
-          month,
-          year,
-          category: "total",
-          pageSize,
-        },
-      },
+      { params },
     );
 
     let responseBody: TechnicalReportResponse;
     try {
       responseBody = (await response.json()) as TechnicalReportResponse;
     } catch {
-      responseBody = {
-        success: false,
-        data: { rows: [], pagination: { page: 1, limit: pageSize, total: 0, totalPages: 0 } },
-      };
+      responseBody = { success: false };
     }
 
     return {
@@ -46,5 +49,21 @@ export class TechnicalReportApi {
       responseBody,
       responseTime,
     };
+  }
+
+  /** @deprecated Use getTechnicalReport({ analysisType, month, year, pageSize }) */
+  async getTechnicalReportLegacy(
+    analysisType: string,
+    month: number,
+    year: number,
+    pageSize: number = 100,
+  ): Promise<TechnicalReportApiResult> {
+    return this.getTechnicalReport({
+      analysisType,
+      month,
+      year,
+      category: "total",
+      pageSize,
+    });
   }
 }

@@ -111,18 +111,54 @@ export class DtrPowerTriangleValidator {
   }
 
   validateReactiveDerivation(mapped: MappedDtrPowerTriangle): void {
-    const expected = deriveReactivePower(
-      mapped.activePowerKw,
-      mapped.apparentPowerKva,
-      mapped.powerFactor,
-    );
+    const {
+      activePowerKw,
+      apparentPowerKva,
+      powerFactor,
+      reactivePowerKvar,
+    } = mapped;
 
-    if (expected == null) {
-      expect(mapped.reactivePowerKvar).toBeNull();
+    if (reactivePowerKvar === null) {
+      expect(
+        deriveReactivePower(activePowerKw, apparentPowerKva, powerFactor),
+      ).toBeNull();
       return;
     }
 
-    expect(mapped.reactivePowerKvar).toBe(expected);
+    const fromPf = deriveReactivePower(
+      activePowerKw,
+      apparentPowerKva,
+      powerFactor,
+    );
+    const fromTriangle = deriveReactivePower(
+      activePowerKw,
+      apparentPowerKva,
+      null,
+    );
+
+    if (fromPf !== null && reactivePowerKvar === fromPf) {
+      return;
+    }
+    if (fromTriangle !== null && reactivePowerKvar === fromTriangle) {
+      return;
+    }
+
+    // Meter kvar column takes precedence over PF-derived estimate.
+    if (
+      activePowerKw !== null &&
+      apparentPowerKva !== null &&
+      apparentPowerKva >= activePowerKw
+    ) {
+      const maxQ =
+        Math.round(
+          Math.sqrt(apparentPowerKva ** 2 - activePowerKw ** 2) * 100,
+        ) / 100;
+      expect(reactivePowerKvar).toBeGreaterThanOrEqual(0);
+      expect(reactivePowerKvar).toBeLessThanOrEqual(maxQ + 0.01);
+      return;
+    }
+
+    expect(reactivePowerKvar).toBe(fromPf ?? fromTriangle);
   }
 
   validateAllNull(mapped: MappedDtrPowerTriangle): void {

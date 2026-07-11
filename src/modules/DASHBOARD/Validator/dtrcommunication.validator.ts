@@ -1,85 +1,170 @@
 import { expect } from "@playwright/test";
-import { DtrCommunicationModel } from "../Mapper/dtrcommunication.mapper";
+import {
+    dtrCommunicationLabelPatterns,
+    dtrCommunicationPeriodPointCounts,
+} from "../Mapper/dtrcommunication.mapper";
+import type {
+    DtrCommunicationErrorResponse,
+    DtrCommunicationPeriod,
+    DtrCommunicationResponse,
+    DtrCommunicationScenario,
+    MappedDtrCommunication,
+} from "../Mapper/dtrcommunication.mapper";
+
+const PERIODS = Object.keys(dtrCommunicationPeriodPointCounts);
 
 export class DtrCommunicationValidator {
-
-    validatePeriod(data: DtrCommunicationModel) {
-        expect(
-            ["daily", "weekly", "monthly", "yearly"]
-        ).toContain(data.period);
+    validateInvalidPeriodError(
+        responseBody: DtrCommunicationErrorResponse,
+    ): void {
+        expect(responseBody.success).toBeFalsy();
+        expect(responseBody.error).toBeDefined();
+        expect(responseBody.error.code).toBe("VALIDATION_ERROR");
+        expect(responseBody.error.message.toLowerCase()).toMatch(/period/i);
     }
 
-    validatePointCount(data: DtrCommunicationModel) {
-
-        if (data.period === "daily") {
-            expect(data.points.length).toBe(12);
-        }
-
-        if (data.period === "monthly") {
-            expect(data.points.length).toBe(24);
-        }
-
-        expect(data.points.length).toBeGreaterThan(0);
+    validateResponseEnvelope(response: DtrCommunicationResponse): void {
+        expect(response.success).toBe(true);
+        expect(response.data).toBeDefined();
     }
 
-    validatePoints(data: DtrCommunicationModel) {
+    validateSuccess(success: boolean): void {
+        expect(success).toBeTruthy();
+    }
 
-        data.points.forEach(point => {
+    validatePeriod(
+        data: MappedDtrCommunication,
+        expected?: DtrCommunicationPeriod,
+    ): void {
+        expect(PERIODS).toContain(data.period);
+        if (expected) {
+            expect(data.period).toBe(expected);
+        }
+    }
 
-            expect(point.label).toBeTruthy();
+    validatePointCount(data: MappedDtrCommunication): void {
+        const expected = dtrCommunicationPeriodPointCounts[data.period];
+        expect(data.points.length).toBe(expected);
+    }
 
-            expect(point.communicatingMeters)
-                .toBeGreaterThanOrEqual(0);
-
-            expect(point.nonCommunicatingMeters)
-                .toBeGreaterThanOrEqual(0);
-
-            expect(
-                Number.isInteger(point.communicatingMeters)
-            ).toBeTruthy();
-
-            expect(
-                Number.isInteger(point.nonCommunicatingMeters)
-            ).toBeTruthy();
+    validateLabelPatterns(data: MappedDtrCommunication): void {
+        const pattern = dtrCommunicationLabelPatterns[data.period];
+        data.points.forEach((point) => {
+            expect(pattern.test(point.label.trim())).toBeTruthy();
         });
     }
 
-    validateUniqueLabels(data: DtrCommunicationModel) {
-
-        const labels = data.points.map(x => x.label);
-
-        const duplicates = labels.filter(
-            (label, index) =>
-                labels.indexOf(label) !== index
-        );
-
-        expect(duplicates.length).toBe(0);
+    validatePoints(data: MappedDtrCommunication): void {
+        data.points.forEach((point) => {
+            expect(point.label).toBeTruthy();
+            expect(point.communicating).toBeGreaterThanOrEqual(0);
+            expect(point.nonCommunicating).toBeGreaterThanOrEqual(0);
+            expect(Number.isInteger(point.communicating)).toBeTruthy();
+            expect(Number.isInteger(point.nonCommunicating)).toBeTruthy();
+        });
     }
 
-    validateTotals(data: DtrCommunicationModel) {
-
-        const communicatingTotal = data.points.reduce(
-            (sum, x) => sum + x.communicatingMeters,
-            0
-        );
-
-        const nonCommunicatingTotal = data.points.reduce(
-            (sum, x) => sum + x.nonCommunicatingMeters,
-            0
-        );
-
-        expect(communicatingTotal).toBeGreaterThanOrEqual(0);
-        expect(nonCommunicatingTotal).toBeGreaterThanOrEqual(0);
+    validateUniqueLabels(data: MappedDtrCommunication): void {
+        const labels = data.points.map((point) => point.label);
+        expect(new Set(labels).size).toBe(labels.length);
     }
 
-    validateCommunicationStatus(data: DtrCommunicationModel) {
-
-        data.points.forEach(point => {
-
+    validateFleetTotals(data: MappedDtrCommunication): void {
+        data.points.forEach((point) => {
             expect(
-                point.communicatingMeters +
-                point.nonCommunicatingMeters
+                point.communicating + point.nonCommunicating,
             ).toBeGreaterThanOrEqual(0);
         });
+    }
+
+    validateLiveOk(
+        mapped: MappedDtrCommunication,
+        expectedPeriod?: DtrCommunicationPeriod,
+    ): void {
+        this.validateSuccess(mapped.success);
+        this.validatePeriod(mapped, expectedPeriod);
+        this.validatePointCount(mapped);
+        this.validateLabelPatterns(mapped);
+        this.validatePoints(mapped);
+        this.validateUniqueLabels(mapped);
+        this.validateFleetTotals(mapped);
+    }
+
+    validateNullPeriodContract(
+        mapped: MappedDtrCommunication,
+        period: DtrCommunicationPeriod,
+    ): void {
+        this.validateContractPoints(mapped, period);
+        this.validatePointCount(mapped);
+        mapped.points.forEach((point) => {
+            expect(point.communicating).toBe(0);
+            expect(point.nonCommunicating).toBe(0);
+        });
+    }
+
+    validateNullDailyContract(mapped: MappedDtrCommunication): void {
+        this.validateNullPeriodContract(mapped, "daily");
+    }
+
+    validatePopulatedContract(mapped: MappedDtrCommunication): void {
+        this.validatePoints(mapped);
+        expect(mapped.points[0].communicating).toBe(1200);
+        expect(mapped.points[1].nonCommunicating).toBe(105);
+    }
+
+    validateContractPoints(
+        mapped: MappedDtrCommunication,
+        period: DtrCommunicationPeriod,
+    ): void {
+        this.validateSuccess(mapped.success);
+        this.validatePeriod(mapped, period);
+        this.validatePointStructure(mapped.points);
+        this.validateLabelPatterns(mapped);
+        this.validatePoints(mapped);
+    }
+
+    validatePointStructure(points: MappedDtrCommunication["points"]): void {
+        points.forEach((point) => {
+            expect(Object.keys(point).sort()).toEqual(
+                ["communicating", "label", "nonCommunicating"].sort(),
+            );
+        });
+    }
+
+    validateScenario(
+        mapped: MappedDtrCommunication,
+        scenario: DtrCommunicationScenario,
+        expectedPeriod?: DtrCommunicationPeriod,
+    ): void {
+        switch (scenario) {
+            case "contract_null_hourly":
+                this.validateNullPeriodContract(mapped, "hourly");
+                break;
+            case "contract_null_daily":
+                this.validateNullDailyContract(mapped);
+                break;
+            case "contract_null_weekly":
+                this.validateNullPeriodContract(mapped, "weekly");
+                break;
+            case "contract_null_monthly":
+                this.validateNullPeriodContract(mapped, "monthly");
+                break;
+            case "contract_null_yearly":
+                this.validateNullPeriodContract(mapped, "yearly");
+                break;
+            case "contract_populated_daily":
+                this.validatePopulatedContract(mapped);
+                break;
+            case "dev_period_hourly":
+            case "dev_period_daily":
+            case "dev_period_weekly":
+            case "dev_period_monthly":
+            case "dev_period_yearly":
+            case "dev_ignore_unknown_query":
+                this.validateLiveOk(mapped, expectedPeriod);
+                break;
+            default:
+                break;
+        }
     }
 }

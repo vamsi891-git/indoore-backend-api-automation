@@ -1,71 +1,91 @@
-import { test } from "../../../../src/fixtures/api.fixture";
-import { AssertionEngine } from "../../../../src/core/engine/assertion.engine";
-import { ValidationEngine } from "../../../../src/core/engine/validation.engine";
-import { ApiValidationHelper } from "../../../../src/core/helpers/api-validation.helper";
-import { PerformanceTracker } from "../../../../src/core/utils/performancetracker";
-import { BackendResponse } from "../../../../src/core/utils/backend-response.util";
+import { test } from "../../../fixtures/api.fixture";
+import { AssertionEngine } from "../../../core/engine/assertion.engine";
+import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { EventDetailApi } from "../Api/eventdetail.api";
-import { EventDetailData } from "../Data/eventdetail.data";
-import { EventDetailMapper } from "../Mapper/eventdetail.mapper";
+import {
+    eventDetailMaxResponseTimeMs,
+    eventDetailTestCases,
+    resolveEventDetailContractBody,
+    resolveEventDetailQuery,
+} from "../Data/eventdetail.data";
+import {
+    EventDetailMapper,
+    type EventDetailErrorBody,
+} from "../Mapper/eventdetail.mapper";
 import { EventDetailValidator } from "../Validator/eventdetail.validator";
 
 test.describe("Event Detail Report API", () => {
-    test(
-        "Validate Event Detail Report API",
-        {
-            tag: ["@smoke", "@reports", "@event-detail"],
-        },
-        async ({ authenticatedApi }, testInfo) => {
-            const api = new EventDetailApi(authenticatedApi);
-            const assert = new AssertionEngine();
-            const validation = new ValidationEngine();
-            const validator = new EventDetailValidator();
+    test.describe.configure({ retries: 1 });
+    test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
-            const { fromDate, toDate, organisationLookupId, limit } =
-                EventDetailData;
+    for (const testCase of eventDetailTestCases) {
+        test(
+            testCase.testName,
+            { tag: testCase.tags },
+            async ({ authenticatedApi }) => {
+                const expectedStatus = testCase.expectedStatus ?? 200;
+                const validator = new EventDetailValidator();
+                const assert = new AssertionEngine();
+                const validation = new ValidationEngine();
 
-            const { rawResponse, responseBody, responseTime } =
-                await api.getEventDetail(
-                    fromDate,
-                    toDate,
-                    organisationLookupId,
-                    limit,
-                );
-
-            const endpoint = `/indore/reports/event-detail?fromDate=${fromDate}&toDate=${toDate}&limit=${limit}&organisationLookupId=${organisationLookupId}`;
-            const defectContext = {
-                module: "REPORTS",
-                endpoint,
-                requestParams: {
-                    fromDate,
-                    toDate,
-                    organisationLookupId,
-                    limit,
-                },
-                responseStatus: rawResponse.status(),
-                responseBody,
-                expectedBehavior:
-                    "GET /indore/reports/event-detail should return 200 with success=true, rows[], appliedFilters, previewNote, and pagination metadata for the requested date range and organisationLookupId.",
-            };
-
-            await PerformanceTracker.track(
-                rawResponse,
-                "Event Detail Report API",
-                `${process.env.BASE_URL}${endpoint}`,
-                responseTime,
-            );
-
-            try {
-                if (BackendResponse.isServerError(rawResponse.status())) {
-                    BackendResponse.logFinding(
-                        "Event Detail Report API",
-                        rawResponse.status(),
-                        responseBody,
+                if (testCase.isContractFixture) {
+                    const fixtureBody = resolveEventDetailContractBody(
+                        testCase.scenario,
                     );
+                    if (!fixtureBody) {
+                        test.skip(true, "Missing event detail contract body");
+                        return;
+                    }
+
+                    const mapped = EventDetailMapper.map(fixtureBody);
+                    validation.execute("Required Fields", () =>
+                        assert.validateRequiredFields(fixtureBody, [
+                            "success",
+                            "data",
+                        ]),
+                    );
+                    validation.execute("Contract Scenario", () =>
+                        validator.validateScenario(mapped, testCase.scenario),
+                    );
+                    validation.printSummary(testCase.testName, 0);
+                    return;
                 }
 
-                validation.execute("Status Code", () =>
-                    assert.validateStatusCode(rawResponse, 200, responseBody),
+                const api = new EventDetailApi(authenticatedApi);
+                const query = resolveEventDetailQuery(testCase.scenario);
+                const queryString = new URLSearchParams(
+                    Object.entries(query).reduce<Record<string, string>>(
+                        (acc, [key, value]) => {
+                            if (value !== undefined) {
+                                acc[key] = String(value);
+                            }
+                            return acc;
+                        },
+                        {},
+                    ),
+                ).toString();
+                const endpoint = `/indore/reports/event-detail${
+                    queryString ? `?${queryString}` : ""
+                }`;
+
+                const { rawResponse, responseBody, responseTime } =
+                    await api.getEventDetail(query);
+
+                await PerformanceTracker.track(
+                    rawResponse,
+                    testCase.testName,
+                    `${process.env.BASE_URL}${endpoint}`,
+                    responseTime,
+                );
+
+                validation.execute("Status Validation", () =>
+                    assert.validateStatusCode(
+                        rawResponse,
+                        expectedStatus,
+                        responseBody,
+                    ),
                 );
                 validation.execute("Content Type", () =>
                     assert.validateContentType(rawResponse),
@@ -73,91 +93,45 @@ test.describe("Event Detail Report API", () => {
                 validation.execute("Response Time", () =>
                     assert.validateResponseTime(
                         responseTime,
-                        EventDetailData.maxResponseTime,
+                        eventDetailMaxResponseTimeMs,
                     ),
                 );
                 validation.execute("Sensitive Data", () =>
                     assert.validateSensitiveData(responseBody),
                 );
 
-                const mapped = EventDetailMapper.map(responseBody);
-                const data = mapped.data;
-                const rows = data.rows;
-
-                validation.execute("Success", () =>
-                    validator.validateSuccess(mapped),
-                );
-                validation.execute("Root Structure", () =>
-                    validator.validateRootStructure(mapped),
-                );
-                validation.execute("Query Echo", () =>
-                    validator.validateQueryEcho(data, fromDate, toDate, limit),
-                );
-                validation.execute("Date Range Format", () =>
-                    validator.validateDateRangeFormat(data),
-                );
-                validation.execute("Scoped Meter Count", () =>
-                    validator.validateScopedMeterCount(data),
-                );
-                validation.execute("Total Row Count", () =>
-                    validator.validateTotalRowCount(data),
-                );
-                validation.execute("Truncation", () =>
-                    validator.validateTruncation(data),
-                );
-                validation.execute("Preview Note", () =>
-                    validator.validatePreviewNote(data),
-                );
-                validation.execute("Applied Filters", () =>
-                    validator.validateAppliedFilters(data, organisationLookupId),
-                );
-                validation.execute("Rows Limit", () =>
-                    validator.validateRowsLimit(rows, limit),
-                );
-                validation.execute("No Data Scenario", () =>
-                    validator.validateNoDataScenario(data),
-                );
-                validation.execute("Rows Present When Total Positive", () =>
-                    validator.validateRowsPresentWhenTotalPositive(data),
-                );
-
-                if (rows.length > 0) {
-                    validation.execute("Rows Structure", () =>
-                        validator.validateRowsStructure(rows),
+                if (expectedStatus !== 200) {
+                    validation.execute("Validation Error", () =>
+                        validator.validateValidationError(
+                            responseBody as EventDetailErrorBody,
+                        ),
                     );
-                    validation.execute("Consumer Fields", () =>
-                        validator.validateConsumerFields(rows),
-                    );
-                    validation.execute("Meter Fields", () =>
-                        validator.validateMeterFields(rows),
-                    );
-                    validation.execute("Hierarchy Fields", () =>
-                        validator.validateHierarchyFields(rows),
-                    );
-                    validation.execute("Event Fields", () =>
-                        validator.validateEventFields(rows),
-                    );
-                    validation.execute("Duration Format", () =>
-                        validator.validateDurationFormat(rows),
-                    );
-                    validation.execute("SL No Sequence", () =>
-                        validator.validateSlNoSequence(rows),
-                    );
-                    validation.execute("Unique SL No", () =>
-                        validator.validateUniqueSlNo(rows),
-                    );
-                    validation.execute("Unique Meter Event Combination", () =>
-                        validator.validateUniqueMeterEventCombination(rows),
-                    );
+                    validation.printSummary(testCase.testName, responseTime);
+                    return;
                 }
-            } finally {
-                ApiValidationHelper.finalize(validation, {
-                    apiName: "Event Detail Report API",
-                    responseTime,
-                    testInfo,
-                    defectContext,
-                });
-            }
-        },
-    );
+
+                validation.execute("Required Fields", () =>
+                    assert.validateRequiredFields(responseBody, [
+                        "success",
+                        "data",
+                    ]),
+                );
+
+                const mapped = EventDetailMapper.map(responseBody);
+                validation.execute("Response Envelope", () =>
+                    validator.validateResponseEnvelope(responseBody),
+                );
+                validation.execute("Event Detail Scenario", () =>
+                    validator.validateScenario(
+                        mapped,
+                        testCase.scenario,
+                        query.page,
+                        query.limit,
+                    ),
+                );
+
+                validation.printSummary(testCase.testName, responseTime);
+            },
+        );
+    }
 });

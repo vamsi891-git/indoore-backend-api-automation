@@ -1,4 +1,12 @@
 import { expect } from "@playwright/test";
+import type { TechnicalReportMapped } from "../Mapper/technicalanalysis.mapper";
+import type { TechnicalReportScenario } from "../Data/technicalanalysis.data";
+
+export interface TechnicalAnalysisErrorBody {
+  success: boolean;
+  error?: { code?: string; message?: string };
+}
+
 export class TechnicalReportValidator {
     // =====================================
     // ROOT VALIDATIONS
@@ -184,11 +192,57 @@ export class TechnicalReportValidator {
     // CROSS FIELD
     // =====================================
     validateCrossFieldLogic(data: any): void {
-        if (data.totalCount > 0 ) {
+        if (data.totalCount > 0) {
+            const offset = (data.page - 1) * data.pageSize;
+            if (data.totalCount <= offset) {
+                expect(data.rows.length).toBe(0);
+                return;
+            }
             expect(data.rows.length).toBeGreaterThan(0);
         }
         if (data.totalPages === 1) {
             expect(data.page).toBe(1);
+        }
+    }
+
+    validateValidationError(responseBody: TechnicalAnalysisErrorBody): void {
+        expect(responseBody.success).toBeFalsy();
+        expect(responseBody.error).toBeDefined();
+        expect(responseBody.error?.code).toBe("VALIDATION_ERROR");
+        expect(responseBody.error?.message).toBeTruthy();
+    }
+
+    validateScenario(
+        mapped: TechnicalReportMapped,
+        scenario: TechnicalReportScenario,
+        queryPage?: number,
+    ): void {
+        switch (scenario) {
+            case "dev_page_beyond":
+                expect(mapped.page).toBe(queryPage ?? mapped.page);
+                if (mapped.totalCount > 0) {
+                    expect(mapped.rows.length).toBe(0);
+                }
+                break;
+            case "dev_custom_page_size":
+                expect(mapped.pageSize).toBeGreaterThan(0);
+                expect(mapped.rows.length).toBeLessThanOrEqual(mapped.pageSize);
+                break;
+            case "dev_category_domestic":
+            case "dev_category_non_domestic":
+                expect(mapped.category).toBeTruthy();
+                break;
+            case "contract_empty_page":
+                expect(mapped.totalCount).toBe(0);
+                expect(mapped.rows.length).toBe(0);
+                expect(mapped.totalPages).toBe(0);
+                break;
+            case "contract_duration_row":
+                expect(mapped.rows.length).toBe(1);
+                expect(mapped.rows[0]?.durationInHours).toBeGreaterThanOrEqual(100);
+                break;
+            default:
+                break;
         }
     }
 }

@@ -1,124 +1,137 @@
-import { test } from "../../../../src/fixtures/api.fixture";
-import { AssertionEngine } from "../../../../src/core/engine/assertion.engine";
-import { ValidationEngine } from "../../../../src/core/engine/validation.engine";
-import { PerformanceTracker } from "../../../../src/core/utils/performancetracker";
+import { test } from "../../../fixtures/api.fixture";
+import { AssertionEngine } from "../../../core/engine/assertion.engine";
+import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { EventReportApi } from "../Api/eventreport.api";
-import { EventReportData } from "../Data/eventreport.data";
-import { EventReportMapper } from "../Mapper/eventreport.mapper";
+import {
+    eventReportMaxResponseTimeMs,
+    eventReportTestCases,
+    resolveEventReportContractBody,
+    resolveEventReportQuery,
+} from "../Data/eventreport.data";
+import {
+    EventReportMapper,
+    type EventReportErrorBody,
+} from "../Mapper/eventreport.mapper";
 import { EventReportValidator } from "../Validator/eventreport.validator";
 
 test.describe("Event Report API", () => {
-    test(
-        "Validate Event Report API",
-        {
-            tag: ["@smoke", "@reports", "@event-report"],
-        },
-        async ({ authenticatedApi }) => {
-            const api = new EventReportApi(authenticatedApi);
-            const assert = new AssertionEngine();
-            const validation = new ValidationEngine();
-            const validator = new EventReportValidator();
+    test.describe.configure({ retries: 1 });
+    test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
-            const { fromDate, toDate, organisationLookupId, limit } =
-                EventReportData;
+    for (const testCase of eventReportTestCases) {
+        test(
+            testCase.testName,
+            { tag: testCase.tags },
+            async ({ authenticatedApi }) => {
+                const expectedStatus = testCase.expectedStatus ?? 200;
+                const validator = new EventReportValidator();
+                const assert = new AssertionEngine();
+                const validation = new ValidationEngine();
 
-            const { rawResponse, responseBody, responseTime } =
-                await api.getEventReport(
-                    fromDate,
-                    toDate,
-                    organisationLookupId,
-                    limit,
-                );
+                if (testCase.isContractFixture) {
+                    const fixtureBody = resolveEventReportContractBody(
+                        testCase.scenario,
+                    );
+                    if (!fixtureBody) {
+                        test.skip(true, "Missing event report contract body");
+                        return;
+                    }
 
-            await PerformanceTracker.track(
-                rawResponse,
-                "Event Report API",
-                `${process.env.BASE_URL}/indore/reports/event-report?fromDate=${fromDate}&toDate=${toDate}&organisationLookupId=${organisationLookupId}&limit=${limit}`,
-                responseTime,
-            );
+                    const mapped = EventReportMapper.map(fixtureBody);
+                    validation.execute("Required Fields", () =>
+                        assert.validateRequiredFields(fixtureBody, [
+                            "success",
+                            "data",
+                        ]),
+                    );
+                    validation.execute("Contract Scenario", () =>
+                        validator.validateScenario(mapped, testCase.scenario),
+                    );
+                    validation.printSummary(testCase.testName, 0);
+                    return;
+                }
 
-            validation.execute("Status Code", () =>
-                assert.validateStatusCode(rawResponse, 200),
-            );
-            validation.execute("Content Type", () =>
-                assert.validateContentType(rawResponse),
-            );
-            validation.execute("Response Time", () =>
-                assert.validateResponseTime(
+                const api = new EventReportApi(authenticatedApi);
+                const query = resolveEventReportQuery(testCase.scenario);
+                const queryString = new URLSearchParams(
+                    Object.entries(query).reduce<Record<string, string>>(
+                        (acc, [key, value]) => {
+                            if (value !== undefined) {
+                                acc[key] = String(value);
+                            }
+                            return acc;
+                        },
+                        {},
+                    ),
+                ).toString();
+                const endpoint = `/indore/reports/event-report${
+                    queryString ? `?${queryString}` : ""
+                }`;
+
+                const { rawResponse, responseBody, responseTime } =
+                    await api.getEventReport(query);
+
+                await PerformanceTracker.track(
+                    rawResponse,
+                    testCase.testName,
+                    `${process.env.BASE_URL}${endpoint}`,
                     responseTime,
-                    EventReportData.maxResponseTime,
-                ),
-            );
-            validation.execute("Sensitive Data", () =>
-                assert.validateSensitiveData(responseBody),
-            );
+                );
 
-            const mapped = EventReportMapper.map(responseBody);
-            const data = mapped.data;
-            const items = data.items;
+                validation.execute("Status Validation", () =>
+                    assert.validateStatusCode(
+                        rawResponse,
+                        expectedStatus,
+                        responseBody,
+                    ),
+                );
+                validation.execute("Content Type", () =>
+                    assert.validateContentType(rawResponse),
+                );
+                validation.execute("Response Time", () =>
+                    assert.validateResponseTime(
+                        responseTime,
+                        eventReportMaxResponseTimeMs,
+                    ),
+                );
+                validation.execute("Sensitive Data", () =>
+                    assert.validateSensitiveData(responseBody),
+                );
 
-            validation.execute("Success", () =>
-                validator.validateSuccess(mapped),
-            );
-            validation.execute("Root Structure", () =>
-                validator.validateRootStructure(mapped),
-            );
-            validation.execute("Query Echo", () =>
-                validator.validateQueryEcho(data, fromDate, toDate),
-            );
-            validation.execute("Date Range Format", () =>
-                validator.validateDateRangeFormat(data),
-            );
-            validation.execute("Scoped Meter Count", () =>
-                validator.validateScopedMeterCount(data),
-            );
-            validation.execute("Applied Filters", () =>
-                validator.validateAppliedFilters(data, organisationLookupId),
-            );
-            validation.execute("Items Limit", () =>
-                validator.validateItemsLimit(items, limit),
-            );
-            validation.execute("No Data Scenario", () =>
-                validator.validateNoDataScenario(data),
-            );
-            validation.execute("Items Present When Scoped", () =>
-                validator.validateItemsPresentWhenScoped(data),
-            );
+                if (expectedStatus !== 200) {
+                    validation.execute("Validation Error", () =>
+                        validator.validateValidationError(
+                            responseBody as EventReportErrorBody,
+                        ),
+                    );
+                    validation.printSummary(testCase.testName, responseTime);
+                    return;
+                }
 
-            if (items.length > 0) {
-                validation.execute("Items Structure", () =>
-                    validator.validateItemsStructure(items),
+                validation.execute("Required Fields", () =>
+                    assert.validateRequiredFields(responseBody, [
+                        "success",
+                        "data",
+                    ]),
                 );
-                validation.execute("Circle Field", () =>
-                    validator.validateCircleField(items),
-                );
-                validation.execute("Event Identity", () =>
-                    validator.validateEventIdentity(items),
-                );
-                validation.execute("Event Counts", () =>
-                    validator.validateEventCounts(items),
-                );
-                validation.execute("Duration Format", () =>
-                    validator.validateDurationFormat(items),
-                );
-                validation.execute("Duration Consistency", () =>
-                    validator.validateDurationConsistency(items),
-                );
-                validation.execute("SL No Sequence", () =>
-                    validator.validateSlNoSequence(items),
-                );
-                validation.execute("Unique SL No", () =>
-                    validator.validateUniqueSlNo(items),
-                );
-                validation.execute("Unique Event ID", () =>
-                    validator.validateUniqueEventId(items),
-                );
-                validation.execute("Unique Event Name", () =>
-                    validator.validateUniqueEventName(items),
-                );
-            }
 
-            validation.printSummary("Event Report API", responseTime);
-        },
-    );
+                const mapped = EventReportMapper.map(responseBody);
+                validation.execute("Response Envelope", () =>
+                    validator.validateResponseEnvelope(responseBody),
+                );
+                validation.execute("Event Report Scenario", () =>
+                    validator.validateScenario(
+                        mapped,
+                        testCase.scenario,
+                        query.page,
+                        query.limit,
+                    ),
+                );
+
+                validation.printSummary(testCase.testName, responseTime);
+            },
+        );
+    }
 });

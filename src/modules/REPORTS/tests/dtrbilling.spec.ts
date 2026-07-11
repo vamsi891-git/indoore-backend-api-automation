@@ -135,7 +135,6 @@ test.describe("DTR Billing Report API", () => {
                     validator.validateUniqueMeterSerial(rows),
                 );
             }
-
             validation.printSummary("DTR Billing Report API", responseTime);
         },
     );

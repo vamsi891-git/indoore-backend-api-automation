@@ -1,104 +1,140 @@
-import { test } from "../../../../src/fixtures/api.fixture";
-import { DtrConsumptionApi } from "../Api/dtrconsumption.api";
-import { DtrConsumptionMapper } from "../Mapper/dtrconsumption.mapper";
-import { DtrConsumptionValidator } from "../Validator/dtrconsumption.validator";
+import { test } from "../../../fixtures/api.fixture";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../../src/core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
+import { DtrConsumptionApi } from "../Api/dtrconsumption.api";
+import {
+    dtrConsumptionMaxResponseTimeMs,
+    dtrConsumptionTestCases,
+    resolveDtrConsumptionContractBody,
+    resolveDtrConsumptionExpectedPeriod,
+    resolveDtrConsumptionQuery,
+} from "../Data/dtrconsumption.data";
+import {
+    DtrConsumptionMapper,
+    type DtrConsumptionErrorResponse,
+} from "../Mapper/dtrconsumption.mapper";
+import { DtrConsumptionValidator } from "../Validator/dtrconsumption.validator";
 
 test.describe("DTR Consumption API", () => {
+    test.describe.configure({ retries: 1 });
+    test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
-    test(
-        "Validate DTR Consumption API",
-        {
-            tag: [
-                "@dashboard",
-                "@smoke"
-            ]
-        },
-        async ({ authenticatedApi }) => {
+    for (const testCase of dtrConsumptionTestCases) {
+        test(
+            testCase.testName,
+            { tag: testCase.tags },
+            async ({ authenticatedApi }) => {
+                const expectedStatus = testCase.expectedStatus ?? 200;
+                const validator = new DtrConsumptionValidator();
+                const assert = new AssertionEngine();
+                const validation = new ValidationEngine();
 
-            const api = new DtrConsumptionApi(authenticatedApi);
+                if (testCase.isContractFixture) {
+                    const fixtureBody = resolveDtrConsumptionContractBody(
+                        testCase.scenario,
+                    );
+                    if (!fixtureBody) {
+                        test.skip(true, "Missing DTR consumption contract body");
+                        return;
+                    }
 
-            const {
-                rawResponse,
-                responseBody,
-                responseTime
-            } = await api.getDtrConsumption();
+                    const mapped = DtrConsumptionMapper.map(fixtureBody);
+                    validation.execute("Required Fields", () =>
+                        assert.validateRequiredFields(fixtureBody, [
+                            "success",
+                            "data",
+                        ]),
+                    );
+                    validation.execute("Contract Scenario", () =>
+                        validator.validateScenario(mapped, testCase.scenario),
+                    );
+                    validation.printSummary(testCase.testName, 0);
+                    return;
+                }
 
-            await PerformanceTracker.track(
-                rawResponse,
-                "DTR Consumption API",
-                `${process.env.BASE_URL}/indore/dashboard/dtr/consumption`,
-                responseTime
-            );
+                const api = new DtrConsumptionApi(authenticatedApi);
+                const query = resolveDtrConsumptionQuery(testCase.scenario);
+                const expectedPeriod = resolveDtrConsumptionExpectedPeriod(
+                    testCase.scenario,
+                );
+                const queryString = new URLSearchParams(
+                    Object.entries(query).reduce<Record<string, string>>(
+                        (acc, [key, value]) => {
+                            if (value !== undefined) {
+                                acc[key] = String(value);
+                            }
+                            return acc;
+                        },
+                        {},
+                    ),
+                ).toString();
+                const endpoint = `/indore/dashboard/dtr/consumption${
+                    queryString ? `?${queryString}` : ""
+                }`;
 
-            const assertion = new AssertionEngine();
-            const validation = new ValidationEngine();
+                const { rawResponse, responseBody, responseTime } =
+                    await api.getDtrConsumption(query);
 
-            validation.execute(
-                "Status Code",
-                () => assertion.validateStatusCode(rawResponse, 200)
-            );
-
-            validation.execute(
-                "Content Type",
-                () => assertion.validateContentType(rawResponse)
-            );
-
-            validation.execute(
-                "Response Time",
-                () => assertion.validateResponseTime(
+                await PerformanceTracker.track(
+                    rawResponse,
+                    testCase.testName,
+                    `${process.env.BASE_URL}${endpoint}`,
                     responseTime,
-                    60000
-                )
-            );
+                );
 
-            validation.execute(
-                "Security",
-                () => assertion.validateSensitiveData(responseBody)
-            );
+                validation.execute("Status Validation", () =>
+                    assert.validateStatusCode(
+                        rawResponse,
+                        expectedStatus,
+                        responseBody,
+                    ),
+                );
+                validation.execute("Content Type", () =>
+                    assert.validateContentType(rawResponse),
+                );
+                validation.execute("Response Time", () =>
+                    assert.validateResponseTime(
+                        responseTime,
+                        dtrConsumptionMaxResponseTimeMs,
+                    ),
+                );
+                validation.execute("Sensitive Data", () =>
+                    assert.validateSensitiveData(responseBody),
+                );
 
-            const data =
-                DtrConsumptionMapper.mapData(responseBody);
+                if (testCase.scenario === "invalid_period") {
+                    validation.execute("Invalid Period Error", () =>
+                        validator.validateInvalidPeriodError(
+                            responseBody as DtrConsumptionErrorResponse,
+                        ),
+                    );
+                    validation.printSummary(testCase.testName, responseTime);
+                    return;
+                }
 
-            const validator =
-                new DtrConsumptionValidator();
+                validation.execute("Required Fields", () =>
+                    assert.validateRequiredFields(responseBody, [
+                        "success",
+                        "data",
+                    ]),
+                );
 
-            validation.execute(
-                "Period",
-                () => validator.validatePeriod(data)
-            );
+                const mapped = DtrConsumptionMapper.map(responseBody);
+                validation.execute("Response Envelope", () =>
+                    validator.validateResponseEnvelope(responseBody),
+                );
+                validation.execute("DTR Consumption Scenario", () =>
+                    validator.validateScenario(
+                        mapped,
+                        testCase.scenario,
+                        expectedPeriod,
+                    ),
+                );
 
-            validation.execute(
-                "Point Count",
-                () => validator.validatePointCount(data)
-            );
-
-            validation.execute(
-                "Points",
-                () => validator.validatePoints(data)
-            );
-
-            validation.execute(
-                "Unique Labels",
-                () => validator.validateUniqueLabels(data)
-            );
-
-            validation.execute(
-                "Totals",
-                () => validator.validateTotals(data)
-            );
-
-            validation.execute(
-                "kVAh vs kWh",
-                () => validator.validateKvahVsKwh(data)
-            );
-
-            validation.printSummary(
-                "DTR Consumption API",
-                responseTime
-            );
-        }
-    );
+                validation.printSummary(testCase.testName, responseTime);
+            },
+        );
+    }
 });
