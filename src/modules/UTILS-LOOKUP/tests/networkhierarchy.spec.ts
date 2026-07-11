@@ -1,55 +1,50 @@
-import { test } from "../../../../src/fixtures/api.fixture";
 import { NetworkApi } from "../Api/networkhierarchy.api";
 import { NetworkMapper } from "../Mapper/networkhierarchy.mapper";
 import { NetworkValidator } from "../Validator/networkhierarchy.validator";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
-test.describe("Network Hierarchy API", () => {
-  test("Validate Network Hierarchy",
-    {
-      tag: ["@smoke", "@network"],
-    },
-    async ({ authenticatedApi }) => {
-      const api = new NetworkApi(authenticatedApi);
-      const { rawResponse, responseBody, responseTime } =
-        await api.getNetworkHierarchy();
-        await PerformanceTracker.track(
-          rawResponse,
-          "Network Hierarchy API",
-          `${process.env.BASE_URL}/indore/utils/hierarchies/network`,
-          responseTime
-        );
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
-      validation.execute("Status Validation", () =>
-        assert.validateStatusCode(rawResponse, 200),
-      );
-      validation.execute("Content Validation", () =>
-        assert.validateContentType(rawResponse),
-      );
-      validation.execute("Response Time", () =>
-        assert.validateResponseTime(responseTime, 60000),
-      );
-      validation.execute("Security Validation", () =>
-        assert.validateSensitiveData(responseBody),
-      );
-      const data = NetworkMapper.mapData(responseBody.data);
-      const validator = new NetworkValidator();
-      validation.execute("Response", () =>
-        validator.validateResponse(responseBody),
-      );
-      validation.execute("Items", () => validator.validateItemsExist(data));
-      validation.execute("Fields", () => validator.validateFields(data));
-      validation.execute("Duplicates", () =>
-        validator.validateDuplicateCodes(data),
-      );
-      validation.execute("Order", () => validator.validateOrderSequence(data));
-      validation.execute("Hierarchy Validation", () =>
-        validator.validateExpectedHierarchy(data),
-      );
-      validation.printSummary("Network Hierarchy API", responseTime);
-    },
+import { networkHierarchyTestCases } from "../Data/hierarchies.data";
+import { registerCatalogLookupTests } from "../utils/lookup-catalog.harness";
+import { getLookupResponseData } from "../utils/lookup-spec.harness";
+import type { HierarchyScenario } from "../Data/hierarchies.data";
+import type { NetworkData } from "../Mapper/networkhierarchy.mapper";
+
+const ENDPOINT = "/indore/utils/hierarchies/network";
+
+function runNetworkHierarchyValidations(
+  scenario: HierarchyScenario,
+  responseBody: unknown,
+  validation: import("../../../core/engine/validation.engine").ValidationEngine,
+): void {
+  const data = NetworkMapper.mapData(
+    getLookupResponseData<NetworkData>(responseBody),
   );
+  const validator = new NetworkValidator();
+
+  validation.execute("Response", () =>
+    validator.validateResponse(responseBody as never),
+  );
+  validation.execute("Items", () => validator.validateItemsExist(data));
+  validation.execute("Fields", () => validator.validateFields(data));
+  validation.execute("Duplicate Codes", () =>
+    validator.validateDuplicateCodes(data),
+  );
+  validation.execute("Order Sequence", () =>
+    validator.validateOrderSequence(data),
+  );
+
+  if (scenario === "smoke") {
+    validation.execute("Expected Hierarchy", () =>
+      validator.validateExpectedHierarchy(data),
+    );
+  }
+}
+
+registerCatalogLookupTests({
+  describeTitle: "Network Hierarchy API",
+  endpoint: ENDPOINT,
+  testCases: networkHierarchyTestCases,
+  fetch: (authenticatedApi) => {
+    const api = new NetworkApi(authenticatedApi);
+    return api.getNetworkHierarchy();
+  },
+  validate: runNetworkHierarchyValidations,
 });
-    

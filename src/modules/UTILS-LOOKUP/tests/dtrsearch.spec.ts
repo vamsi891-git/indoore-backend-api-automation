@@ -1,81 +1,79 @@
-import { test } from "../../../../src/fixtures/api.fixture";
 import { DtrSearchApi } from "../Api/dtrsearch.api";
 import { DtrSearchMapper } from "../Mapper/dtrsearch.mapper";
 import { DtrSearchValidator } from "../Validator/dtrsearch.validator";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
-test.describe("DTR Search API", () => {
-  test("Validate DTR Search API",
-    {
-      tag: ["@smoke", "@dtr"],
-    },
-    async ({ authenticatedApi }) => {
-      const api = new DtrSearchApi(authenticatedApi);
-      const {
-        rawResponse,
-        responseBody,
-        responseTime,
-      } =await api.getDtrSearch();
-      await PerformanceTracker.track(
-        rawResponse,
-        "DTR Search API",
-        `${process.env.BASE_URL}/indore/utils/search/dtr?page=1&limit=20`,
-        responseTime
-      );
-      const assertion = new AssertionEngine();
-      const validation = new ValidationEngine();
-      validation.execute("Status Validation",() =>
-          assertion.validateStatusCode(rawResponse,200)
-      );
-      validation.execute("Content Validation",() =>
-          assertion.validateContentType(rawResponse)
-      );
-      validation.execute("Response Time Validation",() =>
-          assertion.validateResponseTime(responseTime,60000)
-      );
-      validation.execute("Security Validation",() =>
-          assertion.validateSensitiveData(responseBody)
-      );
-      const data = DtrSearchMapper.mapData(responseBody.data);
-      const validator =new DtrSearchValidator();
-      validation.execute("Response Validation",() =>
-          validator.validateResponse(responseBody)
-      );
-      validation.execute("Pagination Validation",() =>
-          validator.validatePagination(data)
-      );
-      validation.execute("Items Validation",() =>
-          validator.validateItemsExist(data)
-      );
-      validation.execute("Serial Validation",() =>
-          validator.validateSerialNumbers(data)
-      );
-      validation.execute("Required Fields Validation",() =>
-          validator.validateRequiredFields(data)
-      );
-      validation.execute("Data Type Validation",() =>
-          validator.validateDataTypes(data)
-      );
-      validation.execute("Meter Serial Validation",() =>
-          validator.validateMeterSerialNumbers(data)
-      );
-      validation.execute("Duplicate Meter Validation",() =>
-          validator.validateDuplicateMeterSerials(data)
-      );
-      validation.execute("Coordinate Validation",() =>
-          validator.validateCoordinates(data)
-      );
-      validation.execute("MF Validation",() =>
-          validator.validateMF(data)
-      );
-      validation.execute("Business Validation",() =>
-          validator.validateBusinessRules(data)
-      );
-      validation.execute("Aggregation Validation",() =>
-          validator.validatePageAggregation(data)
-      );
-      validation.printSummary("DTR Search API",responseTime);
-    },
+import {
+  dtrSearchTestCases,
+  resolveDtrSearchQuery,
+  type DtrSearchScenario,
+} from "../Data/dtrsearch.data";
+import { registerSearchLookupTests } from "../utils/lookup-catalog.harness";
+import { buildQueryString, getLookupResponseData } from "../utils/lookup-spec.harness";
+import type { DtrSearchRawData } from "../Mapper/dtrsearch.mapper";
+
+function runDtrSearchValidations(
+  scenario: DtrSearchScenario,
+  responseBody: unknown,
+  validation: import("../../../core/engine/validation.engine").ValidationEngine,
+): void {
+  const data = DtrSearchMapper.mapData(
+    getLookupResponseData<DtrSearchRawData>(responseBody),
   );
+  const validator = new DtrSearchValidator();
+
+  validation.execute("Response", () =>
+    validator.validateResponse(responseBody as never),
+  );
+  validation.execute("Pagination", () => validator.validatePagination(data));
+
+  if (scenario === "edge_page_beyond") {
+    validation.execute("Empty Page", () => validator.validateEmptyPage(data));
+    return;
+  }
+
+  if (scenario === "edge_limit_one") {
+    validation.execute("Limit One", () => validator.validateLimitOne(data));
+    return;
+  }
+
+  if (data.item.length === 0) {
+    return;
+  }
+
+  validation.execute("Items", () => validator.validateItemsExist(data));
+  validation.execute("Serial Numbers", () =>
+    validator.validateSerialNumbers(data),
+  );
+  validation.execute("Required Fields", () =>
+    validator.validateRequiredFields(data),
+  );
+  validation.execute("Data Types", () => validator.validateDataTypes(data));
+  validation.execute("Meter Serial", () =>
+    validator.validateMeterSerialNumbers(data),
+  );
+  validation.execute("Duplicate Meter", () =>
+    validator.validateDuplicateMeterSerials(data),
+  );
+  validation.execute("Coordinates", () => validator.validateCoordinates(data));
+  validation.execute("MF", () => validator.validateMF(data));
+  validation.execute("Business Rules", () =>
+    validator.validateBusinessRules(data),
+  );
+  validation.execute("Page Aggregation", () =>
+    validator.validatePageAggregation(data),
+  );
+}
+
+registerSearchLookupTests({
+  describeTitle: "DTR Search API",
+  testCases: dtrSearchTestCases,
+  resolveQuery: (scenario) => resolveDtrSearchQuery(scenario),
+  buildPath: (query) => `/indore/utils/search/dtr${buildQueryString(query)}`,
+  fetch: (authenticatedApi, query) => {
+    const api = new DtrSearchApi(authenticatedApi);
+    return api.searchDtr({
+      page: query.page as number | undefined,
+      limit: query.limit as number | undefined,
+    });
+  },
+  validate: runDtrSearchValidations,
 });

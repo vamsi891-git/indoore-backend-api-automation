@@ -42,6 +42,21 @@ Evidence trail for framework improvements (interviews, LinkedIn, PR history).
 
 ---
 
+## UTILS-LOOKUP — data-driven coverage expansion (2026-07-11)
+
+**Scope:** All 14 live lookup/search APIs + 4 missing-route probes.
+
+**Changes:**
+- Shared harness: `runLookupApiTest`, `registerSearchLookupTests`, `registerCatalogLookupTests`.
+- Data files for consumer/DTR/network/org search, hierarchies, catalog lookups, missing routes.
+- ~44 runtime cases: smoke, edge (pagination, limit, structure), negative (400 validation, 404 probes).
+- Mappers aligned to live grid shape (`rows` + `pagination`) for consumer and DTR search.
+- `errorExpectation: status-only` for HTML 404 missing-route probes.
+
+**Run:** `npm run test:module -- utils-lookup`
+
+---
+
 ## Phase 1 — CI/CD safety nets (pending)
 
 - [ ] 1.1 Blocking typecheck in CI

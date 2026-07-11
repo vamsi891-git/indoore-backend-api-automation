@@ -26,8 +26,9 @@ export class SearchConsumerValidator {
   }
 
   validateSerialSequence(data: SearchConsumerData): void {
+    const offset = (data.page - 1) * data.limit;
     data.items.forEach((item, index) => {
-      expect(item.slNo).toBe(index + 1);
+      expect(item.slNo).toBe(offset + index + 1);
     });
   }
 
@@ -78,5 +79,17 @@ export class SearchConsumerValidator {
       expect(typeof item.ivrsNo).toBe("string");
       expect(typeof item.existingIvrsNo).toBe("string");
     });
+  }
+
+  validateEmptyPage(data: SearchConsumerData): void {
+    expect(data.items.length).toBe(0);
+    expect(data.total).toBeGreaterThanOrEqual(0);
+  }
+
+  validateLimitOne(data: SearchConsumerData): void {
+    expect(data.items.length).toBeLessThanOrEqual(1);
+    if (data.total > 0) {
+      expect(data.items.length).toBe(1);
+    }
   }
 }

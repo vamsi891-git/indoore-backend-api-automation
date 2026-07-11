@@ -1,92 +1,87 @@
-import { test } from "../../../../src/fixtures/api.fixture";
+import { expect } from "@playwright/test";
 import { SearchConsumerApi } from "../Api/consumersearch.api";
 import { SearchConsumerMapper } from "../Mapper/consumersearch.mapper";
 import { SearchConsumerValidator } from "../Validator/consumersearch.validator";
+import {
+  consumerSearchTestCases,
+  resolveConsumerSearchQuery,
+  type ConsumerSearchScenario,
+} from "../Data/consumersearch.data";
+import { registerSearchLookupTests } from "../utils/lookup-catalog.harness";
+import { buildQueryString, getLookupResponseData } from "../utils/lookup-spec.harness";
+import type { SearchConsumerRawData } from "../Mapper/consumersearch.mapper";
 
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
-
-test.describe("Search Consumer API", () => {
-  test("Validate Search Consumer",
-    {
-      tag: ["@smoke", "@consumer"],
-    },
-    async ({ authenticatedApi }) => {
-      const api = new SearchConsumerApi(authenticatedApi);
-      const {
-        rawResponse,
-        responseBody,
-        responseTime,
-      } = await api.SearchConsumers(1, 20);
-      await PerformanceTracker.track(
-        rawResponse,
-        "Consumer Search API",
-        `${process.env.BASE_URL}/indore/utils/search/consumers?page=1&limit=20`,
-        responseTime
-      );
-      const assertion = new AssertionEngine();
-      const validation = new ValidationEngine();
-      // ==========================================
-      // API LEVEL VALIDATIONS
-      // ==========================================
-      validation.execute("Status Code Validation",() => 
-        assertion.validateStatusCode(rawResponse, 200)
-    );
-      validation.execute("Content Type Validation",() => 
-        assertion.validateContentType(rawResponse)
-      );
-      validation.execute("Response Time Validation",() => 
-        assertion.validateResponseTime(responseTime, 60000)
-      );
-      validation.execute("Security Validation",() => 
-        assertion.validateSensitiveData(responseBody)
-      );
-      // ==========================================
-      // DATA MAPPING
-      // ==========================================
-      const data = SearchConsumerMapper.mapData(responseBody.data);
-      const validator = new SearchConsumerValidator();
-      // ==========================================
-      // RESPONSE CONTRACT VALIDATIONS
-      // ==========================================
-      validation.execute("Response Validation",() => 
-        validator.validateResponse(responseBody)
-      );
-      validation.execute("Items Validation",() => 
-        validator.validateItemsExist(data)
-      );
-      validation.execute("Pagination Validation",() => 
-        validator.validatePagination(data)
-      );
-      // ==========================================
-      // FIELD VALIDATIONS
-      // ==========================================
-      validation.execute("Required Fields Validation",() => 
-        validator.validateRequiredFields(data)
-      );
-      validation.execute("Data Types Validation",() => 
-        validator.validateDataTypes(data)
-      );
-      // =========================================
-      // BUSINESS VALIDATIONS
-      // ==========================================
-      validation.execute("Serial Sequence Validation",() => 
-        validator.validateSerialSequence(data)
-      );
-      validation.execute("Duplicate Meter Serial Validation",() =>
-          validator.validateDuplicateMeterSerials(data),
-      );
-      validation.execute("Mobile Number Format Validation",() => 
-        validator.validateMobileNumberFormat(data),
-      );
-      validation.execute("IVRS Field Validation",() => 
-        validator.validateIvrsFields(data),
-      );
-      // ==========================================
-      // SUMMARY
-      // ==========================================
-      validation.printSummary("Consumer Search API",responseTime);
-    }
+function runConsumerSearchValidations(
+  scenario: ConsumerSearchScenario,
+  responseBody: unknown,
+  validation: import("../../../core/engine/validation.engine").ValidationEngine,
+): void {
+  const data = SearchConsumerMapper.mapData(
+    getLookupResponseData<SearchConsumerRawData>(responseBody),
   );
+  const validator = new SearchConsumerValidator();
+
+  validation.execute("Response", () =>
+    validator.validateResponse(responseBody as never),
+  );
+  validation.execute("Pagination", () => validator.validatePagination(data));
+
+  if (scenario === "edge_page_beyond") {
+    validation.execute("Empty Page", () => validator.validateEmptyPage(data));
+    return;
+  }
+
+  if (scenario === "edge_page_two") {
+    validation.execute("Page Two", () => {
+      expect(data.page).toBe(2);
+      validator.validatePagination(data);
+      if (data.items.length === 0) {
+        validator.validateEmptyPage(data);
+        return;
+      }
+      validator.validateSerialSequence(data);
+    });
+    return;
+  }
+
+  if (scenario === "edge_limit_one") {
+    validation.execute("Limit One", () => validator.validateLimitOne(data));
+    return;
+  }
+
+  if (data.items.length === 0) {
+    return;
+  }
+
+  validation.execute("Items", () => validator.validateItemsExist(data));
+  validation.execute("Required Fields", () =>
+    validator.validateRequiredFields(data),
+  );
+  validation.execute("Data Types", () => validator.validateDataTypes(data));
+  validation.execute("Serial Sequence", () =>
+    validator.validateSerialSequence(data),
+  );
+  validation.execute("Duplicate Meter Serial", () =>
+    validator.validateDuplicateMeterSerials(data),
+  );
+  validation.execute("Mobile Format", () =>
+    validator.validateMobileNumberFormat(data),
+  );
+  validation.execute("IVRS Fields", () => validator.validateIvrsFields(data));
+}
+
+registerSearchLookupTests({
+  describeTitle: "Consumer Search API",
+  testCases: consumerSearchTestCases,
+  resolveQuery: (scenario) => resolveConsumerSearchQuery(scenario),
+  buildPath: (query) =>
+    `/indore/utils/search/consumers${buildQueryString(query)}`,
+  fetch: (authenticatedApi, query) => {
+    const api = new SearchConsumerApi(authenticatedApi);
+    return api.searchConsumers({
+      page: query.page as number | string | undefined,
+      limit: query.limit as number | undefined,
+    });
+  },
+  validate: runConsumerSearchValidations,
 });

@@ -49,7 +49,7 @@ export class SearchConsumerMapper {
 
     const items = rawItems.map((item, index) => ({
       ...item,
-      slNo: index + 1,
+      slNo: item.slNo ?? (page - 1) * limit + index + 1,
     }));
 
     return {

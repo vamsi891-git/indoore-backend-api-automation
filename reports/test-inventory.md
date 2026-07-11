@@ -1,15 +1,15 @@
 # API Test Inventory
 
-Generated: 2026-07-09T08:45:35.357Z
+Generated: 2026-07-11T06:51:17.266Z
 
 ## Summary
 
 | Metric | Count |
 |--------|------:|
 | Modules | 23 |
-| API files | 124 |
-| Spec files | 160 |
-| Test cases | 339 |
+| API files | 125 |
+| Spec files | 161 |
+| Test cases | 363 |
 | APIs without spec | 9 |
 | Specs without API | 46 |
 
@@ -24,8 +24,8 @@ Generated: 2026-07-09T08:45:35.357Z
 | COMMERICIAL-ANALYSIS | 7 | 6 | 6 | 100% | 0 |
 | CONSUMERS | 14 | 14 | 38 | 100% | 0 |
 | CONSUMPTION | 3 | 5 | 5 | 67% | 1 |
-| DASHBOARD | 5 | 5 | 5 | 100% | 0 |
-| DTRS | 7 | 7 | 7 | 100% | 0 |
+| DASHBOARD | 5 | 5 | 10 | 100% | 0 |
+| DTRS | 7 | 7 | 21 | 100% | 0 |
 | ENERGY-AUDITS | 5 | 7 | 0 | 60% | 2 |
 | FEEDER | 4 | 4 | 4 | 100% | 0 |
 | HES-COMMANDS | 14 | 14 | 35 | 100% | 0 |
@@ -34,9 +34,9 @@ Generated: 2026-07-09T08:45:35.357Z
 | MODULES-PERMISSIONS | 1 | 4 | 20 | 100% | 0 |
 | NOTIFICATIONS | 1 | 2 | 2 | 100% | 0 |
 | OVERALL-DASHBOARD | 2 | 2 | 2 | 100% | 0 |
-| REPORTS | 3 | 3 | 3 | 100% | 0 |
+| REPORTS | 4 | 4 | 7 | 100% | 0 |
 | ROLE-PERMISSIONS | 1 | 4 | 22 | 100% | 0 |
-| TECHNICAL-ANALYSIS | 2 | 2 | 2 | 100% | 0 |
+| TECHNICAL-ANALYSIS | 2 | 2 | 3 | 100% | 0 |
 | USERS-ADMIN | 1 | 6 | 23 | 100% | 0 |
 | USERS-PROFILE-IMAGE | 1 | 3 | 6 | 100% | 0 |
 | UTILS-LOOKUP | 13 | 14 | 14 | 92% | 1 |
@@ -45,7 +45,7 @@ Generated: 2026-07-09T08:45:35.357Z
 
 | Tag | Tests |
 |-----|------:|
-| @smoke | 151 |
+| @smoke | 135 |
 | @negative | 86 |
 | @auth | 56 |
 | @permissions | 42 |
@@ -57,11 +57,10 @@ Generated: 2026-07-09T08:45:35.357Z
 | @users-admin | 23 |
 | @role-permissions | 22 |
 | @modules-permissions | 20 |
-| @dtr | 14 |
 | @asset-management | 10 |
 | @meter-communication | 10 |
+| @dtr | 7 |
 | @hierarchy | 7 |
-| @dashboard | 6 |
 | @users-profile-image | 6 |
 | @consumption | 5 |
 | @commands-history | 5 |
@@ -76,11 +75,9 @@ Generated: 2026-07-09T08:45:35.357Z
 | @commands-meter-location | 3 |
 | @commands-meter-samples | 3 |
 | @commands-search-meters | 3 |
-| @reports | 3 |
 | @coverage | 2 |
 | @consumer | 2 |
 | @daily-consumption | 2 |
-| @profile | 2 |
 | @commands-billing | 2 |
 | @commands-demand-config | 2 |
 | @commands-load-curtailment | 2 |
@@ -108,27 +105,17 @@ Generated: 2026-07-09T08:45:35.357Z
 | @last-three-months | 1 |
 | @monthly-net-meter | 1 |
 | @yearly | 1 |
-| @metrics | 1 |
-| @capacity-gauge | 1 |
-| @daily-threshold-chart | 1 |
-| @dtr-events | 1 |
-| @feeders | 1 |
-| @power-triangle | 1 |
-| @statistics | 1 |
 | @feeder-alerts | 1 |
 | @electrical-parameters | 1 |
+| @profile | 1 |
 | @classification | 1 |
 | @eventpriority2 | 1 |
 | @priority-overview | 1 |
 | @mobile | 1 |
+| @dashboard | 1 |
 | @dtr-communication | 1 |
+| @reports | 1 |
 | @dtr-billing | 1 |
-| @event-detail | 1 |
-| @event-report | 1 |
-| @technical | 1 |
-| @summary | 1 |
-| @technical-analysis | 1 |
-| @report | 1 |
 | @connection | 1 |
 | @consumercategory | 1 |
 | @manufacturer | 1 |

@@ -21,8 +21,10 @@ export class DtrSearchValidator {
   }
 
   validateSerialNumbers(data: DtrSearchData): void {
+    const offset = (data.page - 1) * data.limit;
     data.item.forEach((item, index) => {
-      expect(item.slNo).toBe(index + 1);});
+      expect(item.slNo).toBe(offset + index + 1);
+    });
   }
   validateRequiredFields(data: DtrSearchData): void {
     data.item.forEach(item => {
@@ -82,5 +84,17 @@ export class DtrSearchValidator {
   validatePageAggregation(data: DtrSearchData): void {
     expect(data.item.length).toBeLessThanOrEqual(data.limit);
     expect(data.total).toBeGreaterThanOrEqual(data.item.length);
+  }
+
+  validateEmptyPage(data: DtrSearchData): void {
+    expect(data.item.length).toBe(0);
+    expect(data.total).toBeGreaterThanOrEqual(0);
+  }
+
+  validateLimitOne(data: DtrSearchData): void {
+    expect(data.item.length).toBeLessThanOrEqual(1);
+    if (data.total > 0) {
+      expect(data.item.length).toBe(1);
+    }
   }
 }
