@@ -9,13 +9,15 @@ export interface DeviceManufacturerApiResponse {
 }
 
 export class DeviceManufacturerApi {
+  static readonly PATH = "/indore/utils/device-manufacturers";
+
   constructor(private authenticatedApi: APIRequestContext) {}
 
   async getDeviceManufacturers(): Promise<DeviceManufacturerApiResponse> {
     const { rawResponse, responseBody, responseTime } =
       await fetchLookupJson<DeviceManufacturerResponse>(
         this.authenticatedApi,
-        "/indore/utils/device-manufacturers",
+        DeviceManufacturerApi.PATH,
         "device-manufacturers",
       );
     return { rawResponse, responseBody, responseTime };

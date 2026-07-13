@@ -27,11 +27,11 @@ test.describe("Feeder Daily Consumption API", () => {
                 await api.getDailyConsumption(feederCode, granularity);
 
             await PerformanceTracker.track(
-                rawResponse,
-                "Feeder Daily Consumption API",
-                `${process.env.BASE_URL}/indore/feeder/${feederCode}/daily-consumption?granularity=${granularity}`,
-                responseTime,
-            );
+        rawResponse,
+        "Feeder Daily Consumption API",
+        rawResponse.url(),
+        responseTime
+      );
 
             const assert = new AssertionEngine();
             const validation = new ValidationEngine();

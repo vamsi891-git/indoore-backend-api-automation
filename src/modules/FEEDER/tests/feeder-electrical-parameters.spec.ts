@@ -26,11 +26,11 @@ test.describe("Feeder Electrical Parameters API",() => {
                         feederElectricalParametersData.feederCode
                     );
                 await PerformanceTracker.track(
-                    rawResponse,
-                    "Feeder Electrical Parameters API",
-                    `${process.env.BASE_URL}/indore/feeder/${feederElectricalParametersData.feederCode}/electrical-parameters`,
-                    responseTime
-                );
+        rawResponse,
+        "Feeder Electrical Parameters API",
+        rawResponse.url(),
+        responseTime
+      );
                 const assert =new AssertionEngine();
                 const validation =new ValidationEngine();
                 // =====================================

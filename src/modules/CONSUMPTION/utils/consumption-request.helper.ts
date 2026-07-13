@@ -3,8 +3,8 @@ import { CONSUMPTION_REQUEST_TIMEOUT_MS } from "../../../core/constants/api-time
 import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
 
 const RETRY_STATUSES = new Set([500, 502, 503, 504]);
-const MAX_ATTEMPTS = 2;
-const RETRY_DELAY_MS = 5_000;
+const MAX_ATTEMPTS = 3;
+const RETRY_DELAY_MS = 8_000;
 
 type RequestOptions = Parameters<typeof getWithAutoRefresh>[2];
 

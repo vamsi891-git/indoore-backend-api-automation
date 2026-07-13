@@ -66,19 +66,16 @@ test.describe("DTR Event Report API", () => {
                         {},
                     ),
                 ).toString();
-                const endpoint = `/indore/reports/dtr-event${
-                    queryString ? `?${queryString}` : ""
-                }`;
 
                 const { rawResponse, responseBody, responseTime } =
                     await api.getDtrEvent(query);
 
                 await PerformanceTracker.track(
-                    rawResponse,
-                    testCase.testName,
-                    `${process.env.BASE_URL}${endpoint}`,
-                    responseTime,
-                );
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
                 validation.execute("Status Validation", () =>
                     assert.validateStatusCode(

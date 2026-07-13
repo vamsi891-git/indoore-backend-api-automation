@@ -30,11 +30,11 @@ test.describe("Pattern Consumption Comparison API", () => {
                 patternConsumptionData.year
             );
             await PerformanceTracker.track(
-                rawResponse,
-                "Pattern Consumption Comparison API",
-                `${process.env.BASE_URL}/indore/consumption/pattern-consumption`,
-                responseTime
-            );
+        rawResponse,
+        "Pattern Consumption Comparison API",
+        rawResponse.url(),
+        responseTime
+      );
             const assert = new AssertionEngine();
             const validation = new ValidationEngine();
 

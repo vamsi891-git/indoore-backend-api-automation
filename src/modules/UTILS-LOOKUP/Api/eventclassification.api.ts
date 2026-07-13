@@ -9,13 +9,15 @@ export interface EventClassificationApiResponse {
 }
 
 export class EventClassificationApi {
+  static readonly PATH = "/indore/utils/event-classifications";
+
   constructor(private authenticatedApi: APIRequestContext) {}
 
   async getEventClassifications(): Promise<EventClassificationApiResponse> {
     const { rawResponse, responseBody, responseTime } =
       await fetchLookupJson<EventClassificationResponse>(
         this.authenticatedApi,
-        "/indore/utils/event-classifications",
+        EventClassificationApi.PATH,
         "event-classifications",
       );
     return { rawResponse, responseBody, responseTime };

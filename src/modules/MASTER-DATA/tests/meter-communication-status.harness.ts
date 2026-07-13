@@ -51,11 +51,11 @@ export async function runMeterCommunicationValidation(
   ).toString();
 
   await PerformanceTracker.track(
-    rawResponse,
-    testLabel,
-    `${process.env.BASE_URL}/indore/master-data/meter-communication-status?${qs}`,
-    responseTime,
-  );
+        rawResponse,
+        testLabel,
+        rawResponse.url(),
+        responseTime
+      );
 
   const assert = new AssertionEngine();
   const validation = new ValidationEngine();

@@ -128,11 +128,11 @@ test.describe("Auth Invite E2E Flow", () => {
         const inviteStatus = inviteResponse.rawResponse.status();
 
         await PerformanceTracker.track(
-          inviteResponse.rawResponse,
-          "Auth Invite E2E — Admin Send",
-          `${process.env.BASE_URL}/indore/auth/invite`,
-          inviteResponse.responseTime,
-        );
+        inviteResponse.rawResponse,
+        "Auth Invite E2E — Admin Send",
+        inviteResponse.rawResponse.url(),
+        inviteResponse.responseTime
+      );
 
         if (inviteStatus !== 201) {
           const adopted = await adoptInviteForE2eWhenRateLimited(api);
@@ -161,7 +161,7 @@ test.describe("Auth Invite E2E Flow", () => {
           validation.execute("Admin Invite Status", () => {
             if (inviteStatus === 429) {
               throw new Error(
-                "POST /indore/auth/invite rate limited (429) and no adoptable pending invite was found. " +
+                "Invite create rate limited (429) and no adoptable pending invite was found. " +
                   "Wait 30–60 minutes, run 00-invite-setup first, or set INVITE_E2E_REUSE_CONTEXT=true with token in .env",
               );
             }
@@ -333,11 +333,11 @@ test.describe("Auth Invite E2E Flow", () => {
         const preview = await publicApi.previewInvitation(acceptToken);
 
         await PerformanceTracker.track(
-          preview.rawResponse,
-          "Auth Invite E2E — Preview",
-          `${process.env.BASE_URL}/indore/auth/invite/preview`,
-          preview.responseTime,
-        );
+        preview.rawResponse,
+        "Auth Invite E2E — Preview",
+        preview.rawResponse.url(),
+        preview.responseTime
+      );
 
         validation.execute("Preview Status", () =>
           expect(preview.rawResponse.status()).toBe(200),
@@ -453,11 +453,11 @@ test.describe("Auth Invite E2E Flow", () => {
         const accept = await acceptInvitationWithRetry(publicCtx, acceptPayload);
 
         await PerformanceTracker.track(
-          accept.rawResponse,
-          "Auth Invite E2E — Accept",
-          `${process.env.BASE_URL}/indore/auth/invite/accept`,
-          accept.responseTime,
-        );
+        accept.rawResponse,
+        "Auth Invite E2E — Accept",
+        accept.rawResponse.url(),
+        accept.responseTime
+      );
 
         validation.execute("Accept Status", () =>
           validator.validateAcceptSuccessStatus(accept.rawResponse.status()),

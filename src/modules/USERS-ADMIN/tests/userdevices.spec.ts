@@ -59,9 +59,9 @@ test.describe("User Devices Flow", () => {
                     devicesResponse.responseTime,
                 );
                 await PerformanceTracker.track(
-                    devicesResponse.rawResponse,
-                    "Get Devices",
-                    devicesResponse.rawResponse.url(),
+        devicesResponse.rawResponse,
+        "Get Devices",
+        devicesResponse.rawResponse.url(),
                     devicesResponse.responseTime,
                 );
                 return;
@@ -124,9 +124,9 @@ test.describe("User Devices Flow", () => {
                     verifyResponse.responseTime,
             );
             await PerformanceTracker.track(
-                devicesResponse.rawResponse,
-                "Get Devices",
-                devicesResponse.rawResponse.url(),
+        devicesResponse.rawResponse,
+        "Get Devices",
+        devicesResponse.rawResponse.url(),
                 devicesResponse.responseTime,
             );
         },

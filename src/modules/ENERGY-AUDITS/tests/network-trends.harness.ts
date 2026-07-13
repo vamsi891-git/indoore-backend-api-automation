@@ -26,7 +26,7 @@ export function registerNetworkTrendsTest(
 
       const defectContext = {
         module: "ENERGY-AUDITS",
-        endpoint: "/indore/energy-audit/network-trends",
+        endpoint: rawResponse.url(),
         requestParams: query,
         responseStatus: rawResponse.status(),
         responseBody,

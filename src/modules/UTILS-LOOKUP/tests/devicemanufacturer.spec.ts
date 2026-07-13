@@ -39,7 +39,6 @@ function validateDeviceManufacturer(
 
 registerCatalogLookupTests({
   describeTitle: "Device Manufacturer API",
-  endpoint: "/indore/utils/device-manufacturers",
   testCases: deviceManufacturerTestCases,
   fetch: (api) => new DeviceManufacturerApi(api).getDeviceManufacturers(),
   validate: validateDeviceManufacturer,

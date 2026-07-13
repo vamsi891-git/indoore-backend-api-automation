@@ -13,17 +13,14 @@ export interface OrganizationSearchQuery {
 }
 
 export class OrganizationApi {
+  static readonly PATH = "/indore/utils/search/organisations";
+
   constructor(private authenticatedApi: APIRequestContext) {}
 
   async searchOrganizations(
     query: OrganizationSearchQuery = { limit: 20 },
   ): Promise<OrganizationSearchApiResponse> {
-    const params = new URLSearchParams();
-    if (query.limit !== undefined) {
-      params.set("limit", String(query.limit));
-    }
-    const qs = params.toString();
-    const path = `/indore/utils/search/organisations${qs ? `?${qs}` : ""}`;
+    const path = OrganizationApi.toPath(query);
     const { rawResponse, responseBody, responseTime } =
       await fetchLookupJson<OrganizationResponse>(
         this.authenticatedApi,
@@ -31,5 +28,14 @@ export class OrganizationApi {
         "organisation-search",
       );
     return { rawResponse, responseBody, responseTime };
+  }
+
+  private static toPath(query: OrganizationSearchQuery): string {
+    const params = new URLSearchParams();
+    if (query.limit !== undefined) {
+      params.set("limit", String(query.limit));
+    }
+    const qs = params.toString();
+    return `${OrganizationApi.PATH}${qs ? `?${qs}` : ""}`;
   }
 }

@@ -20,7 +20,7 @@ test.describe("MD Analysis API", () => {
 
       const defectContext = {
         module: "COMMERICIAL-ANALYSIS",
-        endpoint: "/indore/analysis/commercial/md",
+        endpoint: rawResponse.url(),
         requestParams: mdAnalysisCdCompareData,
         responseStatus: rawResponse.status(),
         responseBody,

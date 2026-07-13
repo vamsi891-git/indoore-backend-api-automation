@@ -11,7 +11,6 @@ import {
   validateMeterTestCases,
 } from "../Data/validatemeter.data";
 import { ValidateMeterMapper } from "../Mapper/validatemeter.mapper";
-import type { ValidateMeterErrorResponse } from "../Mapper/validatemeter.mapper";
 import { ValidateMeterValidator } from "../Validator/validatemeter.validator";
 import { ensureValidateConsumerMeterRuntimeContext } from "../utils/validate-consumer-meter-runtime.helper";
 
@@ -38,24 +37,18 @@ test.describe("Validate Meter API", () => {
           testCase.scenario === "missing_meter_serial" ||
           testCase.scenario === "empty_meter_serial"
         ) {
-          const params =
-            testCase.scenario === "empty_meter_serial"
-              ? new URLSearchParams({ meterSerialNumber: "" })
-              : undefined;
-          const url = params
-            ? `/indore/consumers/validate-meter?${params}`
-            : "/indore/consumers/validate-meter";
-          const startedAt = Date.now();
-          const rawResponse = await authenticatedApi.get(url);
-          const responseTime = Date.now() - startedAt;
-          const responseBody = (await rawResponse.json()) as
-            | ValidateMeterErrorResponse
-            | Record<string, unknown>;
+          const api = new ValidateMeterApi(authenticatedApi);
+          const { rawResponse, responseBody, responseTime } =
+            await api.validateMeterRaw(
+              testCase.scenario === "empty_meter_serial"
+                ? { meterSerialNumber: "" }
+                : {},
+            );
 
           await PerformanceTracker.track(
             rawResponse,
             testCase.testName,
-            `${process.env.BASE_URL}${url}`,
+            rawResponse.url(),
             responseTime,
           );
 
@@ -67,9 +60,7 @@ test.describe("Validate Meter API", () => {
             assert.validateStatusCode(rawResponse, expectedStatus, responseBody),
           );
           validation.execute("Validation Error", () =>
-            validator.validateValidationError(
-              responseBody as ValidateMeterErrorResponse,
-            ),
+            validator.validateValidationError(responseBody),
           );
           validation.printSummary(testCase.testName, responseTime);
           return;
@@ -90,17 +81,10 @@ test.describe("Validate Meter API", () => {
         const { rawResponse, responseBody, responseTime } =
           await api.validateMeter(meterSerialNumber, organisationLookupId);
 
-        const params = new URLSearchParams({
-          meterSerialNumber,
-        });
-        if (organisationLookupId != null) {
-          params.set("organisationLookupId", String(organisationLookupId));
-        }
-
         await PerformanceTracker.track(
           rawResponse,
           testCase.testName,
-          `${process.env.BASE_URL}/indore/consumers/validate-meter?${params}`,
+          rawResponse.url(),
           responseTime,
         );
 

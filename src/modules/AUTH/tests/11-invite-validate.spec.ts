@@ -28,8 +28,8 @@ async function createPublicApiContext() {
 
 /**
  * Individual invite validate flow — uses the same email token as invite-e2e:
- *   GET /indore/auth/invite/preview?token=  (INVITE_ACCEPT_TOKEN)
- *   GET /indore/auth/invitations/mine       → find invitation by ID
+ *   preview invitation by accept token (INVITE_ACCEPT_TOKEN)
+ *   list my invitations → find invitation by ID
  */
 test.describe("Auth Invite Validate Flow", () => {
   test.describe.configure({ mode: "serial" });
@@ -57,11 +57,11 @@ test.describe("Auth Invite Validate Flow", () => {
         const preview = await api.previewInvitation(context.token);
 
         await PerformanceTracker.track(
-          preview.rawResponse,
-          "Auth Invite Validate — Preview",
-          `${process.env.BASE_URL}/indore/auth/invite/preview?token=${context.token}`,
-          preview.responseTime,
-        );
+        preview.rawResponse,
+        "Auth Invite Validate — Preview",
+        preview.rawResponse.url(),
+        preview.responseTime
+      );
 
         validation.execute("Preview Status", () =>
           assert.validateStatusCode(preview.rawResponse, 200),

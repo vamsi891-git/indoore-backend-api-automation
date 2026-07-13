@@ -47,11 +47,11 @@ test.describe("Validate Add Meter API", () => {
         }).toString();
 
         await PerformanceTracker.track(
-          rawResponse,
-          testCase.testName,
-          `${process.env.BASE_URL}/indore/master-data/validate-add-meter?${qs}`,
-          responseTime,
-        );
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
         const assert = new AssertionEngine();
         const validation = new ValidationEngine();

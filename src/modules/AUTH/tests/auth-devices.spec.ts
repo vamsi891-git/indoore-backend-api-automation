@@ -28,8 +28,8 @@ test.describe("Auth Devices API", () => {
       await PerformanceTracker.track(
         rawResponse,
         "Auth Devices API",
-        `${process.env.BASE_URL}${AuthTestData.paths.devices}`,
-        responseTime,
+        rawResponse.url(),
+        responseTime
       );
 
       validation.execute("Devices Status Code", () =>

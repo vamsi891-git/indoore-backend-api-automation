@@ -45,9 +45,9 @@ test.describe("User Admin — List", () => {
             );
 
             await PerformanceTracker.track(
-                response.rawResponse,
-                "Get Users",
-                response.rawResponse.url(),
+        response.rawResponse,
+        "Get Users",
+        response.rawResponse.url(),
                 response.responseTime,
             );
 
@@ -187,9 +187,9 @@ test.describe("User Admin — List", () => {
             );
 
             await PerformanceTracker.track(
-                response.rawResponse,
-                "Get Audit Logs",
-                response.rawResponse.url(),
+        response.rawResponse,
+        "Get Audit Logs",
+        response.rawResponse.url(),
                 response.responseTime,
             );
 

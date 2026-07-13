@@ -21,7 +21,7 @@ test.describe("Consumption Compare API", () => {
 
       const defectContext = {
         module: "COMMERICIAL-ANALYSIS",
-        endpoint: "/indore/analysis/commercial/consumption-compare",
+        endpoint: rawResponse.url(),
         requestParams: consumptionCompareLastMonthData,
         responseStatus: rawResponse.status(),
         responseBody,

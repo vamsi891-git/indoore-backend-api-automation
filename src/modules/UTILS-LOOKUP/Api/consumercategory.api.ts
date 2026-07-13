@@ -9,13 +9,15 @@ export interface ConsumerCategoryApiResponse {
 }
 
 export class ConsumerCategoryApi {
+  static readonly PATH = "/indore/utils/consumer-categories";
+
   constructor(private authenticatedApi: APIRequestContext) {}
 
   async getConsumerCategories(): Promise<ConsumerCategoryApiResponse> {
     const { rawResponse, responseBody, responseTime } =
       await fetchLookupJson<ConsumerCategoryResponse>(
         this.authenticatedApi,
-        "/indore/utils/consumer-categories",
+        ConsumerCategoryApi.PATH,
         "consumer-categories",
       );
     return { rawResponse, responseBody, responseTime };

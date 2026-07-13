@@ -33,8 +33,8 @@ test.describe("HES Commands — Search Meters", () => {
       await PerformanceTracker.track(
         rawResponse,
         "Commands Search Meters",
-        url,
-        responseTime,
+        rawResponse.url(),
+        responseTime
       );
 
       ApiValidationHelper.runStandardChecks(validation, assert, {
@@ -87,7 +87,7 @@ test.describe("HES Commands — Search Meters", () => {
         testInfo,
         defectContext: {
           module: "HES-COMMANDS",
-          endpoint: "/indore/commands/search-meters",
+          endpoint: rawResponse.url(),
           method: "POST",
           requestParams: body,
           responseStatus: rawResponse.status(),
@@ -143,7 +143,7 @@ test.describe("HES Commands — Search Meters", () => {
         testInfo,
         defectContext: {
           module: "HES-COMMANDS",
-          endpoint: "/indore/commands/search-meters",
+          endpoint: rawResponse.url(),
           method: "POST",
           requestParams: body,
           responseStatus: rawResponse.status(),
@@ -181,7 +181,7 @@ test.describe("HES Commands — Search Meters", () => {
           testInfo,
           defectContext: {
             module: "HES-COMMANDS",
-            endpoint: "/indore/commands/search-meters",
+            endpoint: rawResponse.url(),
             method: "POST",
             requestParams: body,
             responseStatus: status,
@@ -209,7 +209,7 @@ test.describe("HES Commands — Search Meters", () => {
         testInfo,
         defectContext: {
           module: "HES-COMMANDS",
-          endpoint: "/indore/commands/search-meters",
+          endpoint: rawResponse.url(),
           method: "POST",
           requestParams: body,
           responseStatus: rawResponse.status(),

@@ -7,8 +7,6 @@ import { getLookupResponseData } from "../utils/lookup-spec.harness";
 import type { HierarchyScenario } from "../Data/hierarchies.data";
 import type { OrganisationData } from "../Mapper/organizationhierarchy.mapper";
 
-const ENDPOINT = "/indore/utils/hierarchies/organisation";
-
 function runOrganisationHierarchyValidations(
   scenario: HierarchyScenario,
   responseBody: unknown,
@@ -40,11 +38,8 @@ function runOrganisationHierarchyValidations(
 
 registerCatalogLookupTests({
   describeTitle: "Organisation Hierarchy API",
-  endpoint: ENDPOINT,
   testCases: organizationHierarchyTestCases,
-  fetch: (authenticatedApi) => {
-    const api = new OrganisationApi(authenticatedApi);
-    return api.getOrganisationHierarchy();
-  },
+  fetch: (authenticatedApi) =>
+    new OrganisationApi(authenticatedApi).getOrganisationHierarchy(),
   validate: runOrganisationHierarchyValidations,
 });

@@ -36,11 +36,11 @@ test.describe("Commercial Summary API", () => {
                 await api.getCommercialSummary(month, year, pfThreshold);
 
             await PerformanceTracker.track(
-                rawResponse,
-                "Commercial Summary API",
-                `${process.env.BASE_URL}/indore/analysis/commercial/summary?month=${month}&year=${year}&pfThreshold=${pfThreshold}`,
-                responseTime,
-            );
+        rawResponse,
+        "Commercial Summary API",
+        rawResponse.url(),
+        responseTime
+      );
 
             const assert = new AssertionEngine();
             const validation = new ValidationEngine();

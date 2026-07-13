@@ -97,12 +97,11 @@ test.describe("HES Commands — Payment (E2E)", () => {
         responseTime: postTime,
       } = await paymentApi.postPayment(body);
 
-      const postUrl = `${process.env.BASE_URL}${PAYMENT_PATH}`;
       await PerformanceTracker.track(
         postRaw,
         "Commands Payment — Init Job",
-        postUrl,
-        postTime,
+        postRaw.url(),
+        postTime
       );
 
       const postStatus = postRaw.status();
@@ -121,7 +120,7 @@ test.describe("HES Commands — Payment (E2E)", () => {
           testInfo,
           defectContext: {
             module: "HES-COMMANDS",
-            endpoint: "/indore/commands/payment",
+            endpoint: postRaw.url(),
             method: "POST",
             requestParams: body,
             responseStatus: postStatus,
@@ -207,12 +206,11 @@ test.describe("HES Commands — Payment (E2E)", () => {
         { pollAttempts: pollResult.pollAttempts, jobName },
       );
 
-      const queryUrl = `${process.env.BASE_URL}${buildQueryMeterJobPath(jobName)}`;
       await PerformanceTracker.track(
         pollResult.rawResponse,
         "Commands Payment — Query Meter Job",
-        queryUrl,
-        pollResult.responseTime,
+        pollResult.rawResponse.url(),
+        pollResult.responseTime
       );
 
       ApiValidationHelper.runStandardChecks(validation, assert, {
@@ -297,8 +295,7 @@ test.describe("HES Commands — Payment (E2E)", () => {
         testInfo,
         defectContext: {
           module: "HES-COMMANDS",
-          endpoint:
-            "/indore/commands/payment → /indore/commands/query-meter-job/:jobName",
+          endpoint: postRaw.url(),
           method: "POST → GET",
           requestParams: {
             body,
@@ -353,7 +350,7 @@ test.describe("HES Commands — Payment (E2E)", () => {
         testInfo,
         defectContext: {
           module: "HES-COMMANDS",
-          endpoint: "/indore/commands/payment",
+          endpoint: rawResponse.url(),
           method: "POST",
           requestParams: body,
           responseStatus: rawResponse.status(),

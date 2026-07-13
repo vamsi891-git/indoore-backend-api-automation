@@ -11,7 +11,6 @@ export function registerCatalogLookupTests<
   T extends LookupTestCase & { scenario: string },
 >(options: {
   describeTitle: string;
-  endpoint: string;
   testCases: T[];
   fetch: (authenticatedApi: APIRequestContext) => Promise<LookupApiResult>;
   validate: (
@@ -31,7 +30,6 @@ export function registerCatalogLookupTests<
         async ({ authenticatedApi }) => {
           await runLookupApiTest({
             testCase,
-            endpoint: options.endpoint,
             fetch: () => options.fetch(authenticatedApi),
             onSuccess: ({ validation, responseBody }) => {
               options.validate(testCase.scenario, responseBody, validation);
@@ -50,7 +48,6 @@ export function registerSearchLookupTests<
   describeTitle: string;
   testCases: T[];
   resolveQuery: (scenario: T["scenario"]) => Q;
-  buildPath: (query: Q) => string;
   fetch: (
     authenticatedApi: APIRequestContext,
     query: Q,
@@ -71,10 +68,8 @@ export function registerSearchLookupTests<
         { tag: testCase.tags },
         async ({ authenticatedApi }) => {
           const query = options.resolveQuery(testCase.scenario);
-          const endpoint = options.buildPath(query);
           await runLookupApiTest({
             testCase,
-            endpoint,
             fetch: () => options.fetch(authenticatedApi, query),
             onSuccess: ({ validation, responseBody }) => {
               options.validate(testCase.scenario, responseBody, validation);

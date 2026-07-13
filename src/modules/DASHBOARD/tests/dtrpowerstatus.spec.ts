@@ -70,19 +70,16 @@ test.describe("DTR Power Status API", () => {
                         {},
                     ),
                 ).toString();
-                const endpoint = `/indore/dashboard/dtr/power-status${
-                    queryString ? `?${queryString}` : ""
-                }`;
 
                 const { rawResponse, responseBody, responseTime } =
                     await api.getDtrPowerStatus(query);
 
                 await PerformanceTracker.track(
-                    rawResponse,
-                    testCase.testName,
-                    `${process.env.BASE_URL}${endpoint}`,
-                    responseTime,
-                );
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
                 validation.execute("Status Validation", () =>
                     assert.validateStatusCode(

@@ -46,11 +46,11 @@ test.describe("Daywise Billing Data API", () => {
             );
 
             await PerformanceTracker.track(
-                rawResponse,
-                "Daywise Billing Data API",
-                `${process.env.BASE_URL}/indore/billing/daywise-billing-data?month=${DaywiseBillingTestData.month}&year=${DaywiseBillingTestData.year}&includeTotal=${DaywiseBillingTestData.includeTotal}&page=${DaywiseBillingTestData.page}&limit=${DaywiseBillingTestData.limit}`,
-                responseTime,
-            );
+        rawResponse,
+        "Daywise Billing Data API",
+        rawResponse.url(),
+        responseTime
+      );
 
             const assert = new AssertionEngine();
             const validation = new ValidationEngine();

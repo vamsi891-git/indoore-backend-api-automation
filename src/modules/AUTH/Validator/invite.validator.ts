@@ -361,7 +361,8 @@ export class InviteValidator {
     expect(new Set(permissions).size).toBe(permissions.length);
 
     for (const permission of permissions) {
-      expect(permission).toMatch(/^[a-z0-9_]+\.[a-z0-9_]+$/);
+      // module.resource.action (2+ dotted segments), e.g. master_data.consumer.view
+      expect(permission).toMatch(/^[a-z0-9_]+(\.[a-z0-9_]+)+$/);
     }
 
     if (role.toLowerCase() === "admin") {

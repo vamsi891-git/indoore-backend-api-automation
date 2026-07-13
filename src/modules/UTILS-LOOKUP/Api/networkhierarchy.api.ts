@@ -9,13 +9,15 @@ export interface NetworkApiResponse {
 }
 
 export class NetworkApi {
+  static readonly PATH = "/indore/utils/hierarchies/network";
+
   constructor(private authenticatedApi: APIRequestContext) {}
 
   async getNetworkHierarchy(): Promise<NetworkApiResponse> {
     const { rawResponse, responseBody, responseTime } =
       await fetchLookupJson<NetworkResponse>(
         this.authenticatedApi,
-        "/indore/utils/hierarchies/network",
+        NetworkApi.PATH,
         "network-hierarchy",
       );
     return { rawResponse, responseBody, responseTime };

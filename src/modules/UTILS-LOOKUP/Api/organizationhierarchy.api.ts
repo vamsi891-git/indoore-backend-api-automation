@@ -9,13 +9,15 @@ export interface OrganisationApiResponse {
 }
 
 export class OrganisationApi {
+  static readonly PATH = "/indore/utils/hierarchies/organisation";
+
   constructor(private authenticatedApi: APIRequestContext) {}
 
   async getOrganisationHierarchy(): Promise<OrganisationApiResponse> {
     const { rawResponse, responseBody, responseTime } =
       await fetchLookupJson<OrganisationResponse>(
         this.authenticatedApi,
-        "/indore/utils/hierarchies/organisation",
+        OrganisationApi.PATH,
         "organisation-hierarchy",
       );
     return { rawResponse, responseBody, responseTime };

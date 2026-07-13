@@ -24,8 +24,8 @@ test.describe("Auth Me API", () => {
       await PerformanceTracker.track(
         rawResponse,
         "Auth Me API",
-        `${process.env.BASE_URL}${AuthTestData.paths.me}`,
-        responseTime,
+        rawResponse.url(),
+        responseTime
       );
 
       validation.execute("Me Status Code", () =>

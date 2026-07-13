@@ -81,9 +81,12 @@ test.describe("Asset Management — Negative", () => {
       const dtrId = AssetManagementNegativeData.unknownDtrId;
 
       for (const query of ["page=0&limit=20", "page=1&limit=0", "page=-1&limit=20"]) {
+        const params = new URLSearchParams(query);
+        const page = Number(params.get("page"));
+        const limit = Number(params.get("limit"));
         const rawResponse = await getWithAutoRefresh(
           authenticatedApi,
-          `/indore/asset-management/dtr/${dtrId}?${query}`,
+          assetManagementPaths.dtrDetail(dtrId, page, limit),
         );
         const responseBody = await rawResponse.json().catch(() => ({}));
 

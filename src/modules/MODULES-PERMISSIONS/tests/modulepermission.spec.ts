@@ -84,9 +84,9 @@ test.describe("Module Permission CRUD Flow", () => {
                         validator.validateNaNValues(modules)
                 );
                 await PerformanceTracker.track(
-                    getModulesResponse.rawResponse,
-                    "Get Modules",
-                    getModulesResponse.rawResponse.url(),
+        getModulesResponse.rawResponse,
+        "Get Modules",
+        getModulesResponse.rawResponse.url(),
                     getModulesResponse.responseTime
                 );
                 // =====================================
@@ -114,9 +114,9 @@ test.describe("Module Permission CRUD Flow", () => {
                         validator.validateCreatedModule(createdModule,createModulePayload)
                 );
                 await PerformanceTracker.track(
-                    createModuleResponse.rawResponse,
-                    "Create Module",
-                    createModuleResponse.rawResponse.url(),
+        createModuleResponse.rawResponse,
+        "Create Module",
+        createModuleResponse.rawResponse.url(),
                     createModuleResponse.responseTime
                 );
                 // =====================================
@@ -135,9 +135,9 @@ test.describe("Module Permission CRUD Flow", () => {
                         validator.validateUpdatedModule(updatedModule,ModulePermissionData.updateModulePayload)
                 );
                 await PerformanceTracker.track(
-                    updateModuleResponse.rawResponse,
-                    "Update Module",
-                    updateModuleResponse.rawResponse.url(),
+        updateModuleResponse.rawResponse,
+        "Update Module",
+        updateModuleResponse.rawResponse.url(),
                     updateModuleResponse.responseTime
                 );
                 const moduleKey = updatedModule.key;
@@ -171,9 +171,9 @@ test.describe("Module Permission CRUD Flow", () => {
                         validator.validateCreatedPermission(createdPermission,ModulePermissionData.createPermissionPayload)
                 );
                 await PerformanceTracker.track(
-                    createPermissionResponse.rawResponse,
-                    "Create Permission",
-                    createPermissionResponse.rawResponse.url(),
+        createPermissionResponse.rawResponse,
+        "Create Permission",
+        createPermissionResponse.rawResponse.url(),
                     createPermissionResponse.responseTime
                 );
                 // =====================================
@@ -192,9 +192,9 @@ test.describe("Module Permission CRUD Flow", () => {
                         validator.validateUpdatedPermission(updatedPermission,ModulePermissionData.updatePermissionPayload)
                 );
                 await PerformanceTracker.track(
-                updatePermissionResponse.rawResponse,
-                "Update Permission",
-                updatePermissionResponse.rawResponse.url(),
+        updatePermissionResponse.rawResponse,
+        "Update Permission",
+        updatePermissionResponse.rawResponse.url(),
                 updatePermissionResponse.responseTime
                 );
                 // PART B CONTINUES:

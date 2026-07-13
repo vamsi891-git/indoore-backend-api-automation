@@ -41,11 +41,11 @@ test.describe("Auth Invite Preview API", () => {
         );
 
         await PerformanceTracker.track(
-          preview.rawResponse,
-          "Auth Invite Preview API",
-          `${process.env.BASE_URL}/indore/auth/invite/preview`,
-          preview.responseTime,
-        );
+        preview.rawResponse,
+        "Auth Invite Preview API",
+        preview.rawResponse.url(),
+        preview.responseTime
+      );
 
         validation.execute("Preview Response Time", () =>
           assert.validateResponseTime(
@@ -103,11 +103,11 @@ test.describe("Auth Invite Preview API", () => {
           const preview = await api.previewInvitation(token);
 
           await PerformanceTracker.track(
-            preview.rawResponse,
-            "Auth Invite Preview API (valid)",
-            `${process.env.BASE_URL}/indore/auth/invite/preview?token=${token}`,
-            preview.responseTime,
-          );
+          preview.rawResponse,
+          "Auth Invite Preview API (valid)",
+          preview.rawResponse.url(),
+          preview.responseTime,
+        );
 
           validation.execute("Valid Preview Status", () =>
             assert.validateStatusCode(preview.rawResponse, 200),

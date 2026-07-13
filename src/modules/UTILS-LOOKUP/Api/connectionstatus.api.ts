@@ -9,13 +9,15 @@ export interface ConnectionStatusApiResponse {
 }
 
 export class ConnectionStatusApi {
+  static readonly PATH = "/indore/utils/connection-statuses";
+
   constructor(private authenticatedApi: APIRequestContext) {}
 
   async getConnectionStatuses(): Promise<ConnectionStatusApiResponse> {
     const { rawResponse, responseBody, responseTime } =
       await fetchLookupJson<ConnectionStatusResponse>(
         this.authenticatedApi,
-        "/indore/utils/connection-statuses",
+        ConnectionStatusApi.PATH,
         "connection-statuses",
       );
     return { rawResponse, responseBody, responseTime };

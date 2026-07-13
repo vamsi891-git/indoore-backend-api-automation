@@ -39,11 +39,11 @@ test.describe("Daily Consumption Report API", () => {
                 );
 
             await PerformanceTracker.track(
-                rawResponse,
-                "Daily Consumption Report API",
-                `${process.env.BASE_URL}/indore/consumption/report?reportType=daily&page=${page}&limit=${limit}&fromDate=${fromDate}&toDate=${toDate}&month=${month}&year=${year}`,
-                responseTime,
-            );
+        rawResponse,
+        "Daily Consumption Report API",
+        rawResponse.url(),
+        responseTime
+      );
 
             const assert = new AssertionEngine();
             const validation = new ValidationEngine();

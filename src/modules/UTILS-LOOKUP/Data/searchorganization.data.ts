@@ -1,14 +1,13 @@
 import type { LookupTestCase } from "../utils/lookup-spec.harness";
+import type { OrganizationSearchQuery } from "../Api/searchorganization.api";
+
+export type { OrganizationSearchQuery };
 
 export type OrganizationSearchScenario =
   | "smoke_default"
   | "edge_limit_one"
   | "negative_limit_zero"
   | "negative_limit_negative";
-
-export interface OrganizationSearchQuery {
-  limit?: number;
-}
 
 export function resolveOrganizationSearchQuery(
   scenario: OrganizationSearchScenario,

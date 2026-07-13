@@ -7,8 +7,6 @@ import { getLookupResponseData } from "../utils/lookup-spec.harness";
 import type { HierarchyScenario } from "../Data/hierarchies.data";
 import type { NetworkData } from "../Mapper/networkhierarchy.mapper";
 
-const ENDPOINT = "/indore/utils/hierarchies/network";
-
 function runNetworkHierarchyValidations(
   scenario: HierarchyScenario,
   responseBody: unknown,
@@ -40,11 +38,8 @@ function runNetworkHierarchyValidations(
 
 registerCatalogLookupTests({
   describeTitle: "Network Hierarchy API",
-  endpoint: ENDPOINT,
   testCases: networkHierarchyTestCases,
-  fetch: (authenticatedApi) => {
-    const api = new NetworkApi(authenticatedApi);
-    return api.getNetworkHierarchy();
-  },
+  fetch: (authenticatedApi) =>
+    new NetworkApi(authenticatedApi).getNetworkHierarchy(),
   validate: runNetworkHierarchyValidations,
 });

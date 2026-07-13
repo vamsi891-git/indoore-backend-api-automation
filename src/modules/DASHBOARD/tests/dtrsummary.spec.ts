@@ -70,19 +70,16 @@ test.describe("DTR Summary API", () => {
                         {},
                     ),
                 ).toString();
-                const endpoint = `/indore/dashboard/dtr/summary${
-                    queryString ? `?${queryString}` : ""
-                }`;
 
                 const { rawResponse, responseBody, responseTime } =
                     await api.getDtrSummary(query);
 
                 await PerformanceTracker.track(
-                    rawResponse,
-                    testCase.testName,
-                    `${process.env.BASE_URL}${endpoint}`,
-                    responseTime,
-                );
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
                 validation.execute("Status Validation", () =>
                     assert.validateStatusCode(

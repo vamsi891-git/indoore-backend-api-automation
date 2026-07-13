@@ -36,7 +36,6 @@ test.describe("Consumer Profile API", () => {
         }
 
         const query = resolveConsumerProfileQuery(testCase.scenario);
-        const endpoint = `/indore/consumers/${consumerRef}/profile`;
         const {
           rawResponse,
           responseBody,
@@ -44,11 +43,11 @@ test.describe("Consumer Profile API", () => {
         } = await api.getConsumerProfile(consumerRef, query);
 
         await PerformanceTracker.track(
-          rawResponse,
-          testCase.testName,
-          `${process.env.BASE_URL}${endpoint}`,
-          responseTime,
-        );
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
         const assert = new AssertionEngine();
         const validation = new ValidationEngine();

@@ -12,7 +12,7 @@ test.describe("DTR Master API", () => {
   test.setTimeout(180_000);
 
   test(
-    "Validate GET /indore/master-data/dtr-master-data — default page",
+    "Validate DTR master data — default page",
     { tag: ["@smoke", "@master-data", "@dtr-master"] },
     async ({ authenticatedApi }) => {
       const api = new DtrMasterApi(authenticatedApi);

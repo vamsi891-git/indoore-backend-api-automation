@@ -49,7 +49,8 @@ export interface LookupSuccessContext {
 
 export async function runLookupApiTest(options: {
   testCase: LookupTestCase;
-  endpoint: string;
+  /** Optional label only; request URL comes from rawResponse.url(). */
+  endpoint?: string;
   fetch: () => Promise<LookupApiResult>;
   onSuccess?: (ctx: LookupSuccessContext) => void;
   skipContentTypeCheck?: boolean;
@@ -60,6 +61,11 @@ export async function runLookupApiTest(options: {
   const shared = new UtilsLookupSharedValidator();
 
   const { rawResponse, responseBody, responseTime } = await options.fetch();
+  const requestUrl =
+    rawResponse.url() ||
+    (options.endpoint
+      ? `${process.env.BASE_URL ?? ""}${options.endpoint}`
+      : options.testCase.testName);
 
   if (
     expectedStatus === 200 &&
@@ -70,17 +76,17 @@ export async function runLookupApiTest(options: {
   ) {
     test.skip(
       true,
-      `Rate limited (429) on ${options.endpoint} — retry UTILS-LOOKUP suite later`,
+      `Rate limited (429) on ${requestUrl} — retry UTILS-LOOKUP suite later`,
     );
     return;
   }
 
   await PerformanceTracker.track(
-    rawResponse,
-    options.testCase.testName,
-    `${process.env.BASE_URL}${options.endpoint}`,
-    responseTime,
-  );
+        rawResponse,
+        options.testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
   if (
     BackendResponse.isServerError(rawResponse.status()) &&

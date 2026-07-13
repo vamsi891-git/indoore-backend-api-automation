@@ -35,11 +35,11 @@ test.describe("Audit Log Export API",() => {
                 } =await api.exportAuditLogs(AuditLogExportTestData.limit,AuditLogExportTestData.ascSort);
                 skipIfExportNotDeployed(rawResponse.status());
                 await PerformanceTracker.track(
-                    rawResponse,
-                    "Audit Log Export ASC API",
-                    `${process.env.BASE_URL}${AuditLogExportTestData.exportPath}?limit=${AuditLogExportTestData.limit}&sort=${AuditLogExportTestData.ascSort}`,
-                    responseTime
-                );
+        rawResponse,
+        "Audit Log Export ASC API",
+        rawResponse.url(),
+        responseTime
+      );
                 const assert = new AssertionEngine();
                 const validation = new ValidationEngine();
                 validation.execute("Status Code",() =>
@@ -121,11 +121,11 @@ test.describe("Audit Log Export API",() => {
                 } = await api.exportAuditLogs(AuditLogExportTestData.limit,AuditLogExportTestData.descSort);
                 skipIfExportNotDeployed(rawResponse.status());
                 await PerformanceTracker.track(
-                    rawResponse,
-                    "Audit Log Export DESC API",
-                    `${process.env.BASE_URL}${AuditLogExportTestData.exportPath}?limit=${AuditLogExportTestData.limit}&sort=${AuditLogExportTestData.descSort}`,
-                    responseTime
-                );
+        rawResponse,
+        "Audit Log Export DESC API",
+        rawResponse.url(),
+        responseTime
+      );
                 const assert = new AssertionEngine();
                 const validation = new ValidationEngine();
                 validation.execute("Status Code",() =>

@@ -26,7 +26,7 @@ export function registerLossAnalysisTrendsTest(
 
       const defectContext = {
         module: "ENERGY-AUDITS",
-        endpoint: "/indore/energy-audit/loss-analysis-trends",
+        endpoint: rawResponse.url(),
         requestParams: query,
         responseStatus: rawResponse.status(),
         responseBody,

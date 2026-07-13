@@ -34,8 +34,8 @@ test.describe("Auth Login API", () => {
       await PerformanceTracker.track(
         preflight.rawResponse,
         "Auth CSRF Preflight",
-        `${process.env.BASE_URL}${AuthTestData.paths.login}`,
-        preflight.responseTime,
+        preflight.rawResponse.url(),
+        preflight.responseTime
       );
 
       try {
@@ -105,11 +105,11 @@ test.describe("Auth Login API", () => {
         );
 
         await PerformanceTracker.track(
-          validLogin.rawResponse,
-          "Auth Login API",
-          `${process.env.BASE_URL}${AuthTestData.paths.login}`,
-          validLogin.responseTime,
-        );
+        validLogin.rawResponse,
+        "Auth Login API",
+        validLogin.rawResponse.url(),
+        validLogin.responseTime
+      );
 
         validation.execute("Valid Login Status", () =>
           assert.validateStatusCode(

@@ -7,7 +7,7 @@ import {
   type OrganizationSearchScenario,
 } from "../Data/searchorganization.data";
 import { registerSearchLookupTests } from "../utils/lookup-catalog.harness";
-import { buildQueryString, getLookupResponseData } from "../utils/lookup-spec.harness";
+import { getLookupResponseData } from "../utils/lookup-spec.harness";
 import type { OrganizationData } from "../Mapper/searchorganization.mapper";
 import { expect } from "@playwright/test";
 
@@ -44,14 +44,8 @@ function runOrganizationSearchValidations(
 registerSearchLookupTests({
   describeTitle: "Organisation Search API",
   testCases: organizationSearchTestCases,
-  resolveQuery: (scenario) => resolveOrganizationSearchQuery(scenario),
-  buildPath: (query) =>
-    `/indore/utils/search/organisations${buildQueryString(query)}`,
-  fetch: (authenticatedApi, query) => {
-    const api = new OrganizationApi(authenticatedApi);
-    return api.searchOrganizations({
-      limit: query.limit as number | undefined,
-    });
-  },
+  resolveQuery: resolveOrganizationSearchQuery,
+  fetch: (authenticatedApi, query) =>
+    new OrganizationApi(authenticatedApi).searchOrganizations(query),
   validate: runOrganizationSearchValidations,
 });

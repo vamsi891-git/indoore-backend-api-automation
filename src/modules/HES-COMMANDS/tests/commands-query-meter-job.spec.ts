@@ -32,8 +32,8 @@ test.describe("HES Commands — Query Meter Job", () => {
       await PerformanceTracker.track(
         rawResponse,
         "Commands Query Meter Job",
-        url,
-        responseTime,
+        rawResponse.url(),
+        responseTime
       );
 
       ApiValidationHelper.runStandardChecks(validation, assert, {
@@ -106,7 +106,7 @@ test.describe("HES Commands — Query Meter Job", () => {
         testInfo,
         defectContext: {
           module: "HES-COMMANDS",
-          endpoint: "/indore/commands/query-meter-job/:jobName",
+          endpoint: rawResponse.url(),
           method: "GET",
           requestParams: { jobName },
           responseStatus: rawResponse.status(),
@@ -142,7 +142,7 @@ test.describe("HES Commands — Query Meter Job", () => {
           testInfo,
           defectContext: {
             module: "HES-COMMANDS",
-            endpoint: "/indore/commands/query-meter-job/:jobName",
+            endpoint: rawResponse.url(),
             method: "GET",
             requestParams: { jobName },
             responseStatus: status,
@@ -170,7 +170,7 @@ test.describe("HES Commands — Query Meter Job", () => {
         testInfo,
         defectContext: {
           module: "HES-COMMANDS",
-          endpoint: "/indore/commands/query-meter-job/:jobName",
+          endpoint: rawResponse.url(),
           method: "GET",
           requestParams: { jobName },
           responseStatus: rawResponse.status(),

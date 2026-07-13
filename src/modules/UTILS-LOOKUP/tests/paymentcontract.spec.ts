@@ -42,7 +42,6 @@ function validatePaymentContract(
 
 registerCatalogLookupTests({
   describeTitle: "Payment Contract API",
-  endpoint: "/indore/utils/payment-contracts",
   testCases: paymentContractTestCases,
   fetch: (api) => new PaymentContractApi(api).getPaymentContracts(),
   validate: validatePaymentContract,

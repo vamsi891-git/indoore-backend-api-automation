@@ -13,17 +13,14 @@ export interface NetworkSearchQuery {
 }
 
 export class NetworkSearchApi {
+  static readonly PATH = "/indore/utils/search/networks";
+
   constructor(private authenticatedApi: APIRequestContext) {}
 
   async searchNetworks(
     query: NetworkSearchQuery = { limit: 20 },
   ): Promise<NetworkSearchApiResponse> {
-    const params = new URLSearchParams();
-    if (query.limit !== undefined) {
-      params.set("limit", String(query.limit));
-    }
-    const qs = params.toString();
-    const path = `/indore/utils/search/networks${qs ? `?${qs}` : ""}`;
+    const path = NetworkSearchApi.toPath(query);
     const { rawResponse, responseBody, responseTime } =
       await fetchLookupJson<NetworkSearchResponse>(
         this.authenticatedApi,
@@ -31,5 +28,14 @@ export class NetworkSearchApi {
         "network-search",
       );
     return { rawResponse, responseBody, responseTime };
+  }
+
+  private static toPath(query: NetworkSearchQuery): string {
+    const params = new URLSearchParams();
+    if (query.limit !== undefined) {
+      params.set("limit", String(query.limit));
+    }
+    const qs = params.toString();
+    return `${NetworkSearchApi.PATH}${qs ? `?${qs}` : ""}`;
   }
 }

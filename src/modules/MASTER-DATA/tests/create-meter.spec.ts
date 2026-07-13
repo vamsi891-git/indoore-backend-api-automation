@@ -59,11 +59,11 @@ test.describe("Create Meter API", () => {
           console.log(JSON.stringify(responseBody, null, 2));
 
         await PerformanceTracker.track(
-          rawResponse,
-          testCase.testName,
-          `${process.env.BASE_URL}/indore/master-data/add-meter`,
-          responseTime,
-        );
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
         const assert = new AssertionEngine();
         const validation = new ValidationEngine();

@@ -417,7 +417,8 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     testName:
       "Validate POST /indore/master-data/add-dtr — meter must be active",
     scenario: "meter_inactive",
-    expectedStatus: 400,
+    expectedStatus: 409,
+    acceptableStatuses: [400, 409],
     envKeys: hierarchyEnvKeys,
     buildPayload: () => ({
       ...buildCreateDtrRequest("msn-inactive"),

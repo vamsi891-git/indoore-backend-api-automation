@@ -34,8 +34,8 @@ test.describe("HES Commands — Meter Location", () => {
       await PerformanceTracker.track(
         rawResponse,
         "Commands Meter Location",
-        url,
-        responseTime,
+        rawResponse.url(),
+        responseTime
       );
 
       const status = rawResponse.status();
@@ -48,7 +48,7 @@ test.describe("HES Commands — Meter Location", () => {
           testInfo,
           defectContext: {
             module: "HES-COMMANDS",
-            endpoint: "/indore/commands/meter-location",
+            endpoint: rawResponse.url(),
             method: "POST",
             requestParams: body,
             responseStatus: status,
@@ -105,7 +105,7 @@ test.describe("HES Commands — Meter Location", () => {
         testInfo,
         defectContext: {
           module: "HES-COMMANDS",
-          endpoint: "/indore/commands/meter-location",
+          endpoint: rawResponse.url(),
           method: "POST",
           requestParams: body,
           responseStatus: rawResponse.status(),
@@ -143,7 +143,7 @@ test.describe("HES Commands — Meter Location", () => {
           testInfo,
           defectContext: {
             module: "HES-COMMANDS",
-            endpoint: "/indore/commands/meter-location",
+            endpoint: rawResponse.url(),
             method: "POST",
             requestParams: body,
             responseStatus: status,
@@ -171,7 +171,7 @@ test.describe("HES Commands — Meter Location", () => {
         testInfo,
         defectContext: {
           module: "HES-COMMANDS",
-          endpoint: "/indore/commands/meter-location",
+          endpoint: rawResponse.url(),
           method: "POST",
           requestParams: body,
           responseStatus: rawResponse.status(),
@@ -209,7 +209,7 @@ test.describe("HES Commands — Meter Location", () => {
           testInfo,
           defectContext: {
             module: "HES-COMMANDS",
-            endpoint: "/indore/commands/meter-location",
+            endpoint: rawResponse.url(),
             method: "POST",
             requestParams: body,
             responseStatus: status,
@@ -237,7 +237,7 @@ test.describe("HES Commands — Meter Location", () => {
         testInfo,
         defectContext: {
           module: "HES-COMMANDS",
-          endpoint: "/indore/commands/meter-location",
+          endpoint: rawResponse.url(),
           method: "POST",
           requestParams: body,
           responseStatus: rawResponse.status(),

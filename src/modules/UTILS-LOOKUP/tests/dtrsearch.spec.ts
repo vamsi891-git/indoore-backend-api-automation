@@ -7,7 +7,7 @@ import {
   type DtrSearchScenario,
 } from "../Data/dtrsearch.data";
 import { registerSearchLookupTests } from "../utils/lookup-catalog.harness";
-import { buildQueryString, getLookupResponseData } from "../utils/lookup-spec.harness";
+import { getLookupResponseData } from "../utils/lookup-spec.harness";
 import type { DtrSearchRawData } from "../Mapper/dtrsearch.mapper";
 
 function runDtrSearchValidations(
@@ -66,14 +66,8 @@ function runDtrSearchValidations(
 registerSearchLookupTests({
   describeTitle: "DTR Search API",
   testCases: dtrSearchTestCases,
-  resolveQuery: (scenario) => resolveDtrSearchQuery(scenario),
-  buildPath: (query) => `/indore/utils/search/dtr${buildQueryString(query)}`,
-  fetch: (authenticatedApi, query) => {
-    const api = new DtrSearchApi(authenticatedApi);
-    return api.searchDtr({
-      page: query.page as number | undefined,
-      limit: query.limit as number | undefined,
-    });
-  },
+  resolveQuery: resolveDtrSearchQuery,
+  fetch: (authenticatedApi, query) =>
+    new DtrSearchApi(authenticatedApi).searchDtr(query),
   validate: runDtrSearchValidations,
 });

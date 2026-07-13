@@ -12,7 +12,7 @@ test.describe("Substation Master API", () => {
   test.setTimeout(180_000);
 
   test(
-    "Validate GET /indore/master-data/substation-master-data — default page",
+    "Validate substation master data — default page",
     { tag: ["@smoke", "@master-data", "@substation-master"] },
     async ({ authenticatedApi }) => {
       const api = new SubstationMasterApi(authenticatedApi);

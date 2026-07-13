@@ -8,7 +8,7 @@ import {
   type ConsumerSearchScenario,
 } from "../Data/consumersearch.data";
 import { registerSearchLookupTests } from "../utils/lookup-catalog.harness";
-import { buildQueryString, getLookupResponseData } from "../utils/lookup-spec.harness";
+import { getLookupResponseData } from "../utils/lookup-spec.harness";
 import type { SearchConsumerRawData } from "../Mapper/consumersearch.mapper";
 
 function runConsumerSearchValidations(
@@ -73,15 +73,8 @@ function runConsumerSearchValidations(
 registerSearchLookupTests({
   describeTitle: "Consumer Search API",
   testCases: consumerSearchTestCases,
-  resolveQuery: (scenario) => resolveConsumerSearchQuery(scenario),
-  buildPath: (query) =>
-    `/indore/utils/search/consumers${buildQueryString(query)}`,
-  fetch: (authenticatedApi, query) => {
-    const api = new SearchConsumerApi(authenticatedApi);
-    return api.searchConsumers({
-      page: query.page as number | string | undefined,
-      limit: query.limit as number | undefined,
-    });
-  },
+  resolveQuery: resolveConsumerSearchQuery,
+  fetch: (authenticatedApi, query) =>
+    new SearchConsumerApi(authenticatedApi).searchConsumers(query),
   validate: runConsumerSearchValidations,
 });

@@ -81,19 +81,16 @@ test.describe("DTR Events API", () => {
                         {},
                     ),
                 ).toString();
-                const endpoint = `/indore/dtr/${encodeURIComponent(dtrCode)}/events${
-                    queryString ? `?${queryString}` : ""
-                }`;
 
                 const { rawResponse, responseBody, responseTime } =
                     await api.getEvents(dtrCode, query);
 
                 await PerformanceTracker.track(
-                    rawResponse,
-                    testCase.testName,
-                    `${process.env.BASE_URL}${endpoint}`,
-                    responseTime,
-                );
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
                 validation.execute("Status Validation", () => {
                     if (testCase.scenario === "dtr_not_found") {

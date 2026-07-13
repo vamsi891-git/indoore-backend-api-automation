@@ -1,6 +1,9 @@
 import { TimedApiClient } from "../../../core/base/timed-api.client";
 import { ApiCallResult } from "../../../core/models/api-result.model";
-import { NearestAccountIdsResponse } from "../Mapper/nearestaccountids.mapper";
+import {
+  NearestAccountIdsErrorResponse,
+  NearestAccountIdsResponse,
+} from "../Mapper/nearestaccountids.mapper";
 
 export interface NearestAccountIdsQuery {
   accountId: string;
@@ -10,8 +13,12 @@ export interface NearestAccountIdsQuery {
 }
 
 export type NearestAccountIdsApiResult = ApiCallResult<NearestAccountIdsResponse>;
+export type NearestAccountIdsErrorApiResult =
+  ApiCallResult<NearestAccountIdsErrorResponse>;
 
 export class NearestAccountIdsApi extends TimedApiClient {
+  static readonly PATH = "/indore/consumers/nearest-account-ids";
+
   getNearestAccountIds(
     query: NearestAccountIdsQuery,
   ): Promise<NearestAccountIdsApiResult> {
@@ -28,7 +35,17 @@ export class NearestAccountIdsApi extends TimedApiClient {
       params.organisationLookupId = query.organisationLookupId;
     }
     return this.getJson<NearestAccountIdsResponse>(
-      "/indore/consumers/nearest-account-ids",
+      NearestAccountIdsApi.PATH,
+      { params },
+    );
+  }
+
+  /** Negative / edge probes (missing or empty accountId, invalid limit, etc.). */
+  getNearestAccountIdsRaw(
+    params: Record<string, string | number> = {},
+  ): Promise<NearestAccountIdsErrorApiResult> {
+    return this.getJson<NearestAccountIdsErrorResponse>(
+      NearestAccountIdsApi.PATH,
       { params },
     );
   }

@@ -49,7 +49,7 @@ export async function runFeederMasterValidation(
   await PerformanceTracker.track(
     rawResponse,
     testLabel,
-    `${process.env.BASE_URL}/indore/master-data/feeder-master-data?${buildQueryString(query)}`,
+    rawResponse.url(),
     responseTime,
   );
 

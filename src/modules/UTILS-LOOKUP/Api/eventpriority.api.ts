@@ -9,13 +9,15 @@ export interface EventPriorityApiResponse {
 }
 
 export class EventPriorityApi {
+  static readonly PATH = "/indore/utils/event-priorities";
+
   constructor(private authenticatedApi: APIRequestContext) {}
 
   async getEventPriorities(): Promise<EventPriorityApiResponse> {
     const { rawResponse, responseBody, responseTime } =
       await fetchLookupJson<EventPriorityResponse>(
         this.authenticatedApi,
-        "/indore/utils/event-priorities",
+        EventPriorityApi.PATH,
         "event-priorities",
       );
     return { rawResponse, responseBody, responseTime };

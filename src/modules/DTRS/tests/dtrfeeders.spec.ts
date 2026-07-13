@@ -70,19 +70,16 @@ test.describe("DTR Feeders API", () => {
             {},
           ),
         ).toString();
-        const endpoint = `/indore/dtr/${encodeURIComponent(dtrCode)}/feeders${
-          queryString ? `?${queryString}` : ""
-        }`;
 
         const { rawResponse, responseBody, responseTime } =
           await api.getFeeders(dtrCode, query);
 
         await PerformanceTracker.track(
-          rawResponse,
-          testCase.testName,
-          `${process.env.BASE_URL}${endpoint}`,
-          responseTime,
-        );
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
         validation.execute("Status Validation", () => {
           if (testCase.scenario === "dtr_not_found") {

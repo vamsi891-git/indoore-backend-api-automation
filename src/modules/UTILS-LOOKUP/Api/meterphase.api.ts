@@ -9,13 +9,15 @@ export interface MeterPhaseApiResponse {
 }
 
 export class MeterPhaseApi {
+  static readonly PATH = "/indore/utils/meter-phases";
+
   constructor(private authenticatedApi: APIRequestContext) {}
 
   async getMeterPhases(): Promise<MeterPhaseApiResponse> {
     const { rawResponse, responseBody, responseTime } =
       await fetchLookupJson<MeterPhaseResponse>(
         this.authenticatedApi,
-        "/indore/utils/meter-phases",
+        MeterPhaseApi.PATH,
         "meter-phases",
       );
     return { rawResponse, responseBody, responseTime };

@@ -1,4 +1,7 @@
 import type { LookupTestCase } from "../utils/lookup-spec.harness";
+import type { ConsumerSearchQuery } from "../Api/consumersearch.api";
+
+export type { ConsumerSearchQuery };
 
 export type ConsumerSearchScenario =
   | "smoke_default"
@@ -8,11 +11,6 @@ export type ConsumerSearchScenario =
   | "negative_page_zero"
   | "negative_limit_zero"
   | "negative_page_nan";
-
-export interface ConsumerSearchQuery {
-  page?: number | string;
-  limit?: number;
-}
 
 export function resolveConsumerSearchQuery(
   scenario: ConsumerSearchScenario,
@@ -25,7 +23,7 @@ export function resolveConsumerSearchQuery(
     case "edge_limit_one":
       return { page: 1, limit: 1 };
     case "edge_page_beyond":
-      return { page: 7000, limit: 20 };
+      return { beyondTotalPages: true, limit: 20 };
     case "negative_page_zero":
       return { page: 0, limit: 20 };
     case "negative_limit_zero":

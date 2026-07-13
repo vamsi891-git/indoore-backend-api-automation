@@ -9,13 +9,15 @@ export interface PaymentContractApiResponse {
 }
 
 export class PaymentContractApi {
+  static readonly PATH = "/indore/utils/payment-contracts";
+
   constructor(private authenticatedApi: APIRequestContext) {}
 
   async getPaymentContracts(): Promise<PaymentContractApiResponse> {
     const { rawResponse, responseBody, responseTime } =
       await fetchLookupJson<PaymentContractResponse>(
         this.authenticatedApi,
-        "/indore/utils/payment-contracts",
+        PaymentContractApi.PATH,
         "payment-contracts",
       );
     return { rawResponse, responseBody, responseTime };

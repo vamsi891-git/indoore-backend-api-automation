@@ -46,8 +46,8 @@ test.describe("HES Commands — History", () => {
       await PerformanceTracker.track(
         rawResponse,
         "Commands History — Page 1",
-        url,
-        responseTime,
+        rawResponse.url(),
+        responseTime
       );
 
       runHistoryStandardChecks(
@@ -83,7 +83,7 @@ test.describe("HES Commands — History", () => {
         testInfo,
         defectContext: {
           module: "HES-COMMANDS",
-          endpoint: "/indore/commands/history",
+          endpoint: rawResponse.url(),
           method: "GET",
           requestParams: query,
           responseStatus: rawResponse.status(),
@@ -130,7 +130,7 @@ test.describe("HES Commands — History", () => {
         testInfo,
         defectContext: {
           module: "HES-COMMANDS",
-          endpoint: "/indore/commands/history",
+          endpoint: rawResponse.url(),
           method: "GET",
           requestParams: query,
           responseStatus: rawResponse.status(),
@@ -176,7 +176,7 @@ test.describe("HES Commands — History", () => {
         testInfo,
         defectContext: {
           module: "HES-COMMANDS",
-          endpoint: "/indore/commands/history",
+          endpoint: rawResponse.url(),
           method: "GET",
           requestParams: query,
           responseStatus: rawResponse.status(),
@@ -215,7 +215,7 @@ test.describe("HES Commands — History", () => {
         testInfo,
         defectContext: {
           module: "HES-COMMANDS",
-          endpoint: "/indore/commands/history",
+          endpoint: rawResponse.url(),
           method: "GET",
           requestParams: query,
           responseStatus: rawResponse.status(),
@@ -265,7 +265,7 @@ test.describe("HES Commands — History", () => {
         testInfo,
         defectContext: {
           module: "HES-COMMANDS",
-          endpoint: "/indore/commands/history",
+          endpoint: rawResponse.url(),
           method: "GET",
           requestParams: query,
           responseStatus: rawResponse.status(),

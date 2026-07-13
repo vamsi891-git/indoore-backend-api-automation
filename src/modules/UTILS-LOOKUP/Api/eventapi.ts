@@ -9,13 +9,15 @@ export interface EventApiResponse {
 }
 
 export class EventApi {
+  static readonly PATH = "/indore/utils/events";
+
   constructor(private authenticatedApi: APIRequestContext) {}
 
   async getEvents(): Promise<EventApiResponse> {
     const { rawResponse, responseBody, responseTime } =
       await fetchLookupJson<EventResponse>(
         this.authenticatedApi,
-        "/indore/utils/events",
+        EventApi.PATH,
         "events",
       );
     return { rawResponse, responseBody, responseTime };

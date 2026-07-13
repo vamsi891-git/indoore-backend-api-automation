@@ -54,9 +54,9 @@ test.describe("Role Permission CRUD Flow", () => {
                         validator.validateUltimateRole(roles)
                 );
                 await PerformanceTracker.track(
-                    getRolesResponse.rawResponse,
-                    "Get Roles",
-                    getRolesResponse.rawResponse.url(),
+        getRolesResponse.rawResponse,
+        "Get Roles",
+        getRolesResponse.rawResponse.url(),
                     getRolesResponse.responseTime
                 );
                 // =====================================

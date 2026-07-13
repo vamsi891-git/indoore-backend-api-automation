@@ -27,7 +27,7 @@ export function registerHourlyLossReportTest(
 
       const defectContext = {
         module: "ENERGY-AUDITS",
-        endpoint: "/indore/energy-audit/hourly-loss-report",
+        endpoint: rawResponse.url(),
         requestParams: query,
         responseStatus: rawResponse.status(),
         responseBody,

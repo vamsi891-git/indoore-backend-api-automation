@@ -70,18 +70,18 @@ test.describe("Auth Invite Delete API", () => {
             return;
           } else {
             throw new Error(
-              `POST /indore/auth/invite failed with status ${createStatus}: ${JSON.stringify(inviteResponse.responseBody)}`,
+              `Invite create failed with status ${createStatus}: ${JSON.stringify(inviteResponse.responseBody)}`,
             );
           }
         }
 
         if (inviteResponse.rawResponse.status() === 201) {
           await PerformanceTracker.track(
-            inviteResponse.rawResponse,
-            "Auth Invite Delete API — Create",
-            `${process.env.BASE_URL}/indore/auth/invite`,
-            inviteResponse.responseTime,
-          );
+        inviteResponse.rawResponse,
+        "Auth Invite Delete API — Create",
+        inviteResponse.rawResponse.url(),
+        inviteResponse.responseTime
+      );
         }
       }
 
@@ -90,8 +90,8 @@ test.describe("Auth Invite Delete API", () => {
       await PerformanceTracker.track(
         deleteResponse.rawResponse,
         "Auth Invite Delete API",
-        `${process.env.BASE_URL}/indore/auth/invitations/${invitationId}`,
-        deleteResponse.responseTime,
+        deleteResponse.rawResponse.url(),
+        deleteResponse.responseTime
       );
 
       const listResponse = await api.listMyInvitations({

@@ -36,7 +36,6 @@ function validateEventPriority(
 
 registerCatalogLookupTests({
   describeTitle: "Event Priority API",
-  endpoint: "/indore/utils/event-priorities",
   testCases: eventPriorityTestCases,
   fetch: (api) => new EventPriorityApi(api).getEventPriorities(),
   validate: validateEventPriority,

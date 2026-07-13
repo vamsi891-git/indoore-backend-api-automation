@@ -76,11 +76,11 @@ test.describe("Auth Invite Accept Validate Flow", () => {
         const accept = await acceptInvitationWithRetry(publicCtx, acceptPayload);
 
         await PerformanceTracker.track(
-          accept.rawResponse,
-          "Auth Invite Accept Validate",
-          `${process.env.BASE_URL}/indore/auth/invite/accept`,
-          accept.responseTime,
-        );
+        accept.rawResponse,
+        "Auth Invite Accept Validate",
+        accept.rawResponse.url(),
+        accept.responseTime
+      );
 
         validation.execute("Accept Status", () =>
           validator.validateAcceptSuccessStatus(accept.rawResponse.status()),

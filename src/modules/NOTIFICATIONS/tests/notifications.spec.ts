@@ -51,9 +51,9 @@ test.describe("Notifications CRUD Flow", () => {
                 result: ApiCallResult,
             ) => {
                 await PerformanceTracker.track(
-                    result.rawResponse,
-                    label,
-                    result.rawResponse.url(),
+        result.rawResponse,
+        label,
+        result.rawResponse.url(),
                     result.responseTime,
                 );
             };

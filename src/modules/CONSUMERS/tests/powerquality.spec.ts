@@ -61,16 +61,15 @@ test.describe("Power Quality API", () => {
         }
 
         const query = resolvePowerQualityQuery(testCase.scenario);
-        const endpoint = `/indore/consumers/${consumerRef}/power-quality`;
         const { rawResponse, responseBody, responseTime } =
           await api.getPowerQuality(consumerRef, query);
 
         await PerformanceTracker.track(
-          rawResponse,
-          testCase.testName,
-          `${process.env.BASE_URL}${endpoint}`,
-          responseTime,
-        );
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
         validation.execute("Status Validation", () => {
           if (testCase.scenario === "meter_not_found") {

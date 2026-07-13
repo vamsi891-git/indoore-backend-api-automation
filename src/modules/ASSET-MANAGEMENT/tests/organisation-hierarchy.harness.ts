@@ -44,11 +44,11 @@ export async function runOrganisationHierarchyValidation(
 
   const query = rootId != null ? `?rootId=${rootId}` : "";
   await PerformanceTracker.track(
-    rawResponse,
-    testLabel,
-    `${process.env.BASE_URL}${assetManagementPaths.organisationHierarchy}${query}`,
-    responseTime,
-  );
+        rawResponse,
+        testLabel,
+        rawResponse.url(),
+        responseTime
+      );
 
   const assert = new AssertionEngine();
   const validation = new ValidationEngine();

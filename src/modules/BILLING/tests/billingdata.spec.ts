@@ -36,11 +36,11 @@ test.describe("Billing Data API", () => {
             );
 
             await PerformanceTracker.track(
-                rawResponse,
-                "Billing Data API",
-                `${process.env.BASE_URL}/indore/billing/billing-data?month=${BillingDataTestData.month}&year=${BillingDataTestData.year}&page=${BillingDataTestData.page}&limit=${BillingDataTestData.limit}`,
-                responseTime,
-            );
+        rawResponse,
+        "Billing Data API",
+        rawResponse.url(),
+        responseTime
+      );
 
             const assert = new AssertionEngine();
             const validation = new ValidationEngine();

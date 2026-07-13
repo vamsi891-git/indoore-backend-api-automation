@@ -62,19 +62,16 @@ test.describe("Dashboard Metrics API", () => {
                         {},
                     ),
                 ).toString();
-                const endpoint = `/indore/dashboard/metrics${
-                    queryString ? `?${queryString}` : ""
-                }`;
 
                 const { rawResponse, responseBody, responseTime } =
                     await api.getDashboardMetrics(query);
 
                 await PerformanceTracker.track(
-                    rawResponse,
-                    testCase.testName,
-                    `${process.env.BASE_URL}${endpoint}`,
-                    responseTime,
-                );
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
                 validation.execute("Status Validation", () =>
                     assert.validateStatusCode(rawResponse, 200, responseBody),

@@ -34,18 +34,14 @@ test.describe("Consumer Activation API", () => {
           return;
         }
 
-        const endpoint = `/indore/consumers/${consumerId}/activation`;
-
         if (testCase.scenario === "missing_status") {
-          const startedAt = Date.now();
-          const rawResponse = await authenticatedApi.patch(endpoint, { data: {} });
-          const responseTime = Date.now() - startedAt;
-          const responseBody = (await rawResponse.json()) as ActivationErrorResponse;
+          const { rawResponse, responseBody, responseTime } =
+            await api.patchActivationRaw(consumerId, {});
 
           await PerformanceTracker.track(
             rawResponse,
             testCase.testName,
-            `${process.env.BASE_URL}${endpoint}`,
+            rawResponse.url(),
             responseTime,
           );
 
@@ -65,17 +61,15 @@ test.describe("Consumer Activation API", () => {
           testCase.scenario === "invalid_status" ||
           testCase.scenario === "empty_status"
         ) {
-          const startedAt = Date.now();
-          const rawResponse = await authenticatedApi.patch(endpoint, {
-            data: { status: testCase.invalidStatus },
-          });
-          const responseTime = Date.now() - startedAt;
-          const responseBody = (await rawResponse.json()) as ActivationErrorResponse;
+          const { rawResponse, responseBody, responseTime } =
+            await api.patchActivationRaw(consumerId, {
+              status: testCase.invalidStatus,
+            });
 
           await PerformanceTracker.track(
             rawResponse,
             testCase.testName,
-            `${process.env.BASE_URL}${endpoint}`,
+            rawResponse.url(),
             responseTime,
           );
 
@@ -100,11 +94,11 @@ test.describe("Consumer Activation API", () => {
             await api.updateActivation(consumerId, { status: requestStatus });
 
           await PerformanceTracker.track(
-            rawResponse,
-            testCase.testName,
-            `${process.env.BASE_URL}${endpoint}`,
-            responseTime,
-          );
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
           const assert = new AssertionEngine();
           const validation = new ValidationEngine();
@@ -131,11 +125,11 @@ test.describe("Consumer Activation API", () => {
             await api.updateActivation(consumerId, { status: requestStatus });
 
           await PerformanceTracker.track(
-            rawResponse,
-            testCase.testName,
-            `${process.env.BASE_URL}${endpoint}`,
-            responseTime,
-          );
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
           const assert = new AssertionEngine();
           const validation = new ValidationEngine();

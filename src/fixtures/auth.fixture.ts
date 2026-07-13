@@ -1,10 +1,13 @@
-import { test as base, request, APIRequestContext } from "./base.fixture";
+import { test as base, request, expect, APIRequestContext } from "./base.fixture";
 import { LoggerEngine } from "../core/engine/logger.engine";
 
 type AuthFixtures = {
   /** Raw API context without Bearer token — for login / refresh contract tests */
   unauthenticatedApi: APIRequestContext;
 };
+
+export { expect, request };
+export type { APIRequestContext };
 
 export const test = base.extend<AuthFixtures>({
   unauthenticatedApi: async ({}, use) => {

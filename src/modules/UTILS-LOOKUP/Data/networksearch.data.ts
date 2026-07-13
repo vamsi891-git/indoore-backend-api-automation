@@ -1,14 +1,13 @@
 import type { LookupTestCase } from "../utils/lookup-spec.harness";
+import type { NetworkSearchQuery } from "../Api/networksearch.api";
+
+export type { NetworkSearchQuery };
 
 export type NetworkSearchScenario =
   | "smoke_default"
   | "edge_limit_one"
   | "negative_limit_zero"
   | "negative_limit_negative";
-
-export interface NetworkSearchQuery {
-  limit?: number;
-}
 
 export function resolveNetworkSearchQuery(
   scenario: NetworkSearchScenario,

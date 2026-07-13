@@ -75,19 +75,16 @@ test.describe("Event Log List API", () => {
             {},
           ),
         ).toString();
-        const endpoint = `/indore/consumers/${consumerRef}/event-log/list${
-          queryString ? `?${queryString}` : ""
-        }`;
 
         const { rawResponse, responseBody, responseTime } =
           await api.getEventLogList(consumerRef, query);
 
         await PerformanceTracker.track(
-          rawResponse,
-          testCase.testName,
-          `${process.env.BASE_URL}${endpoint}`,
-          responseTime,
-        );
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
         validation.execute("Status Validation", () => {
           if (

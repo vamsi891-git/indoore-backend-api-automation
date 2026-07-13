@@ -36,7 +36,6 @@ function validateEventClassification(
 
 registerCatalogLookupTests({
   describeTitle: "Event Classification API",
-  endpoint: "/indore/utils/event-classifications",
   testCases: eventClassificationTestCases,
   fetch: (api) => new EventClassificationApi(api).getEventClassifications(),
   validate: validateEventClassification,

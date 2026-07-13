@@ -48,7 +48,7 @@ export async function runDtrDetailValidation(
   await PerformanceTracker.track(
     rawResponse,
     testLabel,
-    `${process.env.BASE_URL}${assetManagementPaths.dtrDetail(dtrId, page, limit)}`,
+    rawResponse.url(),
     responseTime,
   );
 

@@ -61,16 +61,15 @@ test.describe("Live Load Profile API", () => {
         }
 
         const query = resolveLiveLoadProfileQuery(testCase.scenario);
-        const endpoint = `/indore/consumers/${consumerRef}/live-load-profile`;
         const { rawResponse, responseBody, responseTime } =
           await api.getLiveLoadProfile(consumerRef, query);
 
         await PerformanceTracker.track(
-          rawResponse,
-          testCase.testName,
-          `${process.env.BASE_URL}${endpoint}`,
-          responseTime,
-        );
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
         validation.execute("Status Validation", () => {
           if (testCase.scenario === "meter_not_found") {

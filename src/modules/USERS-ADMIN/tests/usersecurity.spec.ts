@@ -64,9 +64,9 @@ test.describe("User Security Flow", () => {
                 logoutResponse.responseTime,
             );
             await PerformanceTracker.track(
-                logoutResponse.rawResponse,
-                "Force Logout",
-                logoutResponse.rawResponse.url(),
+        logoutResponse.rawResponse,
+        "Force Logout",
+        logoutResponse.rawResponse.url(),
                 logoutResponse.responseTime,
             );
         },

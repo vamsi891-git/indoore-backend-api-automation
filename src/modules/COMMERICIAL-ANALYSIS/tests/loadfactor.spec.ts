@@ -21,7 +21,7 @@ test.describe("LF Analysis API", () => {
         await api.getLFAnalysis(lfAnalysisData);
       const defectContext = {
         module: "COMMERICIAL-ANALYSIS",
-        endpoint: "/indore/analysis/commercial/lf",
+        endpoint: rawResponse.url(),
         requestParams: lfAnalysisData,
         responseStatus: rawResponse.status(),
         responseBody,

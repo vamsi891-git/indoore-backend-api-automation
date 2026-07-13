@@ -58,12 +58,11 @@ test.describe("HES Commands — Demand Config (E2E)", () => {
         responseTime: postTime,
       } = await demandApi.postDemandConfig(body);
 
-      const postUrl = `${process.env.BASE_URL}${DEMAND_CONFIG_PATH}`;
       await PerformanceTracker.track(
         postRaw,
         "Commands Demand Config — Init Job",
-        postUrl,
-        postTime,
+        postRaw.url(),
+        postTime
       );
 
       const postStatus = postRaw.status();
@@ -84,7 +83,7 @@ test.describe("HES Commands — Demand Config (E2E)", () => {
             testInfo,
             defectContext: {
               module: "HES-COMMANDS",
-              endpoint: "/indore/commands/demand-config",
+              endpoint: postRaw.url(),
               method: "POST",
               requestParams: body,
               responseStatus: postStatus,
@@ -151,12 +150,11 @@ test.describe("HES Commands — Demand Config (E2E)", () => {
         intervalMs: commandsDemandConfigData.jobPollIntervalMs,
       });
 
-      const queryUrl = `${process.env.BASE_URL}${buildQueryMeterJobPath(jobName)}`;
       await PerformanceTracker.track(
         pollResult.rawResponse,
         "Commands Demand Config — Query Meter Job",
-        queryUrl,
-        pollResult.responseTime,
+        pollResult.rawResponse.url(),
+        pollResult.responseTime
       );
 
       ApiValidationHelper.runStandardChecks(validation, assert, {
@@ -219,8 +217,7 @@ test.describe("HES Commands — Demand Config (E2E)", () => {
         testInfo,
         defectContext: {
           module: "HES-COMMANDS",
-          endpoint:
-            "/indore/commands/demand-config → /indore/commands/query-meter-job/:jobName",
+          endpoint: postRaw.url(),
           method: "POST → GET",
           requestParams: {
             body,
@@ -274,7 +271,7 @@ test.describe("HES Commands — Demand Config (E2E)", () => {
         testInfo,
         defectContext: {
           module: "HES-COMMANDS",
-          endpoint: "/indore/commands/demand-config",
+          endpoint: rawResponse.url(),
           method: "POST",
           requestParams: body,
           responseStatus: rawResponse.status(),

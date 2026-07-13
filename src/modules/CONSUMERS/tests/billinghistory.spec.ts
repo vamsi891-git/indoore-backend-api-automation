@@ -72,19 +72,16 @@ test.describe("Billing History API", () => {
             {},
           ),
         ).toString();
-        const endpoint = `/indore/consumers/${consumerRef}/billing-history${
-          queryString ? `?${queryString}` : ""
-        }`;
 
         const { rawResponse, responseBody, responseTime } =
           await api.getBillingHistory(consumerRef, query);
 
         await PerformanceTracker.track(
-          rawResponse,
-          testCase.testName,
-          `${process.env.BASE_URL}${endpoint}`,
-          responseTime,
-        );
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
         validation.execute("Status Validation", () => {
           if (

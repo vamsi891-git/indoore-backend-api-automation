@@ -21,7 +21,7 @@ test.describe("Meter Communication Status API", () => {
   test.setTimeout(180_000);
 
   test(
-    "Validate GET /indore/master-data/meter-communication-status — default page",
+    "Validate meter communication status — default page",
     { tag: ["@smoke", "@master-data", "@meter-communication"] },
     async ({ authenticatedApi }) => {
       const api = new MeterCommunicationStatusApi(authenticatedApi);

@@ -31,7 +31,7 @@ test.describe("Auth Sent Invitations List API", () => {
         await PerformanceTracker.track(
           response.rawResponse,
           `Auth Sent Invitations List API (${status})`,
-          `${process.env.BASE_URL}/indore/auth/invitations/mine?status=${status}`,
+          response.rawResponse.url(),
           response.responseTime,
         );
 

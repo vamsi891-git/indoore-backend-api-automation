@@ -42,7 +42,6 @@ function validateConsumerCategory(
 
 registerCatalogLookupTests({
   describeTitle: "Consumer Category API",
-  endpoint: "/indore/utils/consumer-categories",
   testCases: consumerCategoryTestCases,
   fetch: (api) => new ConsumerCategoryApi(api).getConsumerCategories(),
   validate: validateConsumerCategory,

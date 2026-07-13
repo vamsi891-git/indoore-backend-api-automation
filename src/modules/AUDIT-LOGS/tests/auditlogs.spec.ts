@@ -29,11 +29,11 @@ test.describe("Audit Logs API", () => {
         params.set("sort", testCase.query.sort ?? "createdAt_desc");
 
         await PerformanceTracker.track(
-          rawResponse,
-          testCase.testName,
-          `${process.env.BASE_URL}/indore/users/audit-logs?${params}`,
-          responseTime,
-        );
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
         const assert = new AssertionEngine();
         const validation = new ValidationEngine();

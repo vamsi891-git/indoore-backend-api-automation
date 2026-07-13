@@ -44,8 +44,8 @@ test.describe("Auth Refresh API", () => {
       await PerformanceTracker.track(
         refresh.rawResponse,
         "Auth Refresh API",
-        `${process.env.BASE_URL}${AuthTestData.paths.refresh}`,
-        refresh.responseTime,
+        refresh.rawResponse.url(),
+        refresh.responseTime
       );
 
       try {

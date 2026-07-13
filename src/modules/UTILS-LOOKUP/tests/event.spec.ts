@@ -35,7 +35,6 @@ function validateEvents(
 
 registerCatalogLookupTests({
   describeTitle: "Events API",
-  endpoint: "/indore/utils/events",
   testCases: eventTestCases,
   fetch: (api) => new EventApi(api).getEvents(),
   validate: validateEvents,

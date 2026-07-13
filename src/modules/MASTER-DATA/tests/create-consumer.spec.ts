@@ -11,6 +11,7 @@ import {
   createConsumerData,
   createConsumerMaxResponseTimeMs,
   createConsumerTestCases,
+  buildValidCreateConsumerRequest,
   ensureBulkConsumerExistingCid,
   ensureBulkConsumerNearestAcctId,
   hasBulkConsumerExistingCid,
@@ -29,6 +30,7 @@ import {
   runtimeMeterSerialEnvKey,
 } from "../utils/validate-meter-runtime.helper";
 import { ensureConsumerMeterRuntimeContext } from "../utils/consumer-meter-runtime.helper";
+import { provisionConsumerAssignableMeterPool } from "../../CONSUMERS/Data/consumer-assignable-meter-pool.data";
 
 const SUCCESS_SCENARIOS = new Set(["create_success"]);
 
@@ -174,23 +176,47 @@ test.describe("Create Consumer API", () => {
           return;
         }
 
-        const requestBody = testCase.buildPayload();
-        const consumerCid = String(requestBody["Consumer ID"] ?? "");
+        let requestBody = testCase.buildPayload();
+        let consumerCid = String(requestBody["Consumer ID"] ?? "");
         const api = new CreateConsumerApi(authenticatedApi);
         const profileApi = new ConsumerProfileApi(authenticatedApi);
-        const { rawResponse, responseBody, responseTime } =
+        let { rawResponse, responseBody, responseTime } =
           await api.createConsumer(requestBody);
+
+        // One retry on meter/modem collision — pool wrap can reuse an already-assigned MSN.
+        if (
+          testCase.scenario === "create_success" &&
+          [400, 409].includes(rawResponse.status())
+        ) {
+          console.warn(
+            `[create-consumer] success got ${rawResponse.status()} — provisioning a fresh meter and retrying`,
+          );
+          const fresh = await provisionConsumerAssignableMeterPool(
+            authenticatedApi,
+            { targetCount: 1, maxCreateAttempts: 10 },
+          );
+          if (fresh[0]) {
+            requestBody = buildValidCreateConsumerRequest({
+              label: "success-retry",
+              meterSerial: fresh[0],
+            });
+            consumerCid = String(requestBody["Consumer ID"] ?? "");
+            await new Promise<void>((resolve) => setTimeout(resolve, 2000));
+            ({ rawResponse, responseBody, responseTime } =
+              await api.createConsumer(requestBody));
+          }
+        }
 
         if (testCase.scenario === "create_success") {
           console.log(JSON.stringify(responseBody, null, 2));
         }
 
         await PerformanceTracker.track(
-          rawResponse,
-          testCase.testName,
-          `${process.env.BASE_URL}/indore/consumers`,
-          responseTime,
-        );
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
         const assert = new AssertionEngine();
         const validation = new ValidationEngine();

@@ -96,11 +96,11 @@ test.describe("Auth Invite User API", () => {
         responseTime = inviteResponse.responseTime;
 
         await PerformanceTracker.track(
-          inviteResponse.rawResponse,
-          "Auth Invite User API",
-          `${process.env.BASE_URL}/indore/auth/invite`,
-          inviteResponse.responseTime,
-        );
+        inviteResponse.rawResponse,
+        "Auth Invite User API",
+        inviteResponse.rawResponse.url(),
+        inviteResponse.responseTime
+      );
 
         validation.execute("Invite Status", () =>
           assert.validateStatusCode(

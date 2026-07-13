@@ -30,11 +30,11 @@ test.describe("Mobile Notification Send API", () => {
                 );
 
             await PerformanceTracker.track(
-                rawResponse,
-                "Mobile Notification Send API",
-                `${process.env.BASE_URL}/indore/notifications/mobile/send?consumerCid=${consumerCid}&notificationType=${notificationType}&message=${message}`,
-                responseTime,
-            );
+        rawResponse,
+        "Mobile Notification Send API",
+        rawResponse.url(),
+        responseTime
+      );
 
             validation.execute("Status Code", () =>
                 assert.validateStatusCode(rawResponse, 200),

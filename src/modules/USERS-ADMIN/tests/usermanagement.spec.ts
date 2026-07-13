@@ -96,9 +96,9 @@ test.describe("User Management Flow", () => {
                     users[0];
                 UserManagementData.userId = selectedUser.id;
                 await PerformanceTracker.track(
-                    usersResponse.rawResponse,
-                    "Get Users",
-                    usersResponse.rawResponse.url(),
+        usersResponse.rawResponse,
+        "Get Users",
+        usersResponse.rawResponse.url(),
                     usersResponse.responseTime
                 );
                 // =====================================
@@ -124,9 +124,9 @@ test.describe("User Management Flow", () => {
                 UserManagementData.updateUserPayload =
                     UserManagementData.buildUpdateUserPayload(user);
                 await PerformanceTracker.track(
-                    userResponse.rawResponse,
-                    "Get User By Id",
-                    userResponse.rawResponse.url(),
+        userResponse.rawResponse,
+        "Get User By Id",
+        userResponse.rawResponse.url(),
                     userResponse.responseTime
                 );
                 // =====================================
@@ -144,9 +144,9 @@ test.describe("User Management Flow", () => {
                         validator.validateUpdatedUser(updatedUser,UserManagementData.updateUserPayload)
                 );
                 await PerformanceTracker.track(
-                    updateUserResponse.rawResponse,
-                    "Update User",
-                    updateUserResponse.rawResponse.url(),
+        updateUserResponse.rawResponse,
+        "Update User",
+        updateUserResponse.rawResponse.url(),
                     updateUserResponse.responseTime
                 );
                 // =====================================
@@ -174,9 +174,9 @@ test.describe("User Management Flow", () => {
                         validator.validateStatusUpdate(statusUser,UserManagementData.updateStatusPayload.status)
                 );
                 await PerformanceTracker.track(
-                    statusResponse.rawResponse,
-                    "Update Status",
-                    statusResponse.rawResponse.url(),
+        statusResponse.rawResponse,
+        "Update Status",
+        statusResponse.rawResponse.url(),
                     statusResponse.responseTime
                 );
                 // =====================================

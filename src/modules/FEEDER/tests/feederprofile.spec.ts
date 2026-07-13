@@ -16,11 +16,11 @@ test.describe("Feeder Profile API", () => {
             const { rawResponse, responseBody, responseTime } =
                 await api.getFeederProfile(feederProfileData.feederCode);
             await PerformanceTracker.track(
-                rawResponse,
-                "Feeder Profile API",
-                `${process.env.BASE_URL}/indore/feeder/${feederProfileData.feederCode}/profile`,
-                responseTime
-            );
+        rawResponse,
+        "Feeder Profile API",
+        rawResponse.url(),
+        responseTime
+      );
             const assert = new AssertionEngine();
             const validation = new ValidationEngine();
             validation.execute("Status Code", () =>

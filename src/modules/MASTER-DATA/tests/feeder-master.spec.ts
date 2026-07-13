@@ -12,7 +12,7 @@ test.describe("Feeder Master API", () => {
   test.setTimeout(180_000);
 
   test(
-    "Validate GET /indore/master-data/feeder-master-data — default page",
+    "Validate feeder master data — default page",
     { tag: ["@smoke", "@master-data", "@feeder-master"] },
     async ({ authenticatedApi }) => {
       const api = new FeederMasterApi(authenticatedApi);

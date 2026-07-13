@@ -38,9 +38,9 @@ test.describe("User Profile Image — List", () => {
             );
 
             await PerformanceTracker.track(
-                response.rawResponse,
-                "Profile Image Upload URL",
-                response.rawResponse.url(),
+        response.rawResponse,
+        "Profile Image Upload URL",
+        response.rawResponse.url(),
                 response.responseTime,
             );
 

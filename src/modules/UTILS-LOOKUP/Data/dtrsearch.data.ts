@@ -1,4 +1,7 @@
 import type { LookupTestCase } from "../utils/lookup-spec.harness";
+import type { DtrSearchQuery } from "../Api/dtrsearch.api";
+
+export type { DtrSearchQuery };
 
 export type DtrSearchScenario =
   | "smoke_default"
@@ -6,11 +9,6 @@ export type DtrSearchScenario =
   | "edge_page_beyond"
   | "negative_page_zero"
   | "negative_limit_zero";
-
-export interface DtrSearchQuery {
-  page?: number;
-  limit?: number;
-}
 
 export function resolveDtrSearchQuery(
   scenario: DtrSearchScenario,
@@ -21,7 +19,7 @@ export function resolveDtrSearchQuery(
     case "edge_limit_one":
       return { page: 1, limit: 1 };
     case "edge_page_beyond":
-      return { page: 7000, limit: 20 };
+      return { beyondTotalPages: true, limit: 20 };
     case "negative_page_zero":
       return { page: 0, limit: 20 };
     case "negative_limit_zero":

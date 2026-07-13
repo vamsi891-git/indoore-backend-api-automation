@@ -120,21 +120,21 @@ test.describe("User Profile Image Flow", () => {
             );
 
             await PerformanceTracker.track(
-                uploadResponse.rawResponse,
-                "Profile Image Upload URL",
-                uploadResponse.rawResponse.url(),
+        uploadResponse.rawResponse,
+        "Profile Image Upload URL",
+        uploadResponse.rawResponse.url(),
                 uploadResponse.responseTime,
             );
             await PerformanceTracker.track(
-                saveResponse.rawResponse,
-                "Profile Image Save",
-                saveResponse.rawResponse.url(),
+        saveResponse.rawResponse,
+        "Profile Image Save",
+        saveResponse.rawResponse.url(),
                 saveResponse.responseTime,
             );
             await PerformanceTracker.track(
-                deleteResponse.rawResponse,
-                "Profile Image Delete",
-                deleteResponse.rawResponse.url(),
+        deleteResponse.rawResponse,
+        "Profile Image Delete",
+        deleteResponse.rawResponse.url(),
                 deleteResponse.responseTime,
             );
 

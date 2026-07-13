@@ -36,7 +36,6 @@ function validateMeterPhase(
 
 registerCatalogLookupTests({
   describeTitle: "Meter Phase API",
-  endpoint: "/indore/utils/meter-phases",
   testCases: meterPhaseTestCases,
   fetch: (api) => new MeterPhaseApi(api).getMeterPhases(),
   validate: validateMeterPhase,

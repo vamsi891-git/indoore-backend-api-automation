@@ -23,11 +23,11 @@ test.describe("Billing Period API",() => {
                     responseTime
                 } = await api.getBillingPeriod(billingPeriodData.consumerNumber);
                 await PerformanceTracker.track(
-                    rawResponse,
-                    "Billing Period API",
-                    `${process.env.BASE_URL}/indore/consumers/${billingPeriodData.consumerNumber}/billing-period`,
-                    responseTime
-                );
+        rawResponse,
+        "Billing Period API",
+        rawResponse.url(),
+        responseTime
+      );
                 const assert = new AssertionEngine();
                 const validation = new ValidationEngine();
                 /*

@@ -46,7 +46,7 @@ export async function runDtrMasterValidation(
   await PerformanceTracker.track(
     rawResponse,
     testLabel,
-    `${process.env.BASE_URL}/indore/master-data/dtr-master-data?${buildQueryString(query)}`,
+    rawResponse.url(),
     responseTime,
   );
 

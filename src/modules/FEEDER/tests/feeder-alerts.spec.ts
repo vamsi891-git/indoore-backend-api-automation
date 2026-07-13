@@ -22,11 +22,11 @@ test.describe("Feeder Alerts API", () => {
                 await api.getAlerts(feederCode, page, limit);
 
             await PerformanceTracker.track(
-                rawResponse,
-                "Feeder Alerts API",
-                `${process.env.BASE_URL}/indore/feeder/${feederCode}/alerts?page=${page}&limit=${limit}`,
-                responseTime,
-            );
+        rawResponse,
+        "Feeder Alerts API",
+        rawResponse.url(),
+        responseTime
+      );
 
             const assert = new AssertionEngine();
             const validation = new ValidationEngine();

@@ -36,20 +36,17 @@ test.describe("Technical Summary API", () => {
             {},
           ),
         ).toString();
-        const endpoint = `/indore/analysis/technical/summary${
-          queryString ? `?${queryString}` : ""
-        }`;
 
         const api = new TechnicalSummaryApi(authenticatedApi);
         const { rawResponse, responseBody, responseTime } =
           await api.getTechnicalSummary(query);
 
         await PerformanceTracker.track(
-          rawResponse,
-          testCase.testName,
-          `${process.env.BASE_URL}${endpoint}`,
-          responseTime,
-        );
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
         const assert = new AssertionEngine();
         const validation = new ValidationEngine();

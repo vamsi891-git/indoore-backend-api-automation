@@ -11,7 +11,6 @@ import {
   resolveNearestAccountIdsQuery,
 } from "../Data/nearestaccountids.data";
 import { NearestAccountIdsMapper } from "../Mapper/nearestaccountids.mapper";
-import type { NearestAccountIdsErrorResponse } from "../Mapper/nearestaccountids.mapper";
 import { NearestAccountIdsValidator } from "../Validator/nearestaccountids.validator";
 
 test.describe("Nearest Account IDs API", () => {
@@ -28,18 +27,13 @@ test.describe("Nearest Account IDs API", () => {
         const validator = new NearestAccountIdsValidator();
 
         if (testCase.scenario === "missing_account_id") {
-          const url = "/indore/consumers/nearest-account-ids";
-          const startedAt = Date.now();
-          const rawResponse = await authenticatedApi.get(url);
-          const responseTime = Date.now() - startedAt;
-          const responseBody = (await rawResponse.json()) as
-            | NearestAccountIdsErrorResponse
-            | Record<string, unknown>;
+          const { rawResponse, responseBody, responseTime } =
+            await api.getNearestAccountIdsRaw();
 
           await PerformanceTracker.track(
             rawResponse,
             testCase.testName,
-            `${process.env.BASE_URL}${url}`,
+            rawResponse.url(),
             responseTime,
           );
 
@@ -49,29 +43,20 @@ test.describe("Nearest Account IDs API", () => {
             assert.validateStatusCode(rawResponse, expectedStatus, responseBody),
           );
           validation.execute("Validation Error", () =>
-            validator.validateValidationError(
-              responseBody as NearestAccountIdsErrorResponse,
-              "accountId",
-            ),
+            validator.validateValidationError(responseBody, "accountId"),
           );
           validation.printSummary(testCase.testName, responseTime);
           return;
         }
 
         if (testCase.scenario === "empty_account_id") {
-          const url =
-            "/indore/consumers/nearest-account-ids?accountId=&limit=10";
-          const startedAt = Date.now();
-          const rawResponse = await authenticatedApi.get(url);
-          const responseTime = Date.now() - startedAt;
-          const responseBody = (await rawResponse.json()) as
-            | NearestAccountIdsErrorResponse
-            | Record<string, unknown>;
+          const { rawResponse, responseBody, responseTime } =
+            await api.getNearestAccountIdsRaw({ accountId: "", limit: 10 });
 
           await PerformanceTracker.track(
             rawResponse,
             testCase.testName,
-            `${process.env.BASE_URL}${url}`,
+            rawResponse.url(),
             responseTime,
           );
 
@@ -81,28 +66,23 @@ test.describe("Nearest Account IDs API", () => {
             assert.validateStatusCode(rawResponse, expectedStatus, responseBody),
           );
           validation.execute("Validation Error", () =>
-            validator.validateValidationError(
-              responseBody as NearestAccountIdsErrorResponse,
-              "accountId",
-            ),
+            validator.validateValidationError(responseBody, "accountId"),
           );
           validation.printSummary(testCase.testName, responseTime);
           return;
         }
 
         if (testCase.scenario === "invalid_limit_zero") {
-          const url = `/indore/consumers/nearest-account-ids?accountId=${nearestAccountIdsDefaultAccountId}&limit=0`;
-          const startedAt = Date.now();
-          const rawResponse = await authenticatedApi.get(url);
-          const responseTime = Date.now() - startedAt;
-          const responseBody = (await rawResponse.json()) as
-            | NearestAccountIdsErrorResponse
-            | Record<string, unknown>;
+          const { rawResponse, responseBody, responseTime } =
+            await api.getNearestAccountIdsRaw({
+              accountId: nearestAccountIdsDefaultAccountId,
+              limit: 0,
+            });
 
           await PerformanceTracker.track(
             rawResponse,
             testCase.testName,
-            `${process.env.BASE_URL}${url}`,
+            rawResponse.url(),
             responseTime,
           );
 
@@ -112,28 +92,23 @@ test.describe("Nearest Account IDs API", () => {
             assert.validateStatusCode(rawResponse, expectedStatus, responseBody),
           );
           validation.execute("Validation Error", () =>
-            validator.validateValidationError(
-              responseBody as NearestAccountIdsErrorResponse,
-              "limit",
-            ),
+            validator.validateValidationError(responseBody, "limit"),
           );
           validation.printSummary(testCase.testName, responseTime);
           return;
         }
 
         if (testCase.scenario === "invalid_limit_max") {
-          const url = `/indore/consumers/nearest-account-ids?accountId=${nearestAccountIdsDefaultAccountId}&limit=100`;
-          const startedAt = Date.now();
-          const rawResponse = await authenticatedApi.get(url);
-          const responseTime = Date.now() - startedAt;
-          const responseBody = (await rawResponse.json()) as
-            | NearestAccountIdsErrorResponse
-            | Record<string, unknown>;
+          const { rawResponse, responseBody, responseTime } =
+            await api.getNearestAccountIdsRaw({
+              accountId: nearestAccountIdsDefaultAccountId,
+              limit: 100,
+            });
 
           await PerformanceTracker.track(
             rawResponse,
             testCase.testName,
-            `${process.env.BASE_URL}${url}`,
+            rawResponse.url(),
             responseTime,
           );
 
@@ -143,10 +118,7 @@ test.describe("Nearest Account IDs API", () => {
             assert.validateStatusCode(rawResponse, expectedStatus, responseBody),
           );
           validation.execute("Validation Error", () =>
-            validator.validateValidationError(
-              responseBody as NearestAccountIdsErrorResponse,
-              "limit",
-            ),
+            validator.validateValidationError(responseBody, "limit"),
           );
           validation.printSummary(testCase.testName, responseTime);
           return;
@@ -161,21 +133,10 @@ test.describe("Nearest Account IDs API", () => {
         const { rawResponse, responseBody, responseTime } =
           await api.getNearestAccountIds(query);
 
-        const params = new URLSearchParams({ accountId: query.accountId });
-        if (query.limit != null) {
-          params.set("limit", String(query.limit));
-        }
-        if (query.maxDistance != null) {
-          params.set("maxDistance", String(query.maxDistance));
-        }
-        if (query.organisationLookupId != null) {
-          params.set("organisationLookupId", String(query.organisationLookupId));
-        }
-
         await PerformanceTracker.track(
           rawResponse,
           testCase.testName,
-          `${process.env.BASE_URL}/indore/consumers/nearest-account-ids?${params}`,
+          rawResponse.url(),
           responseTime,
         );
 

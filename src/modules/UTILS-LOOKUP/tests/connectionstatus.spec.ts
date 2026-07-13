@@ -39,7 +39,6 @@ function validateConnectionStatus(
 
 registerCatalogLookupTests({
   describeTitle: "Connection Status API",
-  endpoint: "/indore/utils/connection-statuses",
   testCases: connectionStatusTestCases,
   fetch: (api) => new ConnectionStatusApi(api).getConnectionStatuses(),
   validate: validateConnectionStatus,

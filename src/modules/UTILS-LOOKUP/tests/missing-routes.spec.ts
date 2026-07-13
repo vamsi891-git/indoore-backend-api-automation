@@ -15,7 +15,6 @@ test.describe("UTILS-LOOKUP — missing routes probe", () => {
       async ({ authenticatedApi }) => {
         await runLookupApiTest({
           testCase,
-          endpoint: testCase.path,
           skipContentTypeCheck: true,
           fetch: async () => {
             const start = Date.now();

@@ -61,16 +61,15 @@ test.describe("Real Time Power API", () => {
         }
 
         const query = resolveRealTimePowerQuery(testCase.scenario);
-        const endpoint = `/indore/consumers/${consumerRef}/real-time-power`;
         const { rawResponse, responseBody, responseTime } =
           await api.getRealTimePower(consumerRef, query);
 
         await PerformanceTracker.track(
-          rawResponse,
-          testCase.testName,
-          `${process.env.BASE_URL}${endpoint}`,
-          responseTime,
-        );
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime
+      );
 
         validation.execute("Status Validation", () => {
           if (testCase.scenario === "meter_not_found") {

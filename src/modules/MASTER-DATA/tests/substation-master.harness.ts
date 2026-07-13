@@ -49,7 +49,7 @@ export async function runSubstationMasterValidation(
   await PerformanceTracker.track(
     rawResponse,
     testLabel,
-    `${process.env.BASE_URL}/indore/master-data/substation-master-data?${buildQueryString(query)}`,
+    rawResponse.url(),
     responseTime,
   );
 

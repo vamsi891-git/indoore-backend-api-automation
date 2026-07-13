@@ -24,7 +24,7 @@ test.describe("HES Commands — Meter Lookup", () => {
       await PerformanceTracker.track(
         rawResponse,
         "Commands Meter Lookup",
-        url,
+        rawResponse.url(),
         responseTime
       );
       ApiValidationHelper.runStandardChecks(validation, assert, {
@@ -64,7 +64,7 @@ test.describe("HES Commands — Meter Lookup", () => {
       );
       const defectContext = {
         module: "HES-COMMANDS",
-        endpoint: "/indore/commands/meters/:serial",
+        endpoint: rawResponse.url(),
         method: "GET",
         requestParams: { serial },
         responseStatus: rawResponse.status(),
@@ -103,7 +103,7 @@ test.describe("HES Commands — Meter Lookup", () => {
           testInfo,
           defectContext: {
             module: "HES-COMMANDS",
-            endpoint: "/indore/commands/meters/:serial",
+            endpoint: rawResponse.url(),
             method: "GET",
             requestParams: { serial },
             responseStatus: status,
@@ -126,7 +126,7 @@ test.describe("HES Commands — Meter Lookup", () => {
       );
       const defectContext = {
         module: "HES-COMMANDS",
-        endpoint: "/indore/commands/meters/:serial",
+        endpoint: rawResponse.url(),
         method: "GET",
         requestParams: { serial },
         responseStatus: rawResponse.status(),

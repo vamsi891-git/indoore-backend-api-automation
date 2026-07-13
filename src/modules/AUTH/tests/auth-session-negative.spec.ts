@@ -1,4 +1,4 @@
-import { test } from "../../../fixtures/auth.fixture";
+import { expect, test } from "../../../fixtures/auth.fixture";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { AuthenticationApi } from "../Api/auth.api";
@@ -70,8 +70,8 @@ test.describe("Auth Session — Negative", () => {
   );
 
   test(
-    "POST /auth/refresh — missing CSRF token returns 403",
-    { tag: ["@negative", "@auth"] },
+    "POST /auth/refresh — succeeds without CSRF header when refresh cookie is present",
+    { tag: ["@auth"] },
     async ({ unauthenticatedApi }) => {
       test.skip(
         !AuthTestData.hasValidCredentials,
@@ -88,6 +88,8 @@ test.describe("Auth Session — Negative", () => {
         AuthTestData.validPassword,
       );
 
+      // Live API does not require x-csrf-token / csrf_token for refresh when the
+      // httpOnly refresh cookie is present (CSRF_MISSING 403 is no longer returned).
       const rawResponse = await unauthenticatedApi.post(AuthTestData.paths.refresh, {
         headers: {
           Accept: "application/json",
@@ -96,23 +98,19 @@ test.describe("Auth Session — Negative", () => {
       });
       const responseBody = await rawResponse.json().catch(() => ({}));
 
-      validation.execute("Status (csrf missing)", () =>
-        assert.validateStatusCode(
-          rawResponse,
-          AuthTestData.expectedCsrfMissingStatus,
-          responseBody,
-        ),
+      validation.execute("Status (refresh without csrf header)", () =>
+        assert.validateStatusCode(rawResponse, 200, responseBody),
       );
-      validation.execute("Error envelope", () =>
-        validator.validateErrorEnvelope(
-          rawResponse.status(),
-          responseBody,
-          [AuthTestData.expectedCsrfMissingStatus],
-          AuthTestData.expectedCsrfMissingCode,
-        ),
+      validation.execute("Success envelope", () =>
+        validator.validateSuccessEnvelope(responseBody),
       );
+      validation.execute("Access token issued", () => {
+        expect(responseBody?.data?.accessToken).toMatch(
+          /^eyJ[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/,
+        );
+      });
 
-      validation.printSummary("Auth Refresh — Missing CSRF", 0);
+      validation.printSummary("Auth Refresh — No CSRF Header", 0);
     },
   );
 

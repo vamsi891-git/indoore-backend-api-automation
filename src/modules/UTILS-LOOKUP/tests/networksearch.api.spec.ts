@@ -8,7 +8,7 @@ import {
   type NetworkSearchScenario,
 } from "../Data/networksearch.data";
 import { registerSearchLookupTests } from "../utils/lookup-catalog.harness";
-import { buildQueryString, getLookupResponseData } from "../utils/lookup-spec.harness";
+import { getLookupResponseData } from "../utils/lookup-spec.harness";
 import type { NetworkData } from "../Mapper/networksearch.mapper";
 
 function runNetworkSearchValidations(
@@ -42,14 +42,8 @@ function runNetworkSearchValidations(
 registerSearchLookupTests({
   describeTitle: "Network Search API",
   testCases: networkSearchTestCases,
-  resolveQuery: (scenario) => resolveNetworkSearchQuery(scenario),
-  buildPath: (query) =>
-    `/indore/utils/search/networks${buildQueryString(query)}`,
-  fetch: (authenticatedApi, query) => {
-    const api = new NetworkSearchApi(authenticatedApi);
-    return api.searchNetworks({
-      limit: query.limit as number | undefined,
-    });
-  },
+  resolveQuery: resolveNetworkSearchQuery,
+  fetch: (authenticatedApi, query) =>
+    new NetworkSearchApi(authenticatedApi).searchNetworks(query),
   validate: runNetworkSearchValidations,
 });
