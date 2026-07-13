@@ -186,6 +186,7 @@ jobs:
           path: |
             playwright-report/
             reports/playwright-results.json
+            reports/defects/
             test-results/
           retention-days: 14
 

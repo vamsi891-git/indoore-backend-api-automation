@@ -2,17 +2,14 @@ import fs from "fs";
 import path from "path";
 import type { TestInfo } from "@playwright/test";
 import type { ValidationResult } from "../models/resultModel";
+import type {
+  DefectReportContext,
+  DefectTriageResult,
+} from "../ai/defect-triage.types";
+import { buildHeuristicTriage } from "../ai/defect-heuristic-triage";
+import { enrichDefectTriage, isDefectLlmEnabled } from "../ai/defect-llm-triage";
 
-export interface DefectReportContext {
-  endpoint: string;
-  method?: string;
-  requestParams?: unknown;
-  responseStatus?: number;
-  responseBody?: unknown;
-  /** What the backend contract / repository logic expects */
-  expectedBehavior?: string;
-  module?: string;
-}
+export type { DefectReportContext };
 
 export interface DefectReportInput {
   apiName: string;
@@ -20,6 +17,7 @@ export interface DefectReportInput {
   results: ValidationResult[];
   context: DefectReportContext;
   testTitle?: string;
+  triage?: DefectTriageResult;
 }
 
 const DEFECTS_DIR = path.join(process.cwd(), "reports", "defects");
@@ -36,6 +34,37 @@ function truncateJson(value: unknown, maxLength = 6000): string {
   return `${text.slice(0, maxLength)}\n... (truncated)`;
 }
 
+function renderTriageSection(triageResult?: DefectTriageResult): string {
+  if (!triageResult) {
+    return "";
+  }
+
+  const { triage, source, model, error } = triageResult;
+  const steps = triage.nextSteps.map((s, i) => `${i + 1}. ${s}`).join("\n");
+  const tags = triage.tags.length ? triage.tags.join(", ") : "—";
+
+  return `## AI / heuristic triage
+
+| Field | Value |
+|-------|-------|
+| **Suggested title** | ${triage.title} |
+| **Severity** | ${triage.severity} |
+| **Classification** | ${triage.classification} |
+| **Likely owner** | ${triage.likelyOwner} |
+| **Confidence** | ${triage.confidence} |
+| **Source** | ${source}${model ? ` (${model})` : ""} |
+
+${triage.summary}
+
+### Recommended next steps
+
+${steps}
+
+**Tags:** ${tags}
+${error ? `\n> Triage note: LLM enrichment failed — used heuristic. (${error})\n` : ""}
+`;
+}
+
 export class DeveloperReportEngine {
   static buildMarkdown(input: DefectReportInput): string {
     const failed = input.results.filter((r) => r.status === "FAIL");
@@ -43,6 +72,14 @@ export class DeveloperReportEngine {
     const firstFailure = failed[0];
     const baseUrl = process.env.BASE_URL ?? "(not set)";
     const timestamp = new Date().toISOString();
+    const triageResult =
+      input.triage ??
+      buildHeuristicTriage({
+        apiName: input.apiName,
+        results: input.results,
+        context: input.context,
+        testTitle: input.testTitle,
+      });
 
     return `# API defect report (for backend developer)
 
@@ -62,6 +99,7 @@ export class DeveloperReportEngine {
 | **First failure** | ${firstFailure?.name ?? "—"} |
 | **Run at** | ${timestamp} |
 
+${renderTriageSection(triageResult)}
 ## Failure detail
 
 \`\`\`
@@ -100,7 +138,7 @@ ${passed.map((p) => `- ${p.name}`).join("\n") || "_None_"}
 ## Suggested steps for developer
 
 1. Reproduce with the same query params (Postman/curl) against \`${baseUrl}${input.context.endpoint}\`.
-2. Compare response with the **Expected behavior** section above.
+2. Compare response with the **Expected behavior** / **AI triage** sections above.
 3. Trace the repository/service method for this report and confirm SQL filters + DTO field names.
 4. Fix backend logic or API serialization; re-run: \`npx playwright test --grep "${input.apiName}"\`.
 
@@ -109,24 +147,79 @@ ${passed.map((p) => `- ${p.name}`).join("\n") || "_None_"}
 `;
   }
 
-  static write(input: DefectReportInput): string {
+  static resolveTriageSync(input: Omit<DefectReportInput, "triage">): DefectTriageResult {
+    return buildHeuristicTriage({
+      apiName: input.apiName,
+      results: input.results,
+      context: input.context,
+      testTitle: input.testTitle,
+    });
+  }
+
+  static async resolveTriage(
+    input: Omit<DefectReportInput, "triage">,
+  ): Promise<DefectTriageResult> {
+    return enrichDefectTriage({
+      apiName: input.apiName,
+      results: input.results,
+      context: input.context,
+      testTitle: input.testTitle,
+    });
+  }
+
+  static write(input: DefectReportInput): { reportPath: string; triagePath: string } {
     if (!fs.existsSync(DEFECTS_DIR)) {
       fs.mkdirSync(DEFECTS_DIR, { recursive: true });
     }
 
     const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const fileName = `${sanitizeFileName(input.apiName)}-${stamp}.md`;
-    const filePath = path.join(DEFECTS_DIR, fileName);
-    const markdown = this.buildMarkdown(input);
+    const baseName = `${sanitizeFileName(input.apiName)}-${stamp}`;
+    const reportPath = path.join(DEFECTS_DIR, `${baseName}.md`);
+    const triagePath = path.join(DEFECTS_DIR, `${baseName}.triage.json`);
 
-    fs.writeFileSync(filePath, markdown, "utf8");
-    return filePath;
+    const triage =
+      input.triage ??
+      this.resolveTriageSync(input);
+    const markdown = this.buildMarkdown({ ...input, triage });
+
+    fs.writeFileSync(reportPath, markdown, "utf8");
+    fs.writeFileSync(
+      triagePath,
+      JSON.stringify(
+        {
+          apiName: input.apiName,
+          testTitle: input.testTitle,
+          endpoint: input.context.endpoint,
+          responseStatus: input.context.responseStatus,
+          ...triage,
+        },
+        null,
+        2,
+      ),
+      "utf8",
+    );
+
+    return { reportPath, triagePath };
+  }
+
+  /** Writes heuristic report immediately; optionally enriches with LLM and rewrites. */
+  static async writeWithOptionalLlm(
+    input: Omit<DefectReportInput, "triage">,
+  ): Promise<{ reportPath: string; triagePath: string; triage: DefectTriageResult }> {
+    const triage = isDefectLlmEnabled()
+      ? await this.resolveTriage(input)
+      : this.resolveTriageSync(input);
+
+    const paths = this.write({ ...input, triage });
+    return { ...paths, triage };
   }
 
   static async attachToTest(
     testInfo: TestInfo,
-    filePath: string,
+    reportPath: string,
     markdown: string,
+    triagePath?: string,
+    triage?: DefectTriageResult,
   ): Promise<void> {
     await testInfo.attach("developer-defect-report.md", {
       body: markdown,
@@ -136,13 +229,23 @@ ${passed.map((p) => `- ${p.name}`).join("\n") || "_None_"}
     await testInfo.attach("developer-defect-report.json", {
       body: JSON.stringify(
         {
-          reportFile: filePath,
+          reportFile: reportPath,
+          triageFile: triagePath,
+          triage,
           hint: "Share developer-defect-report.md with the backend team",
+          llmEnabled: isDefectLlmEnabled(),
         },
         null,
         2,
       ),
       contentType: "application/json",
     });
+
+    if (triage) {
+      await testInfo.attach("defect-triage.json", {
+        body: JSON.stringify(triage, null, 2),
+        contentType: "application/json",
+      });
+    }
   }
 }

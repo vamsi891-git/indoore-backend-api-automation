@@ -1,7 +1,6 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
-import { TECHNICAL_ANALYSIS_REQUEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
 import { TechnicalSummaryResponse } from "../Mapper/technical-summary.mapper";
+import { getTechnicalReportWithRetry } from "../utils/technical-request.helper";
 
 export interface TechnicalSummaryApiResult {
   rawResponse: APIResponse;
@@ -28,14 +27,10 @@ export class TechnicalSummaryApi {
       }
     }
 
-    const start = Date.now();
-    const response = await getWithAutoRefresh(
+    const { response, responseTime } = await getTechnicalReportWithRetry(
       this.authenticatedApi,
       "/indore/analysis/technical/summary",
-      {
-        timeout: TECHNICAL_ANALYSIS_REQUEST_TIMEOUT_MS,
-        ...(Object.keys(params).length > 0 ? { params } : {}),
-      },
+      Object.keys(params).length > 0 ? { params } : undefined,
     );
 
     let responseBody: TechnicalSummaryResponse;
@@ -48,7 +43,7 @@ export class TechnicalSummaryApi {
     return {
       rawResponse: response,
       responseBody,
-      responseTime: Date.now() - start,
+      responseTime,
     };
   }
 }

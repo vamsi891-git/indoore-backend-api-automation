@@ -1,6 +1,11 @@
 import { type TestInfo } from "@playwright/test";
 import { ValidationResult } from "../models/resultModel";
-import { DefectReportContext, DeveloperReportEngine,} from "./developer-report.engine";
+import type { DefectReportContext } from "../ai/defect-triage.types";
+import { DeveloperReportEngine } from "./developer-report.engine";
+import { isDefectLlmEnabled } from "../ai/defect-llm-triage";
+
+export type { DefectReportContext };
+
 export interface PrintSummaryOptions {
   testInfo?: TestInfo;
   defectContext?: DefectReportContext;
@@ -17,14 +22,12 @@ function firstLine(message: string): string {
 
 export class ValidationEngine {
   private results: ValidationResult[] = [];
-  // =====================================
-  // EXECUTE VALIDATION
-  // =====================================
+
   /**
    * Runs a validation and records pass/fail without stopping the test.
    * Call finalize() (or printSummary) at the end to print results and fail the test.
    */
-  execute(validationName: string,validationFn: () => void,): void {
+  execute(validationName: string, validationFn: () => void): void {
     try {
       validationFn();
       this.results.push({
@@ -32,8 +35,7 @@ export class ValidationEngine {
         status: "PASS",
       });
     } catch (error: unknown) {
-      const message =
-        error instanceof Error ? error.message : String(error);
+      const message = error instanceof Error ? error.message : String(error);
       this.results.push({
         name: validationName,
         status: "FAIL",
@@ -44,9 +46,27 @@ export class ValidationEngine {
 
   /**
    * Alias for printSummary — use in a finally block so results always print.
+   * Writes a heuristic defect triage report on failure (no API key required).
+   * For optional LLM enrichment, use finalizeAsync when DEFECT_LLM_ENABLED=1.
    */
-  finalize(apiName: string,responseTime: number,options?: PrintSummaryOptions,): void {
+  finalize(
+    apiName: string,
+    responseTime: number,
+    options?: PrintSummaryOptions,
+  ): void {
     this.printSummary(apiName, responseTime, options);
+  }
+
+  /**
+   * Same checklist + assert as finalize, but awaits optional LLM triage
+   * when DEFECT_LLM_ENABLED=1 and an API key is configured.
+   */
+  async finalizeAsync(
+    apiName: string,
+    responseTime: number,
+    options?: PrintSummaryOptions,
+  ): Promise<void> {
+    await this.printSummaryAsync(apiName, responseTime, options);
   }
 
   private assertAllPassed(): void {
@@ -62,41 +82,21 @@ export class ValidationEngine {
     );
   }
 
-  // =====================================
-  // GET RESULTS
-  // =====================================
-
   getResults(): ValidationResult[] {
     return this.results;
   }
-
-  // =====================================
-  // PASSED COUNT
-  // =====================================
 
   getPassedCount(): number {
     return this.results.filter((r) => r.status === "PASS").length;
   }
 
-  // =====================================
-  // FAILED COUNT
-  // =====================================
-
   getFailedCount(): number {
     return this.results.filter((r) => r.status === "FAIL").length;
   }
 
-  // =====================================
-  // TOTAL COUNT
-  // =====================================
-
   getTotalCount(): number {
     return this.results.length;
   }
-
-  // =====================================
-  // PRINT SUMMARY
-  // =====================================
 
   printSummary(
     apiName: string,
@@ -110,7 +110,33 @@ export class ValidationEngine {
       this.printVerboseBanner(apiName, responseTime, finalStatus);
     }
 
-    this.printChecklist(apiName, responseTime, finalStatus, options);
+    this.printChecklist(apiName, responseTime, finalStatus);
+
+    if (finalStatus === "FAIL") {
+      this.writeDefectReportSync(apiName, responseTime, options);
+    }
+
+    this.assertAllPassed();
+  }
+
+  async printSummaryAsync(
+    apiName: string,
+    responseTime: number,
+    options?: PrintSummaryOptions,
+  ): Promise<void> {
+    const failed = this.results.filter((r) => r.status === "FAIL");
+    const finalStatus = failed.length === 0 ? "PASS" : "FAIL";
+
+    if (isVerboseSummary()) {
+      this.printVerboseBanner(apiName, responseTime, finalStatus);
+    }
+
+    this.printChecklist(apiName, responseTime, finalStatus);
+
+    if (finalStatus === "FAIL") {
+      await this.writeDefectReportAsync(apiName, responseTime, options);
+    }
+
     this.assertAllPassed();
   }
 
@@ -118,7 +144,6 @@ export class ValidationEngine {
     apiName: string,
     responseTime: number,
     finalStatus: "PASS" | "FAIL",
-    options?: PrintSummaryOptions,
   ): void {
     console.log(
       `[${finalStatus}] ${apiName} — ${this.getPassedCount()}/${this.getTotalCount()} checks, ${responseTime}ms`,
@@ -130,10 +155,6 @@ export class ValidationEngine {
         console.log(`     ${firstLine(result.message)}`);
       }
     });
-
-    if (finalStatus === "FAIL") {
-      this.writeDefectReportIfNeeded(apiName, responseTime, options);
-    }
   }
 
   private printVerboseBanner(
@@ -153,37 +174,89 @@ export class ValidationEngine {
     console.log(divider);
   }
 
-  private writeDefectReportIfNeeded(
+  private buildReportInput(
+    apiName: string,
+    responseTime: number,
+    options?: PrintSummaryOptions,
+  ) {
+    const context: DefectReportContext = options?.defectContext ?? {
+      endpoint: "(not provided — pass defectContext for richer reports)",
+      expectedBehavior:
+        "See failed validations. Prefer passing endpoint, status, and responseBody via defectContext.",
+    };
+
+    return {
+      apiName,
+      responseTimeMs: responseTime,
+      results: this.results,
+      context,
+      testTitle: options?.testInfo?.title,
+    };
+  }
+
+  private writeDefectReportSync(
     apiName: string,
     responseTime: number,
     options?: PrintSummaryOptions,
   ): void {
-    if (!options?.defectContext) {
-      return;
-    }
-
-    const markdown = DeveloperReportEngine.buildMarkdown({
-      apiName,
-      responseTimeMs: responseTime,
-      results: this.results,
-      context: options.defectContext,
-      testTitle: options.testInfo?.title,
-    });
-    const reportPath = DeveloperReportEngine.write({
-      apiName,
-      responseTimeMs: responseTime,
-      results: this.results,
-      context: options.defectContext,
-      testTitle: options.testInfo?.title,
+    const input = this.buildReportInput(apiName, responseTime, options);
+    const triage = DeveloperReportEngine.resolveTriageSync(input);
+    const { reportPath, triagePath } = DeveloperReportEngine.write({
+      ...input,
+      triage,
     });
 
     console.log(`Defect report: ${reportPath}`);
+    console.log(
+      `Defect triage: ${triagePath} [${triage.source}] ${triage.triage.classification}/${triage.triage.severity}`,
+    );
 
-    if (options.testInfo) {
+    if (isDefectLlmEnabled()) {
+      console.log(
+        "Defect LLM is enabled — use validation.finalizeAsync(...) to await LLM enrichment.",
+      );
+    }
+
+    if (options?.testInfo) {
+      const markdown = DeveloperReportEngine.buildMarkdown({
+        ...input,
+        triage,
+      });
       void DeveloperReportEngine.attachToTest(
         options.testInfo,
         reportPath,
         markdown,
+        triagePath,
+        triage,
+      );
+    }
+  }
+
+  private async writeDefectReportAsync(
+    apiName: string,
+    responseTime: number,
+    options?: PrintSummaryOptions,
+  ): Promise<void> {
+    const input = this.buildReportInput(apiName, responseTime, options);
+    const { reportPath, triagePath, triage } =
+      await DeveloperReportEngine.writeWithOptionalLlm(input);
+
+    console.log(`Defect report: ${reportPath}`);
+    console.log(
+      `Defect triage: ${triagePath} [${triage.source}] ${triage.triage.classification}/${triage.triage.severity}`,
+    );
+
+    if (options?.testInfo) {
+      const markdown = DeveloperReportEngine.buildMarkdown({
+        ...input,
+        triage,
+      });
+      await DeveloperReportEngine.attachToTest(
+        options.testInfo,
+        reportPath,
+        markdown,
+        triagePath,
+        triage,
       );
     }
   }
