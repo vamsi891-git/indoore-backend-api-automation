@@ -51,31 +51,26 @@ export class ConsumerSearchValidator {
 
     validateUniqueConsumerIds(rows: ConsumerSearchItem[]) {
         const ids = rows.map((row) => row.consumerId);
-
         expect(new Set(ids).size).toBe(ids.length);
     }
-
     validateNoNullValues(rows: ConsumerSearchItem[]) {
         rows.forEach((row) => {
             expect(row.consumerId).not.toBeNull();
             expect(row.consumerName).not.toBeNull();
         });
     }
-
     validateNoUndefinedValues(rows: ConsumerSearchItem[]) {
         rows.forEach((row) => {
             expect(row.consumerId).not.toBeUndefined();
             expect(row.consumerName).not.toBeUndefined();
         });
     }
-
     validateConsumerNameLength(rows: ConsumerSearchItem[]) {
         rows.forEach((row) => {
             expect(row.consumerName.length).toBeGreaterThan(0);
             expect(row.consumerName.length).toBeLessThanOrEqual(255);
         });
     }
-
     validateConsumerNameCharacters(rows: ConsumerSearchItem[]) {
         rows.forEach((row) => {
             expect(row.consumerName).not.toContain("\n");
@@ -83,17 +78,10 @@ export class ConsumerSearchValidator {
             expect(row.consumerName).not.toContain("\t");
         });
     }
-
-    validateTotalRecords(
-        rows: ConsumerSearchItem[],
-        totalRecords: number,
-    ) {
+    validateTotalRecords(rows: ConsumerSearchItem[],totalRecords: number,) {
         expect(totalRecords).toBe(rows.length);
     }
-
-    validateMaximumRecords(
-        rows: ConsumerSearchItem[],
-    ) {
+    validateMaximumRecords(rows: ConsumerSearchItem[],) {
         // Repository limit = 50
         expect(rows.length).toBeLessThanOrEqual(50);
     }

@@ -227,136 +227,49 @@ export class SubmissionDetailValidator {
     expect(data.submittedBy).toBe(data.submittedBy.trim(),);
   }
 
-  validateOldAndNewMetersDifferent(
-    data: SubmissionDetailData,
-  ) {
-
-    expect(
-      data.oldMeter.meterSerial,
-    ).not.toBe(
-      data.newMeter.meterSerial,
-    );
-
-    expect(
-      data.oldMeter.meterLookupId,
-    ).not.toBe(
-      data.newMeter.meterLookupId,
-    );
-
+  validateOldAndNewMetersDifferent(data: SubmissionDetailData,) {
+    expect(data.oldMeter.meterSerial,).not.toBe(data.newMeter.meterSerial,);
+    expect(data.oldMeter.meterLookupId,).not.toBe(data.newMeter.meterLookupId,);
   }
-
-  validateConsumerIvrsConsistency(
-    consumer: SubmissionConsumer,
-  ) {
-    expect(
-      consumer.ivrs,
-    ).toBe(
-      consumer.rrNumber,
-    );
+  validateConsumerIvrsConsistency(consumer: SubmissionConsumer,) {
+    expect(consumer.ivrs,).toBe(consumer.rrNumber,);
   }
-
-  validateReadingFormat(
-    meter: SubmissionMeter,
-  ) {
-
+  validateReadingFormat(meter: SubmissionMeter,) {
     if (meter.meterReading == null) {
       return;
     }
-
-    expect(
-      Number.isNaN(
-        Number(meter.meterReading),
-      ),
-    ).toBeFalsy();
-
+    expect(Number.isNaN(Number(meter.meterReading),),).toBeFalsy();
   }
-
-  validateMeterLookupRelationship(
-    oldMeter: SubmissionMeter,
-    newMeter: SubmissionMeter,
-  ) {
-
-    expect(
-      oldMeter.meterLookupId,
-    ).toBeGreaterThan(0);
-
-    expect(
-      newMeter.meterLookupId,
-    ).toBeGreaterThan(0);
-
+  validateMeterLookupRelationship(oldMeter: SubmissionMeter,newMeter: SubmissionMeter,) {
+    expect(oldMeter.meterLookupId,).toBeGreaterThan(0);
+    expect(newMeter.meterLookupId,).toBeGreaterThan(0);
   }
-
-  validateResponseIntegrity(
-    data: SubmissionDetailData,
-  ) {
-
+  validateResponseIntegrity(data: SubmissionDetailData,) {
     expect(data.id).toBeTruthy();
-
     expect(data.status).toBeTruthy();
-
     expect(data.consumer.consumerName).toBeTruthy();
-
     expect(data.oldMeter.meterSerial).toBeTruthy();
-
     expect(data.newMeter.meterSerial).toBeTruthy();
-
     expect(data.submittedBy).toBeTruthy();
-
   }
-
-  validateNoUndefinedCriticalFields(
-    data: SubmissionDetailData,
-  ) {
-
+  validateNoUndefinedCriticalFields(data: SubmissionDetailData,) {
     expect(data.id).not.toBeUndefined();
-
     expect(data.consumer).not.toBeUndefined();
-
     expect(data.oldMeter).not.toBeUndefined();
-
     expect(data.newMeter).not.toBeUndefined();
-
     expect(data.submittedBy).not.toBeUndefined();
-
   }
-
-  validateObjectSize(
-    data: SubmissionDetailData & { success?: boolean },
-  ) {
-
-    expect(
-      Object.keys(data).length,
-    ).toBe(13);
-
+  validateObjectSize(data: SubmissionDetailData & { success?: boolean },) {
+    expect(Object.keys(data).length,).toBe(13);
   }
-
-  validateConsumerObjectSize(
-    consumer: SubmissionConsumer,
-  ) {
-
-    expect(
-      Object.keys(consumer).length,
-    ).toBe(11);
-
+  validateConsumerObjectSize(consumer: SubmissionConsumer,) {
+    expect(Object.keys(consumer).length,).toBe(11);
   }
-
-  validateMeterObjectSize(
-    meter: SubmissionMeter,
-  ) {
-
-    expect(
-      Object.keys(meter).length,
-    ).toBe(4);
-
+  validateMeterObjectSize(meter: SubmissionMeter,) {
+    expect(Object.keys(meter).length,).toBe(4);
   }
-
-  validateNoExtraRootFields(
-    data: SubmissionDetailData & { success?: boolean },
-  ) {
-
-    expect(
-      Object.keys(data).sort(),
-    ).toEqual([
+  validateNoExtraRootFields(data: SubmissionDetailData & { success?: boolean },) {
+    expect(Object.keys(data).sort(),).toEqual([
       "completedDate",
       "consumer",
       "createdDate",
@@ -371,105 +284,35 @@ export class SubmissionDetailValidator {
       "submittedBy",
       "success",
     ]);
-
   }
-
-  validateConsumerStatusBusinessRule(
-    consumer: SubmissionConsumer,
-  ) {
-
-    if (
-      consumer.consumerStatus === "ACTIVE"
-    ) {
-
-      expect(
-        consumer.consumerId,
-      ).toBeGreaterThan(0);
-
+  validateConsumerStatusBusinessRule(consumer: SubmissionConsumer,) {
+    if (consumer.consumerStatus === "ACTIVE") {
+      expect(consumer.consumerId,).toBeGreaterThan(0);
     }
-
   }
-
-  validateMeterStatusBusinessRule(
-    meter: SubmissionMeter,
-  ) {
-
-    if (
-      meter.meterStatus === "ACTIVE"
-    ) {
-
-      expect(
-        meter.meterLookupId,
-      ).toBeGreaterThan(0);
-
-      expect(
-        meter.meterSerial.length,
-      ).toBeGreaterThan(0);
-
+  validateMeterStatusBusinessRule(meter: SubmissionMeter,) {
+    if (meter.meterStatus === "ACTIVE") {
+      expect(meter.meterLookupId,).toBeGreaterThan(0);
+      expect(meter.meterSerial.length,).toBeGreaterThan(0);
     }
-
   }
-
-  validateCompletedSubmissionRule(
-    data: SubmissionDetailData,
-  ) {
-
-    if (
-      data.status === "COMPLETED"
-    ) {
-
-      expect(
-        data.completedDate,
-      ).not.toBeNull();
-
+  validateCompletedSubmissionRule(data: SubmissionDetailData,) {
+    if (data.status === "COMPLETED") {
+      expect(data.completedDate,).not.toBeNull();
     }
-
   }
-
-  validatePendingSubmissionRule(
-    data: SubmissionDetailData,
-  ) {
-
-    if (
-      data.status === "PENDING"
-    ) {
-
-      expect(
-        data.createdDate.length,
-      ).toBeGreaterThan(0);
-
+  validatePendingSubmissionRule(data: SubmissionDetailData,) {
+    if (data.status === "PENDING") {
+      expect(data.createdDate.length,).toBeGreaterThan(0);
     }
-
   }
-
-  validateSubmittedByLength(
-    data: SubmissionDetailData,
-  ) {
-
-    expect(
-      data.submittedBy.length,
-    ).toBeLessThanOrEqual(255);
-
+  validateSubmittedByLength(data: SubmissionDetailData,) {
+    expect(data.submittedBy.length,).toBeLessThanOrEqual(255);
   }
-
-  validateConsumerNameLength(
-    consumer: SubmissionConsumer,
-  ) {
-
-    expect(
-      consumer.consumerName.length,
-    ).toBeLessThanOrEqual(255);
-
+  validateConsumerNameLength(consumer: SubmissionConsumer,) {
+    expect(consumer.consumerName.length,).toBeLessThanOrEqual(255);
   }
-
-  validateMeterSerialLength(
-    meter: SubmissionMeter,
-  ) {
-
-    expect(
-      meter.meterSerial.length,
-    ).toBeLessThanOrEqual(100);
-
+  validateMeterSerialLength(meter: SubmissionMeter,) {
+    expect(meter.meterSerial.length,).toBeLessThanOrEqual(100);
   }
-
 }

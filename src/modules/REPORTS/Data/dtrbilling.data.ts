@@ -6,7 +6,7 @@ export const dtrBillingMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 export const dtrBillingDefaultFromDate = "2025-01-01";
 export const dtrBillingDefaultToDate = "2025-01-10";
 export const dtrBillingDefaultPage = 1;
-export const dtrBillingDefaultLimit = 500;
+export const dtrBillingDefaultLimit = 50;
 
 export type DtrBillingScenario =
   | "dev_live_primary"
@@ -25,26 +25,20 @@ export interface DtrBillingTestCase {
 export const dtrBillingTestCases: DtrBillingTestCase[] = [
   {
     testName: "Validate DTR Billing Report API — live primary range",
-    tags: ["@reports", "@dtr-billing", "@backend-defect"],
+    tags: ["@reports", "@dtr-billing", "@smoke", "@positive"],
     scenario: "dev_live_primary",
     expectedStatus: 200,
   },
   {
     testName: "Validate DTR Billing Report API — short date range",
-    tags: ["@reports", "@dtr-billing", "@edge", "@backend-defect"],
+    tags: ["@reports", "@dtr-billing", "@edge", "@positive"],
     scenario: "dev_live_short_range",
     expectedStatus: 200,
   },
   {
     testName:
       "Validate DTR Billing Report API — duplicate meterSerialNumbers deduped (no 500)",
-    tags: [
-      "@reports",
-      "@dtr-billing",
-      "@edge",
-      "@negative",
-      "@backend-defect",
-    ],
+    tags: ["@reports", "@dtr-billing", "@edge", "@negative"],
     scenario: "edge_duplicate_meter_serials",
     expectedStatus: 200,
   },

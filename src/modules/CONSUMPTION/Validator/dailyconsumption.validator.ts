@@ -24,6 +24,7 @@ const ITEM_REQUIRED_FIELDS = [
 ] as const;
 
 const ISO_DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 function round5(n: number): number {
     return Number(n.toFixed(5));
@@ -109,6 +110,9 @@ export class DailyConsumptionValidator {
             expect(
                 item.serviceDate === null || typeof item.serviceDate === "string",
             ).toBeTruthy();
+            if (item.serviceDate) {
+                expect(ISO_DATE.test(item.serviceDate)).toBeTruthy();
+            }
             expect(
                 item.minDate === null || typeof item.minDate === "string",
             ).toBeTruthy();

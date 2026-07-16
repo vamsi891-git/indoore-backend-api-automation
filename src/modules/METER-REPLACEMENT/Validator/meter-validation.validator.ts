@@ -11,119 +11,96 @@ const REQUIRED_FIELDS = [
 ] as const;
 
 export class MeterValidationValidator {
-
   validateSuccess(success: boolean) {
     expect(success).toBeTruthy();
   }
-
   validateRootStructure(data: MeterValidationData) {
     expect(typeof data).toBe("object");
   }
-
   validateRequiredFields(data: MeterValidationData) {
     REQUIRED_FIELDS.forEach((field) => {
       expect(data).toHaveProperty(field);
     });
   }
-
   validateValidFlag(data: MeterValidationData) {
     expect(typeof data.valid).toBe("boolean");
   }
-
   validateMessage(data: MeterValidationData) {
     expect(typeof data.message).toBe("string");
     expect(data.message.trim().length).toBeGreaterThan(0);
   }
-
   validateMessageTrim(data: MeterValidationData) {
     expect(data.message).toBe(data.message.trim());
   }
-
   validateMeterLookupId(data: MeterValidationData) {
     expect(typeof data.meterLookupId).toBe("number");
     expect(Number.isInteger(data.meterLookupId)).toBeTruthy();
     expect(data.meterLookupId).toBeGreaterThan(0);
   }
-
   validateMeterSerial(data: MeterValidationData) {
     expect(typeof data.meterSerial).toBe("string");
     expect(data.meterSerial.trim().length).toBeGreaterThan(0);
   }
-
   validateMeterSerialTrim(data: MeterValidationData) {
     expect(data.meterSerial).toBe(
       data.meterSerial.trim(),
     );
   }
-
   validateMeterSerialLength(data: MeterValidationData) {
     expect(data.meterSerial.length).toBeGreaterThan(0);
     expect(data.meterSerial.length).toBeLessThanOrEqual(100);
   }
-
   validateNoNullValues(data: MeterValidationData) {
     Object.values(data).forEach((value) => {
       expect(value).not.toBeNull();
     });
   }
-
   validateNoUndefinedValues(data: MeterValidationData) {
     Object.values(data).forEach((value) => {
       expect(value).not.toBeUndefined();
     });
   }
-
   validateLookupIdRange(data: MeterValidationData) {
     expect(data.meterLookupId).toBeLessThan(
       Number.MAX_SAFE_INTEGER,
     );
   }
-
   validateLookupIdPositive(data: MeterValidationData) {
     expect(data.meterLookupId).toBeGreaterThan(0);
   }
-
   validateMessageLength(data: MeterValidationData) {
     expect(data.message.length).toBeGreaterThan(0);
     expect(data.message.length).toBeLessThanOrEqual(500);
   }
-
   validateMessageCharacters(data: MeterValidationData) {
     expect(data.message).not.toContain("\n");
     expect(data.message).not.toContain("\r");
     expect(data.message).not.toContain("\t");
   }
-
   validateMeterSerialCharacters(data: MeterValidationData) {
     expect(data.meterSerial).not.toContain("\n");
     expect(data.meterSerial).not.toContain("\r");
     expect(data.meterSerial).not.toContain("\t");
   }
-
   validateStringFields(data: MeterValidationData) {
     expect(typeof data.message).toBe("string");
     expect(typeof data.meterSerial).toBe("string");
   }
-
   validateNumericFields(data: MeterValidationData) {
     expect(typeof data.meterLookupId).toBe("number");
   }
-
   validateBooleanField(data: MeterValidationData) {
     expect(typeof data.valid).toBe("boolean");
   }
-
   validateResponseIntegrity(data: MeterValidationData) {
     expect(data.message).toBeTruthy();
     expect(data.meterSerial).toBeTruthy();
     expect(data.meterLookupId).toBeTruthy();
   }
-
   validateMeterIdentity(data: MeterValidationData) {
     expect(data.meterLookupId).toBeGreaterThan(0);
     expect(data.meterSerial.length).toBeGreaterThan(0);
   }
-
   validateObjectSize(data: MeterValidationData & { success?: boolean }) {
     expect(Object.keys(data).length,).toBe(5);
   }

@@ -18,9 +18,7 @@ const FILE_ERROR_SCENARIOS = new Set([
   "file_missing_columns",
   "file_no_data_rows",
 ]);
-
 const FILE_SOFT_ERROR_SCENARIOS = new Set(["file_duplicate_columns"]);
-
 const ROW_LEVEL_SCENARIOS = new Set([
   "validate_all_valid",
   "validate_mixed",
@@ -43,20 +41,16 @@ const ROW_LEVEL_SCENARIOS = new Set([
   "row_invalid_latitude",
   "row_invalid_longitude",
 ]);
-
 function shouldSkipForEnv(
   testCase: (typeof bulkValidateMeterReplacementTestCases)[number],
 ): boolean {
   return shouldSkipMeterReplacementTestForEnv(testCase.envKeys);
 }
-
 test.describe("Bulk Validate Meter Replacement API", () => {
   test.describe.configure({ retries: 1 });
-
   test.afterEach(async () => {
     await new Promise<void>((resolve) => setTimeout(resolve, 1200));
   });
-
   for (const testCase of bulkValidateMeterReplacementTestCases) {
     test(
       testCase.testName,
@@ -69,7 +63,6 @@ test.describe("Bulk Validate Meter Replacement API", () => {
           );
           return;
         }
-
         const upload = await testCase.buildUpload(authenticatedApi);
         const api = new BulkValidateMeterReplacementApi(authenticatedApi);
         const { rawResponse, responseBody, responseTime } =
@@ -78,14 +71,12 @@ test.describe("Bulk Validate Meter Replacement API", () => {
         if (testCase.scenario === "validate_all_valid") {
           console.log(JSON.stringify(responseBody, null, 2));
         }
-
         await PerformanceTracker.track(
           rawResponse,
           testCase.testName,
           rawResponse.url(),
           responseTime,
         );
-
         const assert = new AssertionEngine();
         const validation = new ValidationEngine();
         const validator = new BulkValidateMeterReplacementValidator();
@@ -93,7 +84,6 @@ test.describe("Bulk Validate Meter Replacement API", () => {
         const expectedStatus = FILE_ERROR_SCENARIOS.has(testCase.scenario)
           ? 400
           : testCase.expectedStatus;
-
         validation.execute("Status Validation", () => {
           if (FILE_SOFT_ERROR_SCENARIOS.has(testCase.scenario)) {
             // Live API currently returns 200 for duplicate headers; tolerate 400 if tightened later.
@@ -106,34 +96,18 @@ test.describe("Bulk Validate Meter Replacement API", () => {
           assert.validateContentType(rawResponse),
         );
         validation.execute("Response Time", () =>
-          assert.validateResponseTime(
-            responseTime,
-            bulkValidateMeterReplacementMaxResponseTimeMs,
-          ),
+          assert.validateResponseTime(responseTime,bulkValidateMeterReplacementMaxResponseTimeMs,),
         );
         validation.execute("Security Validation", () =>
           assert.validateSensitiveData(responseBody),
         );
-
         if (rawResponse.status() === 200) {
           validation.execute("Zod Response Schema", () => {
-            const result =
-              BulkValidateMeterReplacementSuccessResponseSchema.safeParse(
-                responseBody,
-              );
-            expect(
-              result.success,
-              result.success
-                ? undefined
-                : JSON.stringify(result.error?.issues, null, 2),
-            ).toBe(true);
+            const result =BulkValidateMeterReplacementSuccessResponseSchema.safeParse(responseBody,);
+            expect(result.success,result.success ? undefined : JSON.stringify(result.error?.issues, null, 2),).toBe(true);
           });
           validation.execute("Required Fields", () =>
-            assert.validateRequiredFields(responseBody, [
-              "success",
-              "summary",
-              "rows",
-            ]),
+            assert.validateRequiredFields(responseBody, ["success","summary","rows",]),
           );
         } else {
           validation.execute("Required Fields", () => {
@@ -141,7 +115,6 @@ test.describe("Bulk Validate Meter Replacement API", () => {
             expect(responseBody.error ?? responseBody.message).toBeTruthy();
           });
         }
-
         validation.execute("Response", () => validator.validateResponse(mapped));
         validation.execute("Scenario Outcome", () => {
           if (FILE_SOFT_ERROR_SCENARIOS.has(testCase.scenario)) {
@@ -162,7 +135,6 @@ test.describe("Bulk Validate Meter Replacement API", () => {
             expect(mapped.error ?? mapped.message).toBeTruthy();
           }
         });
-
         validation.printSummary(testCase.testName, responseTime);
       },
     );

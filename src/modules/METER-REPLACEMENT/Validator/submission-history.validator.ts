@@ -65,12 +65,8 @@ export class SubmissionHistoryValidator {
   validateTotal(pagination: SubmissionPagination) {
     expect(pagination.total).toBeGreaterThanOrEqual(0);
   }
-  validateTotalPages(
-    pagination: SubmissionPagination,
-  ) {
-    expect(
-      pagination.totalPages,
-    ).toBeGreaterThanOrEqual(0);
+  validateTotalPages(pagination: SubmissionPagination,) {
+    expect(pagination.totalPages,).toBeGreaterThanOrEqual(0);
   }
   validatePaginationMath(pagination: SubmissionPagination,) {
     if (pagination.total === 0) {
@@ -166,29 +162,22 @@ export class SubmissionHistoryValidator {
   }
   validateConsumerNameTrim(items: SubmissionHistoryItem[],) {
     items.forEach((item) => {
-      expect(item.consumerName).toBe(
-        item.consumerName.trim(),
-      );
+      expect(item.consumerName).toBe(item.consumerName.trim(),);
     });
   }
 
   validateOldMeterSerialTrim(items: SubmissionHistoryItem[],) {
     items.forEach((item) => {
-      expect(item.oldMeterSerial).toBe(
-        item.oldMeterSerial.trim(),
-      );
+      expect(item.oldMeterSerial).toBe(item.oldMeterSerial.trim(),);
     });
   }
-
   validateNewMeterSerialTrim(items: SubmissionHistoryItem[],
   ) {
     items.forEach((item) => {
       if (item.newMeterSerial == null) {
         return;
       }
-      expect(item.newMeterSerial).toBe(
-        item.newMeterSerial.trim(),
-      );
+      expect(item.newMeterSerial).toBe(item.newMeterSerial.trim(),);
     });
   }
   validateReplacementReasonTrim(items: SubmissionHistoryItem[],) {
@@ -196,9 +185,7 @@ export class SubmissionHistoryValidator {
       if (item.replacementReason == null) {
         return;
       }
-      expect(item.replacementReason).toBe(
-        item.replacementReason.trim(),
-      );
+      expect(item.replacementReason).toBe(item.replacementReason.trim(),);
     });
   }
   validateCreatedDateTrim(items: SubmissionHistoryItem[],) {
@@ -208,7 +195,6 @@ export class SubmissionHistoryValidator {
       );
     });
   }
-
   validatePaginationConsistency(data: SubmissionHistoryData,) {
     expect(data.pagination.total,).toBeGreaterThanOrEqual(data.items.length,);
   }
@@ -216,13 +202,11 @@ export class SubmissionHistoryValidator {
     expect(data).toHaveProperty("items");
     expect(data).toHaveProperty("pagination");
   }
-
   validateNoDuplicateRecords(items: SubmissionHistoryItem[],) {
     const unique = new Set(items.map((item) =>
           `${item.id}-${item.oldMeterSerial}-${item.createdAt}`,
       ),
     );
-
     expect(unique.size).toBe(items.length,);
   }
   validateNoExtraFields(items: SubmissionHistoryItem[],) {

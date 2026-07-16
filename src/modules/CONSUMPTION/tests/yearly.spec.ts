@@ -82,11 +82,38 @@ test.describe("Pattern Consumption Yearly API", () => {
         validation.execute("Table Validation", () =>
           validator.validateTable(mapped),
         );
+        validation.execute("Yearly Title", () =>
+          validator.validateYearlyTitle(mapped.title, patternConsumptionData.year),
+        );
+        validation.execute("Yearly Columns", () =>
+          validator.validateColumnKeys(mapped.columns, [
+            "name",
+            "ivrsNumber",
+            "msn",
+            "phase",
+            "sanctionLoadKw",
+            "janKwh",
+            "decKwh",
+            "totalKwh",
+          ]),
+        );
+        validation.execute("Pagination Validation", () =>
+          validator.validatePagination(
+            mapped.pagination,
+            patternConsumptionData.page,
+            patternConsumptionData.limit,
+            mapped.rows.length,
+          ),
+        );
         validation.execute("Rows Validation", () =>
           validator.validateRows(mapped.rows),
         );
         validation.execute("SLNO Validation", () =>
-          validator.validateSlNo(mapped.rows),
+          validator.validateSlNo(
+            mapped.rows,
+            mapped.pagination.page,
+            mapped.pagination.pageSize,
+          ),
         );
         validation.execute("Required Fields", () =>
           validator.validateRequiredFields(mapped.rows),

@@ -50,33 +50,19 @@ export class MeterReplacementCommonValidator {
     expect([400, 404, 414, 422]).toContain(status);
   }
 
-  static validateErrorEnvelope(
-    body: MeterReplacementErrorBody,
-    expectedCodes?: string[],
-  ) {
+  static validateErrorEnvelope(body: MeterReplacementErrorBody,expectedCodes?: string[],) {
     expect(body.success).toBeFalsy();
     const code = body.error?.code;
     const message = body.error?.message ?? body.message;
-    expect(
-      typeof message === "string" && message.trim().length > 0,
-    ).toBeTruthy();
+    expect(typeof message === "string" && message.trim().length > 0,).toBeTruthy();
     if (expectedCodes?.length) {
       expect(expectedCodes).toContain(code);
     }
   }
-
-  static async getUnauthenticated(
-    unauthenticatedApi: APIRequestContext,
-    path: string,
-    options?: Parameters<APIRequestContext["get"]>[1],
-  ): Promise<APIResponse> {
+  static async getUnauthenticated(unauthenticatedApi: APIRequestContext,path: string,options?: Parameters<APIRequestContext["get"]>[1],): Promise<APIResponse> {
     return withRateLimitRetry(() => unauthenticatedApi.get(path, options));
   }
-
-  static getDisallowedMethodCallers(
-    unauthenticatedApi: APIRequestContext,
-    path: string,
-  ): Record<string, () => Promise<APIResponse>> {
+  static getDisallowedMethodCallers(unauthenticatedApi: APIRequestContext,path: string,): Record<string, () => Promise<APIResponse>> {
     return {
       POST: () =>
         withRateLimitRetry(() =>

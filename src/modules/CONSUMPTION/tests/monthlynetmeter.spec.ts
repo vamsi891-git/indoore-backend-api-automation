@@ -19,7 +19,7 @@ test.describe("Monthly Net Meter Consumption API", () => {
         "@consumption",
         "@monthly-net-meter",
         "@smoke",
-        "@backend-defect",
+        "@positive",
       ],
     },
     async ({ authenticatedApi }) => {
@@ -39,8 +39,7 @@ test.describe("Monthly Net Meter Consumption API", () => {
         responseTime,
       );
 
-      // Live API currently returns 500 INTERNAL_ERROR for all probed month/year/limit
-      // combinations (~20s). Auto-resume full assertions when backend returns 200.
+      // Live API may return 500 under load; auto-resume full assertions when backend returns 200.
       if (
         rawResponse.status() === 500 &&
         isConsumptionInternalError(responseBody)

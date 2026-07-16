@@ -1,43 +1,36 @@
-import { APIRequestContext, APIResponse } from "@playwright/test";
+import { APIRequestContext } from "@playwright/test";
+import { ConsumptionReportApi } from "./consumption-report.api";
 import { DailyConsumptionResponse } from "../Mapper/dailyconsumption.mapper";
-import { getConsumptionWithRetry } from "../utils/consumption-request.helper";
 
 export interface DailyConsumptionApiResult {
-    rawResponse: APIResponse;
-    responseBody: DailyConsumptionResponse;
-    responseTime: number;
+  rawResponse: import("@playwright/test").APIResponse;
+  responseBody: DailyConsumptionResponse;
+  responseTime: number;
 }
 
 export class DailyConsumptionApi {
-    constructor(private readonly authenticatedApi: APIRequestContext) {}
+  private readonly reportApi: ConsumptionReportApi;
 
-    async getDailyReport(
-        page: number,
-        limit: number,
-        fromDate: string,
-        toDate: string,
-        month: number,
-        year: number,
-    ): Promise<DailyConsumptionApiResult> {
-        const { response, responseTime } = await getConsumptionWithRetry(
-            this.authenticatedApi,
-            "/indore/consumption/report",
-            {
-                params: {
-                    reportType: "daily",
-                    page,
-                    limit,
-                    fromDate,
-                    toDate,
-                    month,
-                    year,
-                },
-            },
-        );
-        return {
-            rawResponse: response,
-            responseBody: await response.json(),
-            responseTime,
-        };
-    }
+  constructor(authenticatedApi: APIRequestContext) {
+    this.reportApi = new ConsumptionReportApi(authenticatedApi);
+  }
+
+  async getDailyReport(
+    page: number,
+    limit: number,
+    fromDate: string,
+    toDate: string,
+    month: number,
+    year: number,
+  ): Promise<DailyConsumptionApiResult> {
+    return this.reportApi.getReport<DailyConsumptionResponse>(
+      "daily",
+      page,
+      limit,
+      fromDate,
+      toDate,
+      month,
+      year,
+    );
+  }
 }

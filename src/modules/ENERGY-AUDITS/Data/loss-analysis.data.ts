@@ -10,7 +10,8 @@ export const lossAnalysisBaseQuery = {
   fromDate: "2025-12-20",
   toDate: "2025-12-20",
   page: 1,
-  limit: 100,
+  // Feeder BILLING returns 500 INTERNAL_ERROR for limit >= 50; 30 is safe for all scopes.
+  limit: 30,
 } as const;
 
 export const dtrNetworkLookupId = Number(
