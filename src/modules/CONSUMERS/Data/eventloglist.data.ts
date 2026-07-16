@@ -160,7 +160,14 @@ export function resolveEventLogListQuery(
     case "ell_page_2":
       return { eventPage: 2, eventPageSize: 5 };
     case "ell_with_search":
-      return { eventPage: 1, eventPageSize: 10, eventSearch: "power" };
+      return {
+        eventPage: 1,
+        eventPageSize: 10,
+        // Live descriptions are codes like METER_LAST_GASP; "power" matches nothing
+        // and the API can leave totalCount unfiltered while returning zero rows.
+        eventSearch:
+          process.env.CONSUMER_ELL_EVENT_SEARCH?.trim() || "METER",
+      };
     case "ell_ignore_unknown_query":
       return { eventPage: 1, eventPageSize: 10, foo: 1 };
     case "contract_pagination":

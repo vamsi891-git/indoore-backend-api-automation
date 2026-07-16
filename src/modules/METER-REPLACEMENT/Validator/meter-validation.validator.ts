@@ -125,241 +125,106 @@ export class MeterValidationValidator {
   }
 
   validateObjectSize(data: MeterValidationData & { success?: boolean }) {
-    expect(
-      Object.keys(data).length,
-    ).toBe(5);
+    expect(Object.keys(data).length,).toBe(5);
   }
-
   validateNoExtraFields(data: MeterValidationData & { success?: boolean }) {
-    expect(
-      Object.keys(data).sort(),
-    ).toEqual([
-      "message",
-      "meterLookupId",
-      "meterSerial",
-      "success",
-      "valid",
-    ]);
+    expect(Object.keys(data).sort(),).toEqual(["message","meterLookupId","meterSerial","success","valid",]);
   }
-
   validateBusinessRules(data: MeterValidationData) {
     expect(data).toHaveProperty("valid");
     expect(data).toHaveProperty("message");
     expect(data).toHaveProperty("meterLookupId");
     expect(data).toHaveProperty("meterSerial");
   }
-  validateValidMeterRule(
-    data: MeterValidationData,
-  ) {
+  validateValidMeterRule(data: MeterValidationData,) {
     if (data.valid) {
       expect(data.meterLookupId).toBeGreaterThan(0);
       expect(data.meterSerial.length).toBeGreaterThan(0);
     }
   }
-
-  validateInvalidMeterRule(
-    data: MeterValidationData,
-  ) {
+  validateInvalidMeterRule(data: MeterValidationData,) {
     if (!data.valid) {
       expect(data.message.length).toBeGreaterThan(0);
     }
   }
-
-  validateEligibleMeterMessage(
-    data: MeterValidationData,
+  validateEligibleMeterMessage(data: MeterValidationData,
   ) {
     if (data.valid) {
-      expect(
-        data.message.toLowerCase(),
-      ).toContain("eligible");
+      expect(data.message.toLowerCase(),).toContain("eligible");
     }
   }
-
-  validateIneligibleMeterMessage(
-    data: MeterValidationData,
-  ) {
+  validateIneligibleMeterMessage(data: MeterValidationData,) {
     if (!data.valid) {
-      expect(
-        data.message.length,
-      ).toBeGreaterThan(0);
+      expect(data.message.length,).toBeGreaterThan(0);
     }
   }
-
-  validateMeterLookupRelationship(
-    data: MeterValidationData,
-  ) {
+  validateMeterLookupRelationship(data: MeterValidationData,) {
     expect(data.meterLookupId).toBeGreaterThan(0);
-
-    expect(
-      data.meterSerial.trim().length,
-    ).toBeGreaterThan(0);
+    expect(data.meterSerial.trim().length,).toBeGreaterThan(0);
   }
-
-  validateMessageConsistency(
-    data: MeterValidationData,
-  ) {
-    expect(data.message).toBe(
-      data.message.trim(),
-    );
+  validateMessageConsistency(data: MeterValidationData,) {
+    expect(data.message).toBe(data.message.trim(),);
   }
-
-  validateSerialConsistency(
-    data: MeterValidationData,
-  ) {
-    expect(data.meterSerial).toBe(
-      data.meterSerial.trim(),
-    );
+  validateSerialConsistency(data: MeterValidationData,) {
+    expect(data.meterSerial).toBe(data.meterSerial.trim(),);
   }
-
-  validateMeterSerialNumeric(
-    data: MeterValidationData,
-  ) {
-    expect(
-      /^[A-Za-z0-9]+$/.test(
-        data.meterSerial,
-      ),
-    ).toBeTruthy();
+  validateMeterSerialNumeric(data: MeterValidationData,) {
+    expect(/^[A-Za-z0-9]+$/.test(data.meterSerial,)).toBeTruthy();
   }
-
-  validateLookupIdConsistency(
-    data: MeterValidationData,
-  ) {
-    expect(
-      Number.isInteger(
-        data.meterLookupId,
-      ),
-    ).toBeTruthy();
+  validateLookupIdConsistency(data: MeterValidationData,) {
+    expect(Number.isInteger(data.meterLookupId,),).toBeTruthy();
   }
-
-  validateValidFlagConsistency(
-    data: MeterValidationData,
-  ) {
+  validateValidFlagConsistency(data: MeterValidationData,) {
     if (data.valid) {
-      expect(
-        data.meterLookupId,
-      ).toBeGreaterThan(0);
+      expect(data.meterLookupId,).toBeGreaterThan(0);
     }
   }
-
-  validateMessageNotEmpty(
-    data: MeterValidationData,
-  ) {
-    expect(
-      data.message.trim().length,
-    ).toBeGreaterThan(0);
+  validateMessageNotEmpty(data: MeterValidationData,) {
+    expect(data.message.trim().length,).toBeGreaterThan(0);
   }
-
-  validateMeterSerialNotEmpty(
-    data: MeterValidationData,
-  ) {
-    expect(
-      data.meterSerial.trim().length,
-    ).toBeGreaterThan(0);
+  validateMeterSerialNotEmpty(data: MeterValidationData,) {
+    expect(data.meterSerial.trim().length,).toBeGreaterThan(0);
   }
-
-  validateMeterLookupExists(
-    data: MeterValidationData,
-  ) {
-    expect(
-      data.meterLookupId,
-    ).toBeGreaterThan(0);
+  validateMeterLookupExists(data: MeterValidationData,) {
+    expect(data.meterLookupId,).toBeGreaterThan(0);
   }
-
-  validateNoWhitespaceSerial(
-    data: MeterValidationData,
-  ) {
-    expect(
-      data.meterSerial,
-    ).not.toMatch(/^\s+$/);
+  validateNoWhitespaceSerial(data: MeterValidationData,) {
+    expect(data.meterSerial,).not.toMatch(/^\s+$/);
   }
-
-  validateNoWhitespaceMessage(
-    data: MeterValidationData,
-  ) {
-    expect(
-      data.message,
-    ).not.toMatch(/^\s+$/);
+  validateNoWhitespaceMessage(data: MeterValidationData,) {
+    expect(data.message,).not.toMatch(/^\s+$/);
   }
-
-  validateMeterLookupSafeRange(
-    data: MeterValidationData,
-  ) {
-    expect(
-      data.meterLookupId,
-    ).toBeLessThanOrEqual(
-      Number.MAX_SAFE_INTEGER,
-    );
+  validateMeterLookupSafeRange(data: MeterValidationData,) {
+    expect(data.meterLookupId,).toBeLessThanOrEqual(Number.MAX_SAFE_INTEGER,);
   }
-
-  validateSerialLength(
-    data: MeterValidationData,
-  ) {
-    expect(
-      data.meterSerial.length,
-    ).toBeGreaterThan(0);
-
-    expect(
-      data.meterSerial.length,
-    ).toBeLessThanOrEqual(100);
+  validateSerialLength(data: MeterValidationData,) {
+    expect(data.meterSerial.length,).toBeGreaterThan(0);
+    expect(data.meterSerial.length,).toBeLessThanOrEqual(100);
   }
-
-  validateMessageSafeLength(
-    data: MeterValidationData,
-  ) {
-    expect(
-      data.message.length,
-    ).toBeLessThanOrEqual(500);
+  validateMessageSafeLength(data: MeterValidationData,) {
+    expect(data.message.length,).toBeLessThanOrEqual(500);
   }
-
-  validateResponseObjectIntegrity(
-    data: MeterValidationData,
-  ) {
+  validateResponseObjectIntegrity(data: MeterValidationData,) {
     expect(data.valid).not.toBeNull();
-
     expect(data.message).not.toBeNull();
-
     expect(data.meterLookupId).not.toBeNull();
-
     expect(data.meterSerial).not.toBeNull();
   }
-
-  validateResponseObjectDefined(
-    data: MeterValidationData,
-  ) {
+  validateResponseObjectDefined(data: MeterValidationData,) {
     expect(data.valid).not.toBeUndefined();
-
     expect(data.message).not.toBeUndefined();
-
     expect(data.meterLookupId).not.toBeUndefined();
-
     expect(data.meterSerial).not.toBeUndefined();
   }
-
-  validateMeterLookupNotZero(
-    data: MeterValidationData,
-  ) {
-    expect(
-      data.meterLookupId,
-    ).not.toBe(0);
+  validateMeterLookupNotZero(data: MeterValidationData,) {
+    expect(data.meterLookupId,).not.toBe(0);
   }
-
-  validateMeterSerialFormat(
-    data: MeterValidationData,
-  ) {
-    expect(
-      data.meterSerial.trim(),
-    ).toEqual(
-      data.meterSerial,
-    );
+  validateMeterSerialFormat(data: MeterValidationData,) {
+    expect(data.meterSerial.trim(),).toEqual(data.meterSerial,);
   }
-
-  validateBackendBusinessRule(
-    data: MeterValidationData,
-  ) {
+  validateBackendBusinessRule(data: MeterValidationData,) {
     if (data.valid) {
-      expect(
-        data.message.toLowerCase(),
-      ).toContain("valid");
+      expect(data.message.toLowerCase(),).toContain("valid");
     }
   }
 }

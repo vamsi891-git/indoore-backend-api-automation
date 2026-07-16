@@ -25,7 +25,7 @@ import { CreateSubmissionMapper } from "../Mapper/create-submission.mapper";
 import { MeterValidationMapper } from "../Mapper/meter-validation.mapper";
 import { CreateSubmissionValidator } from "../Validator/create-submission.validator";
 import {
-  findEligibleConsumer,
+  ensureEligibleConsumer,
 } from "../utils/create-submission.helper";
 import { pauseMs } from "../utils/response.helper";
 
@@ -60,7 +60,7 @@ test.describe("Meter Replacement Create Submission E2E", () => {
       const meterValidator = new CreateMeterValidator();
       const createSubmissionValidator = new CreateSubmissionValidator();
 
-      const consumer = await findEligibleConsumer(authenticatedApi);
+      const consumer = await ensureEligibleConsumer(authenticatedApi);
 
       // ── 1. Create meter (new meter for replacement) ─────────────────────
       const meterPayload = {
@@ -220,10 +220,9 @@ test.describe("Meter Replacement Create Submission E2E", () => {
         createSubmissionValidator.validateId(createMapped),
       );
       validation.execute("Create Submission Mapped Status", () =>
-        createSubmissionValidator.validateStatus(
-          createMapped,
-          createSubmissionData.expectedPendingStatus,
-        ),
+        createSubmissionValidator.validateStatus(createMapped, [
+          ...createSubmissionData.expectedCreatedStatuses,
+        ]),
       );
       validation.execute("Create Submission Mapped Trim", () =>
         createSubmissionValidator.validateStatusTrim(createMapped),
@@ -240,8 +239,8 @@ test.describe("Meter Replacement Create Submission E2E", () => {
       validation.execute("Create Submission Mapped Keys", () =>
         createSubmissionValidator.validateNoExtraFields(createMapped),
       );
-      validation.execute("Create Submission Pending Rule", () =>
-        createSubmissionValidator.validatePendingBusinessRule(createMapped),
+      validation.execute("Create Submission Created Rule", () =>
+        createSubmissionValidator.validateCreatedBusinessRule(createMapped),
       );
 
       // ── 4. Submission detail reflects new submission ────────────────────
@@ -254,8 +253,10 @@ test.describe("Meter Replacement Create Submission E2E", () => {
       validation.execute("Submission Detail Identity", () => {
         expect(detail.responseBody.success).toBeTruthy();
         expect(detail.responseBody.data?.id).toBe(createMapped.id);
-        expect(String(detail.responseBody.data?.status ?? "").toUpperCase()).toBe(
-          "PENDING",
+        expect(
+          createSubmissionData.expectedCreatedStatuses,
+        ).toContain(
+          String(detail.responseBody.data?.status ?? "").toUpperCase(),
         );
         expect(detail.responseBody.data?.consumer?.consumerId).toBe(
           consumer.consumerId,

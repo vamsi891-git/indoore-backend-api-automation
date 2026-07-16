@@ -1,6 +1,7 @@
 import { expect } from "@playwright/test";
 import {
   BILLING_HISTORY_DEFAULT_SPAN_MONTHS,
+  BILLING_HISTORY_EMPTY_FALLBACK_SPAN_MONTHS,
   billingHistoryContractConsumptionFormulaMeta,
 } from "../Data/billinghistory.data";
 import type {
@@ -298,13 +299,16 @@ export class BillingHistoryValidator {
   /**
    * Widget resilience — unknown consumer/meter routes may return HTTP 200 with
    * an empty IST calendar instead of 404 when meter context cannot be resolved.
+   * Unresolved-meter empty calendars still use the legacy 24-month span.
    */
   validateGracefulEmptyFallback(
     mapped: MappedBillingHistory,
     billingLimit: number,
   ) {
     const expectedCount =
-      billingLimit > 0 ? billingLimit : BILLING_HISTORY_DEFAULT_SPAN_MONTHS;
+      billingLimit > 0
+        ? billingLimit
+        : BILLING_HISTORY_EMPTY_FALLBACK_SPAN_MONTHS;
     this.validateSuccess(mapped.success);
     this.validateRootStructure(mapped.items);
     this.validateRowCount(mapped.items, expectedCount);

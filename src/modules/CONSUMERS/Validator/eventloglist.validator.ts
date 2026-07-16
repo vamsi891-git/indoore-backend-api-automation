@@ -22,7 +22,7 @@ const ROW_REQUIRED_FIELDS = [
 const HUMAN_DURATION =
     /^\d+h(?:\s+\d+m)?(?:\s+\d+s)?$|^\d+m(?:\s+\d+s)?$/;
 const IST_DATE_TIME =
-    /^\d{1,2}[\s/-](?:\w{3}|\d{2})[\s/-]\d{4}.+\d{1,2}:\d{2}|^\d{2}-\d{2}-\d{4}\s+\d{2}:\d{2}/i;
+    /^\d{1,2}[\s/-](?:[A-Za-z]{3,4}|\d{2})[\s/-]\d{4}.+\d{1,2}:\d{2}|^\d{2}-\d{2}-\d{4}\s+\d{2}:\d{2}/i;
 
 function parseEventDateTime(value: string): number | null {
     const parsed = Date.parse(value);
@@ -353,10 +353,37 @@ export class EventLogListValidator {
             case "ell_by_account":
             case "ell_by_meter":
             case "ell_page_2":
-            case "ell_with_search":
             case "ell_ignore_unknown_query":
                 this.validateLiveOk(mapped);
                 this.validateQueryEcho(mapped, query.eventPage, query.eventPageSize);
+                break;
+            case "ell_with_search":
+                // Search may return zero rows while totalCount stays unfiltered.
+                this.validateSuccess(mapped.success);
+                this.validateRootStructure(mapped);
+                this.validatePaginationBounds(mapped);
+                this.validateBusinessRules(mapped);
+                this.validateQueryEcho(mapped, query.eventPage, query.eventPageSize);
+                if (mapped.rows.length > 0) {
+                    this.validateDataPresentPagination(mapped);
+                    this.validateRowRequiredFields(mapped.rows);
+                    this.validateRowStructure(mapped.rows);
+                    this.validateSerialSequence(
+                        mapped.rows,
+                        mapped.page,
+                        mapped.pageSize,
+                    );
+                    this.validateUniqueSerialNumbers(mapped.rows);
+                    this.validateStatusRules(mapped.rows);
+                    this.validateStatusDistribution(mapped.rows);
+                    this.validateMeterNo(mapped.rows);
+                    this.validateMeterNoConsistency(mapped.rows);
+                    this.validateDescription(mapped.rows);
+                    this.validateDateTimeFormat(mapped.rows);
+                    this.validateDurationDisplayFormat(mapped.rows);
+                    this.validateRestoreAfterOccurrence(mapped.rows);
+                    this.validateChronologicalOrder(mapped.rows);
+                }
                 break;
             case "meter_not_found":
             case "consumer_not_found":

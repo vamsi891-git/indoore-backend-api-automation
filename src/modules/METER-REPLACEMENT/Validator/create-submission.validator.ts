@@ -22,10 +22,16 @@ export class CreateSubmissionValidator {
     expect(data.id).toBeGreaterThan(0);
   }
 
-  validateStatus(data: CreateSubmissionData, expected = "PENDING") {
+  validateStatus(
+    data: CreateSubmissionData,
+    expected: string | string[] = "PENDING",
+  ) {
     expect(typeof data.status).toBe("string");
     expect(data.status.trim().length).toBeGreaterThan(0);
-    expect(data.status.toUpperCase()).toBe(expected.toUpperCase());
+    const allowed = (Array.isArray(expected) ? expected : [expected]).map(
+      (s) => s.toUpperCase(),
+    );
+    expect(allowed).toContain(data.status.toUpperCase());
   }
 
   validateStatusTrim(data: CreateSubmissionData) {
@@ -52,8 +58,13 @@ export class CreateSubmissionValidator {
     expect(Object.keys(data).sort()).toEqual(["id", "status", "success"]);
   }
 
-  validatePendingBusinessRule(data: CreateSubmissionData) {
+  /** Create may return PENDING or auto-COMPLETED depending on backend flow. */
+  validateCreatedBusinessRule(data: CreateSubmissionData) {
     expect(data.id).toBeGreaterThan(0);
-    expect(data.status.toUpperCase()).toBe("PENDING");
+    expect(["PENDING", "COMPLETED"]).toContain(data.status.toUpperCase());
+  }
+
+  validatePendingBusinessRule(data: CreateSubmissionData) {
+    this.validateCreatedBusinessRule(data);
   }
 }

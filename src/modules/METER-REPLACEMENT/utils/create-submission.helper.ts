@@ -1,40 +1,53 @@
 import type { APIRequestContext } from "@playwright/test";
-import { CreateMeterApi } from "../../MASTER-DATA/Api/create-meter.api";
-import { buildCreateMeterRequest } from "../../MASTER-DATA/Data/create-meter.data";
-import { CreateMeterMapper } from "../../MASTER-DATA/Mapper/create-meter.mapper";
-import { ensureMeterManufacturerContext } from "../../MASTER-DATA/utils/meter-manufacturer.helper";
 import { ConsumerDetailApi } from "../Api/consumer-detail.api";
-import { MeterValidationApi } from "../Api/meter-validation.api";
 import {
-  buildCreateSubmissionPayload,
+  ConsumerDetail,
+  ConsumerDetailMapper,
+} from "../Mapper/consumer-detail.mapper";
+import {
   createSubmissionData,
   resolvePreferredEligibleConsumerId,
-  type CreateSubmissionRequestBody,
 } from "../Data/create-submission.data";
-import { ConsumerDetailMapper, type ConsumerDetail } from "../Mapper/consumer-detail.mapper";
+import { CreateMeterApi } from "../../MASTER-DATA/Api/create-meter.api";
+import { buildCreateMeterRequest } from "../../MASTER-DATA/Data/create-meter.data";
+import { MeterValidationApi } from "../Api/meter-validation.api";
 import { MeterValidationMapper } from "../Mapper/meter-validation.mapper";
 import { pauseMs } from "./response.helper";
 
-const VALIDATE_SETTLE_MS = 1_500;
-const VALIDATE_RETRIES = 8;
+const PROBE_PACING_MS = 200;
 
-export type EligibleConsumerContext = ConsumerDetail;
+function hasUsableSubmissionIdentity(
+  mapped?: ConsumerDetail | null,
+): boolean {
+  return Boolean(
+    mapped?.consumerId &&
+      Number.isInteger(mapped.oldMeterLookupId) &&
+      mapped.oldMeterLookupId > 0 &&
+      mapped.oldMeterSerial?.trim(),
+  );
+}
 
-export type ProvisionedNewMeter = {
-  meterSerial: string;
-  meterLookupId: number;
-  createMeterStatus: number;
-};
+async function probeConsumerDetail(
+  detailApi: ConsumerDetailApi,
+  consumerId: number,
+): Promise<ConsumerDetail | null> {
+  try {
+    const result = await detailApi.getConsumerDetail(consumerId);
+    if (result.rawResponse.status() !== 200 || !result.responseBody?.data) {
+      return null;
+    }
+    return ConsumerDetailMapper.map(result.responseBody);
+  } catch {
+    return null;
+  }
+}
 
-export type CreateSubmissionReadyContext = {
-  consumer: EligibleConsumerContext;
-  newMeter: ProvisionedNewMeter;
-  payload: CreateSubmissionRequestBody;
-};
-
+/**
+ * Find a replacement-eligible consumer (replacementEligible === true).
+ */
 export async function findEligibleConsumer(
   authenticatedApi: APIRequestContext,
-): Promise<EligibleConsumerContext> {
+): Promise<ConsumerDetail> {
   const detailApi = new ConsumerDetailApi(authenticatedApi);
   const preferred = resolvePreferredEligibleConsumerId();
   const candidates = [
@@ -45,107 +58,148 @@ export async function findEligibleConsumer(
   ];
 
   for (const consumerId of candidates) {
-    const { rawResponse, responseBody } =
-      await detailApi.getConsumerDetail(consumerId);
-
-    if (rawResponse.status() !== 200 || !responseBody?.data) {
-      continue;
-    }
-
-    const mapped = ConsumerDetailMapper.map(responseBody);
+    const mapped = await probeConsumerDetail(detailApi, consumerId);
+    await pauseMs(PROBE_PACING_MS);
     if (
+      mapped &&
       mapped.replacementEligible &&
-      mapped.oldMeterLookupId > 0 &&
-      mapped.oldMeterSerial.trim().length > 0
+      hasUsableSubmissionIdentity(mapped)
     ) {
       return mapped;
     }
   }
 
   throw new Error(
-    "No replacement-eligible consumer found for create-submission tests. " +
-      "Set METER_REPLACEMENT_ELIGIBLE_CONSUMER_ID or free a PENDING consumer.",
+    `No replacement-eligible consumer found. Tried candidates: ${candidates.join(", ")}`,
   );
 }
 
-export async function provisionReplacementNewMeter(
+/**
+ * Any consumer with old-meter identity — used by create-submission negatives
+ * that only need consumerId / oldMeterLookupId (not replacementEligible).
+ */
+export async function findUsableConsumer(
   authenticatedApi: APIRequestContext,
-): Promise<ProvisionedNewMeter> {
-  await ensureMeterManufacturerContext(authenticatedApi);
+): Promise<ConsumerDetail> {
+  const detailApi = new ConsumerDetailApi(authenticatedApi);
+  const preferred = resolvePreferredEligibleConsumerId();
+  const candidates = [
+    ...(preferred != null ? [preferred] : []),
+    ...createSubmissionData.eligibleConsumerCandidates.filter(
+      (id) => id !== preferred,
+    ),
+  ];
 
-  const meterPayload = {
-    ...buildCreateMeterRequest(`mr-sub-${Date.now()}`),
-    meterStatus: true,
-  };
-  const meterSerial = meterPayload.meterSerialNumber;
-
-  const createMeterApi = new CreateMeterApi(authenticatedApi);
-  const createResult = await createMeterApi.createMeter(meterPayload);
-  const mappedCreate = CreateMeterMapper.map(createResult.responseBody);
-
-  if (createResult.rawResponse.status() !== 201) {
-    throw new Error(
-      `Failed to create meter for MR submission: status=${createResult.rawResponse.status()} body=${JSON.stringify(createResult.responseBody)}`,
-    );
+  for (const consumerId of candidates) {
+    const mapped = await probeConsumerDetail(detailApi, consumerId);
+    await pauseMs(PROBE_PACING_MS);
+    if (hasUsableSubmissionIdentity(mapped)) {
+      return mapped as ConsumerDetail;
+    }
   }
 
-  const validateApi = new MeterValidationApi(authenticatedApi);
-  let validateResult = await validateApi.validateMeter(meterSerial);
-  let validateMapped = MeterValidationMapper.map(validateResult.responseBody);
-
-  for (
-    let attempt = 0;
-    attempt < VALIDATE_RETRIES &&
-    !(
-      validateResult.rawResponse.status() === 200 &&
-      validateMapped.valid === true &&
-      validateMapped.meterLookupId > 0
-    );
-    attempt += 1
-  ) {
-    await pauseMs(VALIDATE_SETTLE_MS);
-    validateResult = await validateApi.validateMeter(meterSerial);
-    validateMapped = MeterValidationMapper.map(validateResult.responseBody);
-  }
-
-  if (!validateMapped.valid || validateMapped.meterLookupId <= 0) {
-    throw new Error(
-      `New meter ${meterSerial} not eligible for replacement after create. last=${JSON.stringify(validateResult.responseBody)}`,
-    );
-  }
-
-  return {
-    meterSerial: validateMapped.meterSerial || meterSerial,
-    meterLookupId:
-      validateMapped.meterLookupId ||
-      Number(mappedCreate.data?.meterLookupTblRefId) ||
-      0,
-    createMeterStatus: createResult.rawResponse.status(),
-  };
+  throw new Error(
+    `No usable consumer (with old meter) found. Tried: ${candidates.slice(0, 20).join(", ")}…`,
+  );
 }
 
-export async function prepareCreateSubmissionContext(
+/**
+ * Find or create an eligible consumer for meter replacement happy paths.
+ */
+export async function ensureEligibleConsumer(
   authenticatedApi: APIRequestContext,
-): Promise<CreateSubmissionReadyContext> {
-  const consumer = await findEligibleConsumer(authenticatedApi);
-  const newMeter = await provisionReplacementNewMeter(authenticatedApi);
+): Promise<ConsumerDetail> {
+  try {
+    return await findEligibleConsumer(authenticatedApi);
+  } catch (firstError) {
+    // Broader numeric scan outside the curated list (step 50 to stay under rate limits).
+    const detailApi = new ConsumerDetailApi(authenticatedApi);
+    const already = new Set(createSubmissionData.eligibleConsumerCandidates);
+    for (let id = 5300; id <= 8000; id += 50) {
+      if (already.has(id)) continue;
+      const mapped = await probeConsumerDetail(detailApi, id);
+      await pauseMs(PROBE_PACING_MS);
+      if (
+        mapped &&
+        mapped.replacementEligible &&
+        hasUsableSubmissionIdentity(mapped)
+      ) {
+        return mapped;
+      }
+    }
+    throw firstError instanceof Error
+      ? firstError
+      : new Error(String(firstError));
+  }
+}
 
-  const latitude = Number(consumer.latitude);
-  const longitude = Number(consumer.longitude);
+/**
+ * Negatives that only need a real consumer+old meter identity.
+ */
+export async function ensureUsableConsumer(
+  authenticatedApi: APIRequestContext,
+): Promise<ConsumerDetail> {
+  try {
+    return await findUsableConsumer(authenticatedApi);
+  } catch {
+    return ensureEligibleConsumer(authenticatedApi);
+  }
+}
 
-  const payload = buildCreateSubmissionPayload({
-    consumerId: consumer.consumerId,
-    oldMeterLookupId: consumer.oldMeterLookupId,
-    oldMeterSerial: consumer.oldMeterSerial,
-    newMeterLookupId: newMeter.meterLookupId,
-    newMeterSerial: newMeter.meterSerial,
-    latitude: Number.isFinite(latitude)
-      ? latitude
-      : createSubmissionData.defaultLatitude,
-    longitude: Number.isFinite(longitude)
-      ? longitude
-      : createSubmissionData.defaultLongitude,
-  });
+/**
+ * Create a new unassigned meter and wait until MR validate reports valid:true.
+ */
+export async function provisionReplacementNewMeter(
+  authenticatedApi: APIRequestContext,
+): Promise<{ meterSerial: string; meterLookupId: number }> {
+  const createMeterApi = new CreateMeterApi(authenticatedApi);
+  let lastError = "";
 
-  return { consumer, newMeter, payload };
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const payload = {
+      ...buildCreateMeterRequest(`mr-new-${Date.now()}-${attempt}`),
+      meterStatus: true,
+    };
+    const createResult = await createMeterApi.createMeter(payload);
+    const status = createResult.rawResponse.status();
+    if (status === 201) {
+      const validateApi = new MeterValidationApi(authenticatedApi);
+      let last: ReturnType<typeof MeterValidationMapper.map> | null = null;
+      for (let v = 0; v < 8; v++) {
+        await pauseMs(1_500);
+        const validateResult = await validateApi.validateMeter(
+          payload.meterSerialNumber,
+        );
+        last = MeterValidationMapper.map(validateResult.responseBody);
+        if (last.valid && last.meterLookupId > 0) {
+          return {
+            meterSerial: last.meterSerial || payload.meterSerialNumber,
+            meterLookupId: last.meterLookupId,
+          };
+        }
+      }
+      throw new Error(
+        `New meter ${payload.meterSerialNumber} not eligible after create. last=${JSON.stringify(last)}`,
+      );
+    }
+
+    lastError = `status=${status} body=${JSON.stringify(createResult.responseBody)}`;
+    // Sequence conflicts are transient — retry with a fresh serial.
+    if (status !== 409) {
+      break;
+    }
+    await pauseMs(1_000);
+  }
+
+  throw new Error(`Failed to create meter: ${lastError}`);
+}
+
+/** @deprecated Prefer ensureEligibleConsumer — kept for bulk runtime imports. */
+export async function createAndWaitForEligibleConsumer(
+  _authenticatedApi: APIRequestContext,
+  _maxWaitAttempts = 8,
+): Promise<ConsumerDetail | null> {
+  // Creating a consumer without assigning a meter does not yield an MR-eligible
+  // consumer. Callers should use ensureEligibleConsumer / findEligibleConsumer.
+  return null;
 }

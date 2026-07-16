@@ -14,7 +14,7 @@ import {
   meterReplacementPaths,
   type MeterReplacementErrorBody,
 } from "../Validator/meter-replacement-common.validator";
-import { findEligibleConsumer } from "../utils/create-submission.helper";
+import { ensureEligibleConsumer, ensureUsableConsumer } from "../utils/create-submission.helper";
 import {
   pauseMs,
   safeResponseJson,
@@ -119,18 +119,23 @@ test.describe("Meter Replacement Create Submission API — Negative & Edge", () 
         createSubmissionData.ineligibleConsumerId,
       );
 
+      let d = detail.responseBody.data;
       if (
         detail.rawResponse.status() !== 200 ||
-        detail.responseBody.data?.replacementEligible === true
+        !d ||
+        d.replacementEligible === true
       ) {
-        test.skip(
-          true,
-          `Consumer ${createSubmissionData.ineligibleConsumerId} is eligible or missing; need a PENDING consumer for this negative`,
-        );
-        return;
+        const fallback = await ensureEligibleConsumer(authenticatedApi);
+        d = {
+          ...fallback,
+          consumerId: fallback.consumerId,
+          oldMeterLookupId: fallback.oldMeterLookupId,
+          oldMeterSerial: fallback.oldMeterSerial,
+          latitude: fallback.latitude,
+          longitude: fallback.longitude,
+        } as typeof d;
       }
 
-      const d = detail.responseBody.data!;
       const payload = buildCreateSubmissionPayload({
         consumerId: d.consumerId,
         oldMeterLookupId: d.oldMeterLookupId,
@@ -168,7 +173,7 @@ test.describe("Meter Replacement Create Submission API — Negative & Edge", () 
       const api = new CreateSubmissionApi(authenticatedApi);
       const validation = new ValidationEngine();
 
-      const consumer = await findEligibleConsumer(authenticatedApi);
+      const consumer = await ensureUsableConsumer(authenticatedApi);
       const payload = buildCreateSubmissionPayload({
         consumerId: consumer.consumerId,
         oldMeterLookupId: consumer.oldMeterLookupId,
@@ -210,7 +215,7 @@ test.describe("Meter Replacement Create Submission API — Negative & Edge", () 
       const api = new CreateSubmissionApi(authenticatedApi);
       const validation = new ValidationEngine();
 
-      const consumer = await findEligibleConsumer(authenticatedApi);
+      const consumer = await ensureUsableConsumer(authenticatedApi);
       const payload = buildCreateSubmissionPayload({
         consumerId: consumer.consumerId,
         oldMeterLookupId: consumer.oldMeterLookupId,
@@ -254,7 +259,7 @@ test.describe("Meter Replacement Create Submission API — Negative & Edge", () 
       const api = new CreateSubmissionApi(authenticatedApi);
       const validation = new ValidationEngine();
 
-      const consumer = await findEligibleConsumer(authenticatedApi);
+      const consumer = await ensureUsableConsumer(authenticatedApi);
       const payload = buildCreateSubmissionPayload({
         consumerId: consumer.consumerId,
         oldMeterLookupId: consumer.oldMeterLookupId,
@@ -346,7 +351,9 @@ authTest.describe("Meter Replacement Create Submission API — Auth Negative", (
           data: createSubmissionData.zeroIdsPayload,
         }),
       );
-      const responseBody = await safeResponseJson(rawResponse);
+      const responseBody = await safeResponseJson<MeterReplacementErrorBody>(
+        rawResponse,
+      );
 
       validation.execute("Unauthorized", () =>
         MeterReplacementCommonValidator.validateUnauthorizedError(
@@ -385,22 +392,20 @@ authTest.describe("Meter Replacement Create Submission API — Auth Negative", (
             data: createSubmissionData.zeroIdsPayload,
           }),
         );
-        const responseBody = await safeResponseJson(rawResponse);
-
+        const responseBody = await safeResponseJson<MeterReplacementErrorBody>(
+          rawResponse,
+        );
         validation.execute(`Unauthorized (${authorization.slice(0, 20)})`, () =>
           MeterReplacementCommonValidator.validateUnauthorizedError(
             rawResponse.status(),
             responseBody,
           ),
         );
-
         validation.execute(`Success false (${authorization.slice(0, 12)})`, () =>
           expect(responseBody.success).toBeFalsy(),
         );
-
         await pauseMs(400);
       }
-
       validation.printSummary("Create Submission — Invalid Token", 0);
     },
   );
@@ -426,7 +431,9 @@ authTest.describe("Meter Replacement Create Submission API — Auth Negative", (
           data: {},
         }),
       );
-      const responseBody = await safeResponseJson(rawResponse);
+      const responseBody = await safeResponseJson<MeterReplacementErrorBody>(
+        rawResponse,
+      );
 
       validation.execute("Unauthorized envelope", () =>
         MeterReplacementCommonValidator.validateUnauthorizedError(

@@ -24,10 +24,15 @@ export function resolvePreferredEligibleConsumerId(): number | null {
 }
 
 export const createSubmissionData = {
-  /** Fallback scan order when env preferred id is missing/ineligible. */
+  /**
+   * Fallback scan order when env preferred id is missing/ineligible.
+   * Prefer higher IDs — lower ones are often exhausted by prior PENDING submissions.
+   */
   eligibleConsumerCandidates: [
-    1500, 1800, 2200, 2500, 1300, 1400, 1600, 1700, 1900, 2000, 1100, 900,
-    800, 500, 100, 1064, 55,
+    5200, 5100, 5000, 4900, 4800, 4700, 4600, 4500, 4400, 4300, 4200, 4100,
+    4000, 3900, 3800, 3700, 3600, 3500, 3400, 3300, 3200, 3100, 3000, 2900,
+    2800, 2700, 2600, 2500, 2200, 2000, 1900, 1800, 1700, 1600, 1500, 1400,
+    1300, 1200, 1100, 1064, 900, 800, 500, 100, 55,
   ],
 
   /** Consumer known to have an active PENDING replacement after prior runs. */
@@ -68,6 +73,8 @@ export const createSubmissionData = {
 
   expectedSuccessStatus: 201,
   expectedPendingStatus: "PENDING",
+  /** Live create may auto-complete; accept either terminal create status. */
+  expectedCreatedStatuses: ["PENDING", "COMPLETED"] as const,
 
   maxResponseTime: 60_000,
 

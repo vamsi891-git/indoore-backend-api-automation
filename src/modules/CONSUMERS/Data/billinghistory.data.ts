@@ -8,8 +8,14 @@ import type {
 
 export const billingHistoryMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 
-/** Mirrors backend CONSUMER_BILLING_HISTORY_DEFAULT_SPAN_MONTHS. */
-export const BILLING_HISTORY_DEFAULT_SPAN_MONTHS = 24;
+/** Mirrors backend CONSUMER_BILLING_HISTORY_DEFAULT_SPAN_MONTHS (resolved consumer). */
+export const BILLING_HISTORY_DEFAULT_SPAN_MONTHS = 18;
+
+/**
+ * Unresolved meter routes return getEmptyBillingHistory with the legacy 24-month
+ * IST calendar (still observed for unknown meter-{id} paths).
+ */
+export const BILLING_HISTORY_EMPTY_FALLBACK_SPAN_MONTHS = 24;
 
 /** IVRS from user request; live archive may return all-empty month rows. */
 export const billingHistoryDefaultIvrs = "N3374018980";
@@ -36,8 +42,8 @@ function emptyBillingMonthRow(periodLabel: string): BillingHistoryRow {
   };
 }
 
-/** User-provided billingLimit=0 sample (24 IST months, newest first). */
-const CONTRACT_EMPTY_24_LABELS = [
+/** Live billingLimit=0 sample (18 IST months, newest first). */
+const CONTRACT_EMPTY_DEFAULT_LABELS = [
   "July 2026",
   "June 2026",
   "May 2026",
@@ -56,19 +62,13 @@ const CONTRACT_EMPTY_24_LABELS = [
   "April 2025",
   "March 2025",
   "February 2025",
-  "January 2025",
-  "December 2024",
-  "November 2024",
-  "October 2024",
-  "September 2024",
-  "August 2024",
 ] as const;
 
-const CONTRACT_EMPTY_12_LABELS = CONTRACT_EMPTY_24_LABELS.slice(0, 12);
+const CONTRACT_EMPTY_12_LABELS = CONTRACT_EMPTY_DEFAULT_LABELS.slice(0, 12);
 
 export const billingHistoryContractEmpty24Response: BillingHistoryResponse = {
   success: true,
-  data: CONTRACT_EMPTY_24_LABELS.map((periodLabel) =>
+  data: CONTRACT_EMPTY_DEFAULT_LABELS.map((periodLabel) =>
     emptyBillingMonthRow(periodLabel),
   ),
 };
@@ -228,7 +228,7 @@ export function resolveBillingHistoryContractBody(
 export const billingHistoryTestCases: BillingHistoryTestCase[] = [
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/billing-history?billingLimit=0 — 24 IST month rows",
+      "Validate GET /indore/consumers/{ivrs}/billing-history?billingLimit=0 — 18 IST month rows",
     scenario: "bh_by_ivrs_all",
     tags: ["@smoke", "@consumer", "@billing", "@billing-history"],
   },
@@ -264,7 +264,7 @@ export const billingHistoryTestCases: BillingHistoryTestCase[] = [
   },
   {
     testName:
-      "Contract — billingLimit=0 empty archive with 24 month labels and em-dash summary",
+      "Contract — billingLimit=0 empty archive with default month labels and em-dash summary",
     scenario: "contract_empty_24",
     isContractFixture: true,
     tags: ["@consumer", "@billing", "@billing-history", "@edge"],

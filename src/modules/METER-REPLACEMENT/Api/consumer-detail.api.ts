@@ -14,6 +14,9 @@ export interface ConsumerDetailApiResult {
 }
 
 export class ConsumerDetailApi {
+  detailConsumer(consumerId: number) {
+    throw new Error("Method not implemented.");
+  }
   constructor(private readonly authenticatedApi: APIRequestContext) {}
 
   async getConsumerDetail(
@@ -24,7 +27,7 @@ export class ConsumerDetailApi {
     const response = await withRateLimitRetry(() =>
       getWithAutoRefresh(
         this.authenticatedApi,
-        `/indore/meter-replacement/consumers/${encodePathSegment(consumerId)}`,
+        `/indore/meter-replacement/consumers/${encodePathSegment(String(consumerId))}`,
       ),
     );
 

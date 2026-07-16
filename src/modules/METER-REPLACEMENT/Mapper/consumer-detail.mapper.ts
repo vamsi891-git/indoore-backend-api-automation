@@ -2,6 +2,7 @@ export type MeterStatus = "ACTIVE" | "INACTIVE";
 export type ConsumerStatus = "ACTIVE" | "INACTIVE";
 
 export interface ConsumerDetail {
+  data: any;
   consumer: string;
   ivrs: string;
   rrNumber: string;

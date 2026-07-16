@@ -6,6 +6,7 @@ import { meterValidationData } from "../Data/meter-validation.data";
 import { MeterValidationMapper } from "../Mapper/meter-validation.mapper";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { pauseMs } from "../utils/response.helper";
 import {
   MeterReplacementCommonValidator,
   meterReplacementAuthData,
@@ -37,7 +38,14 @@ test.describe("Meter Replacement Meter Validation API — Negative & Edge", () =
         meterValidationData.zeroMeterSerial,
       ];
 
-      for (const meterSerial of cases) {
+      for (const [index, meterSerial] of cases.entries()) {
+        // Pace requests so this 11-case burst doesn't trip the API's rate
+        // limiter; withRateLimitRetry backs off on individual 429s, but a
+        // tight back-to-back loop was hitting 429 on every single call.
+        if (index > 0) {
+          await pauseMs(300);
+        }
+
         const { rawResponse, responseBody } =
           await api.validateMeter(meterSerial);
 
