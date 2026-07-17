@@ -59,7 +59,7 @@ Important root files:
 - `src/core/` — reusable engines, clients, schemas, auth, DB, reporting, and utilities.
 - `src/modules/` — business/API modules.
 - `scripts/` — module runner, inventory, report processing, Swagger launcher, DB utilities, and manual workbook generation.
-- `.github/workflows/` — full/smoke and module-specific CI workflows.
+- `.github/workflows/` — QA module gate, main promotion policy, full regression, and reusable/manual module CI.
 
 ## 3. Installation and first run
 
@@ -847,17 +847,48 @@ Documentation drift already identified:
 - README previously said 22 modules; filesystem discovery finds 24 (`METER-REPLACEMENT`, `USERS-PROFILE-IMAGE` were missing from the list).
 - README referenced `Global.Setup.ts`; actual file is `src/global.setup.ts`.
 - README previously implied module CI uses 2 workers; module workflow uses 1.
+- Main full regression no longer runs on pull requests; it runs after merge to `main` (QA-gated promotion).
 - README auth token field names (`token`/`refreshToken`/`jwtToken`) do not match current `TokenManager` disk shape (`accessToken`/`expiresAt`/`csrfToken`).
 
 ## 23. CI/CD
+
+### Promotion model
+
+Intended branch flow:
+
+1. Developer creates a module-named branch (example: `dashboard`).
+2. Open PR into `QA` (review/approval only — module suites do **not** run on the open PR).
+3. Merge into `QA`.
+4. `qa-module-gate.yml` runs on the **push to `QA`** (post-merge). It diffs the new tip against the previous QA tip, detects changed modules, and runs each affected suite via the reusable module workflow.
+5. If the post-merge gate fails, changes remain on `QA` until fixed; do not promote.
+6. When the gate is green, open PR from `QA` into `main`.
+7. `main-promotion-policy.yml` fails unless the source branch is exactly `QA` **and** a successful QA Module Gate workflow run exists for that QA tip SHA.
+8. On green policy + approval, merge into `main`.
+9. Push to `main` triggers `playwright.yml` full regression.
+
+Detection script: `scripts/detect-changed-modules.mjs` / `scripts/lib/detect-changed-modules.mjs`.
+
+- Module path changes → those module slugs.
+- Shared runtime/config (`src/core`, `src/fixtures`, global setup, Playwright/package/tsconfig, module runner scripts, workflow files) → all modules.
+- Docs-only (`docs/`, `README.md`, …) → empty matrix; gate still passes.
+- Local check: `npm run test:detect-modules`.
+
+Risk note: module suites run **after** merge to `QA`, and full regression runs **after** merge to `main`. Failed module results stay on `QA` and block promotion to `main` via the promotion policy check.
+
+### Required branch protection
+
+Protect `QA` and `main` with rulesets:
+
+- `QA`: require PR, require approval, block force-push/delete/direct push. Do **not** require **QA Module Gate** on PRs (it runs on push after merge).
+- `main`: require PR, require approval, require check **Main Promotion Policy**, require up-to-date branch, block force-push/delete/direct push.
 
 ### Main workflow
 
 `.github/workflows/playwright.yml`:
 
 - Push to main/master: full suite.
-- Pull request: smoke suite.
-- Manual dispatch: smoke or full.
+- Manual dispatch: smoke or full (default full).
+- Does **not** run on pull requests into main (policy workflow handles those).
 - Node 20 and Java 17.
 - Installs with `npm ci`.
 - Runs TypeScript checking but currently allows typecheck failure to continue (`continue-on-error: true`).
@@ -870,16 +901,36 @@ Documentation drift already identified:
 
 Risk: because typecheck uses `continue-on-error: true`, CI can proceed with TypeScript problems. Treat CI green as test green, not type-clean, until typecheck is made blocking.
 
+### QA module gate
+
+`.github/workflows/qa-module-gate.yml`:
+
+- Triggers on **push** to `QA` (after merge) and optional manual dispatch — **not** on pull requests into `QA`.
+- Diffs the new QA tip against the previous tip (`github.event.before`).
+- Runs a fail-fast-disabled matrix of affected modules.
+- Exposes a stable check job named **QA Module Gate** on the QA commit.
+- Does not deploy Allure to `gh-pages` from matrix jobs (avoids publish races).
+
+### Main promotion policy
+
+`.github/workflows/main-promotion-policy.yml`:
+
+- Triggers on pull requests targeting `main` or `master`.
+- Passes only when the source branch is `QA`.
+- Also requires a successful completed **QA Module Gate** workflow run for the QA tip SHA (blocks promotion while the post-merge module run is missing, in progress, or failed).
+- Exposes a stable required check job named **Main Promotion Policy**.
+
 ### Module workflow
 
-`.github/workflows/playwright-module.yml`:
+`.github/workflows/playwright-module.yml` + `.github/workflows/reusable-module-tests.yml`:
 
-- Manual module slug and all/smoke scope.
+- Manual module slug and all/smoke scope (dispatch entry point).
+- Reusable workflow shared with the QA gate.
 - Runs **one** worker (`PLAYWRIGHT_WORKERS=1`).
 - Lists modules before execution.
 - Uploads module-specific reports and defects.
-- Deploys Allure and optionally emails the result.
-- Note: deploying every module run to the same `gh-pages` branch overwrites the previously published Allure site.
+- Manual runs may deploy Allure and email; QA matrix runs keep artifacts only.
+- Note: deploying a module run to the same `gh-pages` branch overwrites the previously published Allure site.
 
 ## 24. Environment-variable groups
 

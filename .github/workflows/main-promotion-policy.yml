@@ -1,0 +1,103 @@
+name: Main Promotion Policy
+
+on:
+  pull_request:
+    branches: [main, master]
+
+concurrency:
+  group: main-promotion-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: read
+  checks: read
+
+jobs:
+  main-promotion-policy:
+    name: Main Promotion Policy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require source branch QA and green post-merge module gate
+        env:
+          SOURCE_BRANCH: ${{ github.head_ref }}
+          TARGET_BRANCH: ${{ github.base_ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          QA_SHA: ${{ github.event.pull_request.head.sha }}
+          REPO: ${{ github.repository }}
+          API: ${{ github.api_url }}
+        run: |
+          echo "PR #$PR_NUMBER: $SOURCE_BRANCH → $TARGET_BRANCH"
+
+          if [ "$SOURCE_BRANCH" != "QA" ]; then
+            echo "::error title=Main promotion blocked::Pull requests into $TARGET_BRANCH must come from QA (got '$SOURCE_BRANCH')."
+            echo "Flow: module-branch → PR to QA → merge → post-merge module gate on QA → PR from QA to main → merge → full regression on push."
+            exit 1
+          fi
+
+          echo "Promotion source is QA. Checking post-merge QA Module Gate for tip $QA_SHA"
+
+          RESPONSE="$(curl -sS -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "$API/repos/$REPO/actions/workflows/qa-module-gate.yml/runs?head_sha=$QA_SHA&per_page=10")"
+          export RESPONSE
+
+          node <<'NODE'
+          let data;
+          try {
+            data = JSON.parse(process.env.RESPONSE || "");
+          } catch {
+            console.error("Failed to parse GitHub Actions API response");
+            process.exit(1);
+          }
+
+          if (data.message) {
+            console.error(`GitHub API error: ${data.message}`);
+            process.exit(1);
+          }
+
+          const runs = Array.isArray(data.workflow_runs) ? data.workflow_runs : [];
+          const completed = runs.filter((run) => run.status === "completed");
+          const success = completed.find((run) => run.conclusion === "success");
+          const failed = completed.find((run) =>
+            ["failure", "timed_out", "cancelled"].includes(run.conclusion),
+          );
+          const inProgress = runs.find((run) =>
+            ["queued", "in_progress", "pending", "waiting", "requested"].includes(
+              run.status,
+            ),
+          );
+
+          if (success) {
+            console.log(`QA Module Gate succeeded: ${success.html_url}`);
+            process.exit(0);
+          }
+
+          if (inProgress) {
+            console.error(
+              `QA Module Gate is still running for this QA tip: ${inProgress.html_url}`,
+            );
+            console.error(
+              "Wait for the post-merge module run to finish before promoting to main.",
+            );
+            process.exit(1);
+          }
+
+          if (failed) {
+            console.error(
+              `QA Module Gate failed for this QA tip: ${failed.html_url}`,
+            );
+            console.error(
+              "Fix on a module branch, merge to QA again, and wait for a green post-merge gate.",
+            );
+            process.exit(1);
+          }
+
+          console.error(
+            `No completed QA Module Gate workflow found for SHA ${process.env.QA_SHA}`,
+          );
+          console.error(
+            "Merge into QA first so the post-merge module gate runs, then open/update the QA → main PR.",
+          );
+          process.exit(1);
+          NODE

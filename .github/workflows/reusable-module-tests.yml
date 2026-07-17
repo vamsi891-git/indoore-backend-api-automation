@@ -1,40 +1,59 @@
-name: Playwright API Tests
+name: Reusable Module Tests
 
 on:
-  # Full regression runs after QA → main is merged (push), or on manual dispatch.
-  # Module-level gating happens on PRs into QA (qa-module-gate.yml).
-  # PRs into main are policy-checked only (main-promotion-policy.yml).
-  push:
-    branches: [main, master]
-  workflow_dispatch:
+  workflow_call:
     inputs:
-      test_mode:
-        description: Test suite to run
+      module:
+        description: Module slug (energy-audits, auth, utils-lookup, …)
         required: true
-        default: full
-        type: choice
-        options:
-          - smoke
-          - full
+        type: string
+      scope:
+        description: all or smoke
+        required: false
+        type: string
+        default: all
+      deploy_allure:
+        description: Publish Allure report to gh-pages (disable for matrices)
+        required: false
+        type: boolean
+        default: false
+      send_email:
+        description: Send SMTP report email when configured
+        required: false
+        type: boolean
+        default: false
+    outputs:
+      module:
+        description: Module slug that was tested
+        value: ${{ jobs.module-test.outputs.module }}
+      scope:
+        description: Scope that was tested
+        value: ${{ jobs.module-test.outputs.scope }}
+      result:
+        description: Job result
+        value: ${{ jobs.module-test.result }}
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: reusable-module-${{ inputs.module }}-${{ inputs.scope }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  test:
-    name: Run API tests
+  module-test:
+    name: "${{ inputs.module }} (${{ inputs.scope }})"
     runs-on: ubuntu-latest
-    timeout-minutes: 300
+    timeout-minutes: 60
     permissions:
       contents: write
+    outputs:
+      module: ${{ inputs.module }}
+      scope: ${{ inputs.scope }}
 
     env:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
-      PLAYWRIGHT_WORKERS: 2
+      PLAYWRIGHT_WORKERS: 1
       BASE_URL: ${{ secrets.BASE_URL }}
       EMAIL: ${{ secrets.EMAIL }}
       USERNAME: ${{ secrets.USERNAME }}
@@ -48,7 +67,6 @@ jobs:
       INVITE_E2E_INVITATION_ID: ${{ secrets.INVITE_E2E_INVITATION_ID }}
       REPORT_MAIL_TO: vamsibst@gmail.com
       MASTER_DATA_SKIP_BACKEND_DEFECTS: ${{ vars.MASTER_DATA_SKIP_BACKEND_DEFECTS || '0' }}
-      # PostgreSQL — optional API-vs-DB validation (set DB_* repository secrets)
       DB_HOST: ${{ secrets.DB_HOST }}
       DB_PORT: ${{ secrets.DB_PORT || '5432' }}
       DB_USER: ${{ secrets.DB_USER }}
@@ -56,7 +74,6 @@ jobs:
       DB_NAME: ${{ secrets.DB_NAME || 'mdms_indore' }}
       DB_SSL: ${{ secrets.DB_SSL || 'false' }}
       DB_ARCHIVE_NAME: ${{ secrets.DB_ARCHIVE_NAME || 'mdms_indore_archive' }}
-      # Master Data — bulk upload / create (defaults from .env.example; override via secrets)
       BULK_DTR_ZONE_NAME: ${{ secrets.BULK_DTR_ZONE_NAME || 'Hawabangla' }}
       BULK_DTR_SUBSTATION_NAME: ${{ secrets.BULK_DTR_SUBSTATION_NAME || 'PragatiNagar' }}
       BULK_DTR_FEEDER_NAME: ${{ secrets.BULK_DTR_FEEDER_NAME || 'PARMANU NAGAR(CHQ)' }}
@@ -64,11 +81,27 @@ jobs:
       BULK_DTR_METER_PHASE: ${{ secrets.BULK_DTR_METER_PHASE || '1 PH' }}
       BULK_METER_MANUFACTURER_NAME: ${{ secrets.BULK_METER_MANUFACTURER_NAME || 'L&T' }}
       BULK_CONSUMER_DTR_NAME: ${{ secrets.BULK_CONSUMER_DTR_NAME || 'RJ662' }}
+      BULK_CONSUMER_CATEGORY_NAME: ${{ secrets.BULK_CONSUMER_CATEGORY_NAME || 'Commercial' }}
+      BULK_CONSUMER_CONNECTION_STATUS_NAME: ${{ secrets.BULK_CONSUMER_CONNECTION_STATUS_NAME || 'Connected' }}
+      BULK_CONSUMER_CONNECTION_TYPE_NAME: ${{ secrets.BULK_CONSUMER_CONNECTION_TYPE_NAME || 'Prepaid' }}
+      BULK_CONSUMER_BILLING_CYCLE_NAME: ${{ secrets.BULK_CONSUMER_BILLING_CYCLE_NAME || 'Monthly' }}
+      BULK_CONSUMER_TOD_NAME: ${{ secrets.BULK_CONSUMER_TOD_NAME || 'NO TOD LT' }}
       CREATE_DTR_ORGANISATION_LOOKUP_ID: ${{ secrets.CREATE_DTR_ORGANISATION_LOOKUP_ID || '30' }}
       CREATE_DTR_SUBSTATION_NETWORK_LOOKUP_ID: ${{ secrets.CREATE_DTR_SUBSTATION_NETWORK_LOOKUP_ID || '3' }}
       CREATE_DTR_FEEDER_NETWORK_LOOKUP_ID: ${{ secrets.CREATE_DTR_FEEDER_NETWORK_LOOKUP_ID || '4' }}
       CREATE_DTR_EXISTS_CODE: ${{ secrets.CREATE_DTR_EXISTS_CODE || 'RJ662' }}
-      # Master Data — validate-meter serials (environment-specific; set as repository secrets)
+      CREATE_DTR_MAIN_SUB_METER_TBL_REF_ID: ${{ secrets.CREATE_DTR_MAIN_SUB_METER_TBL_REF_ID || '1' }}
+      CREATE_DTR_METER_PHASE_TBL_REF_ID: ${{ secrets.CREATE_DTR_METER_PHASE_TBL_REF_ID || '1' }}
+      CREATE_METER_DEVICE_MANUFACTURER_TBL_REF_ID: ${{ secrets.CREATE_METER_DEVICE_MANUFACTURER_TBL_REF_ID || '2' }}
+      CREATE_METER_METER_MODEL_TBL_REF_ID: ${{ secrets.CREATE_METER_METER_MODEL_TBL_REF_ID || '1' }}
+      CREATE_CONSUMER_ORGANISATION_LOOKUP_ID: ${{ secrets.CREATE_CONSUMER_ORGANISATION_LOOKUP_ID || '30' }}
+      CREATE_CONSUMER_CATEGORY_TBL_REF_ID: ${{ secrets.CREATE_CONSUMER_CATEGORY_TBL_REF_ID || '3' }}
+      CREATE_CONSUMER_CONNECTION_STATUS_TBL_REF_ID: ${{ secrets.CREATE_CONSUMER_CONNECTION_STATUS_TBL_REF_ID || '1' }}
+      CREATE_CONSUMER_METER_PHASE_TBL_REF_ID: ${{ secrets.CREATE_CONSUMER_METER_PHASE_TBL_REF_ID || '1' }}
+      CREATE_CONSUMER_CONNECTION_TYPE_TBL_REF_ID: ${{ secrets.CREATE_CONSUMER_CONNECTION_TYPE_TBL_REF_ID || '1' }}
+      CREATE_CONSUMER_BILLING_CYCLE_TBL_REF_ID: ${{ secrets.CREATE_CONSUMER_BILLING_CYCLE_TBL_REF_ID || '1' }}
+      CREATE_CONSUMER_TOD_TBL_REF_ID: ${{ secrets.CREATE_CONSUMER_TOD_TBL_REF_ID || '1' }}
+      CREATE_CONSUMER_MAIN_SUB_METER_TBL_REF_ID: ${{ secrets.CREATE_CONSUMER_MAIN_SUB_METER_TBL_REF_ID || '1' }}
       VALIDATE_DTR_METER_VALID_SERIAL: ${{ secrets.VALIDATE_DTR_METER_VALID_SERIAL }}
       VALIDATE_DTR_METER_ON_DTR_SERIAL: ${{ secrets.VALIDATE_DTR_METER_ON_DTR_SERIAL }}
       VALIDATE_DTR_METER_INACTIVE_SERIAL: ${{ secrets.VALIDATE_DTR_METER_INACTIVE_SERIAL }}
@@ -109,11 +142,10 @@ jobs:
           else
             echo "All optional secrets configured."
           fi
-          echo "Master Data hierarchy: zone=$BULK_DTR_ZONE_NAME substation=$BULK_DTR_SUBSTATION_NAME feeder=$BULK_DTR_FEEDER_NAME"
-          echo "Create DTR lookups: org=$CREATE_DTR_ORGANISATION_LOOKUP_ID substation=$CREATE_DTR_SUBSTATION_NETWORK_LOOKUP_ID feeder=$CREATE_DTR_FEEDER_NETWORK_LOOKUP_ID"
+          echo "Module: ${{ inputs.module }} (scope: ${{ inputs.scope }})"
           echo "MASTER_DATA_SKIP_BACKEND_DEFECTS=${MASTER_DATA_SKIP_BACKEND_DEFECTS:-0}"
           if [ -z "$DB_HOST" ]; then
-            echo "::notice title=DB tests will skip::Add DB_HOST, DB_USER, DB_PASSWORD secrets to run master-data.db.spec.ts (@db)"
+            echo "::notice title=DB tests will skip::Add DB_HOST, DB_USER, DB_PASSWORD secrets to run @db suites"
           fi
 
       - name: Setup Node.js
@@ -131,21 +163,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Typecheck
-        run: npm run typecheck
-        continue-on-error: true
+      - name: List available modules
+        run: node scripts/run-module-tests.mjs list
 
-      - name: Run Playwright tests
+      - name: Run module tests
         run: |
-          MODE="full"
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            MODE="${{ github.event.inputs.test_mode }}"
-          fi
-          echo "Running test mode: $MODE (post-merge full regression on push to main/master)"
-          if [ "$MODE" = "smoke" ]; then
-            npm run test:smoke
+          SCOPE="${{ inputs.scope }}"
+          MODULE="${{ inputs.module }}"
+          if [ "$SCOPE" = "smoke" ]; then
+            node scripts/run-module-tests.mjs "$MODULE" --smoke
           else
-            npm test
+            node scripts/run-module-tests.mjs "$MODULE"
           fi
 
       - name: Write Allure environment
@@ -161,18 +189,17 @@ jobs:
         run: |
           if [ -d allure-report ]; then
             zip -r allure-report.zip allure-report
-          else
-            echo "No allure-report folder — skipping zip"
           fi
 
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-${{ inputs.module }}-${{ inputs.scope }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             playwright-report/
             reports/playwright-results.json
+            reports/defects/
             test-results/
           retention-days: 14
 
@@ -180,7 +207,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: allure-report
+          name: allure-report-${{ inputs.module }}-${{ inputs.scope }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             allure-report/
             allure-results/
@@ -188,7 +215,7 @@ jobs:
           retention-days: 14
 
       - name: Deploy Allure to gh-pages branch
-        if: always()
+        if: always() && inputs.deploy_allure
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -197,16 +224,11 @@ jobs:
           force_orphan: true
           enable_jekyll: false
 
-      - name: GitHub Pages activation reminder
-        if: always()
-        run: |
-          echo "::notice title=Enable GitHub Pages (one-time)::Repo Settings → Pages → Deploy from branch → gh-pages → / (root) → Save. Then open https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
-
   send-report-email:
-    name: Email Allure report link
+    name: Email module Allure report
     runs-on: ubuntu-latest
-    needs: test
-    if: always()
+    needs: module-test
+    if: always() && inputs.send_email
 
     env:
       REPORT_MAIL_TO: vamsibst@gmail.com
@@ -219,7 +241,7 @@ jobs:
         uses: actions/download-artifact@v4
         continue-on-error: true
         with:
-          name: playwright-report
+          name: playwright-report-${{ inputs.module }}-${{ inputs.scope }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: artifact
 
       - name: Restore results JSON for email body
@@ -233,13 +255,15 @@ jobs:
       - name: Build email summary
         if: always()
         env:
-          WORKFLOW_JOB_STATUS: ${{ needs.test.result }}
+          WORKFLOW_JOB_STATUS: ${{ needs.module-test.result }}
           ALLURE_REPORT_URL: ${{ format('https://{0}.github.io/{1}/', github.repository_owner, github.event.repository.name) }}
           GITHUB_SERVER_URL: ${{ github.server_url }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_REF_NAME: ${{ github.ref_name }}
           GITHUB_SHA: ${{ github.sha }}
+          MODULE_NAME: ${{ inputs.module }}
+          MODULE_SCOPE: ${{ inputs.scope }}
         run: node scripts/build-allure-email-body.mjs
 
       - name: Check report email configuration
@@ -262,7 +286,7 @@ jobs:
           username: ${{ secrets.SMTP_USERNAME }}
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: >-
-            [${{ needs.test.result }}] Playwright Allure Report —
+            [${{ needs.module-test.result }}] Playwright Module ${{ inputs.module }} (${{ inputs.scope }}) —
             ${{ github.repository }} (${{ github.ref_name }})
           to: ${{ env.REPORT_MAIL_TO }}
           from: ${{ secrets.REPORT_MAIL_FROM || secrets.SMTP_USERNAME }}

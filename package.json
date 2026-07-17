@@ -8,6 +8,8 @@
     "test:smoke": "playwright test --grep @smoke",
     "test:module": "node scripts/run-module-tests.mjs",
     "test:modules:list": "node scripts/run-module-tests.mjs list",
+    "test:detect-modules": "node scripts/detect-changed-modules.mjs --test",
+    "ci:detect-modules": "node scripts/detect-changed-modules.mjs",
     "test:smoke:energy-audit": "playwright test src/modules/ENERGY-AUDITS/tests --grep @smoke",
     "test:energy-audit": "node scripts/run-module-tests.mjs energy-audits",
     "test:hes": "playwright test src/modules/HES-COMMANDS/tests --workers=1",
