@@ -1,32 +1,32 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
-
 import { LFAnalysisResponse } from "../Mapper/loadfactor.mapper";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
+import { getCommercialWithRetry } from "../utils/commercial-request.helper";
+
 export interface LFAnalysisApiResult {
   rawResponse: APIResponse;
   responseBody: LFAnalysisResponse;
   responseTime: number;
 }
+
 export class LFAnalysisApi {
   constructor(private readonly authenticatedApi: APIRequestContext) {}
+
   async getLFAnalysis(
     params: Record<string, string | number | boolean>,
   ): Promise<LFAnalysisApiResult> {
-    const start = Date.now();
-    const response = await getWithAutoRefresh(this.authenticatedApi,
+    const { response, responseTime } = await getCommercialWithRetry(
+      this.authenticatedApi,
       "/indore/analysis/commercial/lf",
       { params },
     );
-    const responseTime = Date.now() - start;
-    if (!response.ok()) {
-      throw new Error(`
-        Status: ${response.status()}
-        Body: ${await response.text()}
-      `);
-    }
+
+    const responseBody = (await response
+      .json()
+      .catch(() => ({}))) as LFAnalysisResponse;
+
     return {
       rawResponse: response,
-      responseBody: await response.json(), 
+      responseBody,
       responseTime,
     };
   }

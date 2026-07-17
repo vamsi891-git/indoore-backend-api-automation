@@ -206,7 +206,11 @@ export class DtrDailyThresholdChartValidator {
                 point.apparentEnergyKvah,
             );
             if (fromEnergy == null) return;
-            expect(point.powerFactor).toBe(fromEnergy);
+            // PF and energy values are rounded independently by the meter/API.
+            // Allow a two-decimal-point drift (for example, 0.99 vs 1.00).
+            expect(Math.abs(point.powerFactor - fromEnergy)).toBeLessThanOrEqual(
+                0.02,
+            );
         });
     }
 
@@ -309,17 +313,10 @@ export class DtrDailyThresholdChartValidator {
         this.validatePeriod(mapped.period, "hourly");
         this.validateContractPoints(mapped.period, mapped.points);
         const meta = dtrDailyThresholdContractReactiveMeta;
-        expect(mapped.points[0].reactiveEnergyKvarh).toBe(
-            meta.expectedReactiveKvarh,
-        );
-        expect(mapped.points[0].reactiveEnergyKvarh).toBe(
-            deriveReactiveEnergyKvarh(
-                meta.activeEnergyKwh,
-                meta.apparentEnergyKvah,
-            ),
+        expect(mapped.points[0].reactiveEnergyKvarh).toBe(meta.expectedReactiveKvarh,);
+        expect(mapped.points[0].reactiveEnergyKvarh).toBe(deriveReactiveEnergyKvarh(meta.activeEnergyKwh,meta.apparentEnergyKvah,),
         );
     }
-
     validatePfContract(mapped: MappedDtrDailyThresholdChart): void {
         this.validateSuccess(mapped.success);
         this.validateFields(mapped);
@@ -327,11 +324,7 @@ export class DtrDailyThresholdChartValidator {
         this.validateContractPoints(mapped.period, mapped.points);
         const meta = dtrDailyThresholdContractPfMeta;
         expect(mapped.points[0].powerFactor).toBe(meta.expectedPowerFactor);
-        expect(mapped.points[0].powerFactor).toBe(
-            derivePowerFactorFromEnergy(
-                meta.activeEnergyKwh,
-                meta.apparentEnergyKvah,
-            ),
+        expect(mapped.points[0].powerFactor).toBe(derivePowerFactorFromEnergy(meta.activeEnergyKwh,meta.apparentEnergyKvah,),
         );
     }
 

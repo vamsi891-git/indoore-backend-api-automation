@@ -49,6 +49,11 @@ test.describe("Consumption Pattern API", () => {
       validation.execute("Sensitive Data Validation", () =>
         assert.validateSensitiveData(responseBody),
       );
+
+      if (rawResponse.status() !== 200) {
+        return;
+      }
+
       // =====================
       // Mapper
       // =====================

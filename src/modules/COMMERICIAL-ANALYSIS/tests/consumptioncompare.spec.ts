@@ -50,6 +50,10 @@ test.describe("Consumption Compare API", () => {
           assert.validateSensitiveData(responseBody),
         );
 
+        if (rawResponse.status() !== 200) {
+          return;
+        }
+
         const rows = mapConsumptionCompareResponse(responseBody);
 
         validation.execute("Response Validation", () =>

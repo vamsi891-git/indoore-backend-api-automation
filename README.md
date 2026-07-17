@@ -98,10 +98,10 @@ npx playwright test src/modules/REPORTS
 
 ## Authentication
 
-- **Global setup:** `src/Global.Setup.ts` (configured in `playwright.config.ts`)
-- **Flow:** API login via `POST /indore/auth/login` using `BASE_URL`, `EMAIL`, and `PASSWORD`
-- **Output:** `playwright/.auth/token.json` (`token`, `refreshToken`, `jwtToken`)
-- **Tests:** `src/fixtures/api.fixture.ts` provides `authenticatedApi` with a Bearer token from that file
+- **Global setup:** `src/global.setup.ts` (configured in `playwright.config.ts`)
+- **Flow:** API login via `POST /indore/auth/login` using `BASE_URL`, `EMAIL`/`USERNAME`, and `PASSWORD` (plus CSRF; optional `DEVICE_ID`)
+- **Output:** `playwright/.auth/token.json` (`accessToken`, `expiresAt`, optional `csrfToken`)
+- **Tests:** `src/fixtures/api.fixture.ts` provides `authenticatedApi`; request wrappers inject Bearer/CSRF and refresh on 401
 
 ## Project layout
 
@@ -109,8 +109,8 @@ npx playwright test src/modules/REPORTS
 src/
   core/                 # Shared client, assertion/validation engines, models
   fixtures/             # Playwright test extensions (authenticated API)
-  Global.Setup.ts       # One-time API login before tests
-  modules/               # 22 modules — run `npm run test:modules:list` for slugs
+  global.setup.ts       # One-time API login before tests
+  modules/               # 24 modules — run `npm run test:modules:list` for slugs
     ASSET-MANAGEMENT/
     AUDIT-LOGS/
     AUTH/
@@ -124,6 +124,7 @@ src/
     FEEDER/
     HES-COMMANDS/
     MASTER-DATA/
+    METER-REPLACEMENT/
     MIS-DASHBOARD/
     MODULES-PERMISSIONS/
     NOTIFICATIONS/
@@ -132,6 +133,7 @@ src/
     ROLE-PERMISSIONS/
     TECHNICAL-ANALYSIS/
     USERS-ADMIN/
+    USERS-PROFILE-IMAGE/
     UTILS-LOOKUP/
 ```
 
@@ -211,7 +213,7 @@ Workflows:
 3. **module:** slug, e.g. `energy-audits`, `auth`, `hes-commands` (run `npm run test:modules:list` locally for the full list)
 4. **scope:** `all` = every test in that module’s `tests/` folder; `smoke` = `@smoke` only
 
-The job uses **2 parallel workers** (`PLAYWRIGHT_WORKERS=2`). On **pull requests**, the main workflow runs `npm run test:smoke` only; on **push to main/master** it runs the full suite (`npm test`). When the run finishes (pass or fail), it generates an **Allure** report and uploads artifacts. If SMTP secrets are configured, the Allure report is emailed to the developer inbox as `allure-report.zip`.
+The **module** job uses **1 worker** (`PLAYWRIGHT_WORKERS=1`). The **main** workflow uses **2 workers**. On **pull requests**, the main workflow runs `npm run test:smoke` only; on **push to main/master** it runs the full suite (`npm test`). When the run finishes (pass or fail), it generates an **Allure** report and uploads artifacts. If SMTP secrets are configured, the Allure report is emailed to the developer inbox as `allure-report.zip`.
 
 Set `PLAYWRIGHT_WORKERS=1` in `.env` if you see token refresh races locally.
 

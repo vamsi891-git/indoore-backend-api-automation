@@ -12,8 +12,7 @@ export function registerLossAnalysisTrendsTest(
   label: string,
   buildQuery: () => LossAnalysisTrendsQuery,
 ): void {
-  test(
-    `Validate ${label} loss analysis trends`,
+  test(`Validate ${label} loss analysis trends`,
     {
       tag: ["@smoke", "@energy-audit", "@loss-analysis-trends", `@${label}`],
     },
@@ -23,7 +22,6 @@ export function registerLossAnalysisTrendsTest(
       const { rawResponse, responseBody, responseTime } =
         await api.getLossAnalysisTrends(query);
       const data = mapLossAnalysisTrendsData(responseBody);
-
       const defectContext = {
         module: "ENERGY-AUDITS",
         endpoint: rawResponse.url(),

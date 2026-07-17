@@ -9,8 +9,8 @@ import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 
 test.describe("Commercial Summary API", () => {
-    test.describe.configure({ retries: 3 });
-    test.setTimeout(600_000);
+    test.describe.configure({ retries: 2 });
+    test.setTimeout(480_000);
 
     test(
         "Validate Commercial Summary API",
@@ -32,7 +32,7 @@ test.describe("Commercial Summary API", () => {
                 reportGroups,
             } = commercialSummaryData;
 
-            const { rawResponse, responseBody, responseTime } =
+            const { rawResponse, responseBody, responseTime, attempts } =
                 await api.getCommercialSummary(month, year, pfThreshold);
 
             await PerformanceTracker.track(
@@ -47,9 +47,17 @@ test.describe("Commercial Summary API", () => {
             const validator = new CommercialSummaryValidator();
 
             try {
-                validation.execute("Status", () =>
-                    assert.validateStatusCode(rawResponse, 200, responseBody),
-                );
+                validation.execute("Status", () => {
+                    if (
+                        rawResponse.status() === 500 &&
+                        responseBody?.error?.code === "INTERNAL_ERROR"
+                    ) {
+                        throw new Error(
+                            `Expected status 200 but received 500 INTERNAL_ERROR after ${attempts} client retry attempt(s). Body: ${JSON.stringify(responseBody)}`,
+                        );
+                    }
+                    assert.validateStatusCode(rawResponse, 200, responseBody);
+                });
                 validation.execute("Content Type", () =>
                     assert.validateContentType(rawResponse),
                 );

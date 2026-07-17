@@ -84,67 +84,39 @@ export class LossAnalysisValidator {
     expect(view.rows.length).toBeGreaterThan(0);
   }
 
-  validateSlNoSequence(
-    rows: LossAnalysisRow[],
-    query: Pick<LossAnalysisQuery, "page" | "limit">,
-  ): void {
+  validateSlNoSequence(rows: LossAnalysisRow[],query: Pick<LossAnalysisQuery, "page" | "limit">,): void {
     const base = (query.page - 1) * query.limit;
     rows.forEach((row, index) => {
       expect(row.slNo).toBe(base + index + 1);
     });
   }
-
-  validateMandatoryFields(
-    rows: LossAnalysisRow[],
-    networkType: LossNetworkType,
-  ): void {
+  validateMandatoryFields(rows: LossAnalysisRow[],networkType: LossNetworkType,): void {
     for (const row of rows) {
       expect(row.id.length).toBeGreaterThan(0);
       expect(row.zone.length).toBeGreaterThan(0);
       expect(row.feeder.length).toBeGreaterThan(0);
-
       if (networkType === "feeder") {
         if (!row.circle?.length) {
-          console.log(
-            `BACKEND FINDING: feeder row ${row.id} (${row.dtrName}) returned circle=null`,
-          );
+          console.log(`BACKEND FINDING: feeder row ${row.id} (${row.dtrName}) returned circle=null`,);
         }
         if (!row.division?.length) {
-          console.log(
-            `BACKEND FINDING: feeder row ${row.id} (${row.dtrName}) returned division=null`,
-          );
+          console.log(`BACKEND FINDING: feeder row ${row.id} (${row.dtrName}) returned division=null`,);
         }
       } else {
         expect(row.circle?.length, `Row ${row.id}: circle is required`).toBeGreaterThan(0);
         expect(row.division?.length, `Row ${row.id}: division is required`).toBeGreaterThan(0);
       }
-
       if (isSummaryRow(row)) {
         continue;
       }
-
-      expect(
-        row.dtrName.length,
-        `Row ${row.id}: dtrName is required for meter-scoped rows`,
-      ).toBeGreaterThan(0);
-      expect(
-        row.meterSerialNumber.length,
-        `Row ${row.id}: meterSerialNumber is required for meter-scoped rows`,
-      ).toBeGreaterThan(0);
-
+      expect(row.dtrName.length,`Row ${row.id}: dtrName is required for meter-scoped rows`,).toBeGreaterThan(0);
+      expect(row.meterSerialNumber.length,`Row ${row.id}: meterSerialNumber is required for meter-scoped rows`,).toBeGreaterThan(0);
       if (networkType === "dtr") {
-        expect(
-          String(row.mf ?? "").trim().length,
-          `Row ${row.id}: mf is required for DTR-scoped loss analysis`,
-        ).toBeGreaterThan(0);
+        expect(String(row.mf ?? "").trim().length,`Row ${row.id}: mf is required for DTR-scoped loss analysis`,).toBeGreaterThan(0);
       }
     }
   }
-
-  validateFieldTypes(
-    rows: LossAnalysisRow[],
-    networkType: LossNetworkType,
-  ): void {
+  validateFieldTypes(rows: LossAnalysisRow[],networkType: LossNetworkType,): void {
     for (const row of rows) {
       expect(typeof row.id).toBe("string");
       expect(typeof row.slNo).toBe("number");
@@ -170,11 +142,7 @@ export class LossAnalysisValidator {
       expect(typeof row.lossPct).toBe("number");
     }
   }
-
-  validateNonNegativeMetrics(
-    rows: LossAnalysisRow[],
-    networkType: LossNetworkType,
-  ): void {
+  validateNonNegativeMetrics(rows: LossAnalysisRow[],networkType: LossNetworkType,): void {
     for (const row of rows) {
       expect(row.inputUnits).toBeGreaterThanOrEqual(0);
       expect(row.totalSoldUnits).toBeGreaterThanOrEqual(0);
@@ -183,11 +151,9 @@ export class LossAnalysisValidator {
       expect(row.billingEfficiencyPct).toBeGreaterThanOrEqual(0);
       expect(row.lossPct).toBeGreaterThanOrEqual(0);
       expect(Number.isInteger(row.consumerCount)).toBe(true);
-
       if (isSummaryRow(row)) {
         continue;
       }
-
       const mfValue = parseMf(row.mf);
       if (networkType === "dtr") {
         expect(mfValue, `Row ${row.id}: mf must be a positive number`).toBeGreaterThan(0);
@@ -200,67 +166,50 @@ export class LossAnalysisValidator {
       }
     }
   }
-
   validateRowIds(rows: LossAnalysisRow[]): void {
     for (const row of rows) {
       if (isSummaryRow(row)) {
         expect(row.id).toMatch(/^row-\d+$/i);
         continue;
       }
-
       if (isMeterScopedRow(row)) {
         expect(row.id).toBe(`meter-${row.meterSerialNumber}`);
       }
     }
   }
-
-  validateNoDuplicateIds(
-    rows: LossAnalysisRow[],
-    networkType: LossNetworkType,
-  ): void {
+  validateNoDuplicateIds(rows: LossAnalysisRow[],networkType: LossNetworkType,): void {
     const meterRows = rows.filter(isMeterScopedRow);
     if (networkType === "feeder") {
       const ids = meterRows.map((row) => row.id);
       const duplicateIds = ids.filter((id, index) => ids.indexOf(id) !== index);
       if (duplicateIds.length > 0) {
-        console.log(
-          `BACKEND FINDING: duplicate feeder row ids detected: ${[...new Set(duplicateIds)].join(", ")}`,
-        );
+        console.log(`BACKEND FINDING: duplicate feeder row ids detected: ${[...new Set(duplicateIds)].join(", ")}`,);
       }
       const keys = meterRows.map(feederRowKey);
       expect(new Set(keys).size).toBe(keys.length);
       return;
     }
-
     const ids = meterRows.map((row) => row.id);
     expect(new Set(ids).size).toBe(ids.length);
   }
-
-  validateNoDuplicateMeterSerials(
-    rows: LossAnalysisRow[],
-    networkType: LossNetworkType,
-  ): void {
+  validateNoDuplicateMeterSerials(rows: LossAnalysisRow[],networkType: LossNetworkType,): void {
     const meterRows = rows.filter(isMeterScopedRow);
     if (networkType === "feeder") {
       const keys = meterRows.map(feederRowKey);
       expect(new Set(keys).size).toBe(keys.length);
       return;
     }
-
     const serials = meterRows.map((row) => row.meterSerialNumber);
     expect(new Set(serials).size).toBe(serials.length);
   }
-
   validateFeederMeterSerialFormat(rows: LossAnalysisRow[]): void {
     for (const row of rows) {
       if (isSummaryRow(row)) {
         continue;
       }
-
       const serial = row.meterSerialNumber.trim();
       expect(serial.length).toBeGreaterThan(0);
       expect(row.id).toBe(`meter-${serial}`);
-
       if (serial.includes(",")) {
         const [dtrSerial, feederSerial] = serial.split(",");
         expect(dtrSerial?.trim().length).toBeGreaterThan(0);
@@ -268,32 +217,25 @@ export class LossAnalysisValidator {
       }
     }
   }
-
   validateFeederScopeConsistency(rows: LossAnalysisRow[]): void {
     const meterRows = rows.filter(isMeterScopedRow);
     const feederNames = [...new Set(meterRows.map((row) => row.feeder))];
     expect(feederNames.length).toBe(1);
     expect(feederNames[0]?.length).toBeGreaterThan(0);
   }
-
   /**
    * DTR scope: one row per DTR — names must be unique on the page.
    * Feeder scope: rows are meter-scoped; the same DTR can have multiple meters
    * (uniqueness is enforced by validateNoDuplicateIds via dtrName::meterSerial).
    */
-  validateNoDuplicateDtrNames(
-    rows: LossAnalysisRow[],
-    networkType: LossNetworkType,
-  ): void {
-    if (networkType === "feeder") {
+  validateNoDuplicateDtrNames(rows: LossAnalysisRow[],networkType: LossNetworkType,): void {
+  if (networkType === "feeder") {
       return;
     }
-
     const meterRows = rows.filter(isMeterScopedRow);
     const names = meterRows.map((row) => row.dtrName);
     expect(new Set(names).size).toBe(names.length);
   }
-
   /**
    * Backend: lossKwh = GREATEST(0, inputUnits - totalSoldUnits)
    * billingEfficiencyPct = (totalSoldUnits / inputUnits) * 100 when inputUnits > 0
@@ -302,38 +244,20 @@ export class LossAnalysisValidator {
   validateLossCalculations(rows: LossAnalysisRow[]): void {
     for (const row of rows) {
       const expectedLoss = Math.max(0, row.inputUnits - row.totalSoldUnits);
-      expect(
-        Math.abs(row.lossKwh - expectedLoss),
-        `DTR ${row.dtrName}: lossKwh ${row.lossKwh} != max(0, input - sold) ${expectedLoss}`,
-      ).toBeLessThanOrEqual(METRIC_EPSILON);
-
+      expect(Math.abs(row.lossKwh - expectedLoss),`DTR ${row.dtrName}: lossKwh ${row.lossKwh} != max(0, input - sold) ${expectedLoss}`,).toBeLessThanOrEqual(METRIC_EPSILON);
       if (row.inputUnits === 0) {
         expect(row.lossKwh).toBe(0);
         expect(row.billingEfficiencyPct).toBe(0);
         expect(row.lossPct).toBe(0);
         continue;
       }
-
       const expectedEfficiency = (row.totalSoldUnits / row.inputUnits) * 100;
       const expectedLossPct = (row.lossKwh / row.inputUnits) * 100;
-
-      expect(
-        Math.abs(row.billingEfficiencyPct - expectedEfficiency),
-        `DTR ${row.dtrName}: billingEfficiencyPct mismatch`,
-      ).toBeLessThanOrEqual(METRIC_EPSILON);
-
-      expect(
-        Math.abs(row.lossPct - expectedLossPct),
-        `DTR ${row.dtrName}: lossPct mismatch`,
-      ).toBeLessThanOrEqual(METRIC_EPSILON);
-
-      expect(
-        Math.abs(row.billingEfficiencyPct + row.lossPct - 100),
-        `DTR ${row.dtrName}: efficiency + loss should equal 100%`,
-      ).toBeLessThanOrEqual(METRIC_EPSILON);
+      expect(Math.abs(row.billingEfficiencyPct - expectedEfficiency),`DTR ${row.dtrName}: billingEfficiencyPct mismatch`,).toBeLessThanOrEqual(METRIC_EPSILON);
+      expect(Math.abs(row.lossPct - expectedLossPct),`DTR ${row.dtrName}: lossPct mismatch`,).toBeLessThanOrEqual(METRIC_EPSILON);
+      expect(Math.abs(row.billingEfficiencyPct + row.lossPct - 100),`DTR ${row.dtrName}: efficiency + loss should equal 100%`,).toBeLessThanOrEqual(METRIC_EPSILON);
     }
   }
-
   validateCrossFieldLogic(view: LossAnalysisPaginatedView): void {
     if (view.totalCount > 0) {
       expect(view.rows.length).toBeGreaterThan(0);

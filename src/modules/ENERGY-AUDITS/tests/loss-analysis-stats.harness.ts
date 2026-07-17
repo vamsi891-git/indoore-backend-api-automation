@@ -12,8 +12,7 @@ export function registerLossAnalysisStatsTest(
   label: string,
   buildQuery: () => LossAnalysisStatsQuery,
 ): void {
-  test(
-    `Validate ${label} loss analysis stats`,
+  test(`Validate ${label} loss analysis stats`,
     {
       tag: ["@smoke", "@energy-audit", "@loss-analysis-stats", `@${label}`],
     },
@@ -23,7 +22,6 @@ export function registerLossAnalysisStatsTest(
       const { rawResponse, responseBody, responseTime } =
         await api.getLossAnalysisStats(query);
       const data = mapLossAnalysisStatsData(responseBody);
-
       const defectContext = {
         module: "ENERGY-AUDITS",
         endpoint: rawResponse.url(),
@@ -33,11 +31,9 @@ export function registerLossAnalysisStatsTest(
         expectedBehavior:
           "DTR-scoped date-range stats: totals echo query; totalLoss=max(0,input-consumption); peakLossHour/lowestLossHour are H1..H24 buckets with matching HH:00 time and lossPct 0..100.",
       };
-
       const assert = new AssertionEngine();
       const validation = new ValidationEngine();
       const validator = new LossAnalysisStatsValidator();
-
       try {
         ApiValidationHelper.runStandardChecks(validation, assert, {
           apiName: `Energy Audit Loss Analysis Stats (${label})`,

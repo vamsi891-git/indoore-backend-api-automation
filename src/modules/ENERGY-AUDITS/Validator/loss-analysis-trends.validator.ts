@@ -77,10 +77,7 @@ export class LossAnalysisTrendsValidator {
     }
   }
 
-  validateCrossFieldLogic(
-    data: LossAnalysisTrendsData,
-    query: LossAnalysisTrendsQuery,
-  ): void {
+  validateCrossFieldLogic(data: LossAnalysisTrendsData,query: LossAnalysisTrendsQuery,): void {
     this.validateQueryEcho(data, query);
     this.validateRootFields(data);
     this.validateItemCount(data.items);
@@ -89,11 +86,7 @@ export class LossAnalysisTrendsValidator {
     this.validateNoDuplicateHours(data.items);
     this.validateHourSequence(data.items);
   }
-
-  validateAll(
-    response: LossAnalysisTrendsResponse,
-    query: LossAnalysisTrendsQuery,
-  ): LossAnalysisTrendsData {
+  validateAll(response: LossAnalysisTrendsResponse,query: LossAnalysisTrendsQuery,): LossAnalysisTrendsData {
     this.validateResponse(response);
     const data = mapLossAnalysisTrendsData(response);
     this.validateCrossFieldLogic(data, query);

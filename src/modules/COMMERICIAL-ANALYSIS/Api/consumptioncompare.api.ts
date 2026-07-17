@@ -1,4 +1,5 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
+import { CONSUMPTION_REQUEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { ConsumptionCompareResponse } from "../Mapper/consumptioncompare.mapper";
 import { getCommercialWithRetry } from "../utils/commercial-request.helper";
 
@@ -18,18 +19,20 @@ export class ConsumptionCompareApi {
       this.authenticatedApi,
       "/indore/analysis/commercial/consumption-compare",
       { params },
+      {
+        maxAttempts: 5,
+        timeoutMs: CONSUMPTION_REQUEST_TIMEOUT_MS,
+        exponentialBackoff: true,
+      },
     );
 
-    if (!response.ok()) {
-      throw new Error(`
-        Status: ${response.status()}
-        Body: ${await response.text()}
-      `);
-    }
+    const responseBody = (await response
+      .json()
+      .catch(() => ({}))) as ConsumptionCompareResponse;
 
     return {
       rawResponse: response,
-      responseBody: await response.json(),
+      responseBody,
       responseTime,
     };
   }

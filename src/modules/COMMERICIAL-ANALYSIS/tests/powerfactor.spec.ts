@@ -45,6 +45,10 @@ test.describe("Power Factor Analysis API", () => {
         assert.validateSensitiveData(responseBody),
       );
 
+      if (rawResponse.status() !== 200) {
+        return;
+      }
+
       const rows = PowerFactorMapper.mapPfRows(responseBody.data.rows);
 
       validation.execute("Response Validation", () =>

@@ -57,10 +57,7 @@ export class DashboardMetricsValidator {
         }
     }
 
-    validateSectionPercentageTotal(
-        group: Record<string, MetricItem>,
-        tolerance = 1,
-    ): void {
+    validateSectionPercentageTotal(group: Record<string, MetricItem>,tolerance = 1,): void {
         const items = Object.values(group);
         if (items.length === 0) {
             return;
@@ -68,7 +65,6 @@ export class DashboardMetricsValidator {
         const total = items.reduce((sum, item) => sum + item.percentage, 0);
         expect(Math.abs(100 - total)).toBeLessThanOrEqual(tolerance);
     }
-
     validateSparkline(group: Record<string, MetricItem>): void {
         Object.values(group).forEach((item) => {
             if (!item.sparkline) {
@@ -80,7 +76,6 @@ export class DashboardMetricsValidator {
             });
         });
     }
-
     validateTrend(group: Record<string, MetricItem>): void {
         Object.values(group).forEach((item) => {
             if (!item.trend) {
@@ -90,11 +85,7 @@ export class DashboardMetricsValidator {
             expect(item.trend.comparisonLabel).toBeTruthy();
         });
     }
-
-    validateConsumerTrends(
-        group: Record<string, MetricItem>,
-        expectedLength = dashboardMetricsConsumerTrendLength,
-    ): void {
+    validateConsumerTrends(group: Record<string, MetricItem>,expectedLength = dashboardMetricsConsumerTrendLength,): void {
         Object.values(group).forEach((item) => {
             if (!item.trends) {
                 return;
@@ -106,11 +97,7 @@ export class DashboardMetricsValidator {
             expect(item.trends.at(-1)).toBe(item.count);
         });
     }
-
-    validateNetworkTrends(
-        group: Record<string, MetricItem>,
-        expectedLength = dashboardMetricsNetworkTrendLength,
-    ): void {
+    validateNetworkTrends(group: Record<string, MetricItem>,expectedLength = dashboardMetricsNetworkTrendLength,): void {
         Object.values(group).forEach((item) => {
             if (!item.trends) {
                 return;
@@ -122,11 +109,9 @@ export class DashboardMetricsValidator {
             expect(item.trends.at(-1)).toBe(item.count);
         });
     }
-
     validateConnectionPercentageTotal(data: MappedDashboardMetrics): void {
         this.validateSectionPercentageTotal(data.connectionStatus);
     }
-
     validateConnectionCounts(data: MappedDashboardMetrics): void {
         const { cd, td, pd } = data.connectionStatus;
         if (!cd || !td || !pd) {
@@ -137,7 +122,6 @@ export class DashboardMetricsValidator {
             expect(activeStatusTotal).toBe(data.totalMeterCount);
         }
     }
-
     validateFleetAlignment(data: MappedDashboardMetrics): void {
         if (data.totalMeterCount == null) {
             return;
@@ -151,7 +135,6 @@ export class DashboardMetricsValidator {
             expect(networkConsumers.count).toBe(data.totalMeterCount);
         }
     }
-
     validateLiveOk(mapped: MappedDashboardMetrics): void {
         this.validateSuccess(mapped.success);
         this.validateFields(mapped);
@@ -175,11 +158,7 @@ export class DashboardMetricsValidator {
         this.validateNetworkHierarchyPercentageTotal(mapped);
         this.validateFleetAlignment(mapped);
     }
-
-    validateNetworkHierarchyPercentageTotal(
-        data: MappedDashboardMetrics,
-        tolerance = 0.5,
-    ): void {
+    validateNetworkHierarchyPercentageTotal(data: MappedDashboardMetrics,tolerance = 0.5,): void {
         const { substations, feeders, dtrs } = data.networkDetails;
         const items = [substations, feeders, dtrs].filter(
             (item): item is MetricItem => item != null,
@@ -202,7 +181,6 @@ export class DashboardMetricsValidator {
         expect(mapped.networkDetails.dtrs?.count).toBe(5281);
         expect(mapped.networkDetails.substations?.percentage).toBe(0.4);
     }
-
     validateConnectionContract(mapped: MappedDashboardMetrics): void {
         this.validateConnectionPercentageTotal(mapped);
         this.validateConnectionCounts(mapped);
@@ -211,7 +189,6 @@ export class DashboardMetricsValidator {
         expect(mapped.connectionStatus.cd?.label).toBe("Connected");
         expect(mapped.connectionStatus.inactive?.count).toBe(0);
     }
-
     validateConsumerTrendsContract(mapped: MappedDashboardMetrics): void {
         this.validateSuccess(mapped.success);
         this.validateConsumerTrends(mapped.consumerType);
@@ -223,7 +200,6 @@ export class DashboardMetricsValidator {
         );
         expect(mapped.consumerType.prepaid?.trends?.at(-1)).toBe(16);
     }
-
     validateNetworkTrendsContract(mapped: MappedDashboardMetrics): void {
         this.validateSuccess(mapped.success);
         this.validateNetworkTrends(mapped.networkDetails);
@@ -234,10 +210,7 @@ export class DashboardMetricsValidator {
         this.validateNetworkHierarchyPercentageTotal(mapped);
     }
 
-    validateScenario(
-        mapped: MappedDashboardMetrics,
-        scenario: DashboardMetricsScenario,
-    ): void {
+    validateScenario(mapped: MappedDashboardMetrics,scenario: DashboardMetricsScenario, ): void {
         switch (scenario) {
             case "contract_live_full":
                 this.validateLiveFullContract(mapped);

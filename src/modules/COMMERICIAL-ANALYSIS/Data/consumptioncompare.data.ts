@@ -2,8 +2,8 @@
 export type ConsumptionCompareType =
   | "Consumption Compare Last Month"
   | "Consumption Compare Same Month Last Year"
-  | "Abnormal High Consumption"
-  | "Abnormal Low Consumption";
+  | "Abnormal High"
+  | "Abnormal Low";
 
 export const consumptionCompareLastMonthData = {
   month: 7,
@@ -14,7 +14,7 @@ export const consumptionCompareLastMonthData = {
 } as const;
 
 export const consumptionCompareSameMonthLastYearData = {
-  month: 12,
+  month: 7,
   year: 2025,
   type: "Consumption Compare Same Month Last Year" as ConsumptionCompareType,
   page: 1,
@@ -22,17 +22,17 @@ export const consumptionCompareSameMonthLastYearData = {
 } as const;
 
 export const consumptionCompareAbnormalHighData = {
-  month: 12,
+  month: 7,
   year: 2025,
-  type: "Abnormal High Consumption" as ConsumptionCompareType,
+  type: "Abnormal High" as ConsumptionCompareType,
   page: 1,
   pageSize: 10,
 } as const;
 
 export const consumptionCompareAbnormalLowData = {
-  month: 12,
+  month: 7,
   year: 2025,
-  type: "Abnormal Low Consumption" as ConsumptionCompareType,
+  type: "Abnormal Low" as ConsumptionCompareType,
   page: 1,
   pageSize: 10,
 } as const;

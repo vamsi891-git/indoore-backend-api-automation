@@ -1,0 +1,189 @@
+﻿Γùç injected env (33) from .env // tip: Γîÿ enable debugging { debug: true }
+Γùç injected env (0) from .env // tip: Γîÿ multiple files { path: ['.env.local', '.env'] }
+
+Running 1 test using 1 worker
+
+[1A[2KΓùç injected env (0) from .env // tip: Γîÿ suppress logs { quiet: true }
+
+
+npx : [1A[2K(node:18500) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At C:\Users\Best Infra\AppData\Local\Temp\ps-script-32bfee17-7375-4132-9cbe-a651eff9c8ca.ps1:82 char:70
++ ... d_testing"; npx playwright test src/modules/MASTER-DATA/tests/probe-c ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([1A[2K(node:1... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+(Use `node --trace-warnings ...` to show where the warning was created)
+[1A[2K[1/1] src\modules\MASTER-DATA\tests\probe-consumer-lookups.spec.ts:13:5 ΓÇ║ probe consumer lookup endpoints
+[1A[2Ksrc\modules\MASTER-DATA\tests\probe-consumer-lookups.spec.ts:13:5 ΓÇ║ probe consumer lookup endpoints
+/indore/utils/consumer-categories [33m200[39m {"success":true,"data":{"items":[{"id":1,"shortName":"SCH","name":"Bhagya Jyothi"},{"id":2,"shortName":"RES","name":"Residential"},{"id":3,"shortName":"COM","name":"Commercial"},{"id":4,"shortName":"AGRI","name":"Agriculture"},{"id":5,"shortName":"SLIGHT","name":"Street Light"},{"id":6,"shortName":"TEMP","name":"Temporary"},{"id":7,"shortName":"IND","name":"Industrial"}]}}
+
+[1A[2K/indore/utils/connection-statuses [33m200[39m {"success":true,"data":{"items":[{"id":1,"name":"Connected","shortName":"CD"},{"id":2,"name":"Disconnected","shortName":"TD"},{"id":3,"name":"Permanent Disconnection","shortName":"PD"}]}}
+
+[1A[2K/indore/utils/meter-phases [33m200[39m {"success":true,"data":{"items":[{"id":1,"name":"1 PH"},{"id":3,"name":"3PH 4CT"},{"id":2,"name":"3PH WC"},{"id":4,"name":"HT"}]}}
+
+[1A[2K/indore/utils/payment-contracts [33m200[39m {"success":true,"data":{"items":[{"id":1,"name":"Prepaid","code":"Prepaid"},{"id":2,"name":"Postpaid","code":"Postpaid"}]}}
+
+[1A[2K/indore/utils/connection-types [33m404[39m <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot GET /utils/connection-types</pre>
+</body>
+</html>
+
+
+[1A[2K/indore/utils/billing-cycles [33m404[39m <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot GET /utils/billing-cycles</pre>
+</body>
+</html>
+
+
+[1A[2K/indore/utils/tods [33m404[39m <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot GET /utils/tods</pre>
+</body>
+</html>
+
+
+[1A[2K/indore/utils/time-of-day [33m404[39m <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot GET /utils/time-of-day</pre>
+</body>
+</html>
+
+
+[1A[2K/indore/utils/main-sub-meters [33m404[39m <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot GET /utils/main-sub-meters</pre>
+</body>
+</html>
+
+
+[1A[2K/indore/utils/meter-types [33m404[39m <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot GET /utils/meter-types</pre>
+</body>
+</html>
+
+
+[1A[2K/indore/utils/billing-cycle [33m404[39m <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot GET /utils/billing-cycle</pre>
+</body>
+</html>
+
+
+[1A[2K/indore/utils/connection-type [33m404[39m <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot GET /utils/connection-type</pre>
+</body>
+</html>
+
+
+[1A[2K/indore/utils/tod [33m404[39m <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot GET /utils/tod</pre>
+</body>
+</html>
+
+
+[1A[2K/indore/utils/main-sub-meter [33m404[39m <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot GET /utils/main-sub-meter</pre>
+</body>
+</html>
+
+
+[1A[2K/indore/utils/lookups/connection-types [33m404[39m <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot GET /utils/lookups/connection-types</pre>
+</body>
+</html>
+
+
+[1A[2K/indore/utils/lookups/billing-cycles [33m404[39m <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Error</title>
+</head>
+<body>
+<pre>Cannot GET /utils/lookups/billing-cycles</pre>
+</body>
+</html>
+
+
+[1A[2Kconsumer-master [33m200[39m {"success":true,"data":{"columns":[{"key":"slNo","header":"Sl No."},{"key":"division","header":"Division"},{"key":"zone","header":"Zone"},{"key":"feeder","header":"Feeder"},{"key":"dtr","header":"DTR"},{"key":"feederNameNew","header":"Feeder Name New"},{"key":"dtrNameNew","header":"DTR Name New"},{"key":"consumerCid","header":"Consumer CID"},{"key":"consumerName","header":"Consumer Name"},{"key":"consumerAddress","header":"Consumer Address"},{"key":"consumerMobileNumber","header":"Mobile No."},{"key":"category","header":"Category"},{"key":"sanctionedLoadKw","header":"Sanctioned Load kW"},{"key":"ivrsNo","header":"IVRS No."},{"key":"existingIvrsNo","header":"Existing IVRS No."},{"key":"meterSerialNumber","header":"Meter Serial Number"},{"key":"meterPhase","header":"Phase"},{"key":"mf","header":"MF"},{"key":"installationDate","header":"Installation Date"},{"key":"latitude","header":"Latitude"},{"key":"longitude","header":"Longitude"},{"key":"meterLookupTblRefId","header":"Meter Lookup Tbl Ref ID"},{"key":"connectedToDcu","header":"Connected to DCU"},{"key":"lsCount","header":"LS Count"},{"key":"dpCount","header":"DP Count"}],"rows":[{"id":"9921425000","slNo":1,"division":"West","zone
+
+[1A[2K[meter-manufacturer] resolved name="L&T" id=2
+
+[1A[2K[validate-meter-runtime] add-valid=98765432 add-exists=CM1783413851 dtr-valid=CM1783408283 dtr-on-dtr=19272331 dtr-inactive=7060268 dtr-assigned=85080223
+
+[1A[2Knetwork-hierarchy [33m200[39m {"success":true,"data":{"hierarchy":[{"networkLookupId":820,"networkCode":"SS06","networkName":"Airport Grid","hierarchyLevel":"Sub Station","children":[{"networkLookupId":821,"networkCode":"WI35","networkName":"B.S.F.(CHQ)","hierarchyLevel":"Feeder","children":[],"dtrs":[{"networkLookupId":822,"dtrCode":"WI351","dtrName":"WI351","dtrMeter":{"meterLookupId":53849,"meterSerialNumber":"00256931","latitude":"22.7252619000000000","longitude":"75.8223750000000000"},"consumerCount":231},{"networkLookupId":823,"dtrCode":"WI3510","dtrName":"WI3510","dtrMeter":{"meterLookupId":53579,"meterSerialNumber":"85129541","latitude":"22.7252673000000000","longitude":"75.8230714000000000"},"consumerCount":333},{"networkLookupId":824,"dtrCode":"WI3511","dtrName":"WI3511","dtrMeter":{"meterLookupId":54095,"meterSerialNumber":"85129511","latitude":"22.7247722000000000","longitude":"75.8237144000000000"},"consumerCount":14},{"networkLookupId":825,"dtrCode":"WI3512","dtrName":"WI3512","dtrMeter":{"meterLookupId":54150,"meterSerialNumber":"85129888","latitude":"22.7241657000000000","longitude":"75.8234964000000000"},"consumerCount":275},{"networkLookupId":826,"dtrCode":"WI3513","dtrName":"WI3513","dtrMeter":{"meterLookupId":55876,"meterSerialNumber":"85132449","latitude":"22.7225702000000000","longitude":"75.8232980000000000"},"consumerCount":283},{"networkLookupId":827,"dtrCode":"WI3514","dtrName":"WI3514","dtrMeter":{"meterLookupId":61940,"meterSerialNumber":"00253667","latitude":"22.7221190000000000","longitude":"75.8255290000000000"},"consumerCount":49},{"networkLookupId":828,"dtrCode":"WI3515","dtrName":"WI3515","dtrMeter":{"meterLookupId":56193,"meterSerialNumber":"18177356","latitude":"22.7232157332915000","longitude":"75.8248555697430360"},"consumerCount":312},{"networkLookupId":829,"dtrCode":"WI3516","dtrName":"WI3516","dtrMeter":{"meterLookupId":62211,"meterSerialNumber":"85137796","latitude":"22.7214438000000000","longitude":"75.8257282000000000"},"consumerCount":46},{"networkLookupId":830,"dtrCode":"WI3517","dtrName":"WI3517","dtrMeter":{"meterLookupId":60164,"meterSerialNumber":"85136298","latitude":"22.7199067000000000","longitude":"75.8239201000000000"},"consumerCount":406},{"networkLookupId":831,"dtrCode":"WI3518","dtrName":"WI3518","dtrMeter":{"meterLookupId":59547,"meterSerialNumber":"85135017","latitude":"75.8233290000000000","longitude":"22.7200520000000000"},"consumerCount":237},{"networkLookupId":832,"dtrCode":"WI3519","dtrName":"WI3519","dtrMeter":{"meterLookupId":62523,"meterSerialNumber":"85138148","latitude":"22.7205669000000000","longitude":"75.8253039000000000"},"consumerCount":190},{"networkLookupId":833,"dtrCode":"WI352","dtrName":"WI352","dtrMeter":{"meterLookupId":65332,"meterSerialNumber":"88013656","latitude":"75.8163910000000000","longitude":"22.7211600000000000"},"consumerCount":70},{"networkLookupId":834,"dtrCode":"WI3520","dtrName":"WI3520","dtrMeter":{"meterLookupId":56767,"meterSerialNumber":"85139047","latitude":"22.7190224037110120","longitude":"75.8275135062103370"},"consumerCount":621},{"networkLookupId":835,"dtrCode":"WI3521","dtrName":"WI3521","dtrMeter":{"meterLookupId":58988,"meterSerialNumber":"85135002","latitude":"75.8223660000000000","longitude":"22.7198840000000000"},"consumerCount":117},{"networkLookupId":836,"dtrCode":"WI3522","dtrName":"WI3522","dtrMeter":{"meterLookupId":56869,"meterSerialNumber":"85133915","latitude":"22.7218997000000000","longitude":"75.8221915000000000"},"consumerCount":45},{"networkLookupId":837,"dtrCode":"WI3523","dtrName":"WI3523","dtrMeter":{"meterLookupId":55450,"meterSerialNumber":"85130236","latitude":"22.7250711000000000","longitude":"75.8208922000000000"},"consumerCount":179},{"networkLookupId":838,"dtrCode":"WI3524","dtrName":"WI3524","dtrMeter":{"meterLookupId":55309,"meterSerialNumber":"85130137","latitude":"22.7245504000000000","longitude":"75.8218303000000000"},"consumerCount":100},{"networkLookupId":839,"dtrCode":"WI3525","dtrName":"WI3525","dtrMeter":{"meterLo
+
+[1A[2KTOD=1 [33m400[39m VALIDATION_FAILED subStationNetworkLookupId is required feederNetworkLookupId is required
+
+[1A[2KTOD=2 [33m400[39m VALIDATION_FAILED subStationNetworkLookupId is required feederNetworkLookupId is required
+
+[1A[2KTOD=3 [33m400[39m VALIDATION_FAILED subStationNetworkLookupId is required feederNetworkLookupId is required
+
+[1A[2KTOD=4 [33m400[39m VALIDATION_FAILED subStationNetworkLookupId is required feederNetworkLookupId is required
+
+[1A[2KTOD=5 [33m400[39m VALIDATION_FAILED subStationNetworkLookupId is required feederNetworkLookupId is required
+
+[1A[2K  1 passed (14.2s)
