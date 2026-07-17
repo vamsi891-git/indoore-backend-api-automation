@@ -15,13 +15,17 @@ concurrency:
   group: qa-module-gate-${{ github.ref }}
   cancel-in-progress: true
 
+# Caller must grant at least what reusable-module-tests.yml requests (contents: write).
+# Otherwise GitHub fails the run with "Startup failure" before any job starts.
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   detect:
     name: Detect changed modules
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       modules_json: ${{ steps.detect.outputs.modules_json }}
       run_modules: ${{ steps.detect.outputs.run_modules }}
@@ -92,6 +96,8 @@ jobs:
     name: Affected module tests
     needs: detect
     if: needs.detect.outputs.run_modules == 'true'
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
@@ -109,6 +115,8 @@ jobs:
     needs: [detect, module-tests]
     if: always()
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Evaluate QA gate
         run: |

@@ -17,12 +17,15 @@ on:
           - all
           - smoke
 
+# Must grant contents: write so reusable-module-tests can deploy Allure to gh-pages.
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   module-test:
     name: "${{ inputs.module }} (${{ inputs.scope }})"
+    permissions:
+      contents: write
     uses: ./.github/workflows/reusable-module-tests.yml
     with:
       module: ${{ inputs.module }}

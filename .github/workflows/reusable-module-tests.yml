@@ -29,9 +29,6 @@ on:
       scope:
         description: Scope that was tested
         value: ${{ jobs.module-test.outputs.scope }}
-      result:
-        description: Job result
-        value: ${{ jobs.module-test.result }}
 
 concurrency:
   group: reusable-module-${{ inputs.module }}-${{ inputs.scope }}-${{ github.ref }}
