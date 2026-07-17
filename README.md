@@ -199,21 +199,77 @@ npx playwright test --grep "@event-report"
 
 ## CI (GitHub Actions)
 
-Workflows:
+### Promotion flow (module → QA → main)
+
+```text
+module-branch ──PR──► QA ──(post-merge)──► module suites
+                         │
+                         └── green gate ──PR──► main ──push──► full regression
+```
+
+1. Create a branch named after the module (example: `dashboard`, `master-data`).
+2. Push your changes and open a **pull request into `QA`** (review/approval only — **no module test run on the open PR**).
+3. Merge into `QA`.
+4. **After merge**, **QA Module Gate** runs on the `QA` push: it diffs the new QA tip against the previous tip, detects affected modules, and runs those suites.
+   - Shared/core changes (`src/core`, fixtures, Playwright/package config, workflow scripts) run **all** modules.
+   - Docs-only changes skip the API matrix and still pass the gate.
+5. If the module gate fails, the code stays on **`QA`** until you fix and merge again (or re-run the workflow). Do **not** promote to `main` yet.
+6. When the post-merge gate is green, open a **pull request from `QA` → `main`**. **Main Promotion Policy** requires:
+   - source branch is exactly `QA`
+   - a successful **QA Module Gate** workflow run exists for that QA tip commit
+7. After approval + green policy check, merge into `main`.
+8. The push to `main` runs the **full** Playwright suite (`playwright.yml`).
+
+Local detector:
+
+```bash
+npm run test:detect-modules
+node scripts/detect-changed-modules.mjs --base origin/QA
+```
+
+### Workflows
 
 | Workflow | File | When |
 |----------|------|------|
-| **Playwright API Tests** | [playwright.yml](.github/workflows/playwright.yml) | Push (full), PR (smoke), manual smoke/full |
+| **QA Module Gate** | [qa-module-gate.yml](.github/workflows/qa-module-gate.yml) | **Push** to `QA` (after merge) — detect + run affected modules |
+| **Main Promotion Policy** | [main-promotion-policy.yml](.github/workflows/main-promotion-policy.yml) | PR → `main`/`master` — source must be `QA` + green post-merge gate |
+| **Playwright API Tests** | [playwright.yml](.github/workflows/playwright.yml) | Push to `main`/`master` (full), manual smoke/full |
 | **Playwright Module Tests** | [playwright-module.yml](.github/workflows/playwright-module.yml) | Manual — pick **one module** + all or smoke |
+| **Reusable Module Tests** | [reusable-module-tests.yml](.github/workflows/reusable-module-tests.yml) | Called by QA gate and manual module workflow |
 
-### Module workflow (per developer / per module)
+### Required GitHub branch protection / rulesets
+
+Configure under **Settings → Rules → Rulesets** (or classic branch protection):
+
+**Ruleset for `QA`**
+
+- Require a pull request before merging
+- Require approvals (at least 1)
+- Do **not** require **QA Module Gate** on the PR (module tests run **after** merge on push)
+- Require branches to be up to date before merging (optional but recommended)
+- Block force pushes and deletions
+- Restrict direct pushes (no bypass for routine work)
+
+**Ruleset for `main` (and `master` if used)**
+
+- Require a pull request before merging
+- Require approvals (at least 1)
+- Require status checks to pass: **`Main Promotion Policy`**
+- Require branches to be up to date before merging
+- Block force pushes and deletions
+- Restrict direct pushes
+- Do **not** allow merges from feature/module branches; only `QA` → `main` PRs satisfy the policy job
+
+After the first `QA` → `main` PR runs the policy workflow, the status-check name appears in the ruleset dropdown. Use the job name exactly: `Main Promotion Policy`.
+
+### Module workflow (manual / per module)
 
 1. Open **[Actions → Playwright Module Tests](https://github.com/vamsi891-git/indoore-backend-api-automation/actions/workflows/playwright-module.yml)**
 2. **Run workflow**
 3. **module:** slug, e.g. `energy-audits`, `auth`, `hes-commands` (run `npm run test:modules:list` locally for the full list)
 4. **scope:** `all` = every test in that module’s `tests/` folder; `smoke` = `@smoke` only
 
-The **module** job uses **1 worker** (`PLAYWRIGHT_WORKERS=1`). The **main** workflow uses **2 workers**. On **pull requests**, the main workflow runs `npm run test:smoke` only; on **push to main/master** it runs the full suite (`npm test`). When the run finishes (pass or fail), it generates an **Allure** report and uploads artifacts. If SMTP secrets are configured, the Allure report is emailed to the developer inbox as `allure-report.zip`.
+The **module** job uses **1 worker** (`PLAYWRIGHT_WORKERS=1`). The **main** full-regression workflow uses **2 workers**. Full regression runs on **push to main/master** (after QA promotion), not on pull requests into main. When a run finishes (pass or fail), it generates an **Allure** report and uploads artifacts. If SMTP secrets are configured, the Allure report is emailed to the developer inbox.
 
 Set `PLAYWRIGHT_WORKERS=1` in `.env` if you see token refresh races locally.
 

@@ -1,0 +1,139 @@
+name: QA Module Gate
+
+# Module suites run only AFTER code is merged into QA (push), never on the open PR.
+on:
+  push:
+    branches: [QA]
+  workflow_dispatch:
+    inputs:
+      base_sha:
+        description: Optional base SHA to diff against (default = previous QA tip / before)
+        required: false
+        type: string
+
+concurrency:
+  group: qa-module-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  detect:
+    name: Detect changed modules
+    runs-on: ubuntu-latest
+    outputs:
+      modules_json: ${{ steps.detect.outputs.modules_json }}
+      run_modules: ${{ steps.detect.outputs.run_modules }}
+      reason: ${{ steps.detect.outputs.reason }}
+      modules_csv: ${{ steps.detect.outputs.modules_csv }}
+      docs_only: ${{ steps.detect.outputs.docs_only }}
+      shared_impact: ${{ steps.detect.outputs.shared_impact }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Detect modules from post-merge diff
+        id: detect
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+          MANUAL_BASE: ${{ github.event.inputs.base_sha }}
+        run: |
+          EMPTY_SHA="0000000000000000000000000000000000000000"
+          HEAD_REF="$HEAD_SHA"
+
+          if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "$MANUAL_BASE" ]; then
+            BASE_REF="$MANUAL_BASE"
+          elif [ "$EVENT_NAME" = "push" ] && [ -n "$PUSH_BEFORE" ] && [ "$PUSH_BEFORE" != "$EMPTY_SHA" ]; then
+            BASE_REF="$PUSH_BEFORE"
+          else
+            # Fallback: previous commit on QA (single commit / first push / manual without base)
+            if git rev-parse --verify HEAD^ >/dev/null 2>&1; then
+              BASE_REF="$(git rev-parse HEAD^)"
+            else
+              echo "::notice title=No prior QA commit::Treating as docs/unrelated empty change set"
+              node scripts/detect-changed-modules.mjs --files
+              exit 0
+            fi
+          fi
+
+          echo "Post-merge detect: $BASE_REF ... $HEAD_REF"
+          # Use explicit SHAs (already ancestors); skip merge-base re-resolution
+          node scripts/detect-changed-modules.mjs --base "$BASE_REF" --head "$HEAD_REF" --no-merge-base
+
+      - name: Summarize detection
+        run: |
+          echo "reason=${{ steps.detect.outputs.reason }}"
+          echo "run_modules=${{ steps.detect.outputs.run_modules }}"
+          echo "modules=${{ steps.detect.outputs.modules_csv }}"
+          echo "docs_only=${{ steps.detect.outputs.docs_only }}"
+          echo "shared_impact=${{ steps.detect.outputs.shared_impact }}"
+          if [ "${{ steps.detect.outputs.run_modules }}" = "true" ]; then
+            echo "::notice title=QA module matrix (post-merge)::Will run: ${{ steps.detect.outputs.modules_csv }}"
+          else
+            echo "::notice title=QA module matrix skipped::reason=${{ steps.detect.outputs.reason }}"
+          fi
+
+  module-tests:
+    name: Affected module tests
+    needs: detect
+    if: needs.detect.outputs.run_modules == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        module: ${{ fromJson(needs.detect.outputs.modules_json) }}
+    uses: ./.github/workflows/reusable-module-tests.yml
+    with:
+      module: ${{ matrix.module }}
+      scope: all
+      deploy_allure: false
+      send_email: false
+    secrets: inherit
+
+  qa-module-gate:
+    name: QA Module Gate
+    needs: [detect, module-tests]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Evaluate QA gate
+        run: |
+          DETECT_RESULT="${{ needs.detect.result }}"
+          RUN_MODULES="${{ needs.detect.outputs.run_modules }}"
+          REASON="${{ needs.detect.outputs.reason }}"
+          MATRIX_RESULT="${{ needs.module-tests.result }}"
+
+          echo "detect=$DETECT_RESULT run_modules=$RUN_MODULES reason=$REASON matrix=$MATRIX_RESULT"
+
+          if [ "$DETECT_RESULT" != "success" ]; then
+            echo "::error title=QA Module Gate failed::Changed-module detection failed"
+            exit 1
+          fi
+
+          if [ "$RUN_MODULES" != "true" ]; then
+            echo "No module API tests required (reason=$REASON). Gate passed."
+            exit 0
+          fi
+
+          if [ "$MATRIX_RESULT" = "success" ]; then
+            echo "All affected module tests passed. Gate passed."
+            exit 0
+          fi
+
+          echo "::error title=QA Module Gate failed::One or more affected module suites failed (matrix result=$MATRIX_RESULT)"
+          echo "Changes remain on QA until the module suite is fixed and re-run (push another fix or re-run this workflow)."
+          exit 1
