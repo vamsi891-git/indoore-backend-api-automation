@@ -44,7 +44,10 @@ export interface ConsumptionPatternResponse {
 export function mapConsumptionPatternResponse(
   response: ConsumptionPatternResponse,
 ): ConsumptionPatternRow[] {
-  return response.data.rows.map((row) => ({
+  const rows = response?.data?.rows;
+  if (!Array.isArray(rows)) return [];
+
+  return rows.map((row) => ({
     meterLookupId: Number(row.meterLookupId),
     circle: row.circle?.trim(),
     division: row.division?.trim(),

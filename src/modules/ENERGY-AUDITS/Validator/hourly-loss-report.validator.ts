@@ -226,46 +226,24 @@ export class HourlyLossReportValidator {
     }
   }
 
-  validateMandatoryFields(
-    rows: HourlyLossReportRow[],
-    hierarchyType: HourlyLossHierarchyType,
-  ): void {
+  validateMandatoryFields(rows: HourlyLossReportRow[],hierarchyType: HourlyLossHierarchyType,): void {
     for (const row of rows) {
       expect(row.rowKind.trim().length).toBeGreaterThan(0);
-
       if (isSummaryRowKind(row) || isConsumerDetailRow(row)) {
-        expect(
-          row.dtrName?.length,
-          `Row ${row.rowKind}: dtrName is required`,
-        ).toBeGreaterThan(0);
-        expect(
-          row.consumerName?.length,
-          `Row ${row.rowKind}: consumerName is required`,
-        ).toBeGreaterThan(0);
+        expect(row.dtrName?.length,`Row ${row.rowKind}: dtrName is required`,).toBeGreaterThan(0);
+        expect(row.consumerName?.length,`Row ${row.rowKind}: consumerName is required`,).toBeGreaterThan(0);
       }
-
       if (isDtrConsumptionRow(row) || isConsumerConsumptionRow(row) || isLossPercentageRow(row)) {
-        expect(
-          row.dtrMeterSerialNumber?.length,
-          `Row ${row.rowKind}: dtrMeterSerialNumber is required`,
-        ).toBeGreaterThan(0);
+        expect(row.dtrMeterSerialNumber?.length,`Row ${row.rowKind}: dtrMeterSerialNumber is required`,).toBeGreaterThan(0);
       }
-
       if (isConsumerDetailRow(row)) {
-        expect(
-          row.meterSerialNumber?.length,
-          `Row ${row.rowKind}: meterSerialNumber is required`,
-        ).toBeGreaterThan(0);
+        expect(row.meterSerialNumber?.length,`Row ${row.rowKind}: meterSerialNumber is required`,).toBeGreaterThan(0);
       }
-
       if (hierarchyType === "feeder" && !row.feeder?.length) {
-        console.log(
-          `BACKEND FINDING: feeder hourly-loss row '${row.rowKind}' missing feeder name`,
-        );
+        console.log(`BACKEND FINDING: feeder hourly-loss row '${row.rowKind}' missing feeder name`,);
       }
     }
   }
-
   validateNonNegativeHourlyMetrics(rows: HourlyLossReportRow[]): void {
     for (const row of rows) {
       expect(row.total).toBeGreaterThanOrEqual(0);
@@ -273,7 +251,6 @@ export class HourlyLossReportValidator {
         expect(value).toBeGreaterThanOrEqual(0);
         expect(Number.isNaN(value)).toBe(false);
       }
-
       const mfValue = parseMf(row.mf);
       if (isSummaryRowKind(row)) {
         expect(mfValue, `Row ${row.rowKind}: mf is required on summary rows`).toBeGreaterThan(0);
@@ -282,58 +259,40 @@ export class HourlyLossReportValidator {
       }
     }
   }
-
   validateTotalEqualsHourlySum(rows: HourlyLossReportRow[]): void {
     for (const row of rows) {
       const hourlySum = getHourlyBucketValues(row).reduce((sum, value) => sum + value, 0);
-      expect(
-        Math.abs(row.total - hourlySum),
-        `Row ${row.rowKind}: total ${row.total} != sum(H1..H24) ${hourlySum}`,
-      ).toBeLessThanOrEqual(METRIC_EPSILON);
+      expect(Math.abs(row.total - hourlySum),`Row ${row.rowKind}: total ${row.total} != sum(H1..H24) ${hourlySum}`,).toBeLessThanOrEqual(METRIC_EPSILON);
     }
   }
-
   validateSummaryLossMath(rows: HourlyLossReportRow[]): void {
     const dtrRow = rows.find(isDtrConsumptionRow);
     const consumerRow = rows.find(isConsumerConsumptionRow);
     const lossRow = rows.find(isLossPercentageRow);
-
     if (!dtrRow || !consumerRow || !lossRow) {
       return;
     }
-
     for (const key of HOURLY_BUCKET_KEYS) {
       const dtrValue = dtrRow[key];
       const consumerValue = consumerRow[key];
       const lossPct = lossRow[key];
-
       if (dtrValue === 0) {
         expect(lossPct).toBe(0);
         continue;
       }
-
       const expectedPct = ((dtrValue - consumerValue) / dtrValue) * 100;
       expect(lossPct).toBeGreaterThanOrEqual(0);
       expect(lossPct).toBeLessThanOrEqual(100);
-      expect(
-        Math.abs(lossPct - expectedPct),
-        `${key}: lossPercentage mismatch`,
-      ).toBeLessThanOrEqual(METRIC_EPSILON);
+      expect(Math.abs(lossPct - expectedPct),`${key}: lossPercentage mismatch`,).toBeLessThanOrEqual(METRIC_EPSILON);
     }
-
     if (dtrRow.total === 0) {
       expect(lossRow.total).toBe(0);
       return;
     }
-
     const expectedTotalPct =
       ((dtrRow.total - consumerRow.total) / dtrRow.total) * 100;
-    expect(
-      Math.abs(lossRow.total - expectedTotalPct),
-      "lossPercentage total mismatch",
-    ).toBeLessThanOrEqual(METRIC_EPSILON);
+    expect(Math.abs(lossRow.total - expectedTotalPct),"lossPercentage total mismatch",).toBeLessThanOrEqual(METRIC_EPSILON);
   }
-
   validateNoDuplicateConsumerMeters(rows: HourlyLossReportRow[]): void {
     const consumerRows = rows.filter(isConsumerDetailRow);
     const keys = consumerRows.map(
@@ -341,7 +300,6 @@ export class HourlyLossReportValidator {
     );
     expect(new Set(keys).size).toBe(keys.length);
   }
-
   validateCrossFieldLogic(view: HourlyLossReportPaginatedView): void {
     if (view.totalCount > 0) {
       expect(view.rows.length).toBeGreaterThan(0);

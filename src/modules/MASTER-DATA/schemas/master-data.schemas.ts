@@ -262,6 +262,40 @@ export type ParsedCreateMeterSuccessResponse = z.infer<
   typeof CreateMeterSuccessResponseSchema
 >;
 
+export const UpdateMeterDataSchema = CreateMeterDataSchema.extend({
+  isActiveStatus: z.boolean(),
+}).passthrough();
+
+export const UpdateMeterSuccessResponseSchema = z.object({
+  success: z.literal(true),
+  message: z.string().min(1),
+  data: UpdateMeterDataSchema,
+});
+
+export type ParsedUpdateMeterSuccessResponse = z.infer<
+  typeof UpdateMeterSuccessResponseSchema
+>;
+
+export const DeactivateMeterDataSchema = z
+  .object({
+    meterLookupTblRefId: z.number().int().positive(),
+    meterTblRefId: z.number().int().positive(),
+    meterSerialNumber: z.string().min(1),
+    isActiveStatus: z.literal(false),
+    previousIsActiveStatus: z.boolean(),
+  })
+  .passthrough();
+
+export const DeactivateMeterSuccessResponseSchema = z.object({
+  success: z.literal(true),
+  message: z.string().min(1),
+  data: DeactivateMeterDataSchema,
+});
+
+export type ParsedDeactivateMeterSuccessResponse = z.infer<
+  typeof DeactivateMeterSuccessResponseSchema
+>;
+
 export const BulkUploadMeterRowResultSchema = z
   .object({
     rowNumber: z.number().int().positive(),

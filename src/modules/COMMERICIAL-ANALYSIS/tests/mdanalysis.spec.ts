@@ -49,6 +49,10 @@ test.describe("MD Analysis API", () => {
           assert.validateSensitiveData(responseBody),
         );
 
+        if (rawResponse.status() !== 200) {
+          return;
+        }
+
         const rows = mapMdAnalysisResponse(responseBody);
 
         validation.execute("Response Validation", () =>

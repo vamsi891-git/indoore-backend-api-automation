@@ -123,11 +123,8 @@ export const CONNECTION_STATUS_DROPDOWN_VALUES = [
   "Disconnected",
   "Permanent Disconnection",
 ] as const;
-
 export const METER_PHASE_DROPDOWN_VALUES = ["1 PH", "3PH WC", "HT"] as const;
-
 export const PAYMENT_CONTRACT_DROPDOWN_VALUES = ["Prepaid", "Postpaid"] as const;
-
 export interface ConsumerLookupIds {
   consumerCategoryId: number;
   connectionStatusId: number;
@@ -137,7 +134,6 @@ export interface ConsumerLookupIds {
   todId: number;
   mainSubMeterId: number;
 }
-
 export interface ConsumerLookupLabels {
   consumerCategory: string;
   connectionStatus: string;

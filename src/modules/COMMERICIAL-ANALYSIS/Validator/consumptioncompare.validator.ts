@@ -34,11 +34,11 @@ function isMonthOverMonthCompare(type: ConsumptionCompareType): boolean {
 }
 
 function isAbnormalHigh(type: ConsumptionCompareType): boolean {
-  return type === "Abnormal High Consumption";
+  return type === "Abnormal High";
 }
 
 function isAbnormalLow(type: ConsumptionCompareType): boolean {
-  return type === "Abnormal Low Consumption";
+  return type === "Abnormal Low";
 }
 
 export class ConsumptionCompareValidator {
@@ -52,37 +52,22 @@ export class ConsumptionCompareValidator {
     }
   }
 
-  validateHasData(
-    response: ConsumptionCompareResponse,
-    query: ConsumptionCompareQueryShape,
-  ): void {
+  validateHasData(response: ConsumptionCompareResponse,query: ConsumptionCompareQueryShape,): void {
     const view = getCommercialPaginatedView(response.data, query);
     expect(view.totalCount).toBeGreaterThan(0);
     expect(view.rows.length).toBeGreaterThan(0);
   }
-
-  validateNoDataScenario(
-    response: ConsumptionCompareResponse,
-    query: ConsumptionCompareQueryShape,
-  ): void {
+  validateNoDataScenario(response: ConsumptionCompareResponse,query: ConsumptionCompareQueryShape,): void {
     const view = getCommercialPaginatedView(response.data, query);
     if (view.totalCount === 0) {
       expect(view.rows.length).toBe(0);
       expect(view.totalPages).toBe(0);
     }
   }
-
-  validateQueryParams(
-    response: ConsumptionCompareResponse,
-    query: ConsumptionCompareQueryShape,
-  ): void {
+  validateQueryParams(response: ConsumptionCompareResponse,query: ConsumptionCompareQueryShape,): void {
     validateCommercialQueryParams(response.data, query);
   }
-
-  validateReportForType(
-    response: ConsumptionCompareResponse,
-    type: ConsumptionCompareType,
-  ): void {
+  validateReportForType(response: ConsumptionCompareResponse,type: ConsumptionCompareType,): void {
     if (isCommercialGridData(response.data)) {
       return;
     }
@@ -97,7 +82,6 @@ export class ConsumptionCompareValidator {
       expect(response.data.reportName).toMatch(/abnormal.*low|low/i);
     }
   }
-
   validateMandatoryFields(rows: ConsumptionCompareRow[]): void {
     for (const row of rows) {
       expect(row.meterLookupId).toBeGreaterThan(0);
@@ -108,37 +92,25 @@ export class ConsumptionCompareValidator {
       expect(row.currKwh).toBeGreaterThanOrEqual(0);
     }
   }
-
   /**
    * Backend prev_month / same_month_last_year:
    * prev.kwh > 0 AND curr.kwh < (prev.kwh * 0.5)
    */
   validateMonthOverMonthDrop(rows: ConsumptionCompareRow[]): void {
     for (const row of rows) {
-      expect(
-        row.prevKwh,
-        `MSN ${row.msn}: prevKwh must be > 0`,
-      ).toBeGreaterThan(0);
-      expect(
-        row.currKwh,
-        `MSN ${row.msn}: currKwh ${row.currKwh} must be < 50% of prevKwh ${row.prevKwh}`,
-      ).toBeLessThan(row.prevKwh * 0.5);
+      expect(row.prevKwh,`MSN ${row.msn}: prevKwh must be > 0`,).toBeGreaterThan(0);
+      expect(row.currKwh,`MSN ${row.msn}: currKwh ${row.currKwh} must be < 50% of prevKwh ${row.prevKwh}`,).toBeLessThan(row.prevKwh * 0.5);
     }
   }
-
   /**
    * Backend abnormal high: curr.kwh >= (avg_kwh * 3); prevKwh holds avg in response
    */
   validateAbnormalHigh(rows: ConsumptionCompareRow[]): void {
     for (const row of rows) {
       expect(row.prevKwh, `MSN ${row.msn}: baseline avg must be > 0`).toBeGreaterThan(0);
-      expect(
-        row.currKwh,
-        `MSN ${row.msn}: currKwh must be >= 3x baseline ${row.prevKwh}`,
-      ).toBeGreaterThanOrEqual(row.prevKwh * 3);
+      expect(row.currKwh,`MSN ${row.msn}: currKwh must be >= 3x baseline ${row.prevKwh}`,).toBeGreaterThanOrEqual(row.prevKwh * 3);
     }
   }
-
   /**
    * Backend abnormal low: curr.kwh <= (avg_kwh / 3)
    */
@@ -151,11 +123,7 @@ export class ConsumptionCompareValidator {
       ).toBeLessThanOrEqual(row.prevKwh / 3);
     }
   }
-
-  validateBusinessRules(
-    rows: ConsumptionCompareRow[],
-    type: ConsumptionCompareType,
-  ): void {
+  validateBusinessRules(rows: ConsumptionCompareRow[],type: ConsumptionCompareType,): void {
     if (isMonthOverMonthCompare(type)) {
       this.validateMonthOverMonthDrop(rows);
     } else if (isAbnormalHigh(type)) {
@@ -164,27 +132,18 @@ export class ConsumptionCompareValidator {
       this.validateAbnormalLow(rows);
     }
   }
-
   /** Backend ORDER BY curr_kwh ASC for month-over-month and abnormal low */
   validateCurrKwhAscendingOrder(rows: ConsumptionCompareRow[]): void {
     for (let i = 1; i < rows.length; i++) {
-      expect(
-        rows[i - 1].currKwh,
-        `currKwh not ascending at index ${i - 1}`,
-      ).toBeLessThanOrEqual(rows[i].currKwh);
+      expect(rows[i - 1].currKwh,`currKwh not ascending at index ${i - 1}`,).toBeLessThanOrEqual(rows[i].currKwh);
     }
   }
-
   /** Backend ORDER BY curr_kwh DESC for abnormal high */
   validateCurrKwhDescendingOrder(rows: ConsumptionCompareRow[]): void {
     for (let i = 1; i < rows.length; i++) {
-      expect(
-        rows[i - 1].currKwh,
-        `currKwh not descending at index ${i - 1}`,
-      ).toBeGreaterThanOrEqual(rows[i].currKwh);
+      expect(rows[i - 1].currKwh,`currKwh not descending at index ${i - 1}`,).toBeGreaterThanOrEqual(rows[i].currKwh);
     }
   }
-
   validateSortOrder(rows: ConsumptionCompareRow[], type: ConsumptionCompareType): void {
     if (isAbnormalHigh(type)) {
       this.validateCurrKwhDescendingOrder(rows);
@@ -192,22 +151,13 @@ export class ConsumptionCompareValidator {
       this.validateCurrKwhAscendingOrder(rows);
     }
   }
-
   validateNoDuplicateRecords(rows: ConsumptionCompareRow[]): void {
     validateNoDuplicateMeterRows(rows, "Consumption Compare");
   }
-
-  validatePagination(
-    response: ConsumptionCompareResponse,
-    query: ConsumptionCompareQueryShape,
-  ): void {
+  validatePagination(response: ConsumptionCompareResponse,query: ConsumptionCompareQueryShape,): void {
     validateCommercialPagination(response.data, query);
   }
-
-  validateTotalCount(
-    response: ConsumptionCompareResponse,
-    query: ConsumptionCompareQueryShape,
-  ): void {
+  validateTotalCount(response: ConsumptionCompareResponse,query: ConsumptionCompareQueryShape,): void {
     validateCommercialTotalCount(response.data, query);
   }
 }

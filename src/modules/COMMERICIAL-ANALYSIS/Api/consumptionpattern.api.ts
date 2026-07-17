@@ -1,8 +1,7 @@
-// Api/consumption-pattern.api.ts
-
 import { APIRequestContext, APIResponse } from "@playwright/test";
 import { ConsumptionPatternResponse } from "../Mapper/consumptionpattern.mapper";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
+import { getCommercialWithRetry } from "../utils/commercial-request.helper";
+
 export interface ConsumptionPatternApiResult {
   rawResponse: APIResponse;
   responseBody: ConsumptionPatternResponse;
@@ -11,24 +10,23 @@ export interface ConsumptionPatternApiResult {
 
 export class ConsumptionPatternApi {
   constructor(private readonly authenticatedApi: APIRequestContext) {}
+
   async getConsumptionPattern(
     params: Record<string, string | number | boolean>,
   ): Promise<ConsumptionPatternApiResult> {
-    const start = Date.now();
-    const response = await getWithAutoRefresh(this.authenticatedApi,
+    const { response, responseTime } = await getCommercialWithRetry(
+      this.authenticatedApi,
       "/indore/analysis/commercial/consumption-pattern",
       { params },
     );
-    const responseTime = Date.now() - start;
-    if (!response.ok()) {
-      throw new Error(`
-        Status: ${response.status()}
-        Body: ${await response.text()}
-      `);
-    }
+
+    const responseBody = (await response
+      .json()
+      .catch(() => ({}))) as ConsumptionPatternResponse;
+
     return {
       rawResponse: response,
-      responseBody: await response.json(),
+      responseBody,
       responseTime,
     };
   }

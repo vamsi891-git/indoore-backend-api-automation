@@ -50,7 +50,10 @@ export interface ConsumptionCompareResponse {
 export function mapConsumptionCompareResponse(
   response: ConsumptionCompareResponse,
 ): ConsumptionCompareRow[] {
-  return response.data.rows.map((row) => ({
+  const rows = response?.data?.rows;
+  if (!Array.isArray(rows)) return [];
+
+  return rows.map((row) => ({
     meterLookupId: Number(row.meterLookupId),
     circle: row.circle?.trim(),
     division: row.division?.trim(),

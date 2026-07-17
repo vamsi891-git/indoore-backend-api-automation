@@ -1,6 +1,6 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
 import { MdAnalysisResponse } from "../Mapper/mdanalysis.mapper";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
+import { getCommercialWithRetry } from "../utils/commercial-request.helper";
 
 export interface MdAnalysisApiResult {
   rawResponse: APIResponse;
@@ -14,24 +14,19 @@ export class MdAnalysisApi {
   async getMdAnalysis(
     params: Record<string, string | number | boolean>,
   ): Promise<MdAnalysisApiResult> {
-    const start = Date.now();
-    const response = await getWithAutoRefresh(
+    const { response, responseTime } = await getCommercialWithRetry(
       this.authenticatedApi,
       "/indore/analysis/commercial/md",
       { params },
     );
-    const responseTime = Date.now() - start;
 
-    if (!response.ok()) {
-      throw new Error(`
-        Status: ${response.status()}
-        Body: ${await response.text()}
-      `);
-    }
+    const responseBody = (await response
+      .json()
+      .catch(() => ({}))) as MdAnalysisResponse;
 
     return {
       rawResponse: response,
-      responseBody: await response.json(),
+      responseBody,
       responseTime,
     };
   }

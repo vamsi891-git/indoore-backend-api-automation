@@ -1,7 +1,9 @@
 import type { APIRequestContext, APIResponse } from "@playwright/test";
 import {
+  deleteWithAutoRefresh,
   getWithAutoRefresh,
   postWithAutoRefresh,
+  putWithAutoRefresh,
 } from "../../../core/utils/authenticated.request";
 import { masterDataMaxResponseTimeMs } from "../Data/master-data.common.data";
 
@@ -143,6 +145,86 @@ export async function postMasterDataJsonWithRetry<T>(
   const rawResponse = lastResponse!;
   const responseBody = parseMasterDataJson<T>(
     "POST",
+    path,
+    rawResponse,
+    lastText,
+  );
+
+  return {
+    rawResponse,
+    responseBody,
+    responseTime: Date.now() - start,
+  };
+}
+
+/** PUT master-data endpoint with auth refresh, retries on 429/5xx, and safe JSON parsing. */
+export async function putMasterDataJsonWithRetry<T>(
+  request: APIRequestContext,
+  path: string,
+  options?: Parameters<typeof putWithAutoRefresh>[2],
+): Promise<MasterDataJsonResult<T>> {
+  const start = Date.now();
+  let lastResponse: APIResponse | undefined;
+  let lastText = "";
+
+  for (let attempt = 1; attempt <= MASTER_DATA_MAX_ATTEMPTS; attempt++) {
+    lastResponse = await putWithAutoRefresh(request, path, {
+      timeout: masterDataMaxResponseTimeMs,
+      ...options,
+    });
+    lastText = await lastResponse.text();
+
+    if (shouldRetryMasterDataAttempt(lastResponse.status(), lastText, attempt)) {
+      await sleep(MASTER_DATA_RETRY_DELAY_MS * attempt);
+      continue;
+    }
+
+    break;
+  }
+
+  const rawResponse = lastResponse!;
+  const responseBody = parseMasterDataJson<T>(
+    "PUT",
+    path,
+    rawResponse,
+    lastText,
+  );
+
+  return {
+    rawResponse,
+    responseBody,
+    responseTime: Date.now() - start,
+  };
+}
+
+/** DELETE master-data endpoint with auth refresh, retries on 429/5xx, and safe JSON parsing. */
+export async function deleteMasterDataJsonWithRetry<T>(
+  request: APIRequestContext,
+  path: string,
+  options?: Parameters<typeof deleteWithAutoRefresh>[2],
+): Promise<MasterDataJsonResult<T>> {
+  const start = Date.now();
+  let lastResponse: APIResponse | undefined;
+  let lastText = "";
+
+  for (let attempt = 1; attempt <= MASTER_DATA_MAX_ATTEMPTS; attempt++) {
+    lastResponse = await deleteWithAutoRefresh(request, path, {
+      timeout: masterDataMaxResponseTimeMs,
+      ...options,
+    });
+    lastText = await lastResponse.text();
+
+    if (shouldRetryMasterDataAttempt(lastResponse.status(), lastText, attempt)) {
+      await sleep(MASTER_DATA_RETRY_DELAY_MS * attempt);
+      continue;
+    }
+
+    break;
+  }
+
+  const rawResponse = lastResponse!;
+  const responseBody = parseMasterDataJson<T>(
+    "DELETE",
     path,
     rawResponse,
     lastText,

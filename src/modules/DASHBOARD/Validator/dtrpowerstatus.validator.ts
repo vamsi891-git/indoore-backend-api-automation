@@ -1,18 +1,7 @@
 import { expect } from "@playwright/test";
-import {
-    dtrPowerStatusLabelPatterns,
-    dtrPowerStatusPeriodPointCounts,
-} from "../Mapper/dtrpowerstatus.mapper";
-import type {
-    DtrPowerStatusErrorResponse,
-    DtrPowerStatusPeriod,
-    DtrPowerStatusResponse,
-    DtrPowerStatusScenario,
-    MappedDtrPowerStatus,
-} from "../Mapper/dtrpowerstatus.mapper";
-
+import { dtrPowerStatusLabelPatterns, dtrPowerStatusPeriodPointCounts,} from "../Mapper/dtrpowerstatus.mapper";
+import type {DtrPowerStatusErrorResponse,DtrPowerStatusPeriod,DtrPowerStatusResponse,DtrPowerStatusScenario,MappedDtrPowerStatus,} from "../Mapper/dtrpowerstatus.mapper";
 const PERIODS = Object.keys(dtrPowerStatusPeriodPointCounts);
-
 export class DtrPowerStatusValidator {
     validateInvalidPeriodError(
         responseBody: DtrPowerStatusErrorResponse,
@@ -22,44 +11,34 @@ export class DtrPowerStatusValidator {
         expect(responseBody.error.code).toBe("VALIDATION_ERROR");
         expect(responseBody.error.message.toLowerCase()).toMatch(/period/i);
     }
-
     validateResponseEnvelope(response: DtrPowerStatusResponse): void {
         expect(response.success).toBe(true);
         expect(response.data).toBeDefined();
     }
-
     validateSuccess(success: boolean): void {
         expect(success).toBeTruthy();
     }
-
-    validatePeriod(
-        data: MappedDtrPowerStatus,
-        expected?: DtrPowerStatusPeriod,
-    ): void {
+    validatePeriod(data: MappedDtrPowerStatus,expected?: DtrPowerStatusPeriod,): void {
         expect(PERIODS).toContain(data.period);
         if (expected) {
             expect(data.period).toBe(expected);
         }
     }
-
     validatePointCount(data: MappedDtrPowerStatus): void {
         const expected = dtrPowerStatusPeriodPointCounts[data.period];
         expect(data.points.length).toBe(expected);
         expect(data.points.length).toBeGreaterThan(0);
     }
-
     validateLabelPatterns(data: MappedDtrPowerStatus): void {
         const pattern = dtrPowerStatusLabelPatterns[data.period];
         data.points.forEach((point) => {
             expect(pattern.test(point.label.trim())).toBeTruthy();
         });
     }
-
     validateUniqueLabels(data: MappedDtrPowerStatus): void {
         const labels = data.points.map((point) => point.label);
         expect(new Set(labels).size).toBe(labels.length);
     }
-
     validatePoints(data: MappedDtrPowerStatus): void {
         data.points.forEach((point) => {
             expect(point.label).toBeTruthy();
@@ -73,7 +52,6 @@ export class DtrPowerStatusValidator {
             expect(Number.isInteger(point.dtrsOff)).toBeTruthy();
         });
     }
-
     validatePercentageMath(data: MappedDtrPowerStatus): void {
         data.points.forEach((point) => {
             const total = point.dtrsOn + point.dtrsOff;
@@ -90,7 +68,6 @@ export class DtrPowerStatusValidator {
             );
         });
     }
-
     validatePercentageTotal(data: MappedDtrPowerStatus): void {
         data.points.forEach((point) => {
             const total = point.dtrsOn + point.dtrsOff;
@@ -103,7 +80,6 @@ export class DtrPowerStatusValidator {
             ).toBeLessThanOrEqual(1);
         });
     }
-
     validateDataConsistency(data: MappedDtrPowerStatus): void {
         data.points.forEach((point) => {
             if (point.onPercentage === 100) {
@@ -114,7 +90,6 @@ export class DtrPowerStatusValidator {
             }
         });
     }
-
     validatePointStructure(points: MappedDtrPowerStatus["points"]): void {
         points.forEach((point) => {
             expect(Object.keys(point).sort()).toEqual(
@@ -128,11 +103,7 @@ export class DtrPowerStatusValidator {
             );
         });
     }
-
-    validateLiveOk(
-        mapped: MappedDtrPowerStatus,
-        expectedPeriod?: DtrPowerStatusPeriod,
-    ): void {
+    validateLiveOk(mapped: MappedDtrPowerStatus,expectedPeriod?: DtrPowerStatusPeriod,): void {
         this.validateSuccess(mapped.success);
         this.validatePeriod(mapped, expectedPeriod);
         this.validatePointCount(mapped);
@@ -144,11 +115,7 @@ export class DtrPowerStatusValidator {
         this.validateDataConsistency(mapped);
         expect(mapped.points.at(-1)?.label).toBeTruthy();
     }
-
-    validateNullPeriodContract(
-        mapped: MappedDtrPowerStatus,
-        period: DtrPowerStatusPeriod,
-    ): void {
+    validateNullPeriodContract(mapped: MappedDtrPowerStatus,period: DtrPowerStatusPeriod): void {
         this.validateSuccess(mapped.success);
         this.validatePeriod(mapped, period);
         this.validatePointStructure(mapped.points);
@@ -170,7 +137,6 @@ export class DtrPowerStatusValidator {
         expect(jul?.dtrsOff).toBe(1285);
         expect(jul?.offPercentage).toBe(100);
     }
-
     validateLiveYearlyContract(mapped: MappedDtrPowerStatus): void {
         this.validateLiveOk(mapped, "yearly");
         const y2025 = mapped.points.find((p) => p.label === "2025");
@@ -180,7 +146,6 @@ export class DtrPowerStatusValidator {
         expect(y2026?.dtrsOff).toBe(1285);
         expect(y2026?.offPercentage).toBe(100);
     }
-
     validateMixedContract(mapped: MappedDtrPowerStatus): void {
         this.validatePoints(mapped);
         this.validatePercentageMath(mapped);
@@ -188,12 +153,7 @@ export class DtrPowerStatusValidator {
         expect(mapped.points[1].offPercentage).toBe(100);
         expect(mapped.points[1].dtrsOn).toBe(0);
     }
-
-    validateScenario(
-        mapped: MappedDtrPowerStatus,
-        scenario: DtrPowerStatusScenario,
-        expectedPeriod?: DtrPowerStatusPeriod,
-    ): void {
+    validateScenario( mapped: MappedDtrPowerStatus,scenario: DtrPowerStatusScenario,expectedPeriod?: DtrPowerStatusPeriod,): void {
         switch (scenario) {
             case "contract_null_hourly":
                 this.validateNullPeriodContract(mapped, "hourly");

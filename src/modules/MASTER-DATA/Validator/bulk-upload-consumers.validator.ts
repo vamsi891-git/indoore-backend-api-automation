@@ -79,10 +79,7 @@ export class BulkUploadConsumersValidator {
     });
   }
 
-  validateCreatedRows(
-    rows: BulkUploadConsumersRowResult[],
-    expectedCount: number,
-  ): void {
+  validateCreatedRows(rows: BulkUploadConsumersRowResult[],expectedCount: number,): void {
     const created = rows.filter((row) => row.status === "CREATED");
     expect(created.length).toBe(expectedCount);
     created.forEach((row) => {
@@ -90,41 +87,20 @@ export class BulkUploadConsumersValidator {
       expect(row.msn.trim().length).toBeGreaterThan(0);
     });
   }
-
   validateRejectedUpload(mapped: BulkUploadConsumersMapped): void {
-    expect(
-      mapped.success,
-      "Backend must reject invalid bulk upload rows (success must be false)",
-    ).toBe(false);
-    expect(
-      mapped.data,
-      "Expected data.rowResults for rejected bulk upload",
-    ).not.toBeNull();
-
+    expect(mapped.success,"Backend must reject invalid bulk upload rows (success must be false)",).toBe(false);
+    expect(mapped.data,"Expected data.rowResults for rejected bulk upload",).not.toBeNull();
     const data = mapped.data!;
     this.validateRootStructure(data);
     this.validateCountsConsistency(data);
     this.validateRowResultsStructure(data.rowResults);
-
     const createdRows = data.rowResults.filter((row) => row.status === "CREATED");
-    expect(
-      createdRows,
-      "Backend accepted invalid bulk upload row(s); manual validations require rejection",
-    ).toHaveLength(0);
-    expect(
-      data.createdCount,
-      "createdCount must be 0 when bulk upload validation rules are violated",
-    ).toBe(0);
-
+    expect(createdRows,"Backend accepted invalid bulk upload row(s); manual validations require rejection",).toHaveLength(0);
+    expect(data.createdCount,"createdCount must be 0 when bulk upload validation rules are violated",).toBe(0);
     const failedRows = data.rowResults.filter((row) =>
-      ROW_FAILURE_STATUSES.includes(
-        row.status as (typeof ROW_FAILURE_STATUSES)[number],
-      ),
+      ROW_FAILURE_STATUSES.includes(row.status as (typeof ROW_FAILURE_STATUSES)[number],),
     );
-    expect(
-      failedRows.length,
-      "At least one row must be VALIDATION_FAILED or FAILED",
-    ).toBeGreaterThanOrEqual(1);
+    expect(failedRows.length,"At least one row must be VALIDATION_FAILED or FAILED",).toBeGreaterThanOrEqual(1);
     const validationFailedCount =
       data.validationFailedCount ??
       failedRows.filter((row) => row.status === "VALIDATION_FAILED").length;
@@ -132,7 +108,6 @@ export class BulkUploadConsumersValidator {
       data.failedCount ??
       failedRows.filter((row) => row.status === "FAILED").length;
     expect(validationFailedCount + failedCount).toBeGreaterThan(0);
-
     failedRows.forEach((row) => {
       const hasMessage =
         (row.message?.trim().length ?? 0) > 0 ||
@@ -141,19 +116,11 @@ export class BulkUploadConsumersValidator {
     });
   }
 
-  validateRowMessageMatches(
-    mapped: BulkUploadConsumersMapped,
-    pattern: RegExp,
-    ruleDescription: string,
-  ): void {
+  validateRowMessageMatches(mapped: BulkUploadConsumersMapped,pattern: RegExp,ruleDescription: string,): void {
     this.validateRejectedUpload(mapped);
     const row = firstFailedRow(mapped.data!);
-    expect(
-      rowMessages(row),
-      `Expected row error mentioning: ${ruleDescription}`,
-    ).toMatch(pattern);
+    expect(rowMessages(row),`Expected row error mentioning: ${ruleDescription}`,).toMatch(pattern);
   }
-
   validateKnownErrorCode(mapped: BulkUploadConsumersMapped): void {
     if (!mapped.error?.code) {
       return;
@@ -161,10 +128,7 @@ export class BulkUploadConsumersValidator {
     expect(KNOWN_ERROR_CODES).toContain(mapped.error.code);
   }
 
-  validateBulkSuccess(
-    mapped: BulkUploadConsumersMapped,
-    expectedCreated: number,
-  ): void {
+  validateBulkSuccess(mapped: BulkUploadConsumersMapped,expectedCreated: number,): void {
     this.validateUploadSuccess(mapped);
     const data = mapped.data!;
     this.validateRootStructure(data);
@@ -175,7 +139,6 @@ export class BulkUploadConsumersValidator {
     expect(data.failedCount).toBe(0);
     expect(data.validationFailedCount ?? 0).toBe(0);
   }
-
   validateFileError(mapped: BulkUploadConsumersMapped): void {
     expect(mapped.success).toBeFalsy();
     const hasFailureDetail =
@@ -196,10 +159,7 @@ export class BulkUploadConsumersValidator {
     }
   }
 
-  validateScenario(
-    mapped: BulkUploadConsumersMapped,
-    scenario: BulkUploadConsumersScenario,
-  ): void {
+  validateScenario(mapped: BulkUploadConsumersMapped,scenario: BulkUploadConsumersScenario,): void {
     switch (scenario) {
       case "bulk_success":
         this.validateBulkSuccess(mapped, 1);

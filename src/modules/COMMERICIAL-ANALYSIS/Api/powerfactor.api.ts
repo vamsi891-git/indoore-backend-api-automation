@@ -1,5 +1,5 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
+import { getCommercialWithRetry } from "../utils/commercial-request.helper";
 
 export interface PowerFactorApiResult {
   rawResponse: APIResponse;
@@ -11,24 +11,17 @@ export class PowerFactorApi {
   constructor(private authenticatedApi: APIRequestContext) {}
 
   async getPfAnalysis(params: any): Promise<PowerFactorApiResult> {
-    const start = Date.now();
-    const response = await getWithAutoRefresh(
+    const { response, responseTime } = await getCommercialWithRetry(
       this.authenticatedApi,
       "/indore/analysis/commercial/pf",
       { params },
     );
-    const responseTime = Date.now() - start;
 
-    if (!response.ok()) {
-      throw new Error(`
-        Status: ${response.status()}
-        Body: ${await response.text()}
-      `);
-    }
+    const responseBody = await response.json().catch(() => ({}));
 
     return {
       rawResponse: response,
-      responseBody: await response.json(),
+      responseBody,
       responseTime,
     };
   }

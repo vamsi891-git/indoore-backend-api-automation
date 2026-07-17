@@ -12,8 +12,7 @@ export function registerHourlyLossReportTest(
   label: string,
   buildQuery: () => HourlyLossReportQuery,
 ): void {
-  test(
-    `Validate ${label} hourly loss report`,
+  test(`Validate ${label} hourly loss report`,
     {
       tag: ["@smoke", "@energy-audit", "@hourly-loss-report", `@${label}`],
     },
@@ -34,11 +33,9 @@ export function registerHourlyLossReportTest(
         expectedBehavior:
           "Hourly loss grid with H1..H24 buckets, total = sum(hours), pagination; empty dataset returns total=0.",
       };
-
       const assert = new AssertionEngine();
       const validation = new ValidationEngine();
       const validator = new HourlyLossReportValidator();
-
       try {
         ApiValidationHelper.runStandardChecks(validation, assert, {
           apiName: `Energy Audit Hourly Loss Report (${label})`,
