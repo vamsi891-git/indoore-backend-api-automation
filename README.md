@@ -71,7 +71,11 @@ SWAGGER_URL=http://localhost:3000/indore/api-docs/
 | `npm run test:smoke` | Run tests tagged `@smoke` |
 | `npm run test:module -- <slug>` | Run **all** tests for one module |
 | `npm run test:module -- <slug> --smoke` | Run **@smoke** tests for one module |
+| `npm run test:module -- <slug> --api` | Run module tests excluding `@db` |
+| `npm run test:module -- <slug> --db` | Run **@db** tests for one module |
 | `npm run test:modules:list` | List module slugs (for CI / local runs) |
+| `npm run check:modules-ci` | Fail if Actions module dropdown is out of sync |
+| `npm run sync:modules-ci` | Rewrite Actions module dropdown from `src/modules` |
 | `npm run test:ui` | Playwright UI mode |
 | `npm run report` | Open the last HTML report |
 | `npm run typecheck` | TypeScript check (`tsc --noEmit`) |
@@ -85,9 +89,10 @@ npm run test:modules:list
 npm run test:module -- energy-audits
 npm run test:module -- utils-lookup
 npm run test:module -- hes-commands --smoke
+npm run test:module -- revenue-protection --api
 ```
 
-Slug = folder name lowercased, spaces → hyphens (`ENERGY-AUDITS` → `energy-audits`, `UTILS-LOOKUP` → `utils-lookup`).
+Slug = folder name lowercased, spaces → hyphens (`ENERGY-AUDITS` → `energy-audits`, `REVENUE-PROTECTION` → `revenue-protection`).
 
 ### Run by tag or path
 
@@ -234,7 +239,7 @@ node scripts/detect-changed-modules.mjs --base origin/QA
 | **QA Module Gate** | [qa-module-gate.yml](.github/workflows/qa-module-gate.yml) | **Push** to `QA` (after merge) — detect + run affected modules |
 | **Main Promotion Policy** | [main-promotion-policy.yml](.github/workflows/main-promotion-policy.yml) | PR → `main`/`master` — source must be `QA` + green post-merge gate |
 | **Playwright API Tests** | [playwright.yml](.github/workflows/playwright.yml) | Push to `main`/`master` (full), manual smoke/full |
-| **Playwright Module Tests** | [playwright-module.yml](.github/workflows/playwright-module.yml) | Manual — pick **one module** + all or smoke |
+| **Playwright Module Tests** | [playwright-module.yml](.github/workflows/playwright-module.yml) | Manual — pick **one module** + scope (`api` / `all` / `smoke` / `db`) |
 | **Reusable Module Tests** | [reusable-module-tests.yml](.github/workflows/reusable-module-tests.yml) | Called by QA gate and manual module workflow |
 
 ### Required GitHub branch protection / rulesets
@@ -266,10 +271,16 @@ After the first `QA` → `main` PR runs the policy workflow, the status-check na
 
 1. Open **[Actions → Playwright Module Tests](https://github.com/vamsi891-git/indoore-backend-api-automation/actions/workflows/playwright-module.yml)**
 2. **Run workflow**
-3. **module:** slug, e.g. `energy-audits`, `auth`, `hes-commands` (run `npm run test:modules:list` locally for the full list)
-4. **scope:** `all` = every test in that module’s `tests/` folder; `smoke` = `@smoke` only
+3. **module:** choose from the dropdown (includes `revenue-protection`, `meter-replacement`, …). Options are synced from `src/modules` — if you add a module folder, run `npm run sync:modules-ci` before merging.
+4. **scope:**
+   - `api` — exclude `@db` (default; fastest stable gate)
+   - `all` — every test in the module `tests/` folder
+   - `smoke` — `@smoke` only
+   - `db` — `@db` only (needs `DB_*` secrets + module `RP_*_DB_SQL_READY` vars when applicable)
 
 The **module** job uses **1 worker** (`PLAYWRIGHT_WORKERS=1`). The **main** full-regression workflow uses **2 workers**. Full regression runs on **push to main/master** (after QA promotion), not on pull requests into main. When a run finishes (pass or fail), it generates an **Allure** report and uploads artifacts. If SMTP secrets are configured, the Allure report is emailed to the developer inbox.
+
+QA Module Gate (post-merge on `QA`) also defaults to **scope=api** and fans out up to **4 modules in parallel** (`fail-fast: false`). Re-run the gate manually with `scope=all` or `scope=db` when you need deeper coverage.
 
 Set `PLAYWRIGHT_WORKERS=1` in `.env` if you see token refresh races locally.
 
