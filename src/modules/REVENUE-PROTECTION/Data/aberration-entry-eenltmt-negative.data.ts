@@ -9,7 +9,6 @@ type AberrationEntryNegativeCase = {
   expectedStatuses: readonly number[];
   outcome: "hard-reject" | "empty-success" | "empty-page";
 };
-
 export const aberrationEntryEenltmtNegativeCases: AberrationEntryNegativeCase[] =
   [
     {

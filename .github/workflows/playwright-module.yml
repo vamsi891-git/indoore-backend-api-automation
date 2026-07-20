@@ -1,35 +1,105 @@
 name: Playwright Module Tests
 
+# Manual one-module runs (SDET / developer self-service).
+# Module dropdown is kept in sync with src/modules via:
+#   npm run check:modules-ci
+#   node scripts/sync-module-workflow.mjs
 on:
   workflow_dispatch:
     inputs:
       module:
-        description: Module slug (energy-audits, auth, utils-lookup, hes-commands, …)
+        description: Module slug (must match src/modules/*/tests)
         required: true
-        type: string
-        default: energy-audits
+        type: choice
+        default: revenue-protection
+        # BEGIN-AUTO-MODULE-OPTIONS
+        options:
+          - asset-management
+          - audit-logs
+          - auth
+          - billing
+          - commericial-analysis
+          - consumers
+          - consumption
+          - dashboard
+          - dtrs
+          - energy-audits
+          - feeder
+          - hes-commands
+          - master-data
+          - meter-replacement
+          - mis-dashboard
+          - modules-permissions
+          - notifications
+          - overall-dashboard
+          - reports
+          - revenue-protection
+          - role-permissions
+          - technical-analysis
+          - users-admin
+          - users-profile-image
+          - utils-lookup
+        # END-AUTO-MODULE-OPTIONS
       scope:
-        description: All tests in the module, or @smoke only
+        description: >-
+          all = every test; smoke = @smoke; api = exclude @db; db = @db only
         required: true
-        default: all
+        default: api
         type: choice
         options:
+          - api
           - all
           - smoke
+          - db
+      deploy_allure:
+        description: Publish Allure report to gh-pages
+        required: true
+        type: boolean
+        default: true
+      send_email:
+        description: Email Allure summary when SMTP secrets are configured
+        required: true
+        type: boolean
+        default: true
 
 # Must grant contents: write so reusable-module-tests can deploy Allure to gh-pages.
 permissions:
   contents: write
 
 jobs:
+  validate-module:
+    name: Validate module slug
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - name: Assert workflow module options match src/modules
+        run: npm run check:modules-ci
+      - name: Assert selected module exists
+        run: |
+          MODULE="${{ inputs.module }}"
+          if ! node scripts/run-module-tests.mjs list | grep -Eq "^[[:space:]]*${MODULE}[[:space:]]"; then
+            echo "::error title=Unknown module::'${MODULE}' is not a discovered module slug"
+            node scripts/run-module-tests.mjs list
+            exit 1
+          fi
+          echo "Selected module: $MODULE (scope=${{ inputs.scope }})"
+
   module-test:
     name: "${{ inputs.module }} (${{ inputs.scope }})"
+    needs: validate-module
     permissions:
       contents: write
     uses: ./.github/workflows/reusable-module-tests.yml
     with:
       module: ${{ inputs.module }}
       scope: ${{ inputs.scope }}
-      deploy_allure: true
-      send_email: true
+      deploy_allure: ${{ inputs.deploy_allure }}
+      send_email: ${{ inputs.send_email }}
     secrets: inherit

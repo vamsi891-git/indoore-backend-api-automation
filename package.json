@@ -11,6 +11,8 @@
     "test:detect-modules": "node scripts/detect-changed-modules.mjs --test",
     "ci:detect-modules": "node scripts/detect-changed-modules.mjs",
     "check:env-example": "node scripts/check-env-example.mjs",
+    "check:modules-ci": "node scripts/sync-module-workflow.mjs --check",
+    "sync:modules-ci": "node scripts/sync-module-workflow.mjs",
     "obs:query": "ts-node --compilerOptions \"{\\\"module\\\":\\\"commonjs\\\"}\" src/observability/query.ts",
     "test:smoke:energy-audit": "playwright test src/modules/ENERGY-AUDITS/tests --grep @smoke",
     "test:energy-audit": "node scripts/run-module-tests.mjs energy-audits",

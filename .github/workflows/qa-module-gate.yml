@@ -1,6 +1,7 @@
 name: QA Module Gate
 
 # Module suites run only AFTER code is merged into QA (push), never on the open PR.
+# Diff previous tip → new tip, fan out one job per affected module (fail-fast: false).
 on:
   push:
     branches: [QA]
@@ -10,6 +11,16 @@ on:
         description: Optional base SHA to diff against (default = previous QA tip / before)
         required: false
         type: string
+      scope:
+        description: Suite scope for affected modules
+        required: true
+        default: api
+        type: choice
+        options:
+          - api
+          - all
+          - smoke
+          - db
 
 concurrency:
   group: qa-module-gate-${{ github.ref }}
@@ -33,6 +44,7 @@ jobs:
       modules_csv: ${{ steps.detect.outputs.modules_csv }}
       docs_only: ${{ steps.detect.outputs.docs_only }}
       shared_impact: ${{ steps.detect.outputs.shared_impact }}
+      scope: ${{ steps.scope.outputs.scope }}
 
     steps:
       - name: Checkout
@@ -51,6 +63,20 @@ jobs:
 
       - name: Typecheck
         run: npm run typecheck
+
+      - name: Assert module workflow dropdown is in sync
+        run: npm run check:modules-ci
+
+      - name: Resolve suite scope
+        id: scope
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "scope=${{ github.event.inputs.scope }}" >> "$GITHUB_OUTPUT"
+          else
+            # Post-merge gate defaults to API (non-DB) for speed + stability.
+            # Re-run manually with scope=all or scope=db when DB secrets are ready.
+            echo "scope=api" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Detect modules from post-merge diff
         id: detect
@@ -89,8 +115,9 @@ jobs:
           echo "modules=${{ steps.detect.outputs.modules_csv }}"
           echo "docs_only=${{ steps.detect.outputs.docs_only }}"
           echo "shared_impact=${{ steps.detect.outputs.shared_impact }}"
+          echo "scope=${{ steps.scope.outputs.scope }}"
           if [ "${{ steps.detect.outputs.run_modules }}" = "true" ]; then
-            echo "::notice title=QA module matrix (post-merge)::Will run: ${{ steps.detect.outputs.modules_csv }}"
+            echo "::notice title=QA module matrix (post-merge)::Will run (${{ steps.scope.outputs.scope }}): ${{ steps.detect.outputs.modules_csv }}"
           else
             echo "::notice title=QA module matrix skipped::reason=${{ steps.detect.outputs.reason }}"
           fi
@@ -103,12 +130,13 @@ jobs:
       contents: write
     strategy:
       fail-fast: false
+      max-parallel: 4
       matrix:
         module: ${{ fromJson(needs.detect.outputs.modules_json) }}
     uses: ./.github/workflows/reusable-module-tests.yml
     with:
       module: ${{ matrix.module }}
-      scope: all
+      scope: ${{ needs.detect.outputs.scope }}
       deploy_allure: false
       send_email: false
     secrets: inherit
@@ -127,8 +155,9 @@ jobs:
           RUN_MODULES="${{ needs.detect.outputs.run_modules }}"
           REASON="${{ needs.detect.outputs.reason }}"
           MATRIX_RESULT="${{ needs.module-tests.result }}"
+          SCOPE="${{ needs.detect.outputs.scope }}"
 
-          echo "detect=$DETECT_RESULT run_modules=$RUN_MODULES reason=$REASON matrix=$MATRIX_RESULT"
+          echo "detect=$DETECT_RESULT run_modules=$RUN_MODULES reason=$REASON scope=$SCOPE matrix=$MATRIX_RESULT"
 
           if [ "$DETECT_RESULT" != "success" ]; then
             echo "::error title=QA Module Gate failed::Changed-module detection failed"
@@ -141,10 +170,10 @@ jobs:
           fi
 
           if [ "$MATRIX_RESULT" = "success" ]; then
-            echo "All affected module tests passed. Gate passed."
+            echo "All affected module tests passed (scope=$SCOPE). Gate passed."
             exit 0
           fi
 
-          echo "::error title=QA Module Gate failed::One or more affected module suites failed (matrix result=$MATRIX_RESULT)"
+          echo "::error title=QA Module Gate failed::One or more affected module suites failed (scope=$SCOPE, matrix result=$MATRIX_RESULT)"
           echo "Changes remain on QA until the module suite is fixed and re-run (push another fix or re-run this workflow)."
           exit 1

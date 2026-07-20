@@ -8,10 +8,10 @@ on:
         required: true
         type: string
       scope:
-        description: all or smoke
+        description: all | smoke | api (exclude @db) | db
         required: false
         type: string
-        default: all
+        default: api
       deploy_allure:
         description: Publish Allure report to gh-pages (disable for matrices)
         required: false
@@ -105,6 +105,14 @@ jobs:
       VALIDATE_DTR_METER_ASSIGNED_SERIAL: ${{ secrets.VALIDATE_DTR_METER_ASSIGNED_SERIAL }}
       VALIDATE_ADD_METER_VALID_SERIAL: ${{ secrets.VALIDATE_ADD_METER_VALID_SERIAL }}
       VALIDATE_ADD_METER_EXISTS_SERIAL: ${{ secrets.VALIDATE_ADD_METER_EXISTS_SERIAL }}
+      # Revenue Protection — optional DB cross-checks / seed IVRS
+      RP_CASES_DB_SQL_READY: ${{ vars.RP_CASES_DB_SQL_READY || 'false' }}
+      RP_ATRZONE_DB_SQL_READY: ${{ vars.RP_ATRZONE_DB_SQL_READY || 'false' }}
+      RP_ABERRATION_ENTRY_DB_SQL_READY: ${{ vars.RP_ABERRATION_ENTRY_DB_SQL_READY || 'false' }}
+      RP_ABERRATION_ENTRY_IVRS: ${{ vars.RP_ABERRATION_ENTRY_IVRS }}
+      RP_DB_SAMPLE_SIZE: ${{ vars.RP_DB_SAMPLE_SIZE || '3' }}
+      RP_REALISATION_MULTIPLIER: ${{ vars.RP_REALISATION_MULTIPLIER || '1' }}
+      RP_CROSS_CIRCLE_ORG_ID: ${{ secrets.RP_CROSS_CIRCLE_ORG_ID }}
 
     steps:
       - name: Checkout
@@ -163,6 +171,19 @@ jobs:
       - name: List available modules
         run: node scripts/run-module-tests.mjs list
 
+      - name: Validate selected module slug
+        env:
+          MODULE: ${{ inputs.module }}
+        run: |
+          node --input-type=module -e "
+            import { getModuleBySlug } from './scripts/lib/modules.mjs';
+            const hit = getModuleBySlug(process.env.MODULE);
+            if (!hit) {
+              console.error('Unknown module:', process.env.MODULE);
+              process.exit(1);
+            }
+            console.log(hit.moduleName + ' → ' + hit.testPath);
+          "
       - name: Observability — CI routing event
         env:
           OBS_RUN_TYPE: targeted
@@ -174,12 +195,24 @@ jobs:
         run: |
           SCOPE="${{ inputs.scope }}"
           MODULE="${{ inputs.module }}"
-          if [ "$SCOPE" = "smoke" ]; then
-            node scripts/run-module-tests.mjs "$MODULE" --smoke
-          else
-            node scripts/run-module-tests.mjs "$MODULE"
-          fi
-
+          case "$SCOPE" in
+            smoke)
+              node scripts/run-module-tests.mjs "$MODULE" --smoke
+              ;;
+            api)
+              node scripts/run-module-tests.mjs "$MODULE" --api
+              ;;
+            db)
+              node scripts/run-module-tests.mjs "$MODULE" --db
+              ;;
+            all|"")
+              node scripts/run-module-tests.mjs "$MODULE"
+              ;;
+            *)
+              echo "::error title=Invalid scope::scope must be one of: all, smoke, api, db (got '$SCOPE')"
+              exit 1
+              ;;
+          esac
       - name: Write Allure environment
         if: always()
         run: node scripts/write-allure-environment.mjs

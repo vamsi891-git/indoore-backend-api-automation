@@ -1,10 +1,12 @@
 /**
- * Run all tests (or smoke only) for one module folder.
+ * Run all tests (or a scoped subset) for one module folder.
  *
  * Usage:
- *   node scripts/run-module-tests.mjs <module-slug> [--smoke]
- *   npm run test:module -- energy-audits
- *   npm run test:module -- energy-audits --smoke
+ *   node scripts/run-module-tests.mjs <module-slug> [--smoke|--api|--db]
+ *   npm run test:module -- revenue-protection
+ *   npm run test:module -- revenue-protection --smoke
+ *   npm run test:module -- revenue-protection --api
+ *   npm run test:module -- revenue-protection --db
  */
 import { spawnSync } from "child_process";
 import {
@@ -16,10 +18,18 @@ import {
 const args = process.argv.slice(2).filter((arg) => arg !== "--");
 const slug = args.find((arg) => !arg.startsWith("--"));
 const smoke = args.includes("--smoke");
+const apiOnly = args.includes("--api");
+const dbOnly = args.includes("--db");
 
 if (!slug || slug === "list") {
   console.log(listModulesText());
   process.exit(slug ? 0 : 1);
+}
+
+const scopeFlags = [smoke, apiOnly, dbOnly].filter(Boolean).length;
+if (scopeFlags > 1) {
+  console.error("Use only one of --smoke, --api, or --db");
+  process.exit(1);
 }
 
 const module = getModuleBySlug(slug);
@@ -30,11 +40,19 @@ if (!module) {
 }
 
 const playwrightArgs = ["playwright", "test", module.testPath, "--workers=1"];
+let scopeLabel = "all";
+
 if (smoke) {
   playwrightArgs.push("--grep", "@smoke");
+  scopeLabel = "smoke";
+} else if (apiOnly) {
+  playwrightArgs.push("--grep-invert", "@db");
+  scopeLabel = "api";
+} else if (dbOnly) {
+  playwrightArgs.push("--grep", "@db");
+  scopeLabel = "db";
 }
 
-const scopeLabel = smoke ? "smoke" : "all";
 console.log(
   `Running ${scopeLabel} tests for ${module.moduleName} (${module.testPath})`,
 );

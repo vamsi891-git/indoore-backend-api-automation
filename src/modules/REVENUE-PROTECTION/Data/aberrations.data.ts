@@ -1,9 +1,7 @@
 import { REVENUE_PROTECTION_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { AberrationsQuery } from "../Mapper/aberrations.mapper";
-
 export const aberrationsMaxResponseTimeMs =
   REVENUE_PROTECTION_MAX_RESPONSE_TIME_MS;
-
 /** Baseline query mirrors the documented sample request. */
 export const aberrationsDefaultQuery: AberrationsQuery = {
   organisationLookupId: 3,
@@ -15,13 +13,11 @@ export const aberrationsDefaultQuery: AberrationsQuery = {
   page: 1,
   limit: 10,
 };
-
 export const aberrationsSmallPageQuery: AberrationsQuery = {
   ...aberrationsDefaultQuery,
   page: 1,
   limit: 5,
 };
-
 export const aberrationsSecondPageQuery: AberrationsQuery = {
   ...aberrationsDefaultQuery,
   page: 2,
@@ -33,7 +29,6 @@ export interface AberrationsTestCase {
   query: AberrationsQuery;
   tags: string[];
 }
-
 export const aberrationsTestCases: AberrationsTestCase[] = [
   {
     testName:
