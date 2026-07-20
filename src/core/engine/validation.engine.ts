@@ -3,6 +3,8 @@ import { ValidationResult } from "../models/resultModel";
 import type { DefectReportContext } from "../ai/defect-triage.types";
 import { DeveloperReportEngine } from "./developer-report.engine";
 import { isDefectLlmEnabled } from "../ai/defect-llm-triage";
+import { appendEvent } from "../../observability/logger";
+import type { ObsContext } from "../../observability/context";
 
 export type { DefectReportContext };
 
@@ -24,6 +26,12 @@ export class ValidationEngine {
   private results: ValidationResult[] = [];
 
   /**
+   * Optional observability context. When provided, each check also emits a
+   * ContractEvent to the shared trace log. When omitted, behavior is unchanged.
+   */
+  constructor(private readonly obs?: ObsContext) {}
+
+  /**
    * Runs a validation and records pass/fail without stopping the test.
    * Call finalize() (or printSummary) at the end to print results and fail the test.
    */
@@ -34,6 +42,7 @@ export class ValidationEngine {
         name: validationName,
         status: "PASS",
       });
+      this.emitContract(validationName, "PASS");
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : String(error);
       this.results.push({
@@ -41,7 +50,57 @@ export class ValidationEngine {
         status: "FAIL",
         message,
       });
+      this.emitContract(validationName, "FAIL", message);
     }
+  }
+
+  /**
+   * Optionally emit a richer ContractEvent (field + expected/actual) for a
+   * schema/contract check. Used by callers that know the diverging field
+   * (e.g. Zod parse). No-op when no observability context is set.
+   */
+  recordContract(input: {
+    check: string;
+    outcome: "pass" | "fail" | "warn";
+    field?: string;
+    expected?: unknown;
+    actual?: unknown;
+    message?: string;
+  }): void {
+    if (!this.obs) {
+      return;
+    }
+    appendEvent({
+      kind: "contract",
+      runId: this.obs.runId,
+      testId: this.obs.testId,
+      module: this.obs.module,
+      outcome: input.outcome,
+      check: input.check,
+      field: input.field,
+      expected: input.expected,
+      actual: input.actual,
+      message: input.message,
+    });
+  }
+
+  private emitContract(
+    check: string,
+    status: "PASS" | "FAIL",
+    message?: string,
+  ): void {
+    if (!this.obs) {
+      return;
+    }
+    appendEvent({
+      kind: "contract",
+      runId: this.obs.runId,
+      testId: this.obs.testId,
+      module: this.obs.module,
+      outcome: status === "PASS" ? "pass" : "fail",
+      check,
+      message: message ? firstLine(message) : undefined,
+    });
   }
 
   /**

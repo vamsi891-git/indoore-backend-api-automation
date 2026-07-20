@@ -1,33 +1,15 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
 import { TechnicalReportApi } from "../Api/technicalanalysis.api";
-import {
-  getTechnicalReportLiveConfig,
-  resolveTechnicalReportContractBody,
-  resolveTechnicalReportQuery,
-  technicalReportTestCases,
-  type TechnicalAnalysisLiveConfig,
-} from "../Data/technicalanalysis.data";
-import {
-  TechnicalReportMapper,
-  type TechnicalReportMapped,
-} from "../Mapper/technicalanalysis.mapper";
+import { getTechnicalReportLiveConfig, resolveTechnicalReportContractBody, resolveTechnicalReportQuery, technicalReportTestCases, type TechnicalAnalysisLiveConfig, } from "../Data/technicalanalysis.data";
+import { TechnicalReportMapper, type TechnicalReportMapped, } from "../Mapper/technicalanalysis.mapper";
 import { TechnicalReportValidator } from "../Validator/technical-analysis.shared";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { BackendResponse } from "../../../core/utils/backend-response.util";
-import {
-  TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
-  TECHNICAL_ANALYSIS_TEST_TIMEOUT_MS,
-} from "../../../core/constants/api-timeouts";
-
-function runLiveReportValidations(
-  validation: ValidationEngine,
-  validator: TechnicalReportValidator,
-  mapped: TechnicalReportMapped,
-  liveConfig: TechnicalAnalysisLiveConfig,
-): void {
+import { TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS, TECHNICAL_ANALYSIS_TEST_TIMEOUT_MS, } from "../../../core/constants/api-timeouts";
+function runLiveReportValidations(validation: ValidationEngine, validator: TechnicalReportValidator, mapped: TechnicalReportMapped, liveConfig: TechnicalAnalysisLiveConfig,): void {
   validation.execute("Response Structure Validation", () =>
     validator.validateResponseStructure(mapped),
   );
@@ -59,7 +41,6 @@ function runLiveReportValidations(
     );
     return;
   }
-
   mapped.rows.forEach((row, index) => {
     validation.execute(`Row ${index + 1} Structure Validation`, () =>
       validator.validateRowStructure(row),
@@ -130,7 +111,6 @@ function runLiveReportValidations(
       break;
   }
 }
-
 test.describe("Technical Analysis Report API", () => {
   test.describe.configure({ mode: "serial", retries: 1 });
   test.setTimeout(TECHNICAL_ANALYSIS_TEST_TIMEOUT_MS);
@@ -145,7 +125,6 @@ test.describe("Technical Analysis Report API", () => {
         const assert = new AssertionEngine();
         const validation = new ValidationEngine();
         const liveConfig = getTechnicalReportLiveConfig(testCase);
-
         if (testCase.isContractFixture) {
           const fixtureBody = resolveTechnicalReportContractBody(
             testCase.scenario,
@@ -154,7 +133,6 @@ test.describe("Technical Analysis Report API", () => {
             test.skip(true, "Missing technical report contract body");
             return;
           }
-
           const query = resolveTechnicalReportQuery(testCase.scenario);
           const mapped = TechnicalReportMapper.map(fixtureBody, {
             analysisType:
@@ -165,14 +143,12 @@ test.describe("Technical Analysis Report API", () => {
             category: query.category,
             page: query.page,
           });
-
           validation.execute("Contract Scenario", () =>
             validator.validateScenario(mapped, testCase.scenario),
           );
           validation.finalize(testCase.testName, 0);
           return;
         }
-
         const query = resolveTechnicalReportQuery(
           testCase.scenario,
           liveConfig,
@@ -188,18 +164,15 @@ test.describe("Technical Analysis Report API", () => {
             {},
           ),
         ).toString();
-
         const api = new TechnicalReportApi(authenticatedApi);
         const { rawResponse, responseBody, responseTime } =
           await api.getTechnicalReport(query);
-
         await PerformanceTracker.track(
-        rawResponse,
-        testCase.testName,
-        rawResponse.url(),
-        responseTime
-      );
-
+          rawResponse,
+          testCase.testName,
+          rawResponse.url(),
+          responseTime
+        );
         if (BackendResponse.isServerError(rawResponse.status())) {
           BackendResponse.logFinding(
             testCase.testName,
@@ -207,7 +180,6 @@ test.describe("Technical Analysis Report API", () => {
             responseBody,
           );
         }
-
         try {
           validation.execute("Status Code Validation", () =>
             assert.validateStatusCode(
@@ -223,31 +195,27 @@ test.describe("Technical Analysis Report API", () => {
             assert.validateResponseTime(
               responseTime,
               liveConfig?.maxResponseTime ??
-                TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
+              TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
             ),
           );
           validation.execute("Sensitive Data Validation", () =>
             assert.validateSensitiveData(responseBody),
           );
-
           if (expectedStatus !== 200) {
             validation.execute("Validation Error", () =>
               validator.validateValidationError(responseBody),
             );
             return;
           }
-
           validation.execute("Success Validation", () => {
             expect(responseBody.success).toBeTruthy();
           });
-
           if (!responseBody.success) {
             validation.execute("Error Envelope", () =>
               validator.validateValidationError(responseBody),
             );
             return;
           }
-
           const mapped = TechnicalReportMapper.map(responseBody, {
             analysisType: query.analysisType ?? "power_failure",
             month: query.month ?? 12,
@@ -256,7 +224,6 @@ test.describe("Technical Analysis Report API", () => {
             category: query.category,
             page: query.page,
           });
-
           if (testCase.scenario === "dev_live_report" && liveConfig) {
             runLiveReportValidations(
               validation,
@@ -266,7 +233,6 @@ test.describe("Technical Analysis Report API", () => {
             );
             return;
           }
-
           validation.execute("Response Structure Validation", () =>
             validator.validateResponseStructure(mapped),
           );

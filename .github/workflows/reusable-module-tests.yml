@@ -163,6 +163,13 @@ jobs:
       - name: List available modules
         run: node scripts/run-module-tests.mjs list
 
+      - name: Observability — CI routing event
+        env:
+          OBS_RUN_TYPE: targeted
+          OBS_MODULES: ${{ inputs.module }}
+          OBS_ROUTING_REASON: "module gate: ${{ inputs.module }} (scope ${{ inputs.scope }})"
+        run: node scripts/observability-ci-routing.mjs
+
       - name: Run module tests
         run: |
           SCOPE="${{ inputs.scope }}"
@@ -199,6 +206,15 @@ jobs:
             reports/defects/
             test-results/
           retention-days: 14
+
+      - name: Upload observability trace logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: observability-logs-${{ inputs.module }}-${{ inputs.scope }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: observability-logs/
+          retention-days: 14
+          if-no-files-found: ignore
 
       - name: Upload Allure report
         if: always()

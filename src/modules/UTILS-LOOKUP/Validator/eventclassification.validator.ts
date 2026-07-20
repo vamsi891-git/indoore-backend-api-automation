@@ -1,12 +1,6 @@
 // Validator/eventclassification.validator.ts
-
 import { expect } from "@playwright/test";
-
-import {
-  EventClassificationData,
-  EventClassificationResponse,
-} from "../Mapper/eventclassification.mapper";
-
+import {EventClassificationData,EventClassificationResponse} from "../Mapper/eventclassification.mapper";
 export class EventClassificationValidator {
   validateResponse(response: EventClassificationResponse) {
     expect(response.success).toBeTruthy();
@@ -14,7 +8,6 @@ export class EventClassificationValidator {
   validateItemsExist(data: EventClassificationData) {
     expect(data.items.length).toBeGreaterThan(0);
   }
-
   validateFields(data: EventClassificationData) {
     data.items.forEach((item) => {
       expect(item.EventClassificationTblRefId).toBeGreaterThan(0);

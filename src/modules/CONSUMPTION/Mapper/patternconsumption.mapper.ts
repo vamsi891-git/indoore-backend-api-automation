@@ -4,27 +4,23 @@ export interface PatternConsumptionPagination {
   totalCount: number;
   totalPages: number;
 }
-
 export interface PatternConsumptionTable {
   title: string;
   columns: Array<{ key: string; label: string }>;
   rows: Record<string, unknown>[];
   pagination?: PatternConsumptionPagination;
 }
-
 export interface PatternConsumptionResponse {
   success: boolean;
   data?: {
     table?: PatternConsumptionTable;
   };
 }
-
 const EMPTY_TABLE: PatternConsumptionTable = {
   title: "",
   columns: [],
   rows: [],
 };
-
 export class PatternConsumptionMapper {
   static map(response: PatternConsumptionResponse) {
     const table = response.data?.table ?? EMPTY_TABLE;

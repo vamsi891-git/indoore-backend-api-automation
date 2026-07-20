@@ -1,4 +1,6 @@
 import pg from "pg";
+import { appendEvent } from "../../observability/logger";
+import { getCurrentContext } from "../../observability/context";
 
 export type DbConfig = {
   host: string;
@@ -146,6 +148,31 @@ export function createPgPool(config: DbConfig = readDbConfig()): pg.Pool {
   });
 }
 
+function emitDbPoolRetry(
+  attempt: number,
+  attempts: number,
+  reason: string,
+  succeeded: boolean,
+): void {
+  const ctx = getCurrentContext();
+  if (!ctx) {
+    return;
+  }
+  appendEvent({
+    kind: "retry",
+    runId: ctx.runId,
+    testId: ctx.testId,
+    module: ctx.module,
+    outcome: succeeded ? "pass" : "warn",
+    layer: "db-pool",
+    attempt,
+    maxAttempts: attempts,
+    reason,
+    succeeded,
+    target: "pg.query",
+  });
+}
+
 async function queryWithRetry<T extends pg.QueryResultRow>(
   pool: pg.Pool,
   sql: string,
@@ -153,16 +180,24 @@ async function queryWithRetry<T extends pg.QueryResultRow>(
   attempts = 3,
 ): Promise<pg.QueryResult<T>> {
   let lastError: unknown;
+  let retried = false;
 
   for (let attempt = 1; attempt <= attempts; attempt++) {
     try {
-      return await pool.query<T>(sql, params);
+      const result = await pool.query<T>(sql, params);
+      if (retried) {
+        emitDbPoolRetry(attempt, attempts, "recovered after transient error", true);
+      }
+      return result;
     } catch (error) {
       lastError = error;
       const canRetry = attempt < attempts && isTransientDbError(error);
       if (!canRetry) {
         throw error;
       }
+      const message = error instanceof Error ? error.message : String(error);
+      emitDbPoolRetry(attempt, attempts, message, false);
+      retried = true;
       const waitMs = attempt * 1500;
       console.warn(
         `[DB] Transient error (${attempt}/${attempts}), retrying in ${waitMs}ms:`,

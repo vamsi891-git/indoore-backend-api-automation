@@ -8,12 +8,9 @@ import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { CONSUMPTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { isConsumptionInternalError } from "../utils/consumption-env.helper";
-
 test.describe("Pattern Consumption Comparison API", () => {
   test.setTimeout(CONSUMPTION_TEST_TIMEOUT_MS);
-
-  test(
-    "Validate Pattern Consumption Comparison API",
+  test("Validate Pattern Consumption Comparison API",
     {
       tag: ["@consumption", "@comparison", "@smoke", "@positive"],
     },
@@ -27,14 +24,12 @@ test.describe("Pattern Consumption Comparison API", () => {
           patternConsumptionData.month,
           patternConsumptionData.year,
         );
-
       await PerformanceTracker.track(
         rawResponse,
         "Pattern Consumption Comparison API",
         rawResponse.url(),
         responseTime,
       );
-
       if (
         rawResponse.status() === 500 &&
         isConsumptionInternalError(responseBody)
@@ -45,13 +40,11 @@ test.describe("Pattern Consumption Comparison API", () => {
         );
         return;
       }
-
       const assert = new AssertionEngine();
       const validation = new ValidationEngine();
       const mapped = PatternConsumptionMapper.map(responseBody);
       const validator = new PatternConsumptionValidator();
       const isOk = rawResponse.status() === 200;
-
       validation.execute("Status Code", () =>
         assert.validateStatusCode(rawResponse, 200, responseBody),
       );

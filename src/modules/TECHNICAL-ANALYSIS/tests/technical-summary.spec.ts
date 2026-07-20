@@ -1,12 +1,7 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
 import { TechnicalSummaryApi } from "../Api/technical-summary.api";
-import {
-  resolveTechnicalSummaryQuery,
-  technicalSummaryExpectedAnalysisTypes,
-  technicalSummaryMaxResponseTimeMs,
-  technicalSummaryTestCases,
-} from "../Data/technical-summary.data";
+import { resolveTechnicalSummaryQuery,technicalSummaryExpectedAnalysisTypes,technicalSummaryMaxResponseTimeMs,technicalSummaryTestCases,} from "../Data/technical-summary.data";
 import { TechnicalSummaryMapper } from "../Mapper/technical-summary.mapper";
 import { TechnicalSummaryValidator } from "../Validator/technical-summary.validator";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
@@ -14,7 +9,6 @@ import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { TECHNICAL_ANALYSIS_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
-
 function isTechnicalSummaryInternalError(body: unknown): boolean {
   if (!body || typeof body !== "object") {
     return false;
@@ -23,11 +17,9 @@ function isTechnicalSummaryInternalError(body: unknown): boolean {
     (body as { error?: { code?: string } }).error?.code === "INTERNAL_ERROR"
   );
 }
-
 test.describe("Technical Summary API", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(TECHNICAL_ANALYSIS_TEST_TIMEOUT_MS);
-
   for (const testCase of technicalSummaryTestCases) {
     test(
       testCase.testName,
@@ -35,18 +27,15 @@ test.describe("Technical Summary API", () => {
       async ({ authenticatedApi }, testInfo) => {
         const expectedStatus = testCase.expectedStatus ?? 200;
         const query = resolveTechnicalSummaryQuery(testCase.scenario);
-
         const api = new TechnicalSummaryApi(authenticatedApi);
         const { rawResponse, responseBody, responseTime } =
           await api.getTechnicalSummary(query);
-
         await PerformanceTracker.track(
           rawResponse,
           testCase.testName,
           rawResponse.url(),
           responseTime,
         );
-
         // Summary aggregates are heavy and intermittently crash with INTERNAL_ERROR.
         if (
           expectedStatus === 200 &&
@@ -64,11 +53,9 @@ test.describe("Technical Summary API", () => {
           );
           return;
         }
-
         const assert = new AssertionEngine();
         const validation = new ValidationEngine();
         const validator = new TechnicalSummaryValidator();
-
         try {
           validation.execute("Status Code", () =>
             assert.validateStatusCode(
@@ -89,37 +76,31 @@ test.describe("Technical Summary API", () => {
           validation.execute("Sensitive Data", () =>
             assert.validateSensitiveData(responseBody),
           );
-
           if (expectedStatus !== 200) {
             validation.execute("Validation Error", () =>
               validator.validateValidationError(responseBody),
             );
             return;
           }
-
           if (rawResponse.status() !== 200 || !responseBody.success) {
             validation.execute("Error Envelope", () =>
               validator.validateApiError(responseBody),
             );
             return;
           }
-
           validation.execute("Data Payload", () => {
             expect(responseBody.data).toBeDefined();
           });
           if (!responseBody.data) {
             return;
           }
-
           const mapped = TechnicalSummaryMapper.map(responseBody);
-
           validation.execute("Month Validation", () =>
             validator.validateMonth(mapped.month),
           );
           validation.execute("Year Validation", () =>
             validator.validateYear(mapped.year),
           );
-
           if (query.month !== undefined && query.year !== undefined) {
             validation.execute("Query Echo", () =>
               validator.validateQueryEcho(
@@ -130,7 +111,6 @@ test.describe("Technical Summary API", () => {
               ),
             );
           }
-
           validation.execute("Reports Validation", () =>
             validator.validateReportsExist(mapped.reports),
           );
@@ -143,7 +123,6 @@ test.describe("Technical Summary API", () => {
           validation.execute("YNR Category Validation", () =>
             validator.validateYnrReports(mapped.reports),
           );
-
           if (testCase.scenario === "dev_live_primary") {
             validation.execute("Expected Analysis Types", () =>
               validator.validateExpectedAnalysisTypes(

@@ -4,19 +4,12 @@ import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { UserManagementApi } from "../Api/usermanagement.api";
-import {
-    isAutomationAccount,
-    UserDevicesTestConfig,
-    UserManagementData,
-} from "../Data/usermanagement.data";
+import {isAutomationAccount,UserDevicesTestConfig,UserManagementData,} from "../Data/usermanagement.data";
 import { User, UserManagementMapper } from "../Mapper/usermanagement.mapper";
 import { UserManagementValidator } from "../Validator/usermanagement.validator";
-
 test.describe("User Management Flow", () => {
     test.describe.configure({ mode: "serial" });
-
-    test(
-        "Validate User Management Module",
+    test("Validate User Management Module",
         { tag: ["@users-admin"] },
         async ({ authenticatedApi }) => {
                 const assert =new AssertionEngine();

@@ -2,17 +2,13 @@ import { TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS } from "../../../core/constants
 import type { TechnicalSummaryQuery } from "../Api/technical-summary.api";
 import type { TechnicalSummaryResponse } from "../Mapper/technical-summary.mapper";
 import { technicalAnalysisLiveConfigs } from "./technicalanalysis.data";
-
 export const technicalSummaryMaxResponseTimeMs = TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS;
-
 export const technicalSummaryDefaultMonth = 12;
 export const technicalSummaryDefaultYear = 2025;
 /** Alternate billing period referenced by live report smoke data. */
 export const technicalSummaryAltYear = 2024;
-
 export const technicalSummaryExpectedAnalysisTypes =
   technicalAnalysisLiveConfigs.map((config) => config.analysisType);
-
 export type TechnicalSummaryScenario =
   | "dev_live_primary"
   | "dev_live_alt_month"
@@ -20,14 +16,12 @@ export type TechnicalSummaryScenario =
   | "invalid_month_13"
   | "missing_month"
   | "missing_year";
-
 export interface TechnicalSummaryTestCase {
   testName: string;
   scenario: TechnicalSummaryScenario;
   tags: string[];
   expectedStatus?: number;
 }
-
 export function resolveTechnicalSummaryQuery(
   scenario: TechnicalSummaryScenario,
 ): TechnicalSummaryQuery {

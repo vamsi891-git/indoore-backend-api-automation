@@ -12,28 +12,16 @@ export class PatternConsumptionValidator {
     expect(data.columns.length).toBeGreaterThan(0);
     expect(Array.isArray(data.rows)).toBeTruthy();
   }
-
   validateRows(rows: Record<string, unknown>[]): void {
     expect(rows.length).toBeGreaterThan(0);
   }
-
-  validateSlNo(
-    rows: Record<string, unknown>[],
-    page = 1,
-    pageSize = rows.length,
-  ): void {
+  validateSlNo(rows: Record<string, unknown>[],page = 1,pageSize = rows.length,): void {
     const base = (page - 1) * pageSize;
     rows.forEach((row, index) => {
       expect(row.slNo).toBe(base + index + 1);
     });
   }
-
-  validatePagination(
-    pagination: PatternConsumptionPagination,
-    page: number,
-    limit: number,
-    rowCount: number,
-  ): void {
+  validatePagination(pagination: PatternConsumptionPagination,page: number,limit: number,rowCount: number,): void {
     expect(pagination.page).toBe(page);
     expect(pagination.pageSize).toBe(limit);
     expect(pagination.totalCount).toBeGreaterThanOrEqual(rowCount);
@@ -44,17 +32,12 @@ export class PatternConsumptionValidator {
       );
     }
   }
-
-  validateColumnKeys(
-    columns: Array<{ key: string; label: string }>,
-    expectedKeys: string[],
-  ): void {
+  validateColumnKeys(columns: Array<{ key: string; label: string }>,expectedKeys: string[],): void {
     const keys = columns.map((column) => column.key);
     expectedKeys.forEach((key) => {
       expect(keys).toContain(key);
     });
   }
-
   validateRequiredFields(rows: Record<string, unknown>[]): void {
     rows.forEach((row) => {
       expect(row).toHaveProperty("ivrsNumber");
@@ -63,7 +46,6 @@ export class PatternConsumptionValidator {
       expect(row).toHaveProperty("name");
     });
   }
-
   validatePhase(rows: Record<string, unknown>[], allowedPhases: string[]): void {
     rows.forEach((row) => {
       if (row.phase) {
@@ -71,13 +53,11 @@ export class PatternConsumptionValidator {
       }
     });
   }
-
   validateSanctionLoad(rows: Record<string, unknown>[]): void {
     rows.forEach((row) => {
       expect(Number(row.sanctionLoadKw)).toBeGreaterThanOrEqual(0);
     });
   }
-
   validateNoNaN(rows: Record<string, unknown>[]): void {
     rows.forEach((row) => {
       Object.values(row).forEach((value) => {
@@ -87,7 +67,6 @@ export class PatternConsumptionValidator {
       });
     });
   }
-
   validateComparison(rows: Record<string, unknown>[]): void {
     rows.forEach((row) => {
       expect(row).toHaveProperty("meterSerialNo");
@@ -104,11 +83,9 @@ export class PatternConsumptionValidator {
       }
     });
   }
-
   validateComparisonTitle(title: string, month: number, year: number): void {
     expect(title).toMatch(new RegExp(`Comparison\\s*\\(${month}/${year}\\)`, "i"));
   }
-
   validateLastThreeMonths(rows: Record<string, unknown>[]): void {
     rows.forEach((row) => {
       if (!row.monthWise) {
@@ -127,7 +104,6 @@ export class PatternConsumptionValidator {
       }
     });
   }
-
   validateYearly(rows: Record<string, unknown>[]): void {
     rows.forEach((row) => {
       expect(row).toHaveProperty("msn");
@@ -155,7 +131,6 @@ export class PatternConsumptionValidator {
       }
     });
   }
-
   validateYearlyTotal(rows: Record<string, unknown>[]): void {
     rows.forEach((row) => {
       const months = [
@@ -178,7 +153,6 @@ export class PatternConsumptionValidator {
       }
     });
   }
-
   validateYearlyTitle(title: string, year: number): void {
     expect(title).toMatch(new RegExp(`Yearly\\s*\\(${year}\\)`, "i"));
   }

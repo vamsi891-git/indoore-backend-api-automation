@@ -8,16 +8,9 @@ import { patternConsumptionData } from "../Data/patternconsumption.data";
 import { monthlyNetMeterData } from "../Data/monthlynetmeter.data";
 import { dailyConsumptionData } from "../Data/dailyconsumption.data";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
-import {
-  ConsumptionCommonValidator,
-  consumptionAuthData,
-  consumptionPaths,
-  type ConsumptionErrorBody,
-} from "../Validator/consumption-common.validator";
-
+import {ConsumptionCommonValidator, consumptionAuthData,consumptionPaths,type ConsumptionErrorBody,} from "../Validator/consumption-common.validator";
 authTest.describe("Consumption API — Auth Negative", () => {
-  authTest(
-    "Pattern consumption rejects missing auth",
+  authTest("Pattern consumption rejects missing auth",
     {
       tag: ["@consumption", "@pattern-consumption", "@negative", "@auth"],
     },
@@ -47,8 +40,7 @@ authTest.describe("Consumption API — Auth Negative", () => {
     },
   );
 
-  authTest(
-    "Consumption report rejects missing auth",
+  authTest("Consumption report rejects missing auth",
     {
       tag: ["@consumption", "@consumption-report", "@negative", "@auth"],
     },
@@ -80,8 +72,7 @@ authTest.describe("Consumption API — Auth Negative", () => {
     },
   );
 
-  authTest(
-    "Monthly net meter rejects missing auth",
+  authTest("Monthly net meter rejects missing auth",
     {
       tag: ["@consumption", "@monthly-net-meter", "@negative", "@auth"],
     },
@@ -109,9 +100,7 @@ authTest.describe("Consumption API — Auth Negative", () => {
       validation.printSummary("Monthly Net Meter — Missing Auth", 0);
     },
   );
-
-  authTest(
-    "Monthly net meter rejects invalid bearer token",
+  authTest("Monthly net meter rejects invalid bearer token",
     {
       tag: ["@consumption", "@monthly-net-meter", "@negative", "@auth"],
     },
@@ -146,8 +135,7 @@ authTest.describe("Consumption API — Auth Negative", () => {
     },
   );
 
-  authTest(
-    "Consumption report rejects disallowed methods",
+  authTest("Consumption report rejects disallowed methods",
     {
       tag: ["@consumption", "@consumption-report", "@negative", "@auth"],
     },
@@ -190,12 +178,10 @@ test.describe("Consumption API — Authenticated smoke after auth negatives", ()
       validation.execute("Pattern consumption status", () => {
         expect([200, 500]).toContain(pattern.rawResponse.status());
       });
-
       const netMeter = await netMeterApi.getMonthlyNetMeter(1, 5, 12, 2025);
       validation.execute("Monthly net meter status", () => {
         expect([200, 500]).toContain(netMeter.rawResponse.status());
       });
-
       const report = await reportApi.getReport(
         "daily",
         dailyConsumptionData.page,
@@ -208,7 +194,6 @@ test.describe("Consumption API — Authenticated smoke after auth negatives", ()
       validation.execute("Daily report status", () => {
         expect(report.rawResponse.status()).toBe(200);
       });
-
       validation.printSummary("Consumption — Auth Reachability", 0);
     },
   );

@@ -1,20 +1,8 @@
 import { expect } from "@playwright/test";
-import {
-    dtrEventDefaultLimit,
-    dtrEventDefaultPage,
-    dtrEventExpectedColumns,
-} from "../Data/dtrevent.data";
-import type {
-    DtrEventErrorBody,
-    DtrEventResponse,
-    DtrEventRow,
-    DtrEventScenario,
-    MappedDtrEvent,
-} from "../Mapper/dtrevent.mapper";
+import {dtrEventDefaultLimit,dtrEventDefaultPage,dtrEventExpectedColumns,} from "../Data/dtrevent.data";
+import type {DtrEventErrorBody,DtrEventResponse,DtrEventRow,DtrEventScenario,MappedDtrEvent,} from "../Mapper/dtrevent.mapper";
 import { dtrEventColumnKeys } from "../Mapper/dtrevent.mapper";
-
 const DURATION_HH_MM_SS_OR_NA = /^(\d+:\d{2}:\d{2}|NA)$/;
-
 function parseDurationHhMmSs(value: string): {
     hours: number;
     minutes: number;
@@ -23,24 +11,20 @@ function parseDurationHhMmSs(value: string): {
     const [hours, minutes, seconds] = value.split(":").map(Number);
     return { hours, minutes, seconds };
 }
-
 export class DtrEventValidator {
     validateResponseEnvelope(response: DtrEventResponse): void {
         expect(response.success).toBe(true);
         expect(response.data).toBeDefined();
     }
-
     validateValidationError(responseBody: DtrEventErrorBody): void {
         expect(responseBody.success).toBeFalsy();
         expect(responseBody.error).toBeDefined();
         expect(responseBody.error?.code).toBe("VALIDATION_ERROR");
         expect(responseBody.error?.message).toBeTruthy();
     }
-
     validateSuccess(mapped: MappedDtrEvent): void {
         expect(mapped.success).toBeTruthy();
     }
-
     validateRootStructure(mapped: MappedDtrEvent): void {
         expect(Array.isArray(mapped.columns)).toBeTruthy();
         expect(Array.isArray(mapped.rows)).toBeTruthy();
@@ -50,7 +34,6 @@ export class DtrEventValidator {
         expect(typeof mapped.pagination.total).toBe("number");
         expect(typeof mapped.pagination.totalPages).toBe("number");
     }
-
     validateColumns(mapped: MappedDtrEvent): void {
         expect(mapped.columns.length).toBe(dtrEventExpectedColumns.length);
         mapped.columns.forEach((column, index) => {
@@ -61,16 +44,10 @@ export class DtrEventValidator {
             expect(dtrEventColumnKeys).toContain(column.key);
         });
     }
-
-    validatePaginationEcho(
-        mapped: MappedDtrEvent,
-        page: number,
-        limit: number,
-    ): void {
+    validatePaginationEcho(mapped: MappedDtrEvent,page: number,limit: number,): void {
         expect(mapped.pagination.page).toBe(page);
         expect(mapped.pagination.limit).toBe(limit);
     }
-
     validatePaginationBounds(mapped: MappedDtrEvent): void {
         expect(mapped.pagination.page).toBeGreaterThan(0);
         expect(mapped.pagination.limit).toBeGreaterThan(0);
@@ -78,7 +55,6 @@ export class DtrEventValidator {
         expect(mapped.pagination.totalPages).toBeGreaterThanOrEqual(0);
         expect(mapped.rows.length).toBeLessThanOrEqual(mapped.pagination.limit);
     }
-
     validatePaginationMath(mapped: MappedDtrEvent): void {
         const { total, limit, totalPages } = mapped.pagination;
         const { rows } = mapped;
@@ -90,23 +66,17 @@ export class DtrEventValidator {
         expect(totalPages).toBe(Math.ceil(total / limit));
         expect(total).toBeGreaterThanOrEqual(rows.length);
     }
-
     validateRowsLimit(mapped: MappedDtrEvent): void {
         expect(mapped.rows.length).toBeLessThanOrEqual(
             mapped.pagination.limit,
         );
     }
-
     validateNoDataScenario(mapped: MappedDtrEvent): void {
         if (mapped.pagination.total === 0) {
             expect(mapped.rows.length).toBe(0);
         }
     }
-
-    validatePageBeyondTotal(
-        mapped: MappedDtrEvent,
-        requestedPage: number,
-    ): void {
+    validatePageBeyondTotal(mapped: MappedDtrEvent,requestedPage: number,): void {
         if (
             mapped.pagination.totalPages > 0 &&
             requestedPage > mapped.pagination.totalPages
@@ -114,7 +84,6 @@ export class DtrEventValidator {
             expect(mapped.rows.length).toBe(0);
         }
     }
-
     validateRowsStructure(rows: DtrEventRow[]): void {
         for (const row of rows) {
             expect(typeof row.id).toBe("string");
@@ -135,13 +104,11 @@ export class DtrEventValidator {
             expect(typeof row.durationHhMmSs).toBe("string");
         }
     }
-
     validateDtrIdentity(rows: DtrEventRow[]): void {
         for (const row of rows) {
             expect(row.dt.trim().length).toBeGreaterThan(0);
         }
     }
-
     validateEventMetrics(rows: DtrEventRow[]): void {
         for (const row of rows) {
             expect(row.eventCount).toBeGreaterThanOrEqual(0);
@@ -150,7 +117,6 @@ export class DtrEventValidator {
             }
         }
     }
-
     validateDurationFormat(rows: DtrEventRow[]): void {
         for (const row of rows) {
             expect(DURATION_HH_MM_SS_OR_NA.test(row.durationHhMmSs)).toBeTruthy();
@@ -167,7 +133,6 @@ export class DtrEventValidator {
             expect(seconds).toBeLessThan(60);
         }
     }
-
     validateMeterNumber(rows: DtrEventRow[]): void {
         for (const row of rows) {
             if (row.dtrMeterNo.trim().length === 0) {
@@ -176,33 +141,21 @@ export class DtrEventValidator {
             expect(/^\d+$/.test(row.dtrMeterNo.trim())).toBeTruthy();
         }
     }
-
-    validateSlNoSequence(
-        rows: DtrEventRow[],
-        page: number,
-        limit: number,
-    ): void {
+    validateSlNoSequence(rows: DtrEventRow[],page: number,limit: number,): void {
         const base = (page - 1) * limit;
         rows.forEach((row, index) => {
             expect(row.slNo).toBe(base + index + 1);
         });
     }
-
     validateUniqueSlNo(rows: DtrEventRow[]): void {
         const slNos = rows.map((row) => row.slNo);
         expect(new Set(slNos).size).toBe(slNos.length);
     }
-
     validateUniqueDtrIds(rows: DtrEventRow[]): void {
         const ids = rows.map((row) => row.id);
         expect(new Set(ids).size).toBe(ids.length);
     }
-
-    validateLiveOk(
-        mapped: MappedDtrEvent,
-        page = dtrEventDefaultPage,
-        limit = dtrEventDefaultLimit,
-    ): void {
+    validateLiveOk(mapped: MappedDtrEvent,page = dtrEventDefaultPage,limit = dtrEventDefaultLimit,): void {
         this.validateSuccess(mapped);
         this.validateRootStructure(mapped);
         this.validateColumns(mapped);
@@ -211,7 +164,6 @@ export class DtrEventValidator {
         this.validatePaginationMath(mapped);
         this.validateRowsLimit(mapped);
         this.validateNoDataScenario(mapped);
-
         if (mapped.rows.length > 0) {
             this.validateRowsStructure(mapped.rows);
             this.validateDtrIdentity(mapped.rows);
@@ -223,20 +175,17 @@ export class DtrEventValidator {
             this.validateUniqueDtrIds(mapped.rows);
         }
     }
-
     validateLiveEmptyRowsContract(mapped: MappedDtrEvent): void {
         this.validateLiveOk(mapped);
         expect(mapped.pagination.total).toBe(5281);
         expect(mapped.pagination.totalPages).toBe(529);
         expect(mapped.rows.length).toBe(0);
     }
-
     validateEmptyPageContract(mapped: MappedDtrEvent): void {
         this.validateLiveOk(mapped);
         expect(mapped.pagination.total).toBe(0);
         expect(mapped.rows.length).toBe(0);
     }
-
     validateSampleRowContract(mapped: MappedDtrEvent): void {
         this.validateLiveOk(mapped);
         expect(mapped.rows.length).toBe(1);
@@ -245,11 +194,7 @@ export class DtrEventValidator {
         expect(mapped.rows[0]?.eventCount).toBe(12);
         expect(mapped.rows[0]?.durationHhMmSs).toBe("0:32:15");
     }
-
-    validatePageBeyondLive(
-        mapped: MappedDtrEvent,
-        requestedPage: number,
-    ): void {
+    validatePageBeyondLive(mapped: MappedDtrEvent,requestedPage: number,): void {
         this.validateSuccess(mapped);
         this.validateRootStructure(mapped);
         this.validateColumns(mapped);
@@ -257,13 +202,7 @@ export class DtrEventValidator {
         this.validatePaginationMath(mapped);
         this.validatePageBeyondTotal(mapped, requestedPage);
     }
-
-    validateScenario(
-        mapped: MappedDtrEvent,
-        scenario: DtrEventScenario,
-        page = dtrEventDefaultPage,
-        limit = dtrEventDefaultLimit,
-    ): void {
+    validateScenario(mapped: MappedDtrEvent,scenario: DtrEventScenario,page = dtrEventDefaultPage,limit = dtrEventDefaultLimit,): void {
         switch (scenario) {
             case "contract_live_empty_rows":
                 this.validateLiveEmptyRowsContract(mapped);

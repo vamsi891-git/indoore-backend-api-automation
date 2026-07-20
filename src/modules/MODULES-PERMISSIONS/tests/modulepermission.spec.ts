@@ -9,9 +9,7 @@ import { ModulePermissionMapper } from "../Mapper/modulepermission.mapper";
 import {  ModulePermissionValidator } from "../Validator/modulepermission.validator";
 test.describe("Module Permission CRUD Flow", () => {
   test.describe.configure({ mode: "serial" });
-
-  test(
-    "Validate Module Permission Module",
+  test("Validate Module Permission Module",
     { tag: ["@permissions", "@modules-permissions"] },
     async ({ authenticatedApi }) => {
                 const assert =new AssertionEngine();

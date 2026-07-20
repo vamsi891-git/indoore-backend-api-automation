@@ -24,7 +24,7 @@ export class SubmissionDetailApi {
     const response = await withRateLimitRetry(() =>
       getWithAutoRefresh(
         this.authenticatedApi,
-        `/indore/meter-replacement/submissions/${encodePathSegment(submissionId)}`,
+        `/indore/meter-replacement/submissions/${encodePathSegment(String(submissionId))}`,
       ),
     );
 

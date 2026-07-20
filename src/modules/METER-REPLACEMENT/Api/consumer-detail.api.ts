@@ -14,9 +14,6 @@ export interface ConsumerDetailApiResult {
 }
 
 export class ConsumerDetailApi {
-  detailConsumer(consumerId: number) {
-    throw new Error("Method not implemented.");
-  }
   constructor(private readonly authenticatedApi: APIRequestContext) {}
 
   async getConsumerDetail(

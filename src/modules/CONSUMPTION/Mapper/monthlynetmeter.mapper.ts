@@ -20,7 +20,6 @@ export interface MonthlyNetMeterItem {
   netKwh: number | null;
   netKvah: number | null;
 }
-
 export interface MonthlyNetMeterData {
   items: MonthlyNetMeterItem[];
   total: number;
@@ -28,7 +27,6 @@ export interface MonthlyNetMeterData {
   limit: number;
   totalPages: number;
 }
-
 export interface MonthlyNetMeterResponse {
   success: boolean;
   data?: MonthlyNetMeterData;
@@ -37,11 +35,8 @@ export interface MonthlyNetMeterResponse {
     message?: string;
   };
 }
-
 export class MonthlyNetMeterMapper {
-  static map(
-    response: MonthlyNetMeterResponse,
-  ): MonthlyNetMeterData & { success: boolean } {
+  static map(response: MonthlyNetMeterResponse,): MonthlyNetMeterData & { success: boolean } {
     const data = response.data ?? ({} as MonthlyNetMeterData);
     return {
       success: response.success,

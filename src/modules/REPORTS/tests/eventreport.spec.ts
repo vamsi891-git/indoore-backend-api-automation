@@ -4,22 +4,12 @@ import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { EventReportApi } from "../Api/eventreport.api";
-import {
-    eventReportMaxResponseTimeMs,
-    eventReportTestCases,
-    resolveEventReportContractBody,
-    resolveEventReportQuery,
-} from "../Data/eventreport.data";
-import {
-    EventReportMapper,
-    type EventReportErrorBody,
-} from "../Mapper/eventreport.mapper";
+import {eventReportMaxResponseTimeMs,eventReportTestCases,resolveEventReportContractBody,resolveEventReportQuery,} from "../Data/eventreport.data";
+import {EventReportMapper,type EventReportErrorBody,} from "../Mapper/eventreport.mapper";
 import { EventReportValidator } from "../Validator/eventreport.validator";
-
 test.describe("Event Report API", () => {
     test.describe.configure({ retries: 1 });
     test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
-
     for (const testCase of eventReportTestCases) {
         test(
             testCase.testName,
@@ -38,13 +28,9 @@ test.describe("Event Report API", () => {
                         test.skip(true, "Missing event report contract body");
                         return;
                     }
-
                     const mapped = EventReportMapper.map(fixtureBody);
                     validation.execute("Required Fields", () =>
-                        assert.validateRequiredFields(fixtureBody, [
-                            "success",
-                            "data",
-                        ]),
+                        assert.validateRequiredFields(fixtureBody, ["success","data",]),
                     );
                     validation.execute("Contract Scenario", () =>
                         validator.validateScenario(mapped, testCase.scenario),
@@ -52,7 +38,6 @@ test.describe("Event Report API", () => {
                     validation.printSummary(testCase.testName, 0);
                     return;
                 }
-
                 const api = new EventReportApi(authenticatedApi);
                 const query = resolveEventReportQuery(testCase.scenario);
                 const queryString = new URLSearchParams(
@@ -66,37 +51,26 @@ test.describe("Event Report API", () => {
                         {},
                     ),
                 ).toString();
-
                 const { rawResponse, responseBody, responseTime } =
                     await api.getEventReport(query);
-
                 await PerformanceTracker.track(
         rawResponse,
         testCase.testName,
         rawResponse.url(),
         responseTime
       );
-
                 validation.execute("Status Validation", () =>
-                    assert.validateStatusCode(
-                        rawResponse,
-                        expectedStatus,
-                        responseBody,
-                    ),
+                    assert.validateStatusCode(rawResponse,expectedStatus,responseBody,),
                 );
                 validation.execute("Content Type", () =>
                     assert.validateContentType(rawResponse),
                 );
                 validation.execute("Response Time", () =>
-                    assert.validateResponseTime(
-                        responseTime,
-                        eventReportMaxResponseTimeMs,
-                    ),
+                    assert.validateResponseTime(responseTime,eventReportMaxResponseTimeMs,),
                 );
                 validation.execute("Sensitive Data", () =>
                     assert.validateSensitiveData(responseBody),
                 );
-
                 if (expectedStatus !== 200) {
                     validation.execute("Validation Error", () =>
                         validator.validateValidationError(
@@ -106,25 +80,15 @@ test.describe("Event Report API", () => {
                     validation.printSummary(testCase.testName, responseTime);
                     return;
                 }
-
                 validation.execute("Required Fields", () =>
-                    assert.validateRequiredFields(responseBody, [
-                        "success",
-                        "data",
-                    ]),
+                    assert.validateRequiredFields(responseBody, ["success","data",]),
                 );
-
                 const mapped = EventReportMapper.map(responseBody);
                 validation.execute("Response Envelope", () =>
                     validator.validateResponseEnvelope(responseBody),
                 );
                 validation.execute("Event Report Scenario", () =>
-                    validator.validateScenario(
-                        mapped,
-                        testCase.scenario,
-                        query.page,
-                        query.limit,
-                    ),
+                    validator.validateScenario(mapped,testCase.scenario,query.page,query.limit,),
                 );
 
                 validation.printSummary(testCase.testName, responseTime);

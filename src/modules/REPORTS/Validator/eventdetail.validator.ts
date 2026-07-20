@@ -1,43 +1,27 @@
 import { expect } from "@playwright/test";
-import {
-    eventDetailDefaultLimit,
-    eventDetailDefaultPage,
-    eventDetailExpectedColumns,
-} from "../Data/eventdetail.data";
-import type {
-    EventDetailErrorBody,
-    EventDetailResponse,
-    EventDetailRow,
-    EventDetailScenario,
-    MappedEventDetail,
-} from "../Mapper/eventdetail.mapper";
+import {eventDetailDefaultLimit,eventDetailDefaultPage,eventDetailExpectedColumns,} from "../Data/eventdetail.data";
+import type {EventDetailErrorBody,EventDetailResponse,EventDetailRow,EventDetailScenario,MappedEventDetail,} from "../Mapper/eventdetail.mapper";
 import { eventDetailColumnKeys } from "../Mapper/eventdetail.mapper";
-
 const DURATION_HH_MM_OR_NA = /^(\d+:\d{2}|NA)$/;
 const EVENT_CLASSIFICATION = /^Class_D\d+$/;
-
 function parseDurationHhMm(value: string): { hours: number; minutes: number } {
     const [hours, minutes] = value.split(":").map(Number);
     return { hours, minutes };
 }
-
 export class EventDetailValidator {
     validateResponseEnvelope(response: EventDetailResponse): void {
         expect(response.success).toBe(true);
         expect(response.data).toBeDefined();
     }
-
     validateValidationError(responseBody: EventDetailErrorBody): void {
         expect(responseBody.success).toBeFalsy();
         expect(responseBody.error).toBeDefined();
         expect(responseBody.error?.code).toBe("VALIDATION_ERROR");
         expect(responseBody.error?.message).toBeTruthy();
     }
-
     validateSuccess(mapped: MappedEventDetail): void {
         expect(mapped.success).toBeTruthy();
     }
-
     validateRootStructure(mapped: MappedEventDetail): void {
         expect(Array.isArray(mapped.columns)).toBeTruthy();
         expect(Array.isArray(mapped.rows)).toBeTruthy();
@@ -47,7 +31,6 @@ export class EventDetailValidator {
         expect(typeof mapped.pagination.total).toBe("number");
         expect(typeof mapped.pagination.totalPages).toBe("number");
     }
-
     validateColumns(mapped: MappedEventDetail): void {
         expect(mapped.columns.length).toBe(eventDetailExpectedColumns.length);
         mapped.columns.forEach((column, index) => {
@@ -58,16 +41,10 @@ export class EventDetailValidator {
             expect(eventDetailColumnKeys).toContain(column.key);
         });
     }
-
-    validatePaginationEcho(
-        mapped: MappedEventDetail,
-        page: number,
-        limit: number,
-    ): void {
+    validatePaginationEcho(mapped: MappedEventDetail,page: number,limit: number,): void {
         expect(mapped.pagination.page).toBe(page);
         expect(mapped.pagination.limit).toBe(limit);
     }
-
     validatePaginationBounds(mapped: MappedEventDetail): void {
         expect(mapped.pagination.page).toBeGreaterThan(0);
         expect(mapped.pagination.limit).toBeGreaterThan(0);
@@ -75,7 +52,6 @@ export class EventDetailValidator {
         expect(mapped.pagination.totalPages).toBeGreaterThanOrEqual(0);
         expect(mapped.rows.length).toBeLessThanOrEqual(mapped.pagination.limit);
     }
-
     validatePaginationMath(mapped: MappedEventDetail): void {
         const { total, limit, totalPages } = mapped.pagination;
         const { rows } = mapped;
@@ -87,13 +63,11 @@ export class EventDetailValidator {
         expect(totalPages).toBe(Math.ceil(total / limit));
         expect(total).toBeGreaterThanOrEqual(rows.length);
     }
-
     validateRowsLimit(mapped: MappedEventDetail): void {
         expect(mapped.rows.length).toBeLessThanOrEqual(
             mapped.pagination.limit,
         );
     }
-
     validateRowsStructure(rows: EventDetailRow[]): void {
         for (const row of rows) {
             expect(typeof row.id).toBe("string");
@@ -115,13 +89,11 @@ export class EventDetailValidator {
             expect(typeof row.durationHhMm).toBe("string");
         }
     }
-
     validateRowIds(rows: EventDetailRow[]): void {
         for (const row of rows) {
             expect(row.id).toBe(`meter-${row.msn}`);
         }
     }
-
     validateMeterFields(rows: EventDetailRow[]): void {
         for (const row of rows) {
             expect(row.msn.trim().length).toBeGreaterThan(0);
@@ -129,7 +101,6 @@ export class EventDetailValidator {
             expect(row.phase.trim().length).toBeGreaterThan(0);
         }
     }
-
     validateConsumerFieldsWhenPresent(rows: EventDetailRow[]): void {
         for (const row of rows) {
             if (row.name.trim().length === 0) {
@@ -140,7 +111,6 @@ export class EventDetailValidator {
             expect(row.tariff.trim().length).toBeGreaterThan(0);
         }
     }
-
     validateHierarchyFields(rows: EventDetailRow[]): void {
         for (const row of rows) {
             expect(typeof row.division).toBe("string");
@@ -149,7 +119,6 @@ export class EventDetailValidator {
             expect(typeof row.dtr).toBe("string");
         }
     }
-
     validateEventFields(rows: EventDetailRow[]): void {
         for (const row of rows) {
             expect(row.eventId).toBeGreaterThan(0);
@@ -160,7 +129,6 @@ export class EventDetailValidator {
             ).toBeTruthy();
         }
     }
-
     validateDurationFormat(rows: EventDetailRow[]): void {
         for (const row of rows) {
             expect(DURATION_HH_MM_OR_NA.test(row.durationHhMm)).toBeTruthy();
@@ -173,18 +141,12 @@ export class EventDetailValidator {
             expect(minutes).toBeLessThan(60);
         }
     }
-
-    validateSlNoSequence(
-        rows: EventDetailRow[],
-        page: number,
-        limit: number,
-    ): void {
+    validateSlNoSequence(rows: EventDetailRow[],page: number,limit: number,): void {
         const base = (page - 1) * limit;
         rows.forEach((row, index) => {
             expect(row.slNo).toBe(base + index + 1);
         });
     }
-
     validateUniqueSlNo(rows: EventDetailRow[]): void {
         const slNos = rows.map((row) => row.slNo);
         expect(new Set(slNos).size).toBe(slNos.length);
@@ -194,17 +156,12 @@ export class EventDetailValidator {
         const keys = rows.map((row) => `${row.msn}_${row.eventId}`);
         expect(new Set(keys).size).toBe(keys.length);
     }
-
     validateNoDataScenario(mapped: MappedEventDetail): void {
         if (mapped.pagination.total === 0) {
             expect(mapped.rows.length).toBe(0);
         }
     }
-
-    validatePageBeyondTotal(
-        mapped: MappedEventDetail,
-        requestedPage: number,
-    ): void {
+    validatePageBeyondTotal(mapped: MappedEventDetail,requestedPage: number,): void {
         if (
             mapped.pagination.totalPages > 0 &&
             requestedPage > mapped.pagination.totalPages
@@ -212,12 +169,7 @@ export class EventDetailValidator {
             expect(mapped.rows.length).toBe(0);
         }
     }
-
-    validateLiveOk(
-        mapped: MappedEventDetail,
-        page = eventDetailDefaultPage,
-        limit = eventDetailDefaultLimit,
-    ): void {
+    validateLiveOk(mapped: MappedEventDetail,page = eventDetailDefaultPage,limit = eventDetailDefaultLimit,): void {
         this.validateSuccess(mapped);
         this.validateRootStructure(mapped);
         this.validateColumns(mapped);
@@ -226,7 +178,6 @@ export class EventDetailValidator {
         this.validatePaginationMath(mapped);
         this.validateRowsLimit(mapped);
         this.validateNoDataScenario(mapped);
-
         if (mapped.rows.length > 0) {
             this.validateRowsStructure(mapped.rows);
             this.validateRowIds(mapped.rows);
@@ -240,7 +191,6 @@ export class EventDetailValidator {
             this.validateUniqueMeterEventCombination(mapped.rows);
         }
     }
-
     validateLiveFullContract(mapped: MappedEventDetail): void {
         this.validateLiveOk(mapped);
         expect(mapped.pagination.total).toBe(2825);
@@ -252,13 +202,11 @@ export class EventDetailValidator {
         expect(mapped.rows[5]?.name).toBe("");
         expect(mapped.rows[9]?.durationHhMm).toBe("NA");
     }
-
     validateEmptyPageContract(mapped: MappedEventDetail): void {
         this.validateLiveOk(mapped);
         expect(mapped.pagination.total).toBe(0);
         expect(mapped.rows.length).toBe(0);
     }
-
     validatePageBeyondLive(
         mapped: MappedEventDetail,
         requestedPage: number,
@@ -270,13 +218,7 @@ export class EventDetailValidator {
         this.validatePaginationMath(mapped);
         this.validatePageBeyondTotal(mapped, requestedPage);
     }
-
-    validateScenario(
-        mapped: MappedEventDetail,
-        scenario: EventDetailScenario,
-        page = eventDetailDefaultPage,
-        limit = eventDetailDefaultLimit,
-    ): void {
+    validateScenario(mapped: MappedEventDetail,scenario: EventDetailScenario,page = eventDetailDefaultPage,limit = eventDetailDefaultLimit,): void {
         switch (scenario) {
             case "contract_live_full":
                 this.validateLiveFullContract(mapped);

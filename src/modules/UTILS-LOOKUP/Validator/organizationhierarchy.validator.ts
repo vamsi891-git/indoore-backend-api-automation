@@ -1,8 +1,5 @@
 import { expect } from "@playwright/test";
-import {
-  OrganisationData,
-  OrganisationResponse,
-} from "../Mapper/organizationhierarchy.mapper";
+import {OrganisationData,OrganisationResponse,} from "../Mapper/organizationhierarchy.mapper";
 export class OrganisationValidator {
   validateResponse(response: OrganisationResponse): void {
     expect(response.success).toBeTruthy();

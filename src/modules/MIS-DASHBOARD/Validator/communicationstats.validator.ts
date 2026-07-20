@@ -5,8 +5,7 @@ export class CommStatsValidator {
         expect(response.success).toBeTruthy();
         expect(response.data).toBeDefined();
     }
-    validateDates(data:CommStatsData
-    ) {
+    validateDates(data:CommStatsData) {
         expect(data.fromDate).toBeTruthy();
         expect(data.toDate).toBeTruthy();
         expect(data.referenceDate).toBeTruthy();

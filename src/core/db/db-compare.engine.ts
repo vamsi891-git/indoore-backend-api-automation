@@ -1,4 +1,6 @@
 import { expect } from "@playwright/test";
+import { appendEvent } from "../../observability/logger";
+import type { ObsContext } from "../../observability/context";
 
 export type DbCompareField = {
   label: string;
@@ -7,6 +9,36 @@ export type DbCompareField = {
   /** When true, only checks both null/undefined or both present */
   optional?: boolean;
 };
+
+/** Observability context for DB cross-validation, with optional table/column tags. */
+export type DbCompareObs = ObsContext & {
+  table?: string;
+  column?: string;
+  mode?: string;
+};
+
+function emitDbEvent(
+  obs: DbCompareObs | undefined,
+  field: DbCompareField,
+  outcome: "pass" | "fail" | "warn",
+): void {
+  if (!obs) {
+    return;
+  }
+  appendEvent({
+    kind: "db_cross_validation",
+    runId: obs.runId,
+    testId: obs.testId,
+    module: obs.module,
+    outcome,
+    table: obs.table,
+    column: obs.column,
+    label: field.label,
+    expected: field.dbValue,
+    actual: field.apiValue,
+    mode: obs.mode,
+  });
+}
 
 /** How the summary table labels the pagination-total row. */
 export type DbTotalCompareMode = "exact" | "lte" | "tolerance";
@@ -107,11 +139,13 @@ function totalCompareStatus(
 export function compareApiToDb(
   fields: DbCompareField[],
   title = "DB vs API — field comparison",
+  obs?: DbCompareObs,
 ): void {
   const mismatches: string[] = [];
   const tableRows: string[][] = [];
 
-  fields.forEach(({ label, apiValue, dbValue, optional }) => {
+  fields.forEach((field) => {
+    const { label, apiValue, dbValue, optional } = field;
     const api = normalizeCompareValue(apiValue);
     const db = normalizeCompareValue(dbValue);
 
@@ -122,6 +156,7 @@ export function compareApiToDb(
         displayValueForTable(dbValue),
         "SKIP",
       ]);
+      emitDbEvent(obs, field, "warn");
       return;
     }
 
@@ -132,6 +167,8 @@ export function compareApiToDb(
       displayValueForTable(dbValue),
       match ? "MATCH" : "MISMATCH",
     ]);
+
+    emitDbEvent(obs, field, match ? "pass" : "fail");
 
     if (!match) {
       mismatches.push(
@@ -161,8 +198,9 @@ export function assertDbVsApiScalar(
   apiValue: unknown,
   dbValue: unknown,
   title = "DB vs API — scalar comparison",
+  obs?: DbCompareObs,
 ): void {
-  compareApiToDb([{ label, apiValue, dbValue }], title);
+  compareApiToDb([{ label, apiValue, dbValue }], title, obs);
 }
 
 /** Context table before field/scalar assertions — not a pass/fail on its own. */

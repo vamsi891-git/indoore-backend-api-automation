@@ -7,12 +7,9 @@ import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { CONSUMPTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
-
 test.describe("Daily Consumption Report API", () => {
     test.setTimeout(CONSUMPTION_TEST_TIMEOUT_MS);
-
-    test(
-        "Validate Daily Consumption Report API",
+    test("Validate Daily Consumption Report API",
         {
             tag: ["@consumption", "@daily-consumption", "@smoke"],
         },
@@ -27,7 +24,6 @@ test.describe("Daily Consumption Report API", () => {
                 year,
                 maxResponseTime,
             } = dailyConsumptionData;
-
             const { rawResponse, responseBody, responseTime } =
                 await api.getDailyReport(
                     page,
@@ -37,18 +33,15 @@ test.describe("Daily Consumption Report API", () => {
                     month,
                     year,
                 );
-
             await PerformanceTracker.track(
         rawResponse,
         "Daily Consumption Report API",
         rawResponse.url(),
         responseTime
       );
-
             const assert = new AssertionEngine();
             const validation = new ValidationEngine();
             const validator = new DailyConsumptionValidator();
-
             validation.execute("Status", () =>
                 assert.validateStatusCode(rawResponse, 200, responseBody),
             );
@@ -69,11 +62,9 @@ test.describe("Daily Consumption Report API", () => {
                     assert.validateRequiredFields(responseBody, ["data"]);
                 }
             });
-
             const mapped = DailyConsumptionMapper.map(responseBody);
             const { items } = mapped;
             const isOk = rawResponse.status() === 200;
-
             if (isOk) {
                 validation.execute("Mapped Required Fields", () =>
                     assert.validateRequiredFields(mapped, [
@@ -106,7 +97,6 @@ test.describe("Daily Consumption Report API", () => {
                     validator.validateBusinessRules(mapped),
                 );
             }
-
             if (isOk && items.length > 0) {
                 validation.execute("Item Required Fields", () =>
                     validator.validateItemRequiredFields(items),
@@ -145,7 +135,6 @@ test.describe("Daily Consumption Report API", () => {
                     validator.validateNoNaN(items),
                 );
             }
-
             validation.printSummary("Daily Consumption Report API", responseTime);
         },
     );
