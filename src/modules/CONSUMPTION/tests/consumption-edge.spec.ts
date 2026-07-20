@@ -6,27 +6,15 @@ import { ConsumptionReportApi } from "../Api/consumption-report.api";
 import { consumptionEdgeCases } from "../Data/consumption-negative.data";
 import { PatternConsumptionMapper } from "../Mapper/patternconsumption.mapper";
 import { PatternConsumptionValidator } from "../Validator/patternconsumption.validator";
-import {
-  DailyConsumptionMapper,
-  DailyConsumptionResponse,
-} from "../Mapper/dailyconsumption.mapper";
-import {
-  HourlyConsumptionMapper,
-  HourlyConsumptionResponse,
-} from "../Mapper/hourlyconsumption.mapper";
-import {
-  MonthlyReportConsumptionMapper,
-  MonthlyReportConsumptionResponse,
-} from "../Mapper/monthlyconsumption.mapper";
+import { DailyConsumptionMapper,DailyConsumptionResponse,} from "../Mapper/dailyconsumption.mapper";
+import {HourlyConsumptionMapper,HourlyConsumptionResponse,} from "../Mapper/hourlyconsumption.mapper";
+import {MonthlyReportConsumptionMapper,MonthlyReportConsumptionResponse,} from "../Mapper/monthlyconsumption.mapper";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { CONSUMPTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { isConsumptionInternalError } from "../utils/consumption-env.helper";
-
 test.describe("Consumption API — Edge", () => {
   test.setTimeout(CONSUMPTION_TEST_TIMEOUT_MS);
-
-  test(
-    "Pattern comparison page 2 returns valid pagination",
+  test("Pattern comparison page 2 returns valid pagination",
     { tag: ["@consumption", "@comparison", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new PatternConsumptionApi(authenticatedApi);
@@ -38,19 +26,15 @@ test.describe("Consumption API — Edge", () => {
         params.month,
         params.year,
       );
-
-      if (
-        rawResponse.status() === 500 &&
+      if (rawResponse.status() === 500 &&
         isConsumptionInternalError(responseBody)
       ) {
         test.skip(true, "Pattern comparison page 2 returned 500 INTERNAL_ERROR");
         return;
       }
-
       const validation = new ValidationEngine();
       const mapped = PatternConsumptionMapper.map(responseBody);
       const validator = new PatternConsumptionValidator();
-
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
       });
@@ -58,19 +42,12 @@ test.describe("Consumption API — Edge", () => {
         validator.validateSlNo(mapped.rows, params.page, params.limit),
       );
       validation.execute("Pagination echo", () =>
-        validator.validatePagination(
-          mapped.pagination,
-          params.page,
-          params.limit,
-          mapped.rows.length,
-        ),
+        validator.validatePagination(mapped.pagination,params.page,params.limit,mapped.rows.length,),
       );
       validation.printSummary("Pattern Comparison — Page 2", 0);
     },
   );
-
-  test(
-    "Pattern yearly limit 1 returns single row",
+  test("Pattern yearly limit 1 returns single row",
     { tag: ["@consumption", "@yearly", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new PatternConsumptionApi(authenticatedApi);
@@ -82,18 +59,12 @@ test.describe("Consumption API — Edge", () => {
         params.month,
         params.year,
       );
-
-      if (
-        rawResponse.status() === 500 &&
-        isConsumptionInternalError(responseBody)
-      ) {
+      if (rawResponse.status() === 500 &&isConsumptionInternalError(responseBody)) {
         test.skip(true, "Pattern yearly limit 1 returned 500 INTERNAL_ERROR");
         return;
       }
-
       const validation = new ValidationEngine();
       const mapped = PatternConsumptionMapper.map(responseBody);
-
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
       });
@@ -103,9 +74,7 @@ test.describe("Consumption API — Edge", () => {
       validation.printSummary("Pattern Yearly — Limit 1", 0);
     },
   );
-
-  test(
-    "Monthly net meter page 2 returns valid pagination",
+  test("Monthly net meter page 2 returns valid pagination",
     { tag: ["@consumption", "@monthly-net-meter", "@edge", "@backend-defect"] },
     async ({ authenticatedApi }) => {
       const api = new MonthlyNetMeterApi(authenticatedApi);
@@ -116,7 +85,6 @@ test.describe("Consumption API — Edge", () => {
         params.month,
         params.year,
       );
-
       if (
         rawResponse.status() === 500 &&
         isConsumptionInternalError(responseBody)
@@ -124,7 +92,6 @@ test.describe("Consumption API — Edge", () => {
         test.skip(true, "Monthly net meter page 2 returned 500 INTERNAL_ERROR");
         return;
       }
-
       const validation = new ValidationEngine();
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
@@ -135,9 +102,7 @@ test.describe("Consumption API — Edge", () => {
       validation.printSummary("Monthly Net Meter — Page 2", 0);
     },
   );
-
-  test(
-    "Daily report page 2 returns valid pagination",
+  test("Daily report page 2 returns valid pagination",
     { tag: ["@consumption", "@daily-consumption", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new ConsumptionReportApi(authenticatedApi);
@@ -152,10 +117,8 @@ test.describe("Consumption API — Edge", () => {
         params.month,
         params.year,
       );
-
       const validation = new ValidationEngine();
       const mapped = DailyConsumptionMapper.map(responseBody);
-
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
       });
@@ -165,9 +128,7 @@ test.describe("Consumption API — Edge", () => {
       validation.printSummary("Daily Report — Page 2", 0);
     },
   );
-
-  test(
-    "Hourly report limit 1 returns at most one item",
+  test("Hourly report limit 1 returns at most one item",
     { tag: ["@consumption", "@hourly-consumption", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new ConsumptionReportApi(authenticatedApi);
@@ -182,7 +143,6 @@ test.describe("Consumption API — Edge", () => {
         params.month,
         params.year,
       );
-
       if (
         rawResponse.status() === 500 &&
         isConsumptionInternalError(responseBody)
@@ -190,10 +150,8 @@ test.describe("Consumption API — Edge", () => {
         test.skip(true, "Hourly report limit 1 returned 500 INTERNAL_ERROR");
         return;
       }
-
       const validation = new ValidationEngine();
       const mapped = HourlyConsumptionMapper.map(responseBody);
-
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
       });
@@ -203,9 +161,7 @@ test.describe("Consumption API — Edge", () => {
       validation.printSummary("Hourly Report — Limit 1", 0);
     },
   );
-
-  test(
-    "Monthly report returns paginated items",
+  test("Monthly report returns paginated items",
     { tag: ["@consumption", "@monthly-consumption", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new ConsumptionReportApi(authenticatedApi);
@@ -220,18 +176,12 @@ test.describe("Consumption API — Edge", () => {
         params.month,
         params.year,
       );
-
-      if (
-        rawResponse.status() === 500 &&
-        isConsumptionInternalError(responseBody)
-      ) {
+      if (rawResponse.status() === 500 && isConsumptionInternalError(responseBody)) {
         test.skip(true, "Monthly report returned 500 INTERNAL_ERROR");
         return;
       }
-
       const validation = new ValidationEngine();
       const mapped = MonthlyReportConsumptionMapper.map(responseBody);
-
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
       });

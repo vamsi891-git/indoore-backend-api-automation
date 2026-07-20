@@ -6,7 +6,6 @@ import { registerCatalogLookupTests } from "../utils/lookup-catalog.harness";
 import { getLookupResponseData } from "../utils/lookup-spec.harness";
 import type { CatalogScenario } from "../Data/lookup-catalogs.data";
 import type { ConnectionStatusData } from "../Mapper/connectionstatus.mapper";
-
 function validateConnectionStatus(
   scenario: CatalogScenario,
   responseBody: unknown,

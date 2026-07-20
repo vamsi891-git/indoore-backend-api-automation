@@ -1,22 +1,16 @@
 import { test } from "../../../fixtures/api.fixture";
 import { ConsumptionReportApi } from "../Api/consumption-report.api";
 import { monthlyReportConsumptionData } from "../Data/monthlyconsumption.data";
-import {
-  MonthlyReportConsumptionMapper,
-  MonthlyReportConsumptionResponse,
-} from "../Mapper/monthlyconsumption.mapper";
+import {MonthlyReportConsumptionMapper,MonthlyReportConsumptionResponse,} from "../Mapper/monthlyconsumption.mapper";
 import { MonthlyReportConsumptionValidator } from "../Validator/monthlyconsumption.validator";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { CONSUMPTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { isConsumptionInternalError } from "../utils/consumption-env.helper";
-
 test.describe("Monthly Consumption Report API", () => {
   test.setTimeout(CONSUMPTION_TEST_TIMEOUT_MS);
-
-  test(
-    "Validate Monthly Consumption Report API",
+  test("Validate Monthly Consumption Report API",
     {
       tag: ["@consumption", "@monthly-consumption", "@smoke", "@positive"],
     },
@@ -24,7 +18,6 @@ test.describe("Monthly Consumption Report API", () => {
       const api = new ConsumptionReportApi(authenticatedApi);
       const { page, limit, fromDate, toDate, month, year, maxResponseTime } =
         monthlyReportConsumptionData;
-
       const { rawResponse, responseBody, responseTime } =
         await api.getReport<MonthlyReportConsumptionResponse>(
           "monthly",
@@ -35,17 +28,13 @@ test.describe("Monthly Consumption Report API", () => {
           month,
           year,
         );
-
       await PerformanceTracker.track(
         rawResponse,
         "Monthly Consumption Report API",
         rawResponse.url(),
         responseTime,
       );
-
-      if (
-        rawResponse.status() === 500 &&
-        isConsumptionInternalError(responseBody)
+      if (rawResponse.status() === 500 && isConsumptionInternalError(responseBody)
       ) {
         test.skip(
           true,
@@ -53,13 +42,11 @@ test.describe("Monthly Consumption Report API", () => {
         );
         return;
       }
-
       const assert = new AssertionEngine();
       const validation = new ValidationEngine();
       const validator = new MonthlyReportConsumptionValidator();
       const mapped = MonthlyReportConsumptionMapper.map(responseBody);
       const isOk = rawResponse.status() === 200;
-
       validation.execute("Status", () =>
         assert.validateStatusCode(rawResponse, 200, responseBody),
       );
@@ -75,7 +62,6 @@ test.describe("Monthly Consumption Report API", () => {
       validation.execute("Required Fields", () =>
         assert.validateRequiredFields(responseBody, ["success"]),
       );
-
       if (isOk) {
         validation.execute("Success", () =>
           validator.validateSuccess(mapped.success),
@@ -93,7 +79,6 @@ test.describe("Monthly Consumption Report API", () => {
           validator.validatePaginationMath(mapped),
         );
       }
-
       if (isOk && mapped.items.length > 0) {
         validation.execute("Item Required Fields", () =>
           validator.validateItemRequiredFields(mapped.items),
@@ -111,7 +96,6 @@ test.describe("Monthly Consumption Report API", () => {
           validator.validateNoNaN(mapped.items),
         );
       }
-
       validation.printSummary("Monthly Consumption Report API", responseTime);
     },
   );

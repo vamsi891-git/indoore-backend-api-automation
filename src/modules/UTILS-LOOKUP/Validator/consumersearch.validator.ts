@@ -3,35 +3,29 @@ import {
   SearchConsumerData,
   SearchConsumerResponse,
 } from "../Mapper/consumersearch.mapper";
-
 export class SearchConsumerValidator {
   validateResponse(response: SearchConsumerResponse): void {
     expect(response.success).toBe(true);
     expect(response.data).toBeDefined();
   }
-
   validatePagination(data: SearchConsumerData): void {
     expect(data.page).toBeGreaterThan(0);
     expect(data.limit).toBeGreaterThan(0);
     expect(data.total).toBeGreaterThanOrEqual(data.items.length);
     expect(data.totalPages).toBeGreaterThan(0);
-
     const expectedPages = Math.max(1, Math.ceil(data.total / data.limit));
     expect(data.totalPages).toBe(expectedPages);
     expect(data.items.length).toBeLessThanOrEqual(data.limit);
   }
-
   validateItemsExist(data: SearchConsumerData): void {
     expect(data.items.length).toBeGreaterThan(0);
   }
-
   validateSerialSequence(data: SearchConsumerData): void {
     const offset = (data.page - 1) * data.limit;
     data.items.forEach((item, index) => {
       expect(item.slNo).toBe(offset + index + 1);
     });
   }
-
   validateRequiredFields(data: SearchConsumerData): void {
     data.items.forEach((item) => {
       expect(item.consumerCid?.trim()).not.toEqual("");
@@ -43,7 +37,6 @@ export class SearchConsumerValidator {
       expect(typeof item.consumerMobileNumber).toBe("string");
     });
   }
-
   validateDataTypes(data: SearchConsumerData): void {
     data.items.forEach((item) => {
       expect(typeof item.slNo).toBe("number");
@@ -59,12 +52,10 @@ export class SearchConsumerValidator {
       }
     });
   }
-
   validateDuplicateMeterSerials(data: SearchConsumerData): void {
     const serials = data.items.map((x) => x.meterSerialNumber?.trim());
     expect(serials.length).toBe(new Set(serials).size);
   }
-
   validateMobileNumberFormat(data: SearchConsumerData): void {
     data.items.forEach((item) => {
       const mobile = item.consumerMobileNumber?.trim() ?? "";
@@ -73,19 +64,16 @@ export class SearchConsumerValidator {
       }
     });
   }
-
   validateIvrsFields(data: SearchConsumerData): void {
     data.items.forEach((item) => {
       expect(typeof item.ivrsNo).toBe("string");
       expect(typeof item.existingIvrsNo).toBe("string");
     });
   }
-
   validateEmptyPage(data: SearchConsumerData): void {
     expect(data.items.length).toBe(0);
     expect(data.total).toBeGreaterThanOrEqual(0);
   }
-
   validateLimitOne(data: SearchConsumerData): void {
     expect(data.items.length).toBeLessThanOrEqual(1);
     if (data.total > 0) {

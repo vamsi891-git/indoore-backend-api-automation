@@ -1,9 +1,5 @@
 import { expect } from "@playwright/test";
-import {
-    eventReportExpectedColumns,
-    eventReportDefaultLimit,
-    eventReportDefaultPage,
-} from "../Data/eventreport.data";
+import {eventReportExpectedColumns,eventReportDefaultLimit, eventReportDefaultPage,} from "../Data/eventreport.data";
 import type {
     EventReportErrorBody,
     EventReportResponse,
@@ -12,31 +8,25 @@ import type {
     MappedEventReport,
 } from "../Mapper/eventreport.mapper";
 import { eventReportColumnKeys } from "../Mapper/eventreport.mapper";
-
 const DURATION_HH_MM = /^\d+:\d{2}$/;
-
 function parseDurationHhMm(value: string): { hours: number; minutes: number } {
     const [hours, minutes] = value.split(":").map(Number);
     return { hours, minutes };
 }
-
 export class EventReportValidator {
     validateResponseEnvelope(response: EventReportResponse): void {
         expect(response.success).toBe(true);
         expect(response.data).toBeDefined();
     }
-
     validateValidationError(responseBody: EventReportErrorBody): void {
         expect(responseBody.success).toBeFalsy();
         expect(responseBody.error).toBeDefined();
         expect(responseBody.error?.code).toBe("VALIDATION_ERROR");
         expect(responseBody.error?.message).toBeTruthy();
     }
-
     validateSuccess(mapped: MappedEventReport): void {
         expect(mapped.success).toBeTruthy();
     }
-
     validateRootStructure(mapped: MappedEventReport): void {
         expect(Array.isArray(mapped.columns)).toBeTruthy();
         expect(Array.isArray(mapped.rows)).toBeTruthy();
@@ -46,7 +36,6 @@ export class EventReportValidator {
         expect(typeof mapped.pagination.total).toBe("number");
         expect(typeof mapped.pagination.totalPages).toBe("number");
     }
-
     validateColumns(mapped: MappedEventReport): void {
         expect(mapped.columns.length).toBe(eventReportExpectedColumns.length);
         mapped.columns.forEach((column, index) => {
@@ -55,16 +44,10 @@ export class EventReportValidator {
             expect(eventReportColumnKeys).toContain(column.key);
         });
     }
-
-    validatePaginationEcho(
-        mapped: MappedEventReport,
-        page: number,
-        limit: number,
-    ): void {
+    validatePaginationEcho(mapped: MappedEventReport,page: number,limit: number,): void {
         expect(mapped.pagination.page).toBe(page);
         expect(mapped.pagination.limit).toBe(limit);
     }
-
     validatePaginationBounds(mapped: MappedEventReport): void {
         expect(mapped.pagination.page).toBeGreaterThan(0);
         expect(mapped.pagination.limit).toBeGreaterThan(0);
@@ -72,7 +55,6 @@ export class EventReportValidator {
         expect(mapped.pagination.totalPages).toBeGreaterThanOrEqual(0);
         expect(mapped.rows.length).toBeLessThanOrEqual(mapped.pagination.limit);
     }
-
     validatePaginationMath(mapped: MappedEventReport): void {
         const { total, limit, totalPages } = mapped.pagination;
         const { rows } = mapped;
@@ -84,13 +66,11 @@ export class EventReportValidator {
         expect(totalPages).toBe(Math.ceil(total / limit));
         expect(total).toBeGreaterThanOrEqual(rows.length);
     }
-
     validateRowsLimit(mapped: MappedEventReport): void {
         expect(mapped.rows.length).toBeLessThanOrEqual(
             mapped.pagination.limit,
         );
     }
-
     validateRowsStructure(rows: EventReportRow[]): void {
         for (const row of rows) {
             expect(typeof row.id).toBe("string");
@@ -103,26 +83,22 @@ export class EventReportValidator {
             expect(typeof row.slNo).toBe("number");
         }
     }
-
     validateRowIds(rows: EventReportRow[]): void {
         for (const row of rows) {
             expect(row.id).toBe(`row-${row.slNo}`);
         }
     }
-
     validateCircleField(rows: EventReportRow[]): void {
         for (const row of rows) {
             expect(row.circle.trim().length).toBeGreaterThan(0);
         }
     }
-
     validateEventIdentity(rows: EventReportRow[]): void {
         for (const row of rows) {
             expect(row.eventId).toBeGreaterThan(0);
             expect(row.eventName.trim().length).toBeGreaterThan(0);
         }
     }
-
     validateEventCounts(rows: EventReportRow[]): void {
         for (const row of rows) {
             expect(row.meterCount).toBeGreaterThanOrEqual(0);
@@ -135,7 +111,6 @@ export class EventReportValidator {
             }
         }
     }
-
     validateDurationFormat(rows: EventReportRow[]): void {
         for (const row of rows) {
             expect(DURATION_HH_MM.test(row.durationHhMm)).toBeTruthy();
@@ -145,7 +120,6 @@ export class EventReportValidator {
             expect(minutes).toBeLessThan(60);
         }
     }
-
     validateDurationConsistency(rows: EventReportRow[]): void {
         for (const row of rows) {
             const { hours, minutes } = parseDurationHhMm(row.durationHhMm);
@@ -155,39 +129,30 @@ export class EventReportValidator {
             }
         }
     }
-
     validateSlNoSequence(rows: EventReportRow[], page: number, limit: number): void {
         const base = (page - 1) * limit;
         rows.forEach((row, index) => {
             expect(row.slNo).toBe(base + index + 1);
         });
     }
-
     validateUniqueSlNo(rows: EventReportRow[]): void {
         const slNos = rows.map((row) => row.slNo);
         expect(new Set(slNos).size).toBe(slNos.length);
     }
-
     validateUniqueEventId(rows: EventReportRow[]): void {
         const eventIds = rows.map((row) => row.eventId);
         expect(new Set(eventIds).size).toBe(eventIds.length);
     }
-
     validateUniqueEventName(rows: EventReportRow[]): void {
         const eventNames = rows.map((row) => row.eventName);
         expect(new Set(eventNames).size).toBe(eventNames.length);
     }
-
     validateNoDataScenario(mapped: MappedEventReport): void {
         if (mapped.pagination.total === 0) {
             expect(mapped.rows.length).toBe(0);
         }
     }
-
-    validatePageBeyondTotal(
-        mapped: MappedEventReport,
-        requestedPage: number,
-    ): void {
+    validatePageBeyondTotal(mapped: MappedEventReport,requestedPage: number,): void {
         if (
             mapped.pagination.totalPages > 0 &&
             requestedPage > mapped.pagination.totalPages
@@ -195,12 +160,7 @@ export class EventReportValidator {
             expect(mapped.rows.length).toBe(0);
         }
     }
-
-    validateLiveOk(
-        mapped: MappedEventReport,
-        page = eventReportDefaultPage,
-        limit = eventReportDefaultLimit,
-    ): void {
+    validateLiveOk(mapped: MappedEventReport,page = eventReportDefaultPage,limit = eventReportDefaultLimit,): void {
         this.validateSuccess(mapped);
         this.validateRootStructure(mapped);
         this.validateColumns(mapped);
@@ -209,7 +169,6 @@ export class EventReportValidator {
         this.validatePaginationMath(mapped);
         this.validateRowsLimit(mapped);
         this.validateNoDataScenario(mapped);
-
         if (mapped.rows.length > 0) {
             this.validateRowsStructure(mapped.rows);
             this.validateRowIds(mapped.rows);
@@ -224,7 +183,6 @@ export class EventReportValidator {
             this.validateUniqueEventName(mapped.rows);
         }
     }
-
     validateLiveFullContract(mapped: MappedEventReport): void {
         this.validateLiveOk(mapped);
         expect(mapped.pagination.total).toBe(10);
@@ -232,13 +190,11 @@ export class EventReportValidator {
         expect(mapped.rows[0]?.eventId).toBe(547);
         expect(mapped.rows[9]?.eventName).toBe("Over Voltage in any phase");
     }
-
     validateEmptyPageContract(mapped: MappedEventReport): void {
         this.validateLiveOk(mapped);
         expect(mapped.pagination.total).toBe(0);
         expect(mapped.rows.length).toBe(0);
     }
-
     validatePage2Live(mapped: MappedEventReport, requestedPage: number): void {
         this.validateSuccess(mapped);
         this.validateRootStructure(mapped);
@@ -247,13 +203,7 @@ export class EventReportValidator {
         this.validatePaginationMath(mapped);
         this.validatePageBeyondTotal(mapped, requestedPage);
     }
-
-    validateScenario(
-        mapped: MappedEventReport,
-        scenario: EventReportScenario,
-        page = eventReportDefaultPage,
-        limit = eventReportDefaultLimit,
-    ): void {
+    validateScenario(mapped: MappedEventReport,scenario: EventReportScenario,page = eventReportDefaultPage,limit = eventReportDefaultLimit,): void {
         switch (scenario) {
             case "contract_live_full":
                 this.validateLiveFullContract(mapped);

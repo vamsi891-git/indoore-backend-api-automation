@@ -8,12 +8,9 @@ import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { CONSUMPTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { isConsumptionInternalError } from "../utils/consumption-env.helper";
-
 test.describe("Monthly Net Meter Consumption API", () => {
   test.setTimeout(CONSUMPTION_TEST_TIMEOUT_MS);
-
-  test(
-    "Validate Monthly Net Meter Consumption API",
+  test("Validate Monthly Net Meter Consumption API",
     {
       tag: [
         "@consumption",
@@ -31,14 +28,12 @@ test.describe("Monthly Net Meter Consumption API", () => {
           monthlyNetMeterData.month,
           monthlyNetMeterData.year,
         );
-
       await PerformanceTracker.track(
         rawResponse,
         "Monthly Net Meter Consumption API",
         rawResponse.url(),
         responseTime,
       );
-
       // Live API may return 500 under load; auto-resume full assertions when backend returns 200.
       if (
         rawResponse.status() === 500 &&
@@ -50,13 +45,11 @@ test.describe("Monthly Net Meter Consumption API", () => {
         );
         return;
       }
-
       const assert = new AssertionEngine();
       const validation = new ValidationEngine();
       const validator = new MonthlyNetMeterValidator();
       const mapped = MonthlyNetMeterMapper.map(responseBody);
       const isOk = rawResponse.status() === 200;
-
       validation.execute("Status Code", () =>
         assert.validateStatusCode(rawResponse, 200, responseBody),
       );
@@ -107,7 +100,6 @@ test.describe("Monthly Net Meter Consumption API", () => {
           validator.validateNoNaN(mapped.items),
         );
       }
-
       validation.printSummary(
         "Monthly Net Meter Consumption API",
         responseTime,

@@ -1,5 +1,4 @@
 import { CONSUMPTION_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
-
 export const dailyConsumptionData = {
     reportType: "daily" as const,
     page: 1,

@@ -1,9 +1,5 @@
 import { expect } from "@playwright/test";
-import {
-  MonthlyReportConsumptionData,
-  MonthlyReportConsumptionItem,
-} from "../Mapper/monthlyconsumption.mapper";
-
+import {MonthlyReportConsumptionData,MonthlyReportConsumptionItem,} from "../Mapper/monthlyconsumption.mapper";
 const ITEM_REQUIRED_FIELDS = [
   "slNo",
   "division",
@@ -22,12 +18,10 @@ const ITEM_REQUIRED_FIELDS = [
   "mdKw",
   "mdKvah",
 ] as const;
-
 export class MonthlyReportConsumptionValidator {
   validateSuccess(success: boolean): void {
     expect(success).toBeTruthy();
   }
-
   validateRootStructure(data: MonthlyReportConsumptionData): void {
     expect(Array.isArray(data.items)).toBeTruthy();
     expect(typeof data.total).toBe("number");
@@ -35,16 +29,10 @@ export class MonthlyReportConsumptionValidator {
     expect(typeof data.limit).toBe("number");
     expect(typeof data.totalPages).toBe("number");
   }
-
-  validateQueryEcho(
-    data: MonthlyReportConsumptionData,
-    page: number,
-    limit: number,
-  ): void {
+  validateQueryEcho(data: MonthlyReportConsumptionData,page: number,limit: number,): void {
     expect(data.page).toBe(page);
     expect(data.limit).toBe(limit);
   }
-
   validatePaginationBounds(data: MonthlyReportConsumptionData): void {
     expect(data.page).toBeGreaterThan(0);
     expect(data.limit).toBeGreaterThan(0);
@@ -52,7 +40,6 @@ export class MonthlyReportConsumptionValidator {
     expect(data.totalPages).toBeGreaterThanOrEqual(0);
     expect(data.items.length).toBeLessThanOrEqual(data.limit);
   }
-
   validatePaginationMath(data: MonthlyReportConsumptionData): void {
     if (data.total === 0) {
       expect(data.items.length).toBe(0);
@@ -70,18 +57,12 @@ export class MonthlyReportConsumptionValidator {
       });
     });
   }
-
-  validateSerialSequence(
-    items: MonthlyReportConsumptionItem[],
-    page: number,
-    limit: number,
-  ): void {
+  validateSerialSequence(items: MonthlyReportConsumptionItem[],page: number,limit: number,): void {
     const base = (page - 1) * limit;
     items.forEach((item, index) => {
       expect(item.slNo).toBe(base + index + 1);
     });
   }
-
   validateEnergyFields(items: MonthlyReportConsumptionItem[]): void {
     items.forEach((item) => {
       for (const field of ["kwh", "kvah", "mdKw", "mdKvah"] as const) {
@@ -93,7 +74,6 @@ export class MonthlyReportConsumptionValidator {
       }
     });
   }
-
   validateNullEnergyBundle(items: MonthlyReportConsumptionItem[]): void {
     items.forEach((item) => {
       if (
@@ -107,7 +87,6 @@ export class MonthlyReportConsumptionValidator {
       expect(item.kwh === null || typeof item.kwh === "number").toBeTruthy();
     });
   }
-
   validateNoNaN(items: MonthlyReportConsumptionItem[]): void {
     items.forEach((item) => {
       for (const value of [item.kwh, item.kvah, item.mdKw, item.mdKvah, item.slNo]) {

@@ -8,12 +8,9 @@ import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { CONSUMPTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { isConsumptionInternalError } from "../utils/consumption-env.helper";
-
 test.describe("Pattern Consumption Last Three Months API", () => {
   test.setTimeout(CONSUMPTION_TEST_TIMEOUT_MS);
-
-  test(
-    "Validate Pattern Consumption Last Three Months API",
+  test("Validate Pattern Consumption Last Three Months API",
     {
       tag: ["@consumption", "@last-three-months", "@smoke"],
     },
@@ -27,14 +24,12 @@ test.describe("Pattern Consumption Last Three Months API", () => {
           patternConsumptionData.month,
           patternConsumptionData.year,
         );
-
       await PerformanceTracker.track(
         rawResponse,
         "Pattern Consumption Last Three Months API",
         rawResponse.url(),
         responseTime,
       );
-
       if (
         rawResponse.status() === 500 &&
         isConsumptionInternalError(responseBody)
@@ -45,13 +40,11 @@ test.describe("Pattern Consumption Last Three Months API", () => {
         );
         return;
       }
-
       const assert = new AssertionEngine();
       const validation = new ValidationEngine();
       const mapped = PatternConsumptionMapper.map(responseBody);
       const validator = new PatternConsumptionValidator();
       const isOk = rawResponse.status() === 200;
-
       validation.execute("Status Code", () =>
         assert.validateStatusCode(rawResponse, 200, responseBody),
       );
@@ -67,7 +60,6 @@ test.describe("Pattern Consumption Last Three Months API", () => {
       validation.execute("Sensitive Data", () =>
         assert.validateSensitiveData(responseBody),
       );
-
       if (isOk) {
         validation.execute("Table Validation", () =>
           validator.validateTable(mapped),
@@ -94,7 +86,6 @@ test.describe("Pattern Consumption Last Three Months API", () => {
           validator.validateNoNaN(mapped.rows),
         );
       }
-
       validation.printSummary(
         "Pattern Consumption Last Three Months API",
         responseTime,

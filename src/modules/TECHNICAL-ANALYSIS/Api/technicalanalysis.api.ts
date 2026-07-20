@@ -1,13 +1,11 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
 import { TechnicalReportResponse } from "../Mapper/technicalanalysis.mapper";
 import { getTechnicalReportWithRetry } from "../utils/technical-request.helper";
-
 export interface TechnicalReportApiResult {
   rawResponse: APIResponse;
   responseBody: TechnicalReportResponse;
   responseTime: number;
 }
-
 export interface TechnicalReportQuery {
   analysisType?: string;
   month?: number;
@@ -17,10 +15,8 @@ export interface TechnicalReportQuery {
   page?: number;
   [key: string]: string | number | boolean | undefined;
 }
-
 export class TechnicalReportApi {
   constructor(private readonly authenticatedApi: APIRequestContext) {}
-
   async getTechnicalReport(
     query: TechnicalReportQuery,
   ): Promise<TechnicalReportApiResult> {
@@ -30,27 +26,23 @@ export class TechnicalReportApi {
         params[key] = value;
       }
     }
-
     const { response, responseTime } = await getTechnicalReportWithRetry(
       this.authenticatedApi,
       "/indore/analysis/technical/report",
       { params },
     );
-
     let responseBody: TechnicalReportResponse;
     try {
       responseBody = (await response.json()) as TechnicalReportResponse;
     } catch {
       responseBody = { success: false };
     }
-
     return {
       rawResponse: response,
       responseBody,
       responseTime,
     };
   }
-
   /** @deprecated Use getTechnicalReport({ analysisType, month, year, pageSize }) */
   async getTechnicalReportLegacy(
     analysisType: string,

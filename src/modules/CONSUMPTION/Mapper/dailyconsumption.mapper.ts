@@ -16,7 +16,6 @@ export interface DailyConsumptionItem {
     fr: number | null;
     kwh: number | null;
 }
-
 export interface DailyConsumptionData {
     items: DailyConsumptionItem[];
     total: number;
@@ -24,16 +23,12 @@ export interface DailyConsumptionData {
     limit: number;
     totalPages: number;
 }
-
 export interface DailyConsumptionResponse {
     success: boolean;
     data?: DailyConsumptionData;
 }
-
 export class DailyConsumptionMapper {
-    static map(
-        response: DailyConsumptionResponse,
-    ): DailyConsumptionData & { success: boolean } {
+    static map(response: DailyConsumptionResponse,): DailyConsumptionData & { success: boolean } {
         const data = response.data ?? ({} as DailyConsumptionData);
         return {
             success: response.success,

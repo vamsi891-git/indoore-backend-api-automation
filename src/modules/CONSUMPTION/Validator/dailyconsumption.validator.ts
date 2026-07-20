@@ -1,9 +1,5 @@
 import { expect } from "@playwright/test";
-import {
-    DailyConsumptionData,
-    DailyConsumptionItem,
-} from "../Mapper/dailyconsumption.mapper";
-
+import {DailyConsumptionData,DailyConsumptionItem,} from "../Mapper/dailyconsumption.mapper";
 const ITEM_REQUIRED_FIELDS = [
     "slNo",
     "division",
@@ -22,23 +18,18 @@ const ITEM_REQUIRED_FIELDS = [
     "fr",
     "kwh",
 ] as const;
-
 const ISO_DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-
 function round5(n: number): number {
     return Number(n.toFixed(5));
 }
-
 function hasAtMost5Decimals(n: number): boolean {
     return round5(n) === n;
 }
-
 export class DailyConsumptionValidator {
     validateSuccess(success: boolean) {
         expect(success).toBeTruthy();
     }
-
     validateRootStructure(data: DailyConsumptionData) {
         expect(Array.isArray(data.items)).toBeTruthy();
         expect(typeof data.total).toBe("number");
@@ -46,12 +37,10 @@ export class DailyConsumptionValidator {
         expect(typeof data.limit).toBe("number");
         expect(typeof data.totalPages).toBe("number");
     }
-
     validateQueryEcho(data: DailyConsumptionData, page: number, limit: number) {
         expect(data.page).toBe(page);
         expect(data.limit).toBe(limit);
     }
-
     validatePaginationBounds(data: DailyConsumptionData) {
         expect(data.page).toBeGreaterThan(0);
         expect(data.limit).toBeGreaterThan(0);
@@ -59,25 +48,21 @@ export class DailyConsumptionValidator {
         expect(data.totalPages).toBeGreaterThanOrEqual(0);
         expect(data.items.length).toBeLessThanOrEqual(data.limit);
     }
-
     validatePaginationMath(data: DailyConsumptionData) {
         if (data.total === 0) {
             expect(data.items.length).toBe(0);
             expect(data.totalPages).toBe(0);
             return;
         }
-
         const expectedPages = Math.ceil(data.total / data.limit);
         expect(data.totalPages).toBe(expectedPages);
         expect(data.total).toBeGreaterThanOrEqual(data.items.length);
     }
-
     validateItemsPresentWhenTotalPositive(data: DailyConsumptionData) {
         if (data.total > 0 && data.page === 1) {
             expect(data.items.length).toBeGreaterThan(0);
         }
     }
-
     validateItemRequiredFields(items: DailyConsumptionItem[]) {
         items.forEach((item) => {
             ITEM_REQUIRED_FIELDS.forEach((field) => {
@@ -85,7 +70,6 @@ export class DailyConsumptionValidator {
             });
         });
     }
-
     validateItemStructure(items: DailyConsumptionItem[]) {
         items.forEach((item) => {
             expect(typeof item.slNo).toBe("number");
@@ -124,18 +108,12 @@ export class DailyConsumptionValidator {
             expect(item.kwh === null || typeof item.kwh === "number").toBeTruthy();
         });
     }
-
-    validateSerialSequence(
-        items: DailyConsumptionItem[],
-        page: number,
-        limit: number,
-    ) {
+    validateSerialSequence(items: DailyConsumptionItem[],page: number,limit: number,) {
         const base = (page - 1) * limit;
         items.forEach((item, index) => {
             expect(item.slNo).toBe(base + index + 1);
         });
     }
-
     validateUniqueSerialNumbers(items: DailyConsumptionItem[]) {
         const serials = items.map((item) => item.slNo);
         expect(new Set(serials).size).toBe(serials.length);
@@ -151,7 +129,6 @@ export class DailyConsumptionValidator {
             }
         });
     }
-
     validateNullReadingBundle(items: DailyConsumptionItem[]) {
         items.forEach((item) => {
             if (item.ir === null && item.fr === null) {
@@ -161,7 +138,6 @@ export class DailyConsumptionValidator {
             }
         });
     }
-
     validateKwhDerivation(items: DailyConsumptionItem[]) {
         items.forEach((item) => {
             if (item.ir == null || item.fr == null) {
@@ -172,7 +148,6 @@ export class DailyConsumptionValidator {
             expect(item.kwh).toBe(round5(item.fr! - item.ir!));
         });
     }
-
     validateRound5Precision(items: DailyConsumptionItem[]) {
         items.forEach((item) => {
             for (const value of [item.ir, item.fr, item.kwh]) {
@@ -183,7 +158,6 @@ export class DailyConsumptionValidator {
             }
         });
     }
-
     validateNonNegativeReadings(items: DailyConsumptionItem[]) {
         items.forEach((item) => {
             for (const value of [item.ir, item.fr, item.kwh]) {
@@ -194,7 +168,6 @@ export class DailyConsumptionValidator {
             }
         });
     }
-
     validateReadingDatesWhenPresent(items: DailyConsumptionItem[]) {
         items.forEach((item) => {
             if (item.ir == null && item.fr == null) {
@@ -204,7 +177,6 @@ export class DailyConsumptionValidator {
             expect(item.maxDate).toBeTruthy();
         });
     }
-
     validateMsnWhenPresent(items: DailyConsumptionItem[]) {
         items.forEach((item) => {
             if (item.msn == null) {
@@ -213,7 +185,6 @@ export class DailyConsumptionValidator {
             expect(item.msn.trim().length).toBeGreaterThan(0);
         });
     }
-
     validateNoNaN(items: DailyConsumptionItem[]) {
         items.forEach((item) => {
             for (const value of [item.ir, item.fr, item.kwh, item.slNo]) {
@@ -223,7 +194,6 @@ export class DailyConsumptionValidator {
             }
         });
     }
-
     validateBusinessRules(data: DailyConsumptionData) {
         expect(data).toHaveProperty("items");
         expect(data).toHaveProperty("total");

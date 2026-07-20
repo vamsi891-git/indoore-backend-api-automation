@@ -5,22 +5,18 @@ import { EventVoltageData } from "../Mapper/eventdatavoltage.mapper";
 type TrendPeriod = keyof typeof backendRules.trendRegex;
 
 export class EventVoltageValidator {
-
     validateResponse(response: { success: boolean; data: unknown }) {
         expect(response.success).toBeTruthy();
         expect(response.data).toBeDefined();
     }
-
     validateReportType(data: EventVoltageData) {
         expect(backendRules.reportTypes)
             .toContain(data.reportType);
     }
-
     validatePeriod(data: EventVoltageData) {
         expect(backendRules.periods)
             .toContain(data.period);
     }
-
     validateDates(data: EventVoltageData) {
         expect(data.fromDate).toBeTruthy();
         expect(data.toDate).toBeTruthy();

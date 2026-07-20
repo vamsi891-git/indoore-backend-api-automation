@@ -8,9 +8,7 @@ import { RolePermissionMapper } from "../Mapper/rolepermission.mapper";
 import {  RolePermissionValidator } from "../Validator/rolepermission.validator";
 test.describe("Role Permission CRUD Flow", () => {
   test.describe.configure({ mode: "serial" });
-
-  test(
-    "Validate Role Permission Module",
+  test("Validate Role Permission Module",
     { tag: ["@permissions", "@role-permissions"] },
     async ({ authenticatedApi }) => {
                 const assert =new AssertionEngine();

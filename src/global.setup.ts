@@ -4,6 +4,7 @@ import path from "path";
 import { AuthApi } from "./core/utils/auth.util";
 import { LoggerEngine } from "./core/engine/logger.engine";
 import { TokenManager } from "./core/utils/token-manager";
+import { initRunId } from "./observability/logger";
 
 function ensureDirectory(dirName: string): void {
   const dirPath = path.join(process.cwd(), dirName);
@@ -28,6 +29,9 @@ function validateEnv(): void {
 async function globalSetup(): Promise<void> {
   dotenv.config();
   LoggerEngine.info("Global setup started");
+
+  const runId = initRunId();
+  LoggerEngine.info(`Observability runId for this run: ${runId}`);
 
   validateEnv();
   ensureDirectory("logs");

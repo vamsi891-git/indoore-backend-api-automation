@@ -819,20 +819,24 @@ The inventory script currently flags these API files as lacking a filename-match
 
 Confirmed real incompleteness:
 
-- `METER-REPLACEMENT/Api/consumer-detail.api.ts` still has a public `detailConsumer()` stub that throws `Method not implemented.` while another implemented method performs the live request.
+- None outstanding in core code paths. The former `METER-REPLACEMENT/Api/consumer-detail.api.ts` `detailConsumer()` stub was removed on 18 July 2026.
+
+Resolved on 18 July 2026:
+
+- `npm run typecheck` is now clean (0 errors). Fixed:
+  - `MASTER-DATA/Validator/create-consumer.validator.ts` — narrowed `profile` after the defined check; added optional `occupancyStatus` to `ConsumerProfileData`.
+  - `METER-REPLACEMENT/Api/submission-detail.api.ts` — coerce id with `String(...)` before `encodePathSegment`.
+  - `METER-REPLACEMENT/Mapper/consumer-detail.mapper.ts` — removed unused `data: any` from `ConsumerDetail`.
+- CI typecheck is now **blocking**: the `Typecheck` step in `playwright.yml` dropped `continue-on-error`, and the QA gate `detect` job runs `npm run typecheck` once per QA push.
+- Meter-replacement `detailConsumer()` stub removed.
+- `.env.example` extended with previously-missing test-facing vars (`MASTER_DATA_SKIP_BACKEND_DEFECTS`, `METER_REPLACEMENT_*`, `MDM_COMPARE_*`, invite tuning knobs, `CONSUMER_ELL_EVENT_SEARCH`, `QUERY_METER_JOB_NAME`). Audit with `npm run check:env-example`.
 
 Other completion work:
 
 - Re-run inventory after each new feature.
-- Restore a clean `npm run typecheck` baseline. The 17 July 2026 check currently reports:
-  - possible-undefined `profile` access and a missing `occupancyStatus` type in `MASTER-DATA/Validator/create-consumer.validator.ts`;
-  - a `string | number` path argument mismatch in `METER-REPLACEMENT/Api/submission-detail.api.ts`;
-  - a `ConsumerDetail` mapper/type mismatch in `METER-REPLACEMENT/Mapper/consumer-detail.mapper.ts`.
-- Remove or finish the meter-replacement `detailConsumer()` stub.
 - Standardize older specs onto `ApiValidationHelper` + rich `defectContext`.
 - Normalize stacked retry/timing semantics across module helpers (some report total wall-clock, some final attempt only).
 - Treat `PerformanceTracker` as diagnostic only; it uses a separate HEAD probe and estimated download time.
-- Sync `.env.example` with code-referenced variables still missing from the template (for example meter-replacement fixtures and invite retry knobs).
 - Hygiene: previously tracked `reports/defects/*.md` remain tracked even though the folder is ignored; probe files under `reports/` may need ignore rules.
 - Ensure every negative case contains a meaningful error-envelope assertion.
 - Ensure every auth endpoint has missing/invalid-token coverage.
@@ -891,7 +895,7 @@ Protect `QA` and `main` with rulesets:
 - Does **not** run on pull requests into main (policy workflow handles those).
 - Node 20 and Java 17.
 - Installs with `npm ci`.
-- Runs TypeScript checking but currently allows typecheck failure to continue (`continue-on-error: true`).
+- Runs TypeScript checking as a **blocking** step (as of 18 July 2026); a failing `tsc --noEmit` fails the job.
 - Generates Playwright and Allure reports even after test failure.
 - Uploads artifacts for 14 days.
 - Deploys Allure to `gh-pages`.
@@ -899,7 +903,7 @@ Protect `QA` and `main` with rulesets:
 - Uses concurrency cancellation for obsolete runs.
 - Main workflow workers: 2.
 
-Risk: because typecheck uses `continue-on-error: true`, CI can proceed with TypeScript problems. Treat CI green as test green, not type-clean, until typecheck is made blocking.
+Typecheck is blocking in both `playwright.yml` (push to main/master) and the QA gate `detect` job (push to QA), so type regressions fail CI before tests run.
 
 ### QA module gate
 

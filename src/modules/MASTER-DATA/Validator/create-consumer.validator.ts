@@ -408,6 +408,9 @@ export class CreateConsumerValidator {
   ): void {
     const profile = response.data;
     expect(profile).toBeDefined();
+    if (!profile) {
+      throw new Error("Consumer profile data missing in create response");
+    }
 
     expect(String(profile.consumerName).trim()).toBe(
       String(request["Consumer Name"]).trim(),

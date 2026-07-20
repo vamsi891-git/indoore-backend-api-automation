@@ -16,7 +16,6 @@ export interface MonthlyReportConsumptionItem {
   mdKw: number | null;
   mdKvah: number | null;
 }
-
 export interface MonthlyReportConsumptionData {
   items: MonthlyReportConsumptionItem[];
   total: number;
@@ -24,16 +23,12 @@ export interface MonthlyReportConsumptionData {
   limit: number;
   totalPages: number;
 }
-
 export interface MonthlyReportConsumptionResponse {
   success: boolean;
   data?: MonthlyReportConsumptionData;
 }
-
 export class MonthlyReportConsumptionMapper {
-  static map(
-    response: MonthlyReportConsumptionResponse,
-  ): MonthlyReportConsumptionData & { success: boolean } {
+  static map(response: MonthlyReportConsumptionResponse,): MonthlyReportConsumptionData & { success: boolean } {
     const data = response.data ?? ({} as MonthlyReportConsumptionData);
     return {
       success: response.success,

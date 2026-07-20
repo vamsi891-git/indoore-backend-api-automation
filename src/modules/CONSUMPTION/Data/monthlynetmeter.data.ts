@@ -1,5 +1,4 @@
 import { CONSUMPTION_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
-
 export const monthlyNetMeterData = {
   page: 1,
   limit: 30,

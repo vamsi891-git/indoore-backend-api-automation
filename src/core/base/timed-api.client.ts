@@ -8,6 +8,8 @@ import {
 } from "../utils/authenticated.request";
 import { DEFAULT_REQUEST_TIMEOUT_MS } from "../constants/api-timeouts";
 import { ApiCallResult } from "../models/api-result.model";
+import { appendEvent } from "../../observability/logger";
+import { getCurrentContext } from "../../observability/context";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 type RequestOptions = Parameters<typeof getWithAutoRefresh>[2];
@@ -18,6 +20,31 @@ const REQUEST_RETRY_DELAY_MS = 4_000;
 
 async function sleep(ms: number): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function emitHttpRetry(
+  attempt: number,
+  reason: string,
+  succeeded: boolean,
+  target: string,
+): void {
+  const ctx = getCurrentContext();
+  if (!ctx) {
+    return;
+  }
+  appendEvent({
+    kind: "retry",
+    runId: ctx.runId,
+    testId: ctx.testId,
+    module: ctx.module,
+    outcome: succeeded ? "pass" : "warn",
+    layer: "http",
+    attempt,
+    maxAttempts: MAX_REQUEST_ATTEMPTS,
+    reason,
+    succeeded,
+    target,
+  });
 }
 
 function isTransientResponseBody(text: string): boolean {
@@ -86,16 +113,27 @@ export class TimedApiClient {
     const start = Date.now();
     let rawResponse!: APIResponse;
     let text = "";
+    let retried = false;
 
     for (let attempt = 1; attempt <= MAX_REQUEST_ATTEMPTS; attempt++) {
       rawResponse = await this.dispatch(method, path, requestOptions);
       text = await rawResponse.text();
 
       if (shouldRetryRequest(rawResponse.status(), text, attempt)) {
+        emitHttpRetry(
+          attempt,
+          `transient response (status ${rawResponse.status()})`,
+          false,
+          `${method} ${path}`,
+        );
+        retried = true;
         await sleep(REQUEST_RETRY_DELAY_MS * attempt);
         continue;
       }
 
+      if (retried) {
+        emitHttpRetry(attempt, "recovered after retry", true, `${method} ${path}`);
+      }
       break;
     }
 

@@ -8,12 +8,9 @@ import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { CONSUMPTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { isConsumptionInternalError } from "../utils/consumption-env.helper";
-
 test.describe("Pattern Consumption Yearly API", () => {
   test.setTimeout(CONSUMPTION_TEST_TIMEOUT_MS);
-
-  test(
-    "Validate Pattern Consumption Yearly API",
+  test("Validate Pattern Consumption Yearly API",
     {
       tag: ["@consumption", "@yearly", "@smoke"],
     },
@@ -27,14 +24,12 @@ test.describe("Pattern Consumption Yearly API", () => {
           patternConsumptionData.month,
           patternConsumptionData.year,
         );
-
       await PerformanceTracker.track(
         rawResponse,
         "Pattern Consumption Yearly API",
         rawResponse.url(),
         responseTime,
       );
-
       // Yearly is intermittently 500 INTERNAL_ERROR under load even after retries.
       if (
         rawResponse.status() === 500 &&
@@ -46,10 +41,8 @@ test.describe("Pattern Consumption Yearly API", () => {
         );
         return;
       }
-
       const assert = new AssertionEngine();
       const validation = new ValidationEngine();
-
       validation.execute("Status Code", () =>
         assert.validateStatusCode(rawResponse, 200, responseBody),
       );
@@ -73,11 +66,9 @@ test.describe("Pattern Consumption Yearly API", () => {
           assert.validateRequiredFields(responseBody, ["data"]);
         }
       });
-
       const mapped = PatternConsumptionMapper.map(responseBody);
       const validator = new PatternConsumptionValidator();
       const isOk = rawResponse.status() === 200;
-
       if (isOk) {
         validation.execute("Table Validation", () =>
           validator.validateTable(mapped),
@@ -134,7 +125,6 @@ test.describe("Pattern Consumption Yearly API", () => {
           validator.validateNoNaN(mapped.rows),
         );
       }
-
       validation.printSummary(
         "Pattern Consumption Yearly API",
         responseTime,

@@ -6,7 +6,6 @@ import { eventPriorityQueries }  from "../Data/eventpriority.data";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 test.describe("MIS Event Priority API",{tag: ["@smoke","@eventpriority"]},() => {
-    
         eventPriorityQueries.forEach(
             query => {
                 test(`${query.period}`,

@@ -8,9 +8,7 @@ import { RolePermissionValidator } from "../Validator/rolepermission.validator";
 
 test.describe("Role Permission — Advanced", () => {
   test.describe.configure({ mode: "serial" });
-
-  test(
-    "PUT /roles/:roleId/modules/:moduleId — toggle module enabled",
+  test("PUT /roles/:roleId/modules/:moduleId — toggle module enabled",
     { tag: ["@permissions", "@role-permissions"] },
     async ({ authenticatedApi }) => {
       const assert = new AssertionEngine();
@@ -18,27 +16,17 @@ test.describe("Role Permission — Advanced", () => {
       const validator = new RolePermissionValidator();
       const roleApi = new RolePermissionApi(authenticatedApi);
       const payload = RolePermissionData.buildUniqueRolePayload();
-
       const created = await roleApi.createRole(payload);
       validation.execute("Create role for module toggle", () =>
         assert.validateStatusCode(created.rawResponse, 201, created.responseBody),
       );
-
       const roleId = RolePermissionMapper.mapRole(created.responseBody).id;
       const catalog = await roleApi.getRolePermissions(roleId);
-      const modules = RolePermissionMapper.mapRolePermissions(
-        catalog.responseBody,
-      ).modules;
-      const targetModule =
-        RolePermissionMapper.findModule(
-          modules,
-          RolePermissionData.preferredModuleKey,
-        ) ?? modules[0];
-
+      const modules = RolePermissionMapper.mapRolePermissions(catalog.responseBody,).modules;
+      const targetModule =RolePermissionMapper.findModule(modules,RolePermissionData.preferredModuleKey,) ?? modules[0];
       if (!targetModule) {
         test.skip(true, "Role permission catalog has no modules");
       }
-
       const disableResponse = await roleApi.setRoleModuleEnabled(
         roleId,
         targetModule!.moduleId,
@@ -51,7 +39,6 @@ test.describe("Role Permission — Advanced", () => {
           disableResponse.responseBody,
         ),
       );
-
       const afterDisable = await roleApi.getRolePermissions(roleId);
       const disabledModules = RolePermissionMapper.mapRolePermissions(
         afterDisable.responseBody,
@@ -70,7 +57,6 @@ test.describe("Role Permission — Advanced", () => {
       validation.execute("Disable revokes all module permissions", () =>
         validator.validateModuleToggleRevokesAllPermissions(disabledModule!),
       );
-
       const enableResponse = await roleApi.setRoleModuleEnabled(
         roleId,
         targetModule!.moduleId,
@@ -83,7 +69,6 @@ test.describe("Role Permission — Advanced", () => {
           enableResponse.responseBody,
         ),
       );
-
       const afterEnable = await roleApi.getRolePermissions(roleId);
       const enabledModules = RolePermissionMapper.mapRolePermissions(
         afterEnable.responseBody,
@@ -104,7 +89,6 @@ test.describe("Role Permission — Advanced", () => {
       );
 
       await roleApi.deleteRole(roleId);
-
       validation.printSummary(
         "Set Role Module Enabled",
         created.responseTime +
@@ -185,7 +169,6 @@ test.describe("Role Permission — Advanced", () => {
       );
     },
   );
-
   test(
     "PUT /roles/:roleId/permissions — replace semantics (full replace + empty revoke)",
     { tag: ["@permissions", "@role-permissions"] },
@@ -214,12 +197,10 @@ test.describe("Role Permission — Advanced", () => {
         modules,
         requires,
       );
-
       if (!replaceCase) {
         await roleApi.deleteRole(roleId);
         test.skip(true, "Need two modules with distinct permission keys");
       }
-
       const firstAssign = await roleApi.assignPermissions(roleId, {
         permissionKeys: replaceCase!.firstKeys,
       });
@@ -230,7 +211,6 @@ test.describe("Role Permission — Advanced", () => {
           firstAssign.responseBody,
         ),
       );
-
       const afterFirst = await roleApi.getRolePermissions(roleId);
       const modulesAfterFirst = RolePermissionMapper.mapRolePermissions(
         afterFirst.responseBody,
@@ -241,7 +221,6 @@ test.describe("Role Permission — Advanced", () => {
           replaceCase!.firstKeys,
         ),
       );
-
       const secondAssign = await roleApi.assignPermissions(roleId, {
         permissionKeys: replaceCase!.secondKeys,
       });
@@ -252,7 +231,6 @@ test.describe("Role Permission — Advanced", () => {
           secondAssign.responseBody,
         ),
       );
-
       const afterSecond = await roleApi.getRolePermissions(roleId);
       const modulesAfterSecond = RolePermissionMapper.mapRolePermissions(
         afterSecond.responseBody,
@@ -267,19 +245,13 @@ test.describe("Role Permission — Advanced", () => {
           replaceCase!.firstKeys[0],
         );
       });
-
       const revokeAll = await roleApi.assignPermissions(
         roleId,
         RolePermissionData.emptyPermissionKeys,
       );
       validation.execute("Empty assign status", () =>
-        assert.validateStatusCode(
-          revokeAll.rawResponse,
-          200,
-          revokeAll.responseBody,
-        ),
+        assert.validateStatusCode(revokeAll.rawResponse,200,revokeAll.responseBody,),
       );
-
       const afterRevoke = await roleApi.getRolePermissions(roleId);
       validation.execute("Empty array revokes all permissions", () =>
         validator.validateNoGrantedPermissions(
@@ -287,13 +259,8 @@ test.describe("Role Permission — Advanced", () => {
             .modules,
         ),
       );
-
       await roleApi.deleteRole(roleId);
-
-      validation.printSummary(
-        "Assign Permissions Replace Semantics",
-        firstAssign.responseTime + secondAssign.responseTime,
-      );
+      validation.printSummary("Assign Permissions Replace Semantics",firstAssign.responseTime + secondAssign.responseTime,);
     },
   );
 });

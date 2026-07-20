@@ -1,23 +1,14 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
 import { getConsumptionWithRetry } from "../utils/consumption-request.helper";
-import {
-  consumptionReportNegativeCases,
-  monthlyNetMeterNegativeCases,
-  patternConsumptionNegativeCases,
-} from "../Data/consumption-negative.data";
-import {
-  ConsumptionCommonValidator,
-  type ConsumptionErrorBody,
-} from "../Validator/consumption-common.validator";
+import {consumptionReportNegativeCases,monthlyNetMeterNegativeCases,patternConsumptionNegativeCases,} from "../Data/consumption-negative.data";
+import {ConsumptionCommonValidator,type ConsumptionErrorBody,} from "../Validator/consumption-common.validator";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
-
 const allNegativeCases = [
   ...patternConsumptionNegativeCases,
   ...monthlyNetMeterNegativeCases,
   ...consumptionReportNegativeCases,
 ];
-
 test.describe("Consumption API — Negative", () => {
   for (const testCase of allNegativeCases) {
     test(

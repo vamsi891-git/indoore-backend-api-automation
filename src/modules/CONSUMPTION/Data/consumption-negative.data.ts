@@ -1,6 +1,5 @@
 import { patternConsumptionData } from "./patternconsumption.data";
 import { dailyConsumptionData } from "./dailyconsumption.data";
-
 export type ConsumptionNegativeCase = {
   testName: string;
   tags: string[];
@@ -9,7 +8,6 @@ export type ConsumptionNegativeCase = {
   expectedStatuses: number[];
   expectedCodes?: string[];
 };
-
 export const patternConsumptionNegativeCases: ConsumptionNegativeCase[] = [
   {
     testName: "pattern consumption missing patternType returns client error",

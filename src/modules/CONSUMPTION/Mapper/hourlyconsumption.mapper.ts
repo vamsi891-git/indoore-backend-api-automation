@@ -35,7 +35,6 @@ export interface HourlyConsumptionItem {
   h24: number | null;
   hourlyKwh: number | null;
 }
-
 export interface HourlyConsumptionData {
   items: HourlyConsumptionItem[];
   total: number;
@@ -43,16 +42,12 @@ export interface HourlyConsumptionData {
   limit: number;
   totalPages: number;
 }
-
 export interface HourlyConsumptionResponse {
   success: boolean;
   data?: HourlyConsumptionData;
 }
-
 export class HourlyConsumptionMapper {
-  static map(
-    response: HourlyConsumptionResponse,
-  ): HourlyConsumptionData & { success: boolean } {
+  static map(response: HourlyConsumptionResponse,): HourlyConsumptionData & { success: boolean } {
     const data = response.data ?? ({} as HourlyConsumptionData);
     return {
       success: response.success,

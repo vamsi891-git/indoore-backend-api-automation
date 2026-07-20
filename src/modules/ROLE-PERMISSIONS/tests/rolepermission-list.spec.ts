@@ -7,21 +7,16 @@ import { RolePermissionApi } from "../Api/rolepermission.api";
 import { RolePermissionData } from "../Data/rolepermission.data";
 import { RolePermissionMapper } from "../Mapper/rolepermission.mapper";
 import { RolePermissionValidator } from "../Validator/rolepermission.validator";
-
 test.describe("Role Permission — List & Me", () => {
   test.describe.configure({ mode: "serial" });
-
-  test(
-    "Validate GET /permissions/roles — role catalog",
+  test("Validate GET /permissions/roles — role catalog",
     { tag: ["@smoke", "@permissions", "@role-permissions"] },
     async ({ authenticatedApi }) => {
       const assert = new AssertionEngine();
       const validation = new ValidationEngine();
       const validator = new RolePermissionValidator();
       const roleApi = new RolePermissionApi(authenticatedApi);
-
       const getRolesResponse = await roleApi.getRoles();
-
       validation.execute("Get Roles Status Code", () =>
         assert.validateStatusCode(getRolesResponse.rawResponse, 200),
       );
@@ -44,9 +39,7 @@ test.describe("Role Permission — List & Me", () => {
         getRolesResponse.rawResponse.url(),
         getRolesResponse.responseTime,
       );
-
       const roles = RolePermissionMapper.mapRoles(getRolesResponse.responseBody);
-
       validation.execute("Validate Roles Response", () =>
         validator.validateResponse(getRolesResponse.responseBody),
       );
@@ -65,7 +58,6 @@ test.describe("Role Permission — List & Me", () => {
       validation.execute("Validate Ultimate Role", () =>
         validator.validateUltimateRole(roles),
       );
-
       validation.printSummary("Get Roles", getRolesResponse.responseTime);
     },
   );
@@ -78,10 +70,8 @@ test.describe("Role Permission — List & Me", () => {
       const validation = new ValidationEngine();
       const validator = new RolePermissionValidator();
       const roleApi = new RolePermissionApi(authenticatedApi);
-
       const modulesResponse = await roleApi.getMyModules();
       const permissionsResponse = await roleApi.getMyPermissions();
-
       validation.execute("My Modules Status", () =>
         assert.validateStatusCode(modulesResponse.rawResponse, 200),
       );
@@ -94,7 +84,6 @@ test.describe("Role Permission — List & Me", () => {
       validation.execute("My Permissions Response", () =>
         validator.validateMyPermissionsResponse(permissionsResponse.responseBody),
       );
-
       validation.printSummary(
         "Get My Modules & Permissions",
         modulesResponse.responseTime + permissionsResponse.responseTime,
@@ -102,18 +91,15 @@ test.describe("Role Permission — List & Me", () => {
     },
   );
 
-  test(
-    "Validate GET /permissions/dependency-rules",
+  test("Validate GET /permissions/dependency-rules",
     { tag: ["@smoke", "@permissions", "@role-permissions"] },
     async ({ authenticatedApi }) => {
       const assert = new AssertionEngine();
       const validation = new ValidationEngine();
       const validator = new RolePermissionValidator();
       const roleApi = new RolePermissionApi(authenticatedApi);
-
       const response = await roleApi.getDependencyRules();
       const status = response.rawResponse.status();
-
       if (
         BackendResponse.shouldSkipServerFailure(
           status,
@@ -123,18 +109,15 @@ test.describe("Role Permission — List & Me", () => {
       ) {
         test.skip(true, "Dependency rules endpoint returned server error");
       }
-
       if (status === 404) {
         test.skip(true, "Dependency rules endpoint not deployed");
       }
-
       validation.execute("Dependency Rules Status", () =>
         assert.validateStatusCode(response.rawResponse, 200),
       );
       validation.execute("Dependency Rules Response", () =>
         validator.validateDependencyRulesResponse(response.responseBody),
       );
-
       validation.printSummary("Get Dependency Rules", response.responseTime);
     },
   );

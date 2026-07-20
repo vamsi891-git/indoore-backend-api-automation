@@ -5,8 +5,7 @@ import { DashboardMetricsValidator } from "../Validator/dashboardmetrics.validat
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 test.describe("Dashboard Metrics API", () => {
-  test(
-    "Validate Dashboard Metrics",
+  test("Validate Dashboard Metrics",
     {
       tag: ["@smoke", "@dashboard"],
     },

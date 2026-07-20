@@ -3,31 +3,22 @@ import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { UserManagementApi } from "../Api/usermanagement.api";
-import {
-    isAutomationAccount,
-    UserDevicesTestConfig,
-    UserManagementData,
-} from "../Data/usermanagement.data";
+import {isAutomationAccount,UserDevicesTestConfig,UserManagementData,} from "../Data/usermanagement.data";
 import { UserManagementMapper } from "../Mapper/usermanagement.mapper";
 import { UserManagementValidator } from "../Validator/usermanagement.validator";
-
 test.describe("User Admin — List", () => {
     test.describe.configure({ mode: "serial" });
-
-    test(
-        "Validate GET /users — user catalog",
+    test("Validate GET /users — user catalog",
         { tag: ["@smoke", "@users-admin"] },
         async ({ authenticatedApi }) => {
             const assert = new AssertionEngine();
             const validation = new ValidationEngine();
             const validator = new UserManagementValidator();
             const userApi = new UserManagementApi(authenticatedApi);
-
             const response = await userApi.getUsers(
                 UserManagementData.page,
                 UserManagementData.limit,
             );
-
             validation.execute("Get Users Status Code", () =>
                 assert.validateStatusCode(response.rawResponse, 200),
             );
@@ -35,26 +26,15 @@ test.describe("User Admin — List", () => {
                 assert.validateContentType(response.rawResponse),
             );
             validation.execute("Get Users Response Time", () =>
-                assert.validateResponseTime(
-                    response.responseTime,
-                    UserManagementData.maxResponseTime,
-                ),
+                assert.validateResponseTime(response.responseTime,UserManagementData.maxResponseTime,),
             );
             validation.execute("Get Users Sensitive Data", () =>
                 assert.validateSensitiveData(response.responseBody),
             );
-
-            await PerformanceTracker.track(
-        response.rawResponse,
-        "Get Users",
-        response.rawResponse.url(),
-                response.responseTime,
-            );
-
+            await PerformanceTracker.track(response.rawResponse,"Get Users",response.rawResponse.url(),response.responseTime,);
             validation.execute("Validate Root Response", () =>
                 validator.validateResponse(response.responseBody),
             );
-
             const usersData = UserManagementMapper.mapUsers(response.responseBody);
             validation.execute("Validate Pagination", () =>
                 validator.validatePagination(
@@ -74,7 +54,6 @@ test.describe("User Admin — List", () => {
             validation.execute("Validate Status Rules", () =>
                 validator.validateStatusRules(usersData.users),
             );
-
             validation.printSummary("Get Users", response.responseTime);
         },
     );

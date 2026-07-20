@@ -6,21 +6,16 @@ import { ModulePermissionApi } from "../Api/modulepermission.api";
 import { ModulePermissionData } from "../Data/modulepermission.data";
 import { ModulePermissionMapper } from "../Mapper/modulepermission.mapper";
 import { ModulePermissionValidator } from "../Validator/modulepermission.validator";
-
 test.describe("Module Permission — List", () => {
   test.describe.configure({ mode: "serial" });
-
-  test(
-    "Validate GET /permissions/modules — catalog list",
+  test("Validate GET /permissions/modules — catalog list",
     { tag: ["@smoke", "@permissions", "@modules-permissions"] },
     async ({ authenticatedApi }) => {
       const assert = new AssertionEngine();
       const validation = new ValidationEngine();
       const validator = new ModulePermissionValidator();
       const moduleApi = new ModulePermissionApi(authenticatedApi);
-
       const getModulesResponse = await moduleApi.getModules();
-
       validation.execute("Get Modules Status Code", () =>
         assert.validateStatusCode(getModulesResponse.rawResponse, 200),
       );
@@ -36,18 +31,15 @@ test.describe("Module Permission — List", () => {
       validation.execute("Get Modules Sensitive Data", () =>
         assert.validateSensitiveData(getModulesResponse.responseBody),
       );
-
       await PerformanceTracker.track(
         getModulesResponse.rawResponse,
         "Get Modules",
         getModulesResponse.rawResponse.url(),
         getModulesResponse.responseTime,
       );
-
       const modules = ModulePermissionMapper.mapModules(
         getModulesResponse.responseBody,
       );
-
       validation.execute("Validate Root Response", () =>
         validator.validateResponse(getModulesResponse.responseBody),
       );

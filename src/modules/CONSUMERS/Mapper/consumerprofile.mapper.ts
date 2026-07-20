@@ -50,6 +50,7 @@ export interface ConsumerProfileData {
   meterSerialNumber: string | null;
   permanentAddress: string | null;
   billingAddress: string | null;
+  occupancyStatus?: string | null;
   connectionDetails: ConsumerConnectionDetails;
   connectionMeterDetails: ConsumerConnectionMeterDetails;
   latestActivities: ConsumerLatestActivity[];
