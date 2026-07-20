@@ -1,28 +1,57 @@
 /**
  * Map changed file paths to module slugs for QA CI matrices.
  *
- * Rules:
- * - `src/modules/<MODULE>/...` → that module's slug
- * - shared runtime / config changes → all modules
- * - docs-only / unrelated paths → empty modules (skip API matrix)
+ * Rules (module-first, MNC-style):
+ * 1. Hard shared runtime (core/fixtures/playwright) → ALL modules
+ * 2. Else any `src/modules/<MODULE>/...` → ONLY those modules
+ *    (CI/docs/soft tooling alongside do NOT expand the matrix)
+ * 3. Soft shared alone (package.json, runner scripts) → ALL modules
+ * 4. CI/docs-only alone → skip API matrix
  */
 import { execFileSync } from "child_process";
 import { discoverModules, moduleNameToSlug } from "./modules.mjs";
 
-/** Paths that affect every module's runtime behavior. */
-export const SHARED_RUNTIME_PREFIXES = [
+/**
+ * Changes that always invalidate every module's runtime behavior.
+ * These expand the matrix to ALL modules even if a feature module also changed.
+ */
+export const HARD_SHARED_RUNTIME_PREFIXES = [
   "src/core/",
   "src/fixtures/",
+  "src/observability/",
   "src/global.setup.ts",
   "playwright.config.ts",
+  "tsconfig.json",
+];
+
+/**
+ * Tooling that can affect installs/runners. Expands to ALL modules only when
+ * no feature-module paths are in the same diff (module-first otherwise).
+ */
+export const SOFT_SHARED_RUNTIME_PREFIXES = [
   "package.json",
   "package-lock.json",
-  "tsconfig.json",
   "scripts/run-module-tests.mjs",
   "scripts/lib/modules.mjs",
-  "scripts/lib/detect-changed-modules.mjs",
+];
+
+/** Back-compat alias used by older callers/tests. */
+export const SHARED_RUNTIME_PREFIXES = [
+  ...HARD_SHARED_RUNTIME_PREFIXES,
+  ...SOFT_SHARED_RUNTIME_PREFIXES,
+];
+
+/**
+ * CI / workflow / detector changes — never expand the module matrix by themselves,
+ * and ignored when feature modules are also in the diff.
+ */
+export const CI_ONLY_PREFIXES = [
+  ".github/",
+  "scripts/sync-module-workflow.mjs",
   "scripts/detect-changed-modules.mjs",
-  ".github/workflows/",
+  "scripts/lib/detect-changed-modules.mjs",
+  "scripts/check-env-example.mjs",
+  "scripts/observability-ci-routing.mjs",
 ];
 
 /** Paths that never require an API module matrix by themselves. */
@@ -51,7 +80,8 @@ export function normalizePath(filePath) {
  */
 function matchesAnyPrefix(filePath, prefixes) {
   return prefixes.some(
-    (prefix) => filePath === prefix.replace(/\/$/, "") || filePath.startsWith(prefix),
+    (prefix) =>
+      filePath === prefix.replace(/\/$/, "") || filePath.startsWith(prefix),
   );
 }
 
@@ -76,9 +106,7 @@ export function detectChangedModules(changedFiles, options = {}) {
     modules.map((module) => [module.moduleName, module.slug]),
   );
 
-  const files = (changedFiles ?? [])
-    .map(normalizePath)
-    .filter(Boolean);
+  const files = (changedFiles ?? []).map(normalizePath).filter(Boolean);
 
   if (files.length === 0) {
     return {
@@ -91,10 +119,33 @@ export function detectChangedModules(changedFiles, options = {}) {
     };
   }
 
-  const sharedFiles = files.filter((file) =>
-    matchesAnyPrefix(file, SHARED_RUNTIME_PREFIXES),
+  const hardSharedFiles = files.filter((file) =>
+    matchesAnyPrefix(file, HARD_SHARED_RUNTIME_PREFIXES),
   );
-  if (sharedFiles.length > 0) {
+  const softSharedFiles = files.filter((file) =>
+    matchesAnyPrefix(file, SOFT_SHARED_RUNTIME_PREFIXES),
+  );
+  const ciOnlyFiles = files.filter((file) =>
+    matchesAnyPrefix(file, CI_ONLY_PREFIXES),
+  );
+
+  const detected = new Set();
+  const unknownModuleFolders = [];
+
+  for (const file of files) {
+    const folder = extractModuleFolder(file);
+    if (!folder) continue;
+    const slug = slugByFolder.get(folder) ?? moduleNameToSlug(folder);
+    if (slugByFolder.has(folder)) {
+      detected.add(slug);
+    } else {
+      detected.add(slug);
+      unknownModuleFolders.push(folder);
+    }
+  }
+
+  // 1) Hard shared always fans out to every module.
+  if (hardSharedFiles.length > 0) {
     return {
       modules: allSlugs,
       reason: "shared-runtime",
@@ -102,28 +153,11 @@ export function detectChangedModules(changedFiles, options = {}) {
       docsOnly: false,
       runModules: allSlugs.length > 0,
       matrix: allSlugs.map((module) => ({ module })),
-      sharedFiles,
+      sharedFiles: hardSharedFiles,
     };
   }
 
-  const detected = new Set();
-  const unknownModuleFolders = [];
-
-  for (const file of files) {
-    const folder = extractModuleFolder(file);
-    if (!folder) {
-      continue;
-    }
-    const slug = slugByFolder.get(folder) ?? moduleNameToSlug(folder);
-    if (slugByFolder.has(folder)) {
-      detected.add(slug);
-    } else {
-      // Still surface the slug so CI fails loudly on unknown folders.
-      detected.add(slug);
-      unknownModuleFolders.push(folder);
-    }
-  }
-
+  // 2) Module-first: feature module paths win over CI/docs/soft tooling in the same PR.
   if (detected.size > 0) {
     const modulesList = [...detected].sort();
     return {
@@ -134,24 +168,51 @@ export function detectChangedModules(changedFiles, options = {}) {
       runModules: true,
       matrix: modulesList.map((module) => ({ module })),
       unknownModuleFolders: [...new Set(unknownModuleFolders)].sort(),
+      ignoredCiFiles: ciOnlyFiles,
+      ignoredSoftSharedFiles: softSharedFiles,
+    };
+  }
+
+  // 3) Soft shared alone (e.g. package.json) → all modules.
+  if (softSharedFiles.length > 0) {
+    return {
+      modules: allSlugs,
+      reason: "shared-runtime",
+      sharedImpact: true,
+      docsOnly: false,
+      runModules: allSlugs.length > 0,
+      matrix: allSlugs.map((module) => ({ module })),
+      sharedFiles: softSharedFiles,
     };
   }
 
   const nonDocs = files.filter(
     (file) => !matchesAnyPrefix(file, DOCS_ONLY_PREFIXES),
   );
-  if (nonDocs.length === 0) {
+  const nonCiAndDocs = nonDocs.filter(
+    (file) => !matchesAnyPrefix(file, CI_ONLY_PREFIXES),
+  );
+
+  if (nonCiAndDocs.length === 0) {
+    const docsOnly =
+      files.every((file) => matchesAnyPrefix(file, DOCS_ONLY_PREFIXES)) ||
+      (ciOnlyFiles.length > 0 &&
+        files.every(
+          (file) =>
+            matchesAnyPrefix(file, DOCS_ONLY_PREFIXES) ||
+            matchesAnyPrefix(file, CI_ONLY_PREFIXES),
+        ));
     return {
       modules: [],
-      reason: "docs-only",
+      reason: docsOnly && ciOnlyFiles.length === 0 ? "docs-only" : "ci-only",
       sharedImpact: false,
-      docsOnly: true,
+      docsOnly: docsOnly && ciOnlyFiles.length === 0,
       runModules: false,
       matrix: [],
+      ciOnlyFiles,
     };
   }
 
-  // Non-module, non-shared changes (scripts probes, tooling) → skip matrix.
   return {
     modules: [],
     reason: "unrelated",
@@ -159,7 +220,7 @@ export function detectChangedModules(changedFiles, options = {}) {
     docsOnly: false,
     runModules: false,
     matrix: [],
-    unrelatedFiles: nonDocs,
+    unrelatedFiles: nonCiAndDocs,
   };
 }
 
@@ -194,13 +255,9 @@ export function listChangedFiles(baseRef, headRef = "HEAD") {
  * @param {string} [headRef]
  */
 export function resolveMergeBase(baseBranch, headRef = "HEAD") {
-  const output = execFileSync(
-    "git",
-    ["merge-base", baseBranch, headRef],
-    {
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "pipe"],
-    },
-  );
+  const output = execFileSync("git", ["merge-base", baseBranch, headRef], {
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+  });
   return output.trim();
 }

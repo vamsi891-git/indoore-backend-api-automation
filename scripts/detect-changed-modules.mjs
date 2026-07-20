@@ -136,6 +136,29 @@ function runSelfTests() {
   const packageShared = detectChangedModules(["package.json"], { modules });
   assert(packageShared.sharedImpact === true, "package.json should be shared");
 
+  const workflowOnly = detectChangedModules(
+    [".github/workflows/qa-module-gate.yml"],
+    { modules },
+  );
+  assert(workflowOnly.runModules === false, "workflow-only should skip modules");
+  assert(workflowOnly.reason === "ci-only", "workflow-only reason should be ci-only");
+
+  const modulePlusCi = detectChangedModules(
+    [
+      "src/modules/DASHBOARD/Api/dashboardmetrics.api.ts",
+      ".github/workflows/qa-module-gate.yml",
+      "package.json",
+      "README.md",
+    ],
+    { modules },
+  );
+  assert(
+    modulePlusCi.modules.join(",") === "dashboard",
+    "module+CI+package should stay module-first (dashboard only)",
+  );
+  assert(modulePlusCi.reason === "module-paths", "expected module-paths for mixed PR");
+  assert(modulePlusCi.sharedImpact === false, "mixed module PR must not fan out");
+
   const empty = detectChangedModules([], { modules });
   assert(empty.reason === "no-changes", "empty change set failed");
   assert(empty.runModules === false, "empty change set should not run");

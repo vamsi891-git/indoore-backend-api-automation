@@ -1,6 +1,7 @@
 name: QA Module Gate
 
 # Module suites run only AFTER code is merged into QA (push), never on the open PR.
+# Diff previous tip → new tip, then run affected modules ONE AT A TIME (sequential).
 on:
   push:
     branches: [QA]
@@ -10,13 +11,21 @@ on:
         description: Optional base SHA to diff against (default = previous QA tip / before)
         required: false
         type: string
+      scope:
+        description: Suite scope for affected modules
+        required: true
+        default: api
+        type: choice
+        options:
+          - api
+          - all
+          - smoke
+          - db
 
 concurrency:
   group: qa-module-gate-${{ github.ref }}
   cancel-in-progress: true
 
-# Caller must grant at least what reusable-module-tests.yml requests (contents: write).
-# Otherwise GitHub fails the run with "Startup failure" before any job starts.
 permissions:
   contents: write
 
@@ -33,6 +42,7 @@ jobs:
       modules_csv: ${{ steps.detect.outputs.modules_csv }}
       docs_only: ${{ steps.detect.outputs.docs_only }}
       shared_impact: ${{ steps.detect.outputs.shared_impact }}
+      scope: ${{ steps.scope.outputs.scope }}
 
     steps:
       - name: Checkout
@@ -52,6 +62,15 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Resolve suite scope
+        id: scope
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "scope=${{ github.event.inputs.scope }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "scope=api" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Detect modules from post-merge diff
         id: detect
         env:
@@ -68,7 +87,6 @@ jobs:
           elif [ "$EVENT_NAME" = "push" ] && [ -n "$PUSH_BEFORE" ] && [ "$PUSH_BEFORE" != "$EMPTY_SHA" ]; then
             BASE_REF="$PUSH_BEFORE"
           else
-            # Fallback: previous commit on QA (single commit / first push / manual without base)
             if git rev-parse --verify HEAD^ >/dev/null 2>&1; then
               BASE_REF="$(git rev-parse HEAD^)"
             else
@@ -79,7 +97,6 @@ jobs:
           fi
 
           echo "Post-merge detect: $BASE_REF ... $HEAD_REF"
-          # Use explicit SHAs (already ancestors); skip merge-base re-resolution
           node scripts/detect-changed-modules.mjs --base "$BASE_REF" --head "$HEAD_REF" --no-merge-base
 
       - name: Summarize detection
@@ -89,8 +106,9 @@ jobs:
           echo "modules=${{ steps.detect.outputs.modules_csv }}"
           echo "docs_only=${{ steps.detect.outputs.docs_only }}"
           echo "shared_impact=${{ steps.detect.outputs.shared_impact }}"
+          echo "scope=${{ steps.scope.outputs.scope }}"
           if [ "${{ steps.detect.outputs.run_modules }}" = "true" ]; then
-            echo "::notice title=QA module matrix (post-merge)::Will run: ${{ steps.detect.outputs.modules_csv }}"
+            echo "::notice title=QA module matrix (sequential)::Will run one-by-one (${{ steps.scope.outputs.scope }}): ${{ steps.detect.outputs.modules_csv }}"
           else
             echo "::notice title=QA module matrix skipped::reason=${{ steps.detect.outputs.reason }}"
           fi
@@ -102,13 +120,15 @@ jobs:
     permissions:
       contents: write
     strategy:
+      # Run modules one after another (job1 → job2 → …), never in parallel.
       fail-fast: false
+      max-parallel: 1
       matrix:
         module: ${{ fromJson(needs.detect.outputs.modules_json) }}
     uses: ./.github/workflows/reusable-module-tests.yml
     with:
       module: ${{ matrix.module }}
-      scope: all
+      scope: ${{ needs.detect.outputs.scope }}
       deploy_allure: false
       send_email: false
     secrets: inherit
@@ -127,8 +147,9 @@ jobs:
           RUN_MODULES="${{ needs.detect.outputs.run_modules }}"
           REASON="${{ needs.detect.outputs.reason }}"
           MATRIX_RESULT="${{ needs.module-tests.result }}"
+          SCOPE="${{ needs.detect.outputs.scope }}"
 
-          echo "detect=$DETECT_RESULT run_modules=$RUN_MODULES reason=$REASON matrix=$MATRIX_RESULT"
+          echo "detect=$DETECT_RESULT run_modules=$RUN_MODULES reason=$REASON scope=$SCOPE matrix=$MATRIX_RESULT"
 
           if [ "$DETECT_RESULT" != "success" ]; then
             echo "::error title=QA Module Gate failed::Changed-module detection failed"
@@ -141,10 +162,10 @@ jobs:
           fi
 
           if [ "$MATRIX_RESULT" = "success" ]; then
-            echo "All affected module tests passed. Gate passed."
+            echo "All affected module tests passed sequentially (scope=$SCOPE). Gate passed."
             exit 0
           fi
 
-          echo "::error title=QA Module Gate failed::One or more affected module suites failed (matrix result=$MATRIX_RESULT)"
+          echo "::error title=QA Module Gate failed::One or more affected module suites failed (scope=$SCOPE, matrix result=$MATRIX_RESULT)"
           echo "Changes remain on QA until the module suite is fixed and re-run (push another fix or re-run this workflow)."
           exit 1
