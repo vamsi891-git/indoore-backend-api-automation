@@ -22,6 +22,25 @@ export function resolveDeviceTestUserId(): string {
     ).trim();
 }
 
+/**
+ * Prefer DEVICE_TEST_USER_ID when that user is still in the catalog;
+ * otherwise fall back to a non-automation user (or first user).
+ */
+export function pickDeviceTestUserId(users: User[]): string {
+    const preferred = resolveDeviceTestUserId();
+    const preferredUser = users.find((user) => user.id === preferred);
+    if (preferredUser) return preferredUser.id;
+
+    const other = users.find((user) => !isAutomationAccount(user));
+    if (other) return other.id;
+
+    if (users[0]?.id) return users[0].id;
+
+    throw new Error(
+        "No users available for device tests. Seed users or set DEVICE_TEST_USER_ID.",
+    );
+}
+
 export type UpdateUserPayload = {
     firstName: string;
     lastName: string;

@@ -4,23 +4,16 @@ import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { REVENUE_PROTECTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { CasesApi } from "../Api/cases.api";
-import {
-  casesDefaultQuery,
-  casesMaxResponseTimeMs,
-  casesZeroRowsQuery,
-} from "../Data/cases.data";
+import { casesDefaultQuery, casesMaxResponseTimeMs, casesZeroRowsQuery,} from "../Data/cases.data";
 import { CasesMapper } from "../Mapper/cases.mapper";
 import { CasesValidator } from "../Validator/cases.validator";
 import { applyAllureTestCaseId } from "../../../core/utils/allure-test-case.helper";
 import { assertZodSchema } from "../../../core/utils/zod-validation.helper";
 import { CasesSuccessResponseSchema } from "../schemas/cases.schemas";
-
 test.describe("Revenue Protection — Cases Edge", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(REVENUE_PROTECTION_TEST_TIMEOUT_MS);
-
-  test(
-    "IND-RPT-004 — Page far beyond total returns empty rows (not page-1 fallback)",
+  test("IND-RPT-004 — Page far beyond total returns empty rows (not page-1 fallback)",
     { tag: ["@revenue-protection", "@cases", "@edge"] },
     async ({ authenticatedApi }) => {
       await applyAllureTestCaseId("IND-RPT-004");
@@ -53,9 +46,7 @@ test.describe("Revenue Protection — Cases Edge", () => {
       validation.printSummary("Cases — Page Beyond Total", responseTime);
     },
   );
-
-  test(
-    "IND-RPT-005 — Single-page result: total equals returned records",
+  test("IND-RPT-005 — Single-page result: total equals returned records",
     { tag: ["@revenue-protection", "@cases", "@edge"] },
     async ({ authenticatedApi }) => {
       await applyAllureTestCaseId("IND-RPT-005");
@@ -89,9 +80,7 @@ test.describe("Revenue Protection — Cases Edge", () => {
       validation.printSummary("Cases — Single Page Total Match", responseTime);
     },
   );
-
-  test(
-    "IND-RPT-006 — Filter combination returning zero rows → success empty grid",
+  test("IND-RPT-006 — Filter combination returning zero rows → success empty grid",
     { tag: ["@revenue-protection", "@cases", "@edge"] },
     async ({ authenticatedApi }) => {
       await applyAllureTestCaseId("IND-RPT-006");

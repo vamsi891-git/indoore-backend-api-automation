@@ -1,0 +1,18 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/utils/hierarchies/network",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "items"
+  ],
+  "itemKeys": [
+    "code",
+    "id",
+    "name",
+    "order"
+  ],
+  "hasColumnsGrid": false
+}

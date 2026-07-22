@@ -10,6 +10,10 @@ const resolvedWorkers =
     ? playwrightWorkers
     : 1;
 
+/** Mutation-proof specs intentionally break fixtures; exclude unless opted in. */
+const includeMutationProof =
+  process.env.INCLUDE_MUTATION_PROOF?.trim().toLowerCase() === "true";
+
 export default defineConfig({
   globalSetup: require.resolve("./src/global.setup.ts"),
   testDir: "./src",
@@ -17,6 +21,7 @@ export default defineConfig({
   workers: resolvedWorkers,
   timeout: DEFAULT_TEST_TIMEOUT_MS,
   retries: 1,
+  grepInvert: includeMutationProof ? undefined : /@mutation-proof/,
   reporter: [
     ["list"],
     ["html", { outputFolder: "playwright-report", open: "never" }],

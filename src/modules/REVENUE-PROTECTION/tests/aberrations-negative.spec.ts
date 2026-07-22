@@ -3,19 +3,11 @@ import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { REVENUE_PROTECTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { REVENUE_PROTECTION_ABERRATIONS_PATH } from "../Api/aberrations.api";
 import { aberrationsNegativeCases } from "../Data/aberrations-negative.data";
-import {
-  RevenueCommonValidator,
-  type RevenueErrorBody,
-} from "../Validator/revenue-common.validator";
-import {
-  buildRevenueProtectionUrl,
-  getRevenueProtectionWithRetry,
-} from "../utils/revenue-protection-request.helper";
-
+import {RevenueCommonValidator,type RevenueErrorBody,} from "../Validator/revenue-common.validator";
+import {buildRevenueProtectionUrl,getRevenueProtectionWithRetry,} from "../utils/revenue-protection-request.helper";
 test.describe("Revenue Protection — Aberrations Negative", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(REVENUE_PROTECTION_TEST_TIMEOUT_MS);
-
   for (const negativeCase of aberrationsNegativeCases) {
     test(
       negativeCase.testName,
@@ -32,7 +24,6 @@ test.describe("Revenue Protection — Aberrations Negative", () => {
         const body = (await rawResponse
           .json()
           .catch(() => ({}))) as RevenueErrorBody;
-
         validation.execute("Expected status", () => {
           if (!negativeCase.expectedStatuses.includes(rawResponse.status())) {
             throw new Error(
@@ -40,7 +31,6 @@ test.describe("Revenue Protection — Aberrations Negative", () => {
             );
           }
         });
-
         if (negativeCase.outcome === "hard-reject") {
           validation.execute("Rejected with error envelope", () =>
             RevenueCommonValidator.validateErrorEnvelope(
@@ -56,7 +46,6 @@ test.describe("Revenue Protection — Aberrations Negative", () => {
             ),
           );
         }
-
         validation.printSummary(negativeCase.testName, 0);
       },
     );

@@ -43,7 +43,14 @@
     "manual:add-dtr-pack": "node scripts/build-add-dtr-test-pack.mjs",
     "docs:swagger": "node scripts/open-swagger.mjs",
     "docs:swagger:open": "node scripts/open-swagger.mjs --open",
-    "test:unit": "playwright test src/core/__tests__"
+    "test:unit": "playwright test src/core/__tests__",
+    "test:revenue-protection": "node scripts/run-module-tests.mjs revenue-protection",
+    "test:revenue-protection:contract": "playwright test src/modules/REVENUE-PROTECTION/tests --grep @contract-snapshot --workers=1",
+    "test:revenue-protection:mutation-proof": "node scripts/run-mutation-proof.mjs revenue-protection",
+    "test:utils-lookup": "node scripts/run-module-tests.mjs utils-lookup",
+    "test:utils-lookup:contract": "playwright test src/modules/UTILS-LOOKUP/tests --grep @contract-snapshot --workers=1",
+    "test:utils-lookup:mutation-proof": "node scripts/run-mutation-proof.mjs utils-lookup",
+    "test:mutation-proof": "node scripts/run-mutation-proof.mjs"
   },
   "keywords": [],
   "author": "",

@@ -27,8 +27,7 @@ authTest.describe("Revenue Protection — Aberration Entry By IVRS Auth Negative
   authTest.describe.configure({ mode: "serial" });
   authTest.setTimeout(180_000);
 
-  authTest(
-    "IND-REV-ABE-IVRS-AUTH-001 — PATCH without Authorization header",
+  authTest("IND-REV-ABE-IVRS-AUTH-001 — PATCH without Authorization header",
     {
       tag: [
         "@revenue-protection",
@@ -58,8 +57,7 @@ authTest.describe("Revenue Protection — Aberration Entry By IVRS Auth Negative
     },
   );
 
-  authTest(
-    "IND-REV-ABE-IVRS-AUTH-002 — PATCH with invalid bearer token",
+  authTest("IND-REV-ABE-IVRS-AUTH-002 — PATCH with invalid bearer token",
     {
       tag: [
         "@revenue-protection",
@@ -100,8 +98,7 @@ authTest.describe("Revenue Protection — Aberration Entry By IVRS Auth Negative
     },
   );
 
-  authTest(
-    "IND-REV-ABE-IVRS-AUTH-003 — Unsupported HTTP methods (POST/PUT/DELETE)",
+  authTest("IND-REV-ABE-IVRS-AUTH-003 — Unsupported HTTP methods (POST/PUT/DELETE)",
     {
       tag: [
         "@revenue-protection",

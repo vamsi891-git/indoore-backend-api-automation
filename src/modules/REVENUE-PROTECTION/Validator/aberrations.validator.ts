@@ -78,7 +78,6 @@ export class AberrationsValidator {
       expect(row.amountRealisation).toBeGreaterThanOrEqual(0);
     });
   }
-
   validateRowFields(data: AberrationsData): void {
     data.rows.forEach((row) => {
       expect(row.id.trim()).not.toEqual("");
@@ -92,17 +91,14 @@ export class AberrationsValidator {
       expect(Number.isFinite(row.amountRealisation)).toBeTruthy();
     });
   }
-
   validateUniqueRowIds(data: AberrationsData): void {
     const ids = data.rows.map((row) => row.id);
     expect(new Set(ids).size).toEqual(ids.length);
   }
-
   validateQueryEcho(data: AberrationsData, query: AberrationsQuery): void {
     expect(data.pagination.page).toEqual(query.page ?? 1);
     expect(data.pagination.limit).toEqual(query.limit ?? 10);
   }
-
   validateMonthYearEcho(data: AberrationsData, query: AberrationsQuery): void {
     const expectedMonth = String(query.month).trim().toUpperCase();
     const expectedYear = String(query.year).trim();

@@ -1,0 +1,136 @@
+{
+  "columns": [
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "subStation",
+      "header": "Sub Station"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtr",
+      "header": "DTR"
+    },
+    {
+      "key": "name",
+      "header": "Name"
+    },
+    {
+      "key": "address",
+      "header": "Address"
+    },
+    {
+      "key": "ivrsNo",
+      "header": "IVRS No."
+    },
+    {
+      "key": "meterSerialNo",
+      "header": "Meter Serial No."
+    },
+    {
+      "key": "eventName",
+      "header": "Event Name"
+    },
+    {
+      "key": "occurrenceTime",
+      "header": "Occurence Time"
+    },
+    {
+      "key": "restorationTime",
+      "header": "Restoration Time"
+    },
+    {
+      "key": "remarks",
+      "header": "Remarks"
+    },
+    {
+      "key": "amountBilled",
+      "header": "Amount Billed"
+    },
+    {
+      "key": "amountRealised",
+      "header": "Amount Realised"
+    },
+    {
+      "key": "fieldOfficerRemarks",
+      "header": "Field Officer Remarks"
+    },
+    {
+      "key": "fieldOfficerName",
+      "header": "Field Officer Name"
+    },
+    {
+      "key": "fieldOfficerDesignation",
+      "header": "Field Officer Designation"
+    },
+    {
+      "key": "mrTransactionNo",
+      "header": "MR/Transaction No."
+    },
+    {
+      "key": "p4No",
+      "header": "P4 No."
+    },
+    {
+      "key": "p4Date",
+      "header": "P4 Date"
+    },
+    {
+      "key": "inspectionDate",
+      "header": "Inspection Date"
+    },
+    {
+      "key": "entryDate",
+      "header": "Entry Date"
+    },
+    {
+      "key": "month",
+      "header": "Month"
+    },
+    {
+      "key": "year",
+      "header": "Year"
+    }
+  ],
+  "rowFieldKeys": [
+    "address",
+    "amountBilled",
+    "amountRealised",
+    "circle",
+    "division",
+    "dtr",
+    "entryDate",
+    "eventName",
+    "feeder",
+    "fieldOfficerDesignation",
+    "fieldOfficerName",
+    "fieldOfficerRemarks",
+    "inspectionDate",
+    "ivrsNo",
+    "meterSerialNo",
+    "month",
+    "mrTransactionNo",
+    "name",
+    "occurrenceTime",
+    "p4Date",
+    "p4No",
+    "remarks",
+    "restorationTime",
+    "subStation",
+    "year",
+    "zone"
+  ]
+}

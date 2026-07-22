@@ -9,17 +9,13 @@ import {
   revenueProtectionPaths,
   type RevenueErrorBody,
 } from "../Validator/revenue-common.validator";
-
 const aberrationsUrl = `${revenueProtectionPaths.aberrations}?${buildAberrationsQueryString(
   aberrationsDefaultQuery,
 )}`;
-
 authTest.describe("Revenue Protection — Aberrations Auth Negative", () => {
   authTest.describe.configure({ mode: "serial" });
   authTest.setTimeout(180_000);
-
-  authTest(
-    "Aberrations rejects missing auth",
+  authTest("Aberrations rejects missing auth",
     { tag: ["@revenue-protection", "@aberrations", "@negative", "@auth"] },
     async ({ unauthenticatedApi }) => {
       const validation = new ValidationEngine();
@@ -39,9 +35,7 @@ authTest.describe("Revenue Protection — Aberrations Auth Negative", () => {
       validation.printSummary("Aberrations — Missing Auth", 0);
     },
   );
-
-  authTest(
-    "Aberrations rejects invalid bearer token",
+  authTest("Aberrations rejects invalid bearer token",
     { tag: ["@revenue-protection", "@aberrations", "@negative", "@auth"] },
     async ({ unauthenticatedApi }) => {
       const validation = new ValidationEngine();
@@ -68,9 +62,7 @@ authTest.describe("Revenue Protection — Aberrations Auth Negative", () => {
       validation.printSummary("Aberrations — Invalid Token", 0);
     },
   );
-
-  authTest(
-    "Aberrations rejects disallowed HTTP methods",
+  authTest("Aberrations rejects disallowed HTTP methods",
     { tag: ["@revenue-protection", "@aberrations", "@negative", "@auth"] },
     async ({ unauthenticatedApi }) => {
       const validation = new ValidationEngine();

@@ -1,8 +1,5 @@
 import { z } from "zod";
-import {
-  ColumnSchema,
-  PaginationSchema,
-} from "../../../core/schemas/api-response.schemas";
+import {ColumnSchema,PaginationSchema,} from "../../../core/schemas/api-response.schemas";
 import { P4_DATE_REGEX, ENTRY_DATE_TIME_REGEX } from "./cases.schemas";
 
 /**
@@ -48,7 +45,6 @@ export const AtrZoneRowSchema = z
     month: z.string(),
   })
   .strict();
-
 export const AtrZoneDataSchema = z
   .object({
     columns: z.array(ColumnSchema),
@@ -56,14 +52,12 @@ export const AtrZoneDataSchema = z
     pagination: PaginationSchema,
   })
   .strict();
-
 export const AtrZoneSuccessResponseSchema = z
   .object({
     success: z.literal(true),
     data: AtrZoneDataSchema,
   })
   .strict();
-
 export type AtrZoneRow = z.infer<typeof AtrZoneRowSchema>;
 export type AtrZoneData = z.infer<typeof AtrZoneDataSchema>;
 export type ParsedAtrZoneResponse = z.infer<typeof AtrZoneSuccessResponseSchema>;

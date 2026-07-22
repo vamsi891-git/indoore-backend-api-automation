@@ -14,7 +14,6 @@ import { AberrationEntryByIvrsMapper } from "../Mapper/aberration-entry-by-ivrs.
 import { AberrationEntryByIvrsValidator } from "../Validator/aberration-entry-by-ivrs.validator";
 import { AberrationEntryByIvrsSuccessResponseSchema } from "../schemas/aberration-entry-by-ivrs.schemas";
 import { resolveAberrationEntryIvrsForUpdate } from "../utils/aberration-entry-by-ivrs.helper";
-
 test.describe("Revenue Protection — Aberration Entry By IVRS Edge", () => {
   test.describe.configure({ retries: 1, mode: "serial" });
   test.setTimeout(REVENUE_PROTECTION_TEST_TIMEOUT_MS);

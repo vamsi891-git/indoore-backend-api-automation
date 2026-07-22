@@ -1,0 +1,17 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/utils/connection-statuses",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "items"
+  ],
+  "itemKeys": [
+    "id",
+    "name",
+    "shortName"
+  ],
+  "hasColumnsGrid": false
+}

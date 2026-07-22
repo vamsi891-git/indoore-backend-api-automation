@@ -1,29 +1,20 @@
-import {
-  attachDataQualityReport,
-  type DataQualityReport,
-  type DataQualityWarning,
-} from "../../../core/utils/data-quality-logger";
+import { attachDataQualityReport, type DataQualityReport, type DataQualityWarning,} from "../../../core/utils/data-quality-logger";
 import { CANONICAL_CASE_EVENTS } from "../Data/cases.data";
 import type { CasesData } from "../Mapper/cases.mapper";
-
 function resolveRealisationMultiplier(): number {
   const raw = Number(process.env.RP_REALISATION_MULTIPLIER ?? "1");
   return Number.isFinite(raw) && raw > 0 ? raw : 1;
 }
-
 function resolveEmptyFieldThresholdPct(): number {
   const raw = Number(process.env.RP_EMPTY_FIELD_THRESHOLD_PCT ?? "25");
   return Number.isFinite(raw) && raw >= 0 ? raw : 25;
 }
-
 function normalizeEventLabel(value: string): string {
   return value.trim().toLowerCase().replace(/\s+/g, " ");
 }
-
 const canonicalEventSet = new Set(
   CANONICAL_CASE_EVENTS.map((event) => normalizeEventLabel(event)),
 );
-
 /**
  * Revenue-protection cases soft checks.
  * Realisation outliers use RP_REALISATION_MULTIPLIER (default 1.0).
@@ -39,7 +30,6 @@ export function collectCasesDataQualityFindings(
   let emptyMsn = 0;
   let unknownEvents = 0;
   let realisationOutliers = 0;
-
   for (const row of data.rows) {
     const eventNorm = normalizeEventLabel(row.event);
     if (row.event.trim() && !canonicalEventSet.has(eventNorm)) {
@@ -53,7 +43,6 @@ export function collectCasesDataQualityFindings(
         expected: [...CANONICAL_CASE_EVENTS],
       });
     }
-
     if (!row.consumerName.trim()) {
       emptyConsumerName += 1;
     }
@@ -63,7 +52,6 @@ export function collectCasesDataQualityFindings(
     if (!row.msn.trim()) {
       emptyMsn += 1;
     }
-
     const threshold = row.amountBilled * multiplier;
     if (row.amountRealisation > threshold) {
       realisationOutliers += 1;
@@ -77,11 +65,9 @@ export function collectCasesDataQualityFindings(
       });
     }
   }
-
   const rowCount = data.rows.length || 1;
   const thresholdPct = resolveEmptyFieldThresholdPct();
   const pct = (count: number) => (count / rowCount) * 100;
-
   if (pct(emptyConsumerName) > thresholdPct) {
     warnings.push({
       code: "EMPTY_CONSUMER_NAME_THRESHOLD",
@@ -106,7 +92,6 @@ export function collectCasesDataQualityFindings(
       actual: emptyMsn,
     });
   }
-
   return {
     warnings,
     counts: {
@@ -119,7 +104,6 @@ export function collectCasesDataQualityFindings(
     },
   };
 }
-
 export async function logCasesDataQualityFindings(
   data: CasesData,
 ): Promise<DataQualityReport> {

@@ -6,19 +6,11 @@ import { REVENUE_PROTECTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-
 import { AtrZoneApi } from "../Api/atr-zone.api";
 import { atrZoneDefaultQuery } from "../Data/atr-zone.data";
 import { AtrZoneMapper } from "../Mapper/atr-zone.mapper";
-import {
-  countAtrZoneForFilters,
-  getAtrZoneRowByBusinessKey,
-  isAtrZoneDbSqlReady,
-  resolveDbSampleSize,
-  sampleRowIds,
-} from "../Db/atr-zone.db";
+import {countAtrZoneForFilters,getAtrZoneRowByBusinessKey,isAtrZoneDbSqlReady,resolveDbSampleSize,sampleRowIds,} from "../Db/atr-zone.db";
 import { applyAllureTestCaseId } from "../../../core/utils/allure-test-case.helper";
-
 test.describe("Revenue Protection — ATR Zone DB cross-validation", () => {
   test.describe.configure({ retries: 1, mode: "serial" });
   test.setTimeout(REVENUE_PROTECTION_TEST_TIMEOUT_MS);
-
   test.beforeEach(() => {
     test.skip(!isDbConfigured(), "DB credentials not configured");
     test.skip(
@@ -26,9 +18,7 @@ test.describe("Revenue Protection — ATR Zone DB cross-validation", () => {
       "Set RP_ATRZONE_DB_SQL_READY=true after confirming atr-zone SQL against live schema",
     );
   });
-
-  test(
-    "IND-RPT-ATZ-DB-001 — COUNT(*) matches pagination.total",
+  test("IND-RPT-ATZ-DB-001 — COUNT(*) matches pagination.total",
     { tag: ["@revenue-protection", "@atr-zone", "@db"] },
     async ({ authenticatedApi, db, obs }) => {
       await applyAllureTestCaseId("IND-RPT-ATZ-DB-001");
@@ -36,7 +26,6 @@ test.describe("Revenue Protection — ATR Zone DB cross-validation", () => {
       const { responseBody } = await api.getAtrZone({ ...atrZoneDefaultQuery, page: 1, limit: 100 });
       const mapped = AtrZoneMapper.mapData(responseBody.data);
       const dbCount = await countAtrZoneForFilters(db, atrZoneDefaultQuery);
-
       compareApiToDb(
         [{ label: "pagination.total", apiValue: mapped.pagination.total, dbValue: dbCount }],
         "DB vs API — atr-zone total count",

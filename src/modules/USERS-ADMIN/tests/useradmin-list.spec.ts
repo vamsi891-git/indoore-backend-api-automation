@@ -6,6 +6,7 @@ import { UserManagementApi } from "../Api/usermanagement.api";
 import {isAutomationAccount,UserDevicesTestConfig,UserManagementData,} from "../Data/usermanagement.data";
 import { UserManagementMapper } from "../Mapper/usermanagement.mapper";
 import { UserManagementValidator } from "../Validator/usermanagement.validator";
+import { resolveLiveDeviceTestUserId } from "../utils/resolve-device-test-user";
 test.describe("User Admin — List", () => {
     test.describe.configure({ mode: "serial" });
     test("Validate GET /users — user catalog",
@@ -109,9 +110,8 @@ test.describe("User Admin — List", () => {
             const validator = new UserManagementValidator();
             const userApi = new UserManagementApi(authenticatedApi);
 
-            const response = await userApi.getUserDevices(
-                UserDevicesTestConfig.deviceTestUserId,
-            );
+            const userId = await resolveLiveDeviceTestUserId(authenticatedApi);
+            const response = await userApi.getUserDevices(userId);
             validation.execute("Get Devices Status Code", () =>
                 assert.validateStatusCode(response.rawResponse, 200),
             );

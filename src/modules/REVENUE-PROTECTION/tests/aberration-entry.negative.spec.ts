@@ -18,11 +18,9 @@ import {
   buildRevenueProtectionUrl,
   getRevenueProtectionWithRetry,
 } from "../utils/revenue-protection-request.helper";
-
 test.describe("Revenue Protection — Aberration Entry Negative", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(REVENUE_PROTECTION_TEST_TIMEOUT_MS);
-
   for (const negativeCase of [
     ...aberrationEntryNegativeCases,
     ...aberrationEntryEenltmtNegativeCases,
@@ -32,7 +30,6 @@ test.describe("Revenue Protection — Aberration Entry Negative", () => {
       { tag: [...negativeCase.tags] },
       async ({ authenticatedApi, obs }) => {
         await applyAllureTestCaseId(negativeCase.testCaseId);
-
         const validation = new ValidationEngine(obs);
         const { response: rawResponse } = await getRevenueProtectionWithRetry(
           authenticatedApi,
@@ -42,7 +39,6 @@ test.describe("Revenue Protection — Aberration Entry Negative", () => {
           ),
         );
         const body = (await rawResponse.json().catch(() => ({}))) as RevenueErrorBody;
-
         validation.execute("Expected status", () => {
           const allowed = negativeCase.expectedStatuses as readonly number[];
           if (!allowed.includes(rawResponse.status())) {
@@ -51,7 +47,6 @@ test.describe("Revenue Protection — Aberration Entry Negative", () => {
             );
           }
         });
-
         if (negativeCase.outcome === "hard-reject") {
           validation.execute("Rejected with error envelope", () =>
             RevenueCommonValidator.validateErrorEnvelope(rawResponse.status(), body),
@@ -76,7 +71,6 @@ test.describe("Revenue Protection — Aberration Entry Negative", () => {
             RevenueCommonValidator.validateEmptySuccessGrid(rawResponse.status(), body),
           );
         }
-
         validation.printSummary(negativeCase.testName, 0);
       },
     );

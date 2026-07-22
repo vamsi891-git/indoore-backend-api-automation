@@ -11,34 +11,28 @@ import { CasesSuccessResponseSchema } from "../schemas/cases.schemas";
 import { CasesValidator } from "../Validator/cases.validator";
 import { applyAllureTestCaseId } from "../../../core/utils/allure-test-case.helper";
 import { logCasesDataQualityFindings } from "../utils/cases-data-quality";
-
 test.describe("Revenue Protection — Cases Detail API", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(REVENUE_PROTECTION_TEST_TIMEOUT_MS);
-
   for (const testCase of casesTestCases) {
     test(
       testCase.testName,
       { tag: testCase.tags },
       async ({ authenticatedApi }) => {
         await applyAllureTestCaseId(testCase.testCaseId);
-
         const api = new CasesApi(authenticatedApi);
         const { rawResponse, responseBody, responseTime } =
           await api.getCases(testCase.query);
-
         await PerformanceTracker.track(
           rawResponse,
           testCase.testName,
           rawResponse.url(),
           responseTime,
         );
-
         const assert = new AssertionEngine();
         const validation = new ValidationEngine();
         const validator = new CasesValidator();
         const mapped = CasesMapper.mapData(responseBody.data);
-
         validation.execute("Status Validation", () =>
           assert.validateStatusCode(rawResponse, 200, responseBody),
         );
@@ -82,9 +76,7 @@ test.describe("Revenue Protection — Cases Detail API", () => {
         validation.execute("Month/Year Echo", () =>
           validator.validateMonthYearEcho(mapped, testCase.query),
         );
-
         await logCasesDataQualityFindings(mapped);
-
         validation.printSummary(testCase.testName, responseTime);
       },
     );
