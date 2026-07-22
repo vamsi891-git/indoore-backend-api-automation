@@ -15,43 +15,35 @@ import { AberrationEntryByIvrsMapper } from "../Mapper/aberration-entry-by-ivrs.
 import { AberrationEntryByIvrsValidator } from "../Validator/aberration-entry-by-ivrs.validator";
 import { AberrationEntryByIvrsSuccessResponseSchema } from "../schemas/aberration-entry-by-ivrs.schemas";
 import { resolveAberrationEntryIvrsForUpdate } from "../utils/aberration-entry-by-ivrs.helper";
-
 test.describe("Revenue Protection — Aberration Entry By IVRS (PATCH)", () => {
   test.describe.configure({
     retries: 1,
     mode: "serial",
   });
-
   test.setTimeout(REVENUE_PROTECTION_TEST_TIMEOUT_MS);
-
   for (const testCase of aberrationEntryByIvrsTestCases) {
     test(
       testCase.testName,
       { tag: [...testCase.tags] },
       async ({ authenticatedApi, obs }) => {
         await applyAllureTestCaseId(testCase.testCaseId);
-
         const ivrsNo = await resolveAberrationEntryIvrsForUpdate(authenticatedApi);
         const api = new AberrationEntryApi(authenticatedApi);
         const payload = buildAberrationEntryUpdatePayload({
           remarks: `automation ${testCase.testCaseId}`,
         });
-
         const { rawResponse, responseBody, responseTime } =
           await api.patchAberrationEntryByIvrs(ivrsNo, payload);
-
         await PerformanceTracker.track(
           rawResponse,
           testCase.testName,
           rawResponse.url(),
           responseTime,
         );
-
         const assert = new AssertionEngine();
         const validation = new ValidationEngine(obs);
         const validator = new AberrationEntryByIvrsValidator();
         const mapped = AberrationEntryByIvrsMapper.mapData(responseBody.data);
-
         validation.execute("Status Validation", () =>
           assert.validateStatusCode(rawResponse, 200, responseBody),
         );
@@ -77,20 +69,17 @@ test.describe("Revenue Protection — Aberration Entry By IVRS (PATCH)", () => {
         validation.execute("IVRS Echo", () =>
           validator.validateIvrsEcho(mapped, ivrsNo),
         );
-
         validation.printSummary(testCase.testName, responseTime);
       },
     );
   }
 
-  test(
-    "IND-REV-ABE-IVRS-002 — PATCH with p4Number alias also succeeds",
+  test("IND-REV-ABE-IVRS-002 — PATCH with p4Number alias also succeeds",
     {
       tag: ["@revenue-protection", "@aberration-entry-by-ivrs", "@positive"],
     },
     async ({ authenticatedApi, obs }) => {
       await applyAllureTestCaseId("IND-REV-ABE-IVRS-002");
-
       const ivrsNo = await resolveAberrationEntryIvrsForUpdate(authenticatedApi);
       const api = new AberrationEntryApi(authenticatedApi);
       const payload = buildAberrationEntryUpdatePayload({
@@ -98,15 +87,12 @@ test.describe("Revenue Protection — Aberration Entry By IVRS (PATCH)", () => {
         p4Number: "AUTO-P4-002",
         p4Date: "20-07-2026",
       });
-
       const { rawResponse, responseBody, responseTime } =
         await api.patchAberrationEntryByIvrs(ivrsNo, payload);
-
       const assert = new AssertionEngine();
       const validation = new ValidationEngine(obs);
       const validator = new AberrationEntryByIvrsValidator();
       const mapped = AberrationEntryByIvrsMapper.mapData(responseBody.data);
-
       validation.execute("Status Validation", () =>
         assert.validateStatusCode(rawResponse, 200, responseBody),
       );

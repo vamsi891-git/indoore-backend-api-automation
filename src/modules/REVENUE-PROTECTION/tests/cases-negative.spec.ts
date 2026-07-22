@@ -7,10 +7,7 @@ import { ApiErrorResponseSchema } from "../../../core/schemas/api-response.schem
 import { REVENUE_PROTECTION_CASES_PATH, buildCasesQueryString } from "../Api/cases.api";
 import { casesDefaultQuery } from "../Data/cases.data";
 import { casesNegativeCases } from "../Data/cases-negative.data";
-import {
-  RevenueCommonValidator,
-  type RevenueErrorBody,
-} from "../Validator/revenue-common.validator";
+import { RevenueCommonValidator,type RevenueErrorBody,} from "../Validator/revenue-common.validator";
 import { applyAllureTestCaseId } from "../../../core/utils/allure-test-case.helper";
 import { CasesMapper } from "../Mapper/cases.mapper";
 import type { CasesRawData } from "../Mapper/cases.mapper";
@@ -18,18 +15,15 @@ import {
   buildRevenueProtectionUrl,
   getRevenueProtectionWithRetry,
 } from "../utils/revenue-protection-request.helper";
-
 test.describe("Revenue Protection — Cases Negative", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(REVENUE_PROTECTION_TEST_TIMEOUT_MS);
-
   for (const negativeCase of casesNegativeCases) {
     test(
       negativeCase.testName,
       { tag: negativeCase.tags },
       async ({ authenticatedApi }) => {
         await applyAllureTestCaseId(negativeCase.testCaseId);
-
         const validation = new ValidationEngine();
         const { response: rawResponse } = await getRevenueProtectionWithRetry(
           authenticatedApi,
@@ -38,7 +32,6 @@ test.describe("Revenue Protection — Cases Negative", () => {
         const body = (await rawResponse
           .json()
           .catch(() => ({}))) as RevenueErrorBody;
-
         validation.execute("Expected status", () => {
           if (!negativeCase.expectedStatuses.includes(rawResponse.status())) {
             throw new Error(
@@ -46,7 +39,6 @@ test.describe("Revenue Protection — Cases Negative", () => {
             );
           }
         });
-
         if (negativeCase.outcome === "hard-reject") {
           validation.execute("Rejected with error envelope", () =>
             RevenueCommonValidator.validateErrorEnvelope(
@@ -80,7 +72,6 @@ test.describe("Revenue Protection — Cases Negative", () => {
             ),
           );
         }
-
         validation.printSummary(negativeCase.testName, 0);
       },
     );

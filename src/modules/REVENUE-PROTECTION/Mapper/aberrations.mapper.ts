@@ -8,12 +8,10 @@ export interface AberrationsQuery {
   page?: number;
   limit?: number;
 }
-
 export interface GridColumn {
   key: string;
   header: string;
 }
-
 export interface AberrationSummaryRowRaw {
   id?: string | number;
   circle?: string | null;
@@ -25,26 +23,22 @@ export interface AberrationSummaryRowRaw {
   amountBilled?: number | string | null;
   amountRealisation?: number | string | null;
 }
-
 export interface AberrationPaginationRaw {
   page?: number | string | null;
   limit?: number | string | null;
   total?: number | string | null;
   totalPages?: number | string | null;
 }
-
 export interface AberrationsRawData {
   columns?: GridColumn[];
   rows?: AberrationSummaryRowRaw[];
   pagination?: AberrationPaginationRaw;
 }
-
 export interface AberrationsResponse {
   success: boolean;
   data?: AberrationsRawData;
   error?: { code?: string; message?: string };
 }
-
 export interface AberrationSummaryRow {
   id: string;
   circle: string;
@@ -56,20 +50,17 @@ export interface AberrationSummaryRow {
   amountBilled: number;
   amountRealisation: number;
 }
-
 export interface AberrationPagination {
   page: number;
   limit: number;
   total: number;
   totalPages: number;
 }
-
 export interface AberrationsData {
   columns: GridColumn[];
   rows: AberrationSummaryRow[];
   pagination: AberrationPagination;
 }
-
 function toNumber(value: unknown, fallback = 0): number {
   if (value === null || value === undefined || value === "") {
     return fallback;
@@ -77,14 +68,12 @@ function toNumber(value: unknown, fallback = 0): number {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
 }
-
 function toText(value: unknown, fallback = ""): string {
   if (value === null || value === undefined) {
     return fallback;
   }
   return String(value).trim();
 }
-
 export class AberrationsMapper {
   static mapRow(row: AberrationSummaryRowRaw): AberrationSummaryRow {
     return {
@@ -99,7 +88,6 @@ export class AberrationsMapper {
       amountRealisation: toNumber(row.amountRealisation),
     };
   }
-
   static mapData(data: AberrationsRawData | undefined): AberrationsData {
     const pagination = data?.pagination ?? {};
     return {

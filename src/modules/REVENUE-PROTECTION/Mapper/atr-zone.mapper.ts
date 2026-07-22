@@ -7,12 +7,10 @@ export interface AtrZoneQuery {
   page?: number;
   limit?: number;
 }
-
 export interface AtrZoneGridColumn {
   key: string;
   header: string;
 }
-
 export interface AtrZoneRowRaw {
   id?: string | number;
   circle?: string | null;
@@ -38,27 +36,23 @@ export interface AtrZoneRowRaw {
   year?: string | number | null;
   month?: string | null;
 }
-
 export interface AtrZonePaginationRaw {
   page?: number | string | null;
   limit?: number | string | null;
   total?: number | string | null;
   totalPages?: number | string | null;
 }
-
 export interface AtrZoneRawData {
   columns?: AtrZoneGridColumn[];
   rows?: AtrZoneRowRaw[];
   pagination?: AtrZonePaginationRaw;
 }
-
 export interface AtrZoneResponse {
   success: boolean;
   data?: AtrZoneRawData;
   error?: { code?: string; message?: string };
   message?: string;
 }
-
 export interface AtrZoneRow {
   id: string;
   circle: string;
@@ -84,31 +78,26 @@ export interface AtrZoneRow {
   year: string;
   month: string;
 }
-
 export interface AtrZonePagination {
   page: number;
   limit: number;
   total: number;
   totalPages: number;
 }
-
 export interface AtrZoneData {
   columns: AtrZoneGridColumn[];
   rows: AtrZoneRow[];
   pagination: AtrZonePagination;
 }
-
 function toNumber(value: unknown, fallback = 0): number {
   if (value === null || value === undefined || value === "") return fallback;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
 }
-
 function toText(value: unknown, fallback = ""): string {
   if (value === null || value === undefined) return fallback;
   return String(value);
 }
-
 export class AtrZoneMapper {
   static mapRow(row: AtrZoneRowRaw): AtrZoneRow {
     return {
@@ -137,7 +126,6 @@ export class AtrZoneMapper {
       month: toText(row.month).trim(),
     };
   }
-
   static mapData(data: AtrZoneRawData | undefined): AtrZoneData {
     const pagination = data?.pagination ?? {};
     return {

@@ -1,41 +1,27 @@
-import {
-  attachDataQualityReport,
-  type DataQualityReport,
-  type DataQualityWarning,
-} from "../../../core/utils/data-quality-logger";
+import {attachDataQualityReport,type DataQualityReport,type DataQualityWarning,} from "../../../core/utils/data-quality-logger";
 import { CANONICAL_ABERRATION_EVENTS } from "../Data/aberration-entry.data";
 import type { AberrationEntryData } from "../Mapper/aberration-entry.mapper";
-
 function resolveRealisationMultiplier(): number {
   const raw = Number(process.env.RP_REALISATION_MULTIPLIER ?? "1");
   return Number.isFinite(raw) && raw > 0 ? raw : 1;
 }
-
 function normalizeEventLabel(value: string): string {
   return value.trim().toLowerCase().replace(/\s+/g, " ");
 }
-
 const canonicalEventSet = new Set(
   CANONICAL_ABERRATION_EVENTS.map((e) => normalizeEventLabel(e)),
 );
-
-export function collectAberrationEntryDataQualityFindings(
-  data: AberrationEntryData,
-): DataQualityReport {
+export function collectAberrationEntryDataQualityFindings(data: AberrationEntryData,): DataQualityReport {
   const warnings: DataQualityWarning[] = [];
   const multiplier = resolveRealisationMultiplier();
-
   let unknownEvents = 0;
   let realisationOutliers = 0;
   let emptyFieldOfficer = 0;
   let emptyRemarks = 0;
-
   for (const row of data.rows) {
     const eventNorm = normalizeEventLabel(row.eventName);
-
     if (row.eventName.trim() && !canonicalEventSet.has(eventNorm)) {
       unknownEvents++;
-
       warnings.push({
         code: "UNKNOWN_EVENT",
         message: `eventName not found in canonical list: "${row.eventName}"`,

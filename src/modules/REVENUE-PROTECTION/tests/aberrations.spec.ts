@@ -17,12 +17,7 @@ test.describe("Revenue Protection — Aberrations Summary API", () => {
       const api = new AberrationsApi(authenticatedApi);
       const { rawResponse, responseBody, responseTime } =
         await api.getAberrationSummary(testCase.query);
-      await PerformanceTracker.track(
-        rawResponse,
-        testCase.testName,
-        rawResponse.url(),
-        responseTime,
-      );
+      await PerformanceTracker.track(rawResponse,testCase.testName,rawResponse.url(),responseTime,);
       const assert = new AssertionEngine();
       const validation = new ValidationEngine();
       const validator = new AberrationsValidator();

@@ -1,27 +1,21 @@
 import { z } from "zod";
-import {
-  ColumnSchema,
-  PaginationSchema,
+import {ColumnSchema,PaginationSchema,
 } from "../../../core/schemas/api-response.schemas";
-
 /**
  * Backend returns Indian display dates (DD-MM-YYYY), not ISO 8601.
  * Empty string is allowed when no P4 has been raised yet.
  */
 export const P4_DATE_REGEX = /^(\d{2}-\d{2}-\d{4})?$/;
-
 /**
  * Backend returns human-readable entry timestamps like "10 Jul 2026, 1:38 pm".
  * Do not treat these as ISO dates.
  */
 export const ENTRY_DATE_TIME_REGEX =
   /^\d{1,2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4}, \d{1,2}:\d{2} (am|pm)$/i;
-
 /**
  * Confirm complete value set with backend — sample only shows Open / Resolved / Closed.
  */
 export const CaseStatusSchema = z.enum(["Open", "Resolved", "Closed"]);
-
 export const CaseRowSchema = z
   .object({
     id: z.string().min(1),
@@ -51,7 +45,6 @@ export const CaseRowSchema = z
     status: CaseStatusSchema,
   })
   .strict();
-
 export const CasesDataSchema = z
   .object({
     columns: z.array(ColumnSchema),
@@ -59,14 +52,12 @@ export const CasesDataSchema = z
     pagination: PaginationSchema,
   })
   .strict();
-
 export const CasesSuccessResponseSchema = z
   .object({
     success: z.literal(true),
     data: CasesDataSchema,
   })
   .strict();
-
 export type CaseStatus = z.infer<typeof CaseStatusSchema>;
 export type CaseRow = z.infer<typeof CaseRowSchema>;
 export type CasesData = z.infer<typeof CasesDataSchema>;

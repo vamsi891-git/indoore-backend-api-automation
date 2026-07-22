@@ -1,31 +1,22 @@
-import {
-  attachDataQualityReport,
-  type DataQualityReport,
-  type DataQualityWarning,
-} from "../../../core/utils/data-quality-logger";
+import {attachDataQualityReport,type DataQualityReport,type DataQualityWarning,} from "../../../core/utils/data-quality-logger";
 import { CANONICAL_ATRZONE_EVENTS } from "../Data/atr-zone.data";
 import type { AtrZoneData } from "../Mapper/atr-zone.mapper";
-
 function resolveRealisationMultiplier(): number {
   const raw = Number(process.env.RP_REALISATION_MULTIPLIER ?? "1");
   return Number.isFinite(raw) && raw > 0 ? raw : 1;
 }
-
 function normalizeEventLabel(value: string): string {
   return value.trim().toLowerCase().replace(/\s+/g, " ");
 }
-
 const canonicalEventSet = new Set(
   CANONICAL_ATRZONE_EVENTS.map((e) => normalizeEventLabel(e)),
 );
-
 export function collectAtrZoneDataQualityFindings(data: AtrZoneData): DataQualityReport {
   const warnings: DataQualityWarning[] = [];
   const multiplier = resolveRealisationMultiplier();
   let unknownEvents = 0;
   let realisationOutliers = 0;
   let emptyEventCategory = 0;
-
   for (const row of data.rows) {
     const eventNorm = normalizeEventLabel(row.eventName);
     if (row.eventName.trim() && !canonicalEventSet.has(eventNorm)) {
@@ -39,7 +30,6 @@ export function collectAtrZoneDataQualityFindings(data: AtrZoneData): DataQualit
         expected: [...CANONICAL_ATRZONE_EVENTS],
       });
     }
-
     const threshold = row.amountBilled * multiplier;
     if (row.amountRealised > threshold) {
       realisationOutliers += 1;
@@ -52,12 +42,10 @@ export function collectAtrZoneDataQualityFindings(data: AtrZoneData): DataQualit
         expected: `<= ${threshold}`,
       });
     }
-
     if (!row.eventCategory.trim()) {
       emptyEventCategory += 1;
     }
   }
-
   // eventCategory is empty in 100% of the sample despite a real SQL
   // expression (atrZoneEventCategoryExpr) existing to populate it —
   // surface this as a standing warning, not per-row noise.
@@ -70,7 +58,6 @@ export function collectAtrZoneDataQualityFindings(data: AtrZoneData): DataQualit
       actual: emptyEventCategory,
     });
   }
-
   return {
     warnings,
     counts: {
@@ -81,7 +68,6 @@ export function collectAtrZoneDataQualityFindings(data: AtrZoneData): DataQualit
     },
   };
 }
-
 export async function logAtrZoneDataQualityFindings(
   data: AtrZoneData,
 ): Promise<DataQualityReport> {

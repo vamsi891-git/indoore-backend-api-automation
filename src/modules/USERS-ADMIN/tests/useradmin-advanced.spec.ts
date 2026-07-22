@@ -6,6 +6,7 @@ import {isAutomationAccount,UserDevicesTestConfig,UserManagementData,} from "../
 import { UserManagementApi } from "../Api/usermanagement.api";
 import { UserManagementMapper, User } from "../Mapper/usermanagement.mapper";
 import { UserManagementValidator } from "../Validator/usermanagement.validator";
+import { resolveLiveDeviceTestUserId } from "../utils/resolve-device-test-user";
 test.describe("User Admin — Advanced", () => {
     test.describe.configure({ mode: "serial" });
     test("DELETE /users/:id/devices/:deviceId — revoke device and verify catalog",
@@ -15,7 +16,7 @@ test.describe("User Admin — Advanced", () => {
             const validation = new ValidationEngine();
             const validator = new UserManagementValidator();
             const userApi = new UserManagementApi(authenticatedApi);
-            const userId = UserDevicesTestConfig.deviceTestUserId;
+            const userId = await resolveLiveDeviceTestUserId(authenticatedApi);
             const listResponse = await userApi.getUserDevices(userId);
             validation.execute("Get Devices Status Code", () =>
                 assert.validateStatusCode(listResponse.rawResponse, 200),

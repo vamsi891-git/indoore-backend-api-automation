@@ -14,38 +14,31 @@ import { AberrationEntryMapper } from "../Mapper/aberration-entry.mapper";
 import { AberrationEntryValidator } from "../Validator/aberration-entry.validator";
 import { AberrationEntrySuccessResponseSchema } from "../schemas/aberration-entry.schemas";
 import { logAberrationEntryDataQualityFindings } from "../utils/aberration-entry-data-quality";
-
 test.describe("Revenue Protection — Aberration Entry API", () => {
   test.describe.configure({
     retries: 1,
     mode: "serial",
   });
-
   test.setTimeout(REVENUE_PROTECTION_TEST_TIMEOUT_MS);
-
   for (const testCase of aberrationEntryTestCases) {
     test(
       testCase.testName,
       { tag: [...testCase.tags] },
       async ({ authenticatedApi, obs }) => {
         await applyAllureTestCaseId(testCase.testCaseId);
-
         const api = new AberrationEntryApi(authenticatedApi);
         const { rawResponse, responseBody, responseTime } =
           await api.getAberrationEntry(testCase.query);
-
         await PerformanceTracker.track(
           rawResponse,
           testCase.testName,
           rawResponse.url(),
           responseTime,
         );
-
         const assert = new AssertionEngine();
         const validation = new ValidationEngine(obs);
         const validator = new AberrationEntryValidator();
         const mapped = AberrationEntryMapper.mapData(responseBody.data);
-
         validation.execute("Status Validation", () =>
           assert.validateStatusCode(rawResponse, 200, responseBody),
         );
@@ -89,9 +82,7 @@ test.describe("Revenue Protection — Aberration Entry API", () => {
         validation.execute("Occurrence Sorting", () =>
           validator.validateOccurrenceSorting(mapped),
         );
-
         await logAberrationEntryDataQualityFindings(mapped);
-
         validation.printSummary(testCase.testName, responseTime);
       },
     );

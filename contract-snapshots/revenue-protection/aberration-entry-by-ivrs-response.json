@@ -1,0 +1,12 @@
+{
+  "httpMethod": "PATCH",
+  "pathPattern": "/indore/revenue-protection/aberration-entry/:ivrsNo",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "ivrsNo"
+  ],
+  "hasColumnsGrid": false
+}

@@ -1,0 +1,80 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/utils/search/dtr",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "circle",
+    "division",
+    "dtr",
+    "feeder",
+    "id",
+    "latitude",
+    "longitude",
+    "meterLookupTblRefId",
+    "meterSerialNumber",
+    "mf",
+    "serviceDate",
+    "slNo",
+    "subStation",
+    "zone"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "slNo",
+      "header": "Sl.No."
+    },
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "subStation",
+      "header": "Sub Station"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtr",
+      "header": "DTR"
+    },
+    {
+      "key": "meterSerialNumber",
+      "header": "Meter_Serial_Number"
+    },
+    {
+      "key": "mf",
+      "header": "MF"
+    },
+    {
+      "key": "latitude",
+      "header": "Latitude"
+    },
+    {
+      "key": "longitude",
+      "header": "Longitude"
+    },
+    {
+      "key": "serviceDate",
+      "header": "ServiceDate"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/utils/search/consumers",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "consumerAddress",
+    "consumerCid",
+    "consumerMobileNumber",
+    "consumerName",
+    "existingIvrsNo",
+    "id",
+    "ivrsNo",
+    "meterSerialNumber"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "consumerName",
+      "header": "Consumer Name"
+    },
+    {
+      "key": "consumerCid",
+      "header": "Consumer CID"
+    },
+    {
+      "key": "consumerAddress",
+      "header": "Consumer Address"
+    },
+    {
+      "key": "ivrsNo",
+      "header": "IVRS No."
+    },
+    {
+      "key": "existingIvrsNo",
+      "header": "Existing IVRS No."
+    },
+    {
+      "key": "meterSerialNumber",
+      "header": "Meter Serial Number"
+    },
+    {
+      "key": "consumerMobileNumber",
+      "header": "Mobile No."
+    }
+  ]
+}

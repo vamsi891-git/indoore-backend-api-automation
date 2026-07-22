@@ -6,48 +6,32 @@ import { REVENUE_PROTECTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-
 import { AberrationEntryApi } from "../Api/aberration-entry.api";
 import { aberrationEntryEenltmtDefaultQuery } from "../Data/aberration-entry-eenltmt.data";
 import { AberrationEntryMapper } from "../Mapper/aberration-entry.mapper";
-import {
-  countAberrationEntryForFilters,
-  getAberrationEntryRowByBusinessKey,
-  isAberrationEntryDbSqlReady,
-  resolveDbSampleSize,
-  sampleRowIds,
-} from "../Db/aberration-entry.db";
+import {countAberrationEntryForFilters,getAberrationEntryRowByBusinessKey,isAberrationEntryDbSqlReady,resolveDbSampleSize,sampleRowIds,} from "../Db/aberration-entry.db";
 import { applyAllureTestCaseId } from "../../../core/utils/allure-test-case.helper";
-
 test.describe("Revenue Protection — Aberration Entry EENLTMT DB cross-validation", () => {
   test.describe.configure({
     retries: 1,
     mode: "serial",
   });
-
   test.setTimeout(REVENUE_PROTECTION_TEST_TIMEOUT_MS);
-
   test.beforeEach(() => {
     test.skip(!isDbConfigured(), "DB credentials not configured");
-
     test.skip(
       !isAberrationEntryDbSqlReady(),
       "Set RP_ABERRATION_ENTRY_DB_SQL_READY=true after validating SQL against live schema",
     );
   });
-
-  test(
-    "IND-REV-ABE-EEN-DB-001 — COUNT(*) matches pagination.total",
+  test("IND-REV-ABE-EEN-DB-001 — COUNT(*) matches pagination.total",
     {
       tag: ["@revenue-protection", "@aberration-entry-eenltmt", "@db"],
     },
     async ({ authenticatedApi, db, obs }) => {
       await applyAllureTestCaseId("IND-REV-ABE-EEN-DB-001");
-
       const api = new AberrationEntryApi(authenticatedApi);
       const query = { ...aberrationEntryEenltmtDefaultQuery, page: 1, limit: 100 };
-
       const { responseBody } = await api.getAberrationEntry(query);
       const mapped = AberrationEntryMapper.mapData(responseBody.data);
-
       const dbCount = await countAberrationEntryForFilters(db, query);
-
       compareApiToDb(
         [
           {
@@ -65,36 +49,24 @@ test.describe("Revenue Protection — Aberration Entry EENLTMT DB cross-validati
       );
     },
   );
-
-  test(
-    "IND-REV-ABE-EEN-DB-002 — Sampled rows match DB",
+  test("IND-REV-ABE-EEN-DB-002 — Sampled rows match DB",
     {
       tag: ["@revenue-protection", "@aberration-entry-eenltmt", "@db"],
     },
     async ({ authenticatedApi, db, obs }) => {
       await applyAllureTestCaseId("IND-REV-ABE-EEN-DB-002");
-
       const api = new AberrationEntryApi(authenticatedApi);
       const query = { ...aberrationEntryEenltmtDefaultQuery, page: 1, limit: 100 };
-
       const { responseBody } = await api.getAberrationEntry(query);
       const mapped = AberrationEntryMapper.mapData(responseBody.data);
-
       const rowsWithIvrs = mapped.rows.filter((row) => row.ivrsNo.trim().length > 0);
-
-      test.skip(
-        rowsWithIvrs.length === 0,
-        "No IVRS rows available for DB validation",
-      );
-
+      test.skip(rowsWithIvrs.length === 0,"No IVRS rows available for DB validation",);
       const sampleIvrs = sampleRowIds(
         rowsWithIvrs.map((r) => r.ivrsNo),
         resolveDbSampleSize(),
       );
-
       for (const ivrs of sampleIvrs) {
         const apiRow = rowsWithIvrs.find((r) => r.ivrsNo === ivrs)!;
-
         const dbRow = await getAberrationEntryRowByBusinessKey(
           db,
           apiRow.ivrsNo.trim(),
@@ -102,9 +74,7 @@ test.describe("Revenue Protection — Aberration Entry EENLTMT DB cross-validati
           apiRow.amountBilled,
           "EENLMT",
         );
-
         expect(dbRow, `Missing DB row for IVRS=${apiRow.ivrsNo}`).toBeTruthy();
-
         compareApiToDb(
           [
             {

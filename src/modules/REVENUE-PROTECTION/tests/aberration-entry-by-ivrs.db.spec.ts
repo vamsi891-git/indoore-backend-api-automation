@@ -34,14 +34,12 @@ test.describe("Revenue Protection — Aberration Entry By IVRS DB cross-validati
     );
   });
 
-  test(
-    "IND-REV-ABE-IVRS-DB-001 — PATCH then spot-check updated fields in DB",
+  test("IND-REV-ABE-IVRS-DB-001 — PATCH then spot-check updated fields in DB",
     {
       tag: ["@revenue-protection", "@aberration-entry-by-ivrs", "@db"],
     },
     async ({ authenticatedApi, db, obs }) => {
       await applyAllureTestCaseId("IND-REV-ABE-IVRS-DB-001");
-
       const ivrsNo = await resolveAberrationEntryIvrsForUpdate(authenticatedApi);
       const payload = buildAberrationEntryUpdatePayload({
         remarks: "db-cross-check",
@@ -52,15 +50,12 @@ test.describe("Revenue Protection — Aberration Entry By IVRS DB cross-validati
         fieldOfficerDesignation: "AE",
         fieldOfficerRemarks: "db remarks",
       });
-
       const api = new AberrationEntryApi(authenticatedApi);
       const { responseBody } = await api.patchAberrationEntryByIvrs(ivrsNo, payload);
       const mapped = AberrationEntryByIvrsMapper.mapData(responseBody.data);
       expect(mapped.ivrsNo.trim().toLowerCase()).toBe(ivrsNo.trim().toLowerCase());
-
       const row = await getLatestAberrationEntryByIvrs(db, ivrsNo);
       expect(row, `Missing DB row for IVRS=${ivrsNo}`).toBeTruthy();
-
       compareApiToDb(
         [
           {
@@ -107,8 +102,7 @@ test.describe("Revenue Protection — Aberration Entry By IVRS DB cross-validati
     },
   );
 
-  test(
-    "IND-REV-ABE-IVRS-DB-002 — Unknown IVRS has zero DB rows",
+  test("IND-REV-ABE-IVRS-DB-002 — Unknown IVRS has zero DB rows",
     {
       tag: ["@revenue-protection", "@aberration-entry-by-ivrs", "@db"],
     },

@@ -8,12 +8,10 @@ export interface CasesQuery {
   page?: number;
   limit?: number;
 }
-
 export interface GridColumn {
   key: string;
   header: string;
 }
-
 export interface CaseRowRaw {
   id?: string | number;
   circle?: string | null;
@@ -36,27 +34,23 @@ export interface CaseRowRaw {
   entryDateTime?: string | null;
   status?: string | null;
 }
-
 export interface CasePaginationRaw {
   page?: number | string | null;
   limit?: number | string | null;
   total?: number | string | null;
   totalPages?: number | string | null;
 }
-
 export interface CasesRawData {
   columns?: GridColumn[];
   rows?: CaseRowRaw[];
   pagination?: CasePaginationRaw;
 }
-
 export interface CasesResponse {
   success: boolean;
   data?: CasesRawData;
   error?: { code?: string; message?: string };
   message?: string;
 }
-
 export interface CaseRow {
   id: string;
   circle: string;
@@ -79,20 +73,17 @@ export interface CaseRow {
   entryDateTime: string;
   status: string;
 }
-
 export interface CasePagination {
   page: number;
   limit: number;
   total: number;
   totalPages: number;
 }
-
 export interface CasesData {
   columns: GridColumn[];
   rows: CaseRow[];
   pagination: CasePagination;
 }
-
 function toNumber(value: unknown, fallback = 0): number {
   if (value === null || value === undefined || value === "") {
     return fallback;
@@ -100,14 +91,12 @@ function toNumber(value: unknown, fallback = 0): number {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
 }
-
 function toText(value: unknown, fallback = ""): string {
   if (value === null || value === undefined) {
     return fallback;
   }
   return String(value);
 }
-
 export class CasesMapper {
   static mapRow(row: CaseRowRaw): CaseRow {
     return {
@@ -133,7 +122,6 @@ export class CasesMapper {
       status: toText(row.status).trim(),
     };
   }
-
   static mapData(data: CasesRawData | undefined): CasesData {
     const pagination = data?.pagination ?? {};
     return {
