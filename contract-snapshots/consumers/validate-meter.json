@@ -1,0 +1,19 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumers/validate-meter",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "meterExists",
+    "meterSerialNumber",
+    "valid"
+  ],
+  "itemKeys": [
+    "meterExists",
+    "meterSerialNumber",
+    "valid"
+  ],
+  "hasColumnsGrid": false
+}

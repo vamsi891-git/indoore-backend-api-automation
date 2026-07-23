@@ -8,12 +8,15 @@ import type {
 
 export const billingHistoryMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 
-/** Mirrors backend CONSUMER_BILLING_HISTORY_DEFAULT_SPAN_MONTHS (resolved consumer). */
+/** Backend consumerBillingHistoryQuerySchema: `0` = all archive periods (max 120). */
+export const BILLING_HISTORY_MAX_ARCHIVE_PERIODS = 120;
+
+/** Fixture / legacy empty calendar length used in contract samples. */
 export const BILLING_HISTORY_DEFAULT_SPAN_MONTHS = 18;
 
 /**
- * Unresolved meter routes return getEmptyBillingHistory with the legacy 24-month
- * IST calendar (still observed for unknown meter-{id} paths).
+ * Unresolved / not-found routes use getEmptyConsumerBillingHistory —
+ * live env still often returns a 24-month IST empty calendar.
  */
 export const BILLING_HISTORY_EMPTY_FALLBACK_SPAN_MONTHS = 24;
 
@@ -228,7 +231,7 @@ export function resolveBillingHistoryContractBody(
 export const billingHistoryTestCases: BillingHistoryTestCase[] = [
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/billing-history?billingLimit=0 — 18 IST month rows",
+      "Validate GET /indore/consumers/{ivrs}/billing-history?billingLimit=0 — all archive periods (≤120)",
     scenario: "bh_by_ivrs_all",
     tags: ["@smoke", "@consumer", "@billing", "@billing-history"],
   },

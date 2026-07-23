@@ -1,0 +1,25 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumers/{ref}/event-log/list",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "page",
+    "pageSize",
+    "rows",
+    "totalCount",
+    "totalPages"
+  ],
+  "itemKeys": [
+    "description",
+    "durationDisplay",
+    "meterNo",
+    "occurDateTime",
+    "restoreDateTime",
+    "serialNo",
+    "status"
+  ],
+  "hasColumnsGrid": false
+}

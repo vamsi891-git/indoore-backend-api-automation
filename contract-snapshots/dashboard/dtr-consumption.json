@@ -1,0 +1,19 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/dashboard/dtr/consumption",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "period",
+    "points"
+  ],
+  "itemKeys": [
+    "kvah",
+    "kvarh",
+    "kwh",
+    "label"
+  ],
+  "hasColumnsGrid": false
+}

@@ -5,11 +5,7 @@ import { ConsumerDetailApi } from "../Api/consumer-detail.api";
 import { consumerDetailData } from "../Data/consumer-detail.data";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
-import {
-  MeterReplacementCommonValidator,
-  meterReplacementAuthData,
-  meterReplacementPaths,
-} from "../Validator/meter-replacement-common.validator";
+import {MeterReplacementCommonValidator,meterReplacementAuthData,meterReplacementPaths,} from "../Validator/meter-replacement-common.validator";
 test.describe("Meter Replacement Consumer Detail API — Negative & Edge", () => {
   test("Unknown consumer returns 404 CONSUMER_NOT_FOUND",
     {

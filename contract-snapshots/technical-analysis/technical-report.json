@@ -1,0 +1,80 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/analysis/technical/report",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "address",
+    "category",
+    "dtr",
+    "durationInHours",
+    "eventName",
+    "feeder",
+    "id",
+    "ivrsNumber",
+    "meterLookupId",
+    "msn",
+    "name",
+    "phase",
+    "subDivision",
+    "subStation"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "subDivision",
+      "header": "Sub Division"
+    },
+    {
+      "key": "subStation",
+      "header": "Sub Station"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtr",
+      "header": "DTR"
+    },
+    {
+      "key": "name",
+      "header": "Consumer Name"
+    },
+    {
+      "key": "address",
+      "header": "Address"
+    },
+    {
+      "key": "ivrsNumber",
+      "header": "IVRS Number"
+    },
+    {
+      "key": "category",
+      "header": "Category"
+    },
+    {
+      "key": "msn",
+      "header": "Meter Sl No"
+    },
+    {
+      "key": "phase",
+      "header": "Phase"
+    },
+    {
+      "key": "eventName",
+      "header": "Event Name"
+    },
+    {
+      "key": "durationInHours",
+      "header": "Duration (Hours)"
+    }
+  ]
+}

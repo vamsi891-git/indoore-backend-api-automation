@@ -1,0 +1,19 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumers/{id}/activation",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "consumer",
+    "previousStatus"
+  ],
+  "itemKeys": [
+    "cid",
+    "name",
+    "status",
+    "tblRefId"
+  ],
+  "hasColumnsGrid": false
+}

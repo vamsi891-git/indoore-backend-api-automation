@@ -1,0 +1,23 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/meter-replacement/meters/validate",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "code",
+    "message",
+    "meterLookupId",
+    "meterSerial",
+    "valid"
+  ],
+  "itemKeys": [
+    "code",
+    "message",
+    "meterLookupId",
+    "meterSerial",
+    "valid"
+  ],
+  "hasColumnsGrid": false
+}

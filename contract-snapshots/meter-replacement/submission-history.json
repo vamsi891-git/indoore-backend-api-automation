@@ -1,0 +1,22 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/meter-replacement/submissions/history",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "items",
+    "pagination"
+  ],
+  "itemKeys": [
+    "consumerName",
+    "createdAt",
+    "id",
+    "newMeterSerial",
+    "oldMeterSerial",
+    "replacementReason",
+    "status"
+  ],
+  "hasColumnsGrid": false
+}

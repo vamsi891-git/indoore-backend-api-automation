@@ -1,0 +1,19 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/meter-replacement/dashboard-summary",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "myWork",
+    "overall"
+  ],
+  "itemKeys": [
+    "totalMetersReplaced",
+    "totalMetersRequested",
+    "totalPendingMeters",
+    "totalUnmappedMeters"
+  ],
+  "hasColumnsGrid": false
+}

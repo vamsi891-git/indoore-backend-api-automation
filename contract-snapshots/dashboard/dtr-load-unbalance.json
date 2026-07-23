@@ -1,0 +1,18 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/dashboard/dtr/load-unbalance",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "items",
+    "total"
+  ],
+  "itemKeys": [
+    "label",
+    "percentage",
+    "value"
+  ],
+  "hasColumnsGrid": false
+}

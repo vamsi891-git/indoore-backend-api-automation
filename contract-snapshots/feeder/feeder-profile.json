@@ -1,0 +1,20 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/feeder/{feederCode}/profile",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "feederCode",
+    "feederName",
+    "overview",
+    "parentDtr",
+    "status"
+  ],
+  "itemKeys": [
+    "title",
+    "value"
+  ],
+  "hasColumnsGrid": false
+}

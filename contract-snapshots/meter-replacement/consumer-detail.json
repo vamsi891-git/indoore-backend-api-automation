@@ -1,0 +1,49 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/meter-replacement/consumers/{consumerId}",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "accountId",
+    "address",
+    "consumer",
+    "consumerCid",
+    "consumerId",
+    "consumerStatus",
+    "ivrs",
+    "latitude",
+    "longitude",
+    "mobileNumber",
+    "office",
+    "oldMeterLookupId",
+    "oldMeterSerial",
+    "oldMeterStatus",
+    "replacementEligible",
+    "rrNumber",
+    "servicePointId",
+    "zone"
+  ],
+  "itemKeys": [
+    "accountId",
+    "address",
+    "consumer",
+    "consumerCid",
+    "consumerId",
+    "consumerStatus",
+    "ivrs",
+    "latitude",
+    "longitude",
+    "mobileNumber",
+    "office",
+    "oldMeterLookupId",
+    "oldMeterSerial",
+    "oldMeterStatus",
+    "replacementEligible",
+    "rrNumber",
+    "servicePointId",
+    "zone"
+  ],
+  "hasColumnsGrid": false
+}

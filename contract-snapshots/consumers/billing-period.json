@@ -1,0 +1,21 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumers/{ref}/billing-period",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "billStatus",
+    "dailyConsumption",
+    "monthlyConsumption",
+    "totalOutstanding"
+  ],
+  "itemKeys": [
+    "billStatus",
+    "dailyConsumption",
+    "monthlyConsumption",
+    "totalOutstanding"
+  ],
+  "hasColumnsGrid": false
+}

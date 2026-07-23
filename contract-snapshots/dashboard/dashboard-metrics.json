@@ -1,0 +1,27 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/dashboard/metrics",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "categoryWiseConsumer",
+    "connectionStatus",
+    "consumerType",
+    "networkDetails",
+    "oemWiseConsumer",
+    "phaseWiseConsumer",
+    "timestamp"
+  ],
+  "itemKeys": [
+    "categoryWiseConsumer",
+    "connectionStatus",
+    "consumerType",
+    "networkDetails",
+    "oemWiseConsumer",
+    "phaseWiseConsumer",
+    "timestamp"
+  ],
+  "hasColumnsGrid": false
+}

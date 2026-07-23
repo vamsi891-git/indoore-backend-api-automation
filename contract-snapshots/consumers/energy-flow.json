@@ -1,0 +1,20 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumers/{ref}/energy-flow",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "period",
+    "points"
+  ],
+  "itemKeys": [
+    "kvahExport",
+    "kvahImport",
+    "kwhExport",
+    "kwhImport",
+    "label"
+  ],
+  "hasColumnsGrid": false
+}

@@ -1,0 +1,15 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/feeder/{feederCode}/daily-consumption",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "granularity",
+    "points",
+    "unit"
+  ],
+  "itemKeys": [],
+  "hasColumnsGrid": false
+}

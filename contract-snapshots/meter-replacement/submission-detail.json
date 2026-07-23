@@ -1,0 +1,36 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/meter-replacement/submissions/{submissionId}",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "completedDate",
+    "consumer",
+    "createdDate",
+    "id",
+    "latitude",
+    "longitude",
+    "newMeter",
+    "oldMeter",
+    "remarks",
+    "replacementReason",
+    "status",
+    "submittedBy"
+  ],
+  "itemKeys": [
+    "accountId",
+    "address",
+    "consumerCid",
+    "consumerId",
+    "consumerName",
+    "consumerStatus",
+    "ivrs",
+    "office",
+    "rrNumber",
+    "servicePointId",
+    "zone"
+  ],
+  "hasColumnsGrid": false
+}
