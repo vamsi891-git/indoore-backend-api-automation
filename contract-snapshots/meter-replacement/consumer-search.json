@@ -1,0 +1,16 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/meter-replacement/consumers/search",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "data"
+  ],
+  "itemKeys": [
+    "consumerId",
+    "consumerName"
+  ],
+  "hasColumnsGrid": false
+}

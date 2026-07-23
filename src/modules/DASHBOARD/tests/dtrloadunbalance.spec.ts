@@ -3,6 +3,7 @@ import { test as authTest } from "../../../fixtures/auth.fixture";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { DtrLoadUnbalanceApi } from "../Api/dtrloadunbalance.api";
 import {
@@ -136,6 +137,18 @@ authTest.describe("DTR Load Unbalance API — Auth Negative", () => {
                     LOAD_UNBALANCE_PATH,
                     { headers: authCase.headers },
                 );
+                if (
+                    BackendResponse.shouldSkipRateLimit(
+                        rawResponse.status(),
+                        `DTR load-unbalance ${authCase.testName}`,
+                    )
+                ) {
+                    authTest.skip(
+                        true,
+                        `Rate limited (429) on ${LOAD_UNBALANCE_PATH} — retry later`,
+                    );
+                    return;
+                }
                 const responseBody = await rawResponse.json().catch(() => ({}));
                 const responseTime = Date.now() - started;
 

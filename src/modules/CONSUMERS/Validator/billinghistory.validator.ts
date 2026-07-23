@@ -2,6 +2,7 @@ import { expect } from "@playwright/test";
 import {
   BILLING_HISTORY_DEFAULT_SPAN_MONTHS,
   BILLING_HISTORY_EMPTY_FALLBACK_SPAN_MONTHS,
+  BILLING_HISTORY_MAX_ARCHIVE_PERIODS,
   billingHistoryContractConsumptionFormulaMeta,
 } from "../Data/billinghistory.data";
 import type {
@@ -323,9 +324,15 @@ export class BillingHistoryValidator {
     this.validateSuccess(mapped.success);
     this.validateRootStructure(mapped.items);
 
-    const expectedCount =
-      billingLimit > 0 ? billingLimit : BILLING_HISTORY_DEFAULT_SPAN_MONTHS;
-    this.validateRowCount(mapped.items, expectedCount);
+    // Backend: billingLimit>0 → newest N; billingLimit=0 → all archive (≤120).
+    if (billingLimit > 0) {
+      this.validateRowCount(mapped.items, billingLimit);
+    } else {
+      expect(mapped.items.length).toBeGreaterThan(0);
+      expect(mapped.items.length).toBeLessThanOrEqual(
+        BILLING_HISTORY_MAX_ARCHIVE_PERIODS,
+      );
+    }
 
     this.validateRowRequiredFields(mapped.items);
     this.validateRowStructure(mapped.items);
@@ -346,7 +353,11 @@ export class BillingHistoryValidator {
   ) {
     switch (scenario) {
       case "contract_empty_24":
-        this.validateEmptyContract(mapped, BILLING_HISTORY_DEFAULT_SPAN_MONTHS);
+        // Fixture name is legacy; body uses DEFAULT_SPAN (18) empty month rows.
+        this.validateEmptyContract(
+          mapped,
+          BILLING_HISTORY_DEFAULT_SPAN_MONTHS,
+        );
         break;
       case "contract_empty_12":
         this.validateEmptyContract(mapped, 12);

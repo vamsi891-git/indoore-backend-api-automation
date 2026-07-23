@@ -1,23 +1,37 @@
 import { z } from "zod";
-import { ApiErrorResponseSchema, PaginationSchema } from "../../../core/schemas/api-response.schemas";
+import {
+  ApiErrorResponseSchema,
+  PaginationSchema,
+} from "../../../core/schemas/api-response.schemas";
 
-const nullableString = z.string().nullable();
+/**
+ * Backend often returns "" for optional codes / sparse master data.
+ * Validators treat empty codes as soft (log); names stay required.
+ */
+const requiredName = z.string().trim().min(1);
+const emptyableString = z.string();
+/** Serial / coords: string or null; empty string allowed. */
+const optionalTrimmedString = z.string().nullable();
 
-export const AssetMeterSchema = z.object({
-  meterLookupId: z.number().int().positive(),
-  meterSerialNumber: nullableString,
-  latitude: nullableString,
-  longitude: nullableString,
-});
+export const AssetMeterSchema = z
+  .object({
+    meterLookupId: z.number().int().positive(),
+    meterSerialNumber: optionalTrimmedString,
+    latitude: optionalTrimmedString,
+    longitude: optionalTrimmedString,
+  })
+  .strict();
 
 export const AssetDtrNodeSchema: z.ZodType<AssetDtrNode> = z.lazy(() =>
-  z.object({
-    networkLookupId: z.number().int().positive(),
-    dtrCode: z.string(),
-    dtrName: z.string(),
-    consumerCount: z.number().int().nonnegative(),
-    dtrMeter: AssetMeterSchema.nullable(),
-  }),
+  z
+    .object({
+      networkLookupId: z.number().int().positive(),
+      dtrCode: emptyableString,
+      dtrName: requiredName,
+      consumerCount: z.number().int().nonnegative(),
+      dtrMeter: AssetMeterSchema.nullable(),
+    })
+    .strict(),
 );
 
 export type AssetDtrNode = {
@@ -28,17 +42,19 @@ export type AssetDtrNode = {
   dtrMeter: z.infer<typeof AssetMeterSchema> | null;
 };
 
-export const NetworkHierarchyNodeSchema: z.ZodType<NetworkHierarchyNode> = z.lazy(
-  () =>
-    z.object({
-      networkLookupId: z.number().int().positive(),
-      networkCode: z.string(),
-      networkName: z.string(),
-      hierarchyLevel: z.string(),
-      children: z.array(NetworkHierarchyNodeSchema),
-      dtrs: z.array(AssetDtrNodeSchema),
-    }),
-);
+export const NetworkHierarchyNodeSchema: z.ZodType<NetworkHierarchyNode> =
+  z.lazy(() =>
+    z
+      .object({
+        networkLookupId: z.number().int().positive(),
+        networkCode: emptyableString,
+        networkName: requiredName,
+        hierarchyLevel: requiredName,
+        children: z.array(NetworkHierarchyNodeSchema),
+        dtrs: z.array(AssetDtrNodeSchema),
+      })
+      .strict(),
+  );
 
 export type NetworkHierarchyNode = {
   networkLookupId: number;
@@ -51,14 +67,16 @@ export type NetworkHierarchyNode = {
 
 export const OrganisationHierarchyNodeSchema: z.ZodType<OrganisationHierarchyNode> =
   z.lazy(() =>
-    z.object({
-      organisationLookupId: z.number().int().positive(),
-      officeCode: z.string(),
-      officeName: z.string(),
-      hierarchyLevel: z.string(),
-      children: z.array(OrganisationHierarchyNodeSchema),
-      dtrs: z.array(AssetDtrNodeSchema),
-    }),
+    z
+      .object({
+        organisationLookupId: z.number().int().positive(),
+        officeCode: emptyableString,
+        officeName: requiredName,
+        hierarchyLevel: requiredName,
+        children: z.array(OrganisationHierarchyNodeSchema),
+        dtrs: z.array(AssetDtrNodeSchema),
+      })
+      .strict(),
   );
 
 export type OrganisationHierarchyNode = {
@@ -70,40 +88,51 @@ export type OrganisationHierarchyNode = {
   dtrs: AssetDtrNode[];
 };
 
-export const ConsumerNodeSchema = z.object({
-  consumerTblRefId: z.number().int().positive(),
-  consumerCid: z.string(),
-  consumerName: z.string(),
-  consumerAddress: z.string(),
-  accountId: z.string(),
-  rrNumber: z.string(),
-  meters: z.array(AssetMeterSchema),
-});
+export const ConsumerNodeSchema = z
+  .object({
+    consumerTblRefId: z.number().int().positive(),
+    consumerCid: emptyableString,
+    consumerName: requiredName,
+    consumerAddress: emptyableString,
+    accountId: emptyableString,
+    rrNumber: emptyableString,
+    meters: z.array(AssetMeterSchema),
+  })
+  .strict();
 
-export const NetworkHierarchySuccessResponseSchema = z.object({
-  success: z.literal(true),
-  data: z.object({
-    hierarchy: z.array(NetworkHierarchyNodeSchema),
-  }),
-});
+export const NetworkHierarchySuccessResponseSchema = z
+  .object({
+    success: z.literal(true),
+    data: z.object({
+      hierarchy: z.array(NetworkHierarchyNodeSchema),
+    }),
+  })
+  .strict();
 
-export const OrganisationHierarchySuccessResponseSchema = z.object({
-  success: z.literal(true),
-  data: z.object({
-    hierarchy: z.array(OrganisationHierarchyNodeSchema),
-  }),
-});
+export const OrganisationHierarchySuccessResponseSchema = z
+  .object({
+    success: z.literal(true),
+    data: z.object({
+      hierarchy: z.array(OrganisationHierarchyNodeSchema),
+    }),
+  })
+  .strict();
 
-export const DtrDetailSuccessResponseSchema = z.object({
-  success: z.literal(true),
-  data: z
-    .object({
-      dtrCode: z.string(),
-      dtrName: z.string(),
-      dtrMeter: AssetMeterSchema.nullable(),
-      consumers: z.array(ConsumerNodeSchema),
-    })
-    .merge(PaginationSchema),
-});
+const DtrDetailDataSchema = z
+  .object({
+    dtrCode: emptyableString,
+    dtrName: requiredName,
+    dtrMeter: AssetMeterSchema.nullable(),
+    consumers: z.array(ConsumerNodeSchema),
+  })
+  .merge(PaginationSchema)
+  .strict();
+
+export const DtrDetailSuccessResponseSchema = z
+  .object({
+    success: z.literal(true),
+    data: DtrDetailDataSchema,
+  })
+  .strict();
 
 export { ApiErrorResponseSchema };

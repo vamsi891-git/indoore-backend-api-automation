@@ -1,0 +1,19 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumers/{ref}/communication-status",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "date",
+    "delayed",
+    "intervals"
+  ],
+  "itemKeys": [
+    "date",
+    "delayed",
+    "intervals"
+  ],
+  "hasColumnsGrid": false
+}

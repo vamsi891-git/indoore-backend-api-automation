@@ -1,0 +1,19 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumers/{ref}/billing-history",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "(array)"
+  ],
+  "itemKeys": [
+    "billAmount",
+    "consumptionKwh",
+    "consumptionSummaryText",
+    "paymentStatus",
+    "periodLabel"
+  ],
+  "hasColumnsGrid": false
+}

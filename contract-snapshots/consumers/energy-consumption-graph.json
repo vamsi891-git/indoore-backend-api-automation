@@ -1,0 +1,17 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumers/{ref}/energy-consumption-graph",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "period",
+    "points"
+  ],
+  "itemKeys": [
+    "consumptionKwh",
+    "label"
+  ],
+  "hasColumnsGrid": false
+}

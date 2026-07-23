@@ -8,8 +8,8 @@
  *   npm run test:module -- revenue-protection --api
  *   npm run test:module -- revenue-protection --db
  *
- * Revenue Protection + Utils Lookup: mutation-proof + contract-snapshot specs
- * are included for --all and --api (they are part of those modules' suites).
+ * Revenue Protection + Utils Lookup + Asset Management + Consumers:
+ * mutation-proof + contract-snapshot specs are included for --all and --api.
  * Other modules still exclude @mutation-proof unless INCLUDE_MUTATION_PROOF=true.
  */
 import { spawnSync } from "child_process";
@@ -48,6 +48,12 @@ let scopeLabel = "all";
 const modulesWithMutationProof = new Set([
   "revenue-protection",
   "utils-lookup",
+  "asset-management",
+  "consumers",
+  "technical-analysis",
+  "feeder",
+  "dashboard",
+  "meter-replacement",
 ]);
 const includeMutationProofForModule =
   modulesWithMutationProof.has(slug) ||

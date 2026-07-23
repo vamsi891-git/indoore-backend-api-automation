@@ -14,11 +14,26 @@ const requested = process.argv.slice(2).filter((arg) => !arg.startsWith("--"));
 const targets =
   requested.length > 0
     ? requested
-    : ["revenue-protection", "utils-lookup"];
+    : [
+        "revenue-protection",
+        "utils-lookup",
+        "asset-management",
+        "consumers",
+        "technical-analysis",
+        "feeder",
+        "dashboard",
+        "meter-replacement",
+      ];
 
 const pathBySlug = {
   "revenue-protection": "src/modules/REVENUE-PROTECTION/tests",
   "utils-lookup": "src/modules/UTILS-LOOKUP/tests",
+  "asset-management": "src/modules/ASSET-MANAGEMENT/tests",
+  consumers: "src/modules/CONSUMERS/tests",
+  "technical-analysis": "src/modules/TECHNICAL-ANALYSIS/tests",
+  feeder: "src/modules/FEEDER/tests",
+  dashboard: "src/modules/DASHBOARD/tests",
+  "meter-replacement": "src/modules/METER-REPLACEMENT/tests",
 };
 
 const testPaths = targets.map((slug) => {

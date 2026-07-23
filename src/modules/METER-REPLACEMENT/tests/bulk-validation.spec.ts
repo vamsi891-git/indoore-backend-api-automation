@@ -10,7 +10,7 @@ import {
 } from "../Data/bulk-validation.data";
 import { BulkValidateMeterReplacementMapper } from "../Mapper/bulk-validation.mapper";
 import { BulkValidateMeterReplacementValidator } from "../Validator/bulk-validation.validator";
-import { BulkValidateMeterReplacementSuccessResponseSchema } from "../utils/Meter replacement.schemas";
+import { BulkValidateMeterReplacementSuccessResponseSchema } from "../schemas/meter-replacement.schemas";
 import { shouldSkipMeterReplacementTestForEnv } from "../utils/meter-replacement-env.helper";
 
 const FILE_ERROR_SCENARIOS = new Set([

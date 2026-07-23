@@ -1,0 +1,33 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumers/{ref}/profile",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "billingAddress",
+    "connectionDetails",
+    "connectionMeterDetails",
+    "consumerEmail",
+    "consumerName",
+    "consumerNumber",
+    "latestActivities",
+    "meterSerialNumber",
+    "permanentAddress",
+    "uniqueId"
+  ],
+  "itemKeys": [
+    "billingAddress",
+    "connectionDetails",
+    "connectionMeterDetails",
+    "consumerEmail",
+    "consumerName",
+    "consumerNumber",
+    "latestActivities",
+    "meterSerialNumber",
+    "permanentAddress",
+    "uniqueId"
+  ],
+  "hasColumnsGrid": false
+}

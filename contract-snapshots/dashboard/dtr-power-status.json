@@ -1,0 +1,20 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/dashboard/dtr/power-status",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "period",
+    "points"
+  ],
+  "itemKeys": [
+    "dtrsOff",
+    "dtrsOn",
+    "label",
+    "offPercentage",
+    "onPercentage"
+  ],
+  "hasColumnsGrid": false
+}

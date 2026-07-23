@@ -10,6 +10,7 @@ export type ValidateMeterReason =
   | "METER_NOT_FOUND"
   | "METER_ALREADY_ASSIGNED"
   | "METER_INACTIVE"
+  | "METER_ALREADY_ON_DTR"
   | "ORGANISATION_MISMATCH"
   | "OUT_OF_SCOPE";
 

@@ -1,0 +1,17 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/meter-replacement/progress",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "monthly",
+    "weekly"
+  ],
+  "itemKeys": [
+    "labels",
+    "values"
+  ],
+  "hasColumnsGrid": false
+}

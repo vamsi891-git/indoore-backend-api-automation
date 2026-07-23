@@ -1,0 +1,13 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumers/{ref}/live-load-profile",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "(null)"
+  ],
+  "itemKeys": [],
+  "hasColumnsGrid": false
+}
