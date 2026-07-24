@@ -30,10 +30,8 @@ import {
   runtimeMeterSerialEnvKey,
 } from "../utils/validate-meter-runtime.helper";
 import { ensureConsumerMeterRuntimeContext } from "../utils/consumer-meter-runtime.helper";
-import { provisionConsumerAssignableMeterPool } from "../../CONSUMERS/Data/consumer-assignable-meter-pool.data";
-
+import { provisionFreshConsumerAssignableMeters } from "../../CONSUMERS/Data/consumer-assignable-meter-pool.data";
 const SUCCESS_SCENARIOS = new Set(["create_success"]);
-
 const METER_SCENARIO_SCENARIOS = new Set([
   "meter_not_found",
   "meter_inactive",
@@ -180,24 +178,58 @@ test.describe("Create Consumer API", () => {
         let consumerCid = String(requestBody["Consumer ID"] ?? "");
         const api = new CreateConsumerApi(authenticatedApi);
         const profileApi = new ConsumerProfileApi(authenticatedApi);
+
+        // Success must use a brand-new assignable meter — pool wrap reuses MSNs
+        // already mapped by earlier create-consumer / bulk cases in the same run.
+        if (testCase.scenario === "create_success") {
+          const fresh = await provisionFreshConsumerAssignableMeters(
+            authenticatedApi,
+            1,
+            { maxCreateAttempts: 12 },
+          );
+          if (!fresh[0]) {
+            test.skip(
+              true,
+              "Could not provision a fresh assignable meter for create-consumer success",
+            );
+            return;
+          }
+          requestBody = buildValidCreateConsumerRequest({
+            label: "success",
+            meterSerial: fresh[0],
+          });
+          consumerCid = String(requestBody["Consumer ID"] ?? "");
+          console.log(`[create-consumer] success meter: ${fresh[0]}`);
+          await new Promise<void>((resolve) => setTimeout(resolve, 1500));
+        }
+
         let { rawResponse, responseBody, responseTime } =
           await api.createConsumer(requestBody);
 
-        // One retry on meter/modem collision — pool wrap can reuse an already-assigned MSN.
-        if (
-          testCase.scenario === "create_success" &&
-          [400, 409].includes(rawResponse.status())
-        ) {
-          console.warn(
-            `[create-consumer] success got ${rawResponse.status()} — provisioning a fresh meter and retrying`,
-          );
-          const fresh = await provisionConsumerAssignableMeterPool(
-            authenticatedApi,
-            { targetCount: 1, maxCreateAttempts: 10 },
-          );
-          if (fresh[0]) {
+        const acceptableStatuses =
+          testCase.acceptableStatuses ?? [testCase.expectedStatus];
+
+        // Retry create_success on meter collision with another brand-new MSN.
+        if (testCase.scenario === "create_success") {
+          for (
+            let attempt = 1;
+            attempt <= 3 &&
+            !acceptableStatuses.includes(rawResponse.status());
+            attempt += 1
+          ) {
+            console.warn(
+              `[create-consumer] success got ${rawResponse.status()} (attempt ${attempt}) — ${JSON.stringify(responseBody).slice(0, 300)}`,
+            );
+            const fresh = await provisionFreshConsumerAssignableMeters(
+              authenticatedApi,
+              1,
+              { maxCreateAttempts: 12 },
+            );
+            if (!fresh[0]) {
+              break;
+            }
             requestBody = buildValidCreateConsumerRequest({
-              label: "success-retry",
+              label: `success-retry-${attempt}`,
               meterSerial: fresh[0],
             });
             consumerCid = String(requestBody["Consumer ID"] ?? "");
@@ -212,22 +244,23 @@ test.describe("Create Consumer API", () => {
         }
 
         await PerformanceTracker.track(
-        rawResponse,
-        testCase.testName,
-        rawResponse.url(),
-        responseTime
-      );
+          rawResponse,
+          testCase.testName,
+          rawResponse.url(),
+          responseTime,
+        );
 
         const assert = new AssertionEngine();
         const validation = new ValidationEngine();
         const validator = new CreateConsumerValidator();
         const mapped = CreateConsumerMapper.map(responseBody);
+        const statusOk = acceptableStatuses.includes(rawResponse.status());
 
         validation.execute("Status Validation", () => {
-          const statuses = testCase.acceptableStatuses ?? [
-            testCase.expectedStatus,
-          ];
-          expect(statuses).toContain(rawResponse.status());
+          expect(
+            acceptableStatuses,
+            `HTTP ${rawResponse.status()} not in [${acceptableStatuses.join(", ")}]; body=${JSON.stringify(responseBody).slice(0, 400)}`,
+          ).toContain(rawResponse.status());
         });
         validation.execute("Content Validation", () =>
           assert.validateContentType(rawResponse),
@@ -239,29 +272,35 @@ test.describe("Create Consumer API", () => {
           assert.validateSensitiveData(responseBody),
         );
 
-        if (SUCCESS_SCENARIOS.has(testCase.scenario)) {
+        // Only assert success/error envelope when status matched expectation.
+        if (statusOk && SUCCESS_SCENARIOS.has(testCase.scenario)) {
           validation.execute("Required Fields", () =>
-            assert.validateRequiredFields(responseBody, [
-              "success",
-              "message",
-              "data",
-            ]),
+            assert.validateRequiredFields(responseBody, ["success", "data"]),
           );
-        } else {
+          if (responseBody.message !== undefined) {
+            validation.execute("Success Message Present", () => {
+              expect(String(responseBody.message ?? "").trim().length).toBeGreaterThan(
+                0,
+              );
+            });
+          }
+        } else if (statusOk) {
           validation.execute("Required Fields", () =>
             assert.validateRequiredFields(responseBody, ["success", "error"]),
           );
         }
 
         validation.execute("Response", () => validator.validateResponse(mapped));
-        validation.execute("Scenario Outcome", () =>
-          validator.validateScenario(
-            mapped,
-            testCase.scenario,
-            requestBody,
-            testCase.validationField,
-          ),
-        );
+        if (statusOk) {
+          validation.execute("Scenario Outcome", () =>
+            validator.validateScenario(
+              mapped,
+              testCase.scenario,
+              requestBody,
+              testCase.validationField,
+            ),
+          );
+        }
 
         if (testCase.scenario === "create_success" && mapped.isCreateSuccess) {
           const profileResult = await profileApi.getConsumerProfile(

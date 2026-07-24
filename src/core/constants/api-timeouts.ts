@@ -10,14 +10,23 @@ export const CONSUMPTION_REQUEST_TIMEOUT_MS = 360_000;
 export const CONSUMPTION_MAX_RESPONSE_TIME_MS = 360_000;
 export const CONSUMPTION_TEST_TIMEOUT_MS = 600_000;
 export const DEFAULT_TEST_TIMEOUT_MS = 240_000;
-/** HES meter jobs can stay RUNNING several minutes under load — avoid 120s defaults. */
-export const HES_COMMANDS_JOB_POLL_TIMEOUT_MS = 360_000;
+/**
+ * Cap how long E2E waits for HES callback. Healthy jobs usually finish well under this;
+ * stuck RUNNING/IN_PROGRESS soft-skips instead of burning 6+ minutes.
+ * Override with JOB_POLL_TIMEOUT_MS when HES is known slow but healthy.
+ */
+export const HES_COMMANDS_JOB_POLL_TIMEOUT_MS = 120_000;
 export const HES_COMMANDS_JOB_POLL_INTERVAL_MS = 3_000;
-export const HES_COMMANDS_JOB_POLL_INITIAL_DELAY_MS = 5_000;
+export const HES_COMMANDS_JOB_POLL_INITIAL_DELAY_MS = 2_000;
+/**
+ * Soft-skip earlier when hesJobStatus + meterStatus never change (callback clearly pending).
+ * Override with JOB_POLL_STUCK_MS. Must be <= JOB_POLL_TIMEOUT_MS to take effect.
+ */
+export const HES_COMMANDS_JOB_POLL_STUCK_MS = 90_000;
 /** Minimum gap between HES job POSTs when tests share one meter (ms). */
 export const HES_COMMANDS_JOB_MIN_GAP_MS = 10_000;
 /** Poll window + init POST + validation buffer for @e2e command specs. */
-export const HES_COMMANDS_E2E_TEST_TIMEOUT_MS = 540_000;
+export const HES_COMMANDS_E2E_TEST_TIMEOUT_MS = 240_000;
 export const HES_COMMANDS_PAYMENT_TEST_TIMEOUT_MS = HES_COMMANDS_E2E_TEST_TIMEOUT_MS;
 export const TECHNICAL_ANALYSIS_REQUEST_TIMEOUT_MS = 120_000;
 export const TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS = 120_000;

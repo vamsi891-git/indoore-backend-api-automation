@@ -1,0 +1,26 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/notifications",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "notifications",
+    "pagination"
+  ],
+  "itemKeys": [
+    "createdAt",
+    "id",
+    "isRead",
+    "message",
+    "meta",
+    "notificationType",
+    "priority",
+    "readAt",
+    "redirectUrl",
+    "title",
+    "updatedAt"
+  ],
+  "hasColumnsGrid": false
+}

@@ -1,0 +1,3 @@
+/** Read-only SQL for COMMERICIAL-ANALYSIS. Gated by COMMERICIAL_ANALYSIS_DB_SQL_READY=true. */
+export const COMMERICIAL_ANALYSIS_DB_SQL_SQL_TODO =
+  "Paste backend repository SQL before enabling COMMERICIAL_ANALYSIS_DB_SQL_READY";

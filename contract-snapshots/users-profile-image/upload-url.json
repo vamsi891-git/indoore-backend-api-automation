@@ -1,0 +1,19 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/users/me/profile-image/upload-url",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "fileUrl",
+    "key",
+    "uploadUrl"
+  ],
+  "itemKeys": [
+    "fileUrl",
+    "key",
+    "uploadUrl"
+  ],
+  "hasColumnsGrid": false
+}

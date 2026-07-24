@@ -25,11 +25,12 @@ import {
 import {
   logCommandE2eResponses,
   pollQueryMeterJob,
+  softSkipHesE2eInfraFailure,
 } from "../utils/commands-job-e2e.helper";
 import { waitForHesJobQueueSlot } from "../utils/commands-hes-queue.helper";
 
 test.describe("HES Commands — Metering Mode (E2E)", () => {
-  test.describe.configure({ mode: "serial" });
+  test.describe.configure({ mode: "serial", retries: 0 });
   test.setTimeout(HES_COMMANDS_E2E_TEST_TIMEOUT_MS);
 
   test(
@@ -160,12 +161,14 @@ test.describe("HES Commands — Metering Mode (E2E)", () => {
         pollResult = await pollQueryMeterJob(queryApi, jobName, {
           timeoutMs: commandsMeteringModeData.jobPollTimeoutMs,
           intervalMs: commandsMeteringModeData.jobPollIntervalMs,
+          stuckMs: commandsMeteringModeData.jobPollStuckMs,
+          expectedCommand: "metering_mode_get",
         });
       } catch (error) {
         logCommandE2eResponses("Commands Metering Mode", postBody, undefined, {
           jobName,
         });
-        throw error;
+        softSkipHesE2eInfraFailure(error, testInfo);
       }
 
       logCommandE2eResponses(

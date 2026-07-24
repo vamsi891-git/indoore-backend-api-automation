@@ -1,0 +1,27 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/master-data/substation-master-data",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "circleName",
+    "consumerCount",
+    "discomName",
+    "divisionName",
+    "dtrCount",
+    "id",
+    "regionName",
+    "slNo",
+    "substationCode",
+    "substationName",
+    "zoneName"
+  ],
+  "hasColumnsGrid": false
+}

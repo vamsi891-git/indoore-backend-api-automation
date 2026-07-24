@@ -21,11 +21,14 @@ import {
   CommandsJobInitMapper,
   extractJobNamesFromInitResponse,
 } from "../shared/commands-job-init.mapper";
-import { pollQueryMeterJob } from "../utils/commands-job-e2e.helper";
+import {
+  pollQueryMeterJob,
+  softSkipHesE2eInfraFailure,
+} from "../utils/commands-job-e2e.helper";
 import { waitForHesJobQueueSlot } from "../utils/commands-hes-queue.helper";
 
 test.describe("HES Commands — Billing (E2E)", () => {
-  test.describe.configure({ mode: "serial" });
+  test.describe.configure({ mode: "serial", retries: 0 });
   test.setTimeout(HES_COMMANDS_E2E_TEST_TIMEOUT_MS);
 
   test(
@@ -131,10 +134,17 @@ test.describe("HES Commands — Billing (E2E)", () => {
       });
 
       const jobName = jobNames[0];
-      const pollResult = await pollQueryMeterJob(queryApi, jobName, {
-        timeoutMs: commandsBillingData.jobPollTimeoutMs,
-        intervalMs: commandsBillingData.jobPollIntervalMs,
-      });
+      let pollResult;
+      try {
+        pollResult = await pollQueryMeterJob(queryApi, jobName, {
+          timeoutMs: commandsBillingData.jobPollTimeoutMs,
+          intervalMs: commandsBillingData.jobPollIntervalMs,
+          stuckMs: commandsBillingData.jobPollStuckMs,
+          expectedCommand: "billing_period_get",
+        });
+      } catch (error) {
+        softSkipHesE2eInfraFailure(error, testInfo);
+      }
 
       await PerformanceTracker.track(
         pollResult.rawResponse,

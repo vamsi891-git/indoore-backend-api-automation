@@ -1,0 +1,27 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/master-data/feeder-master-data",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "circleName",
+    "consumerCount",
+    "discomName",
+    "divisionName",
+    "dtrCount",
+    "feederName",
+    "id",
+    "regionName",
+    "slNo",
+    "substationName",
+    "zoneName"
+  ],
+  "hasColumnsGrid": false
+}
