@@ -1,0 +1,31 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/master-data/meter-master-data",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "assetId",
+    "id",
+    "ipAddress",
+    "isActiveStatus",
+    "ismiNumber",
+    "meterLookupTblRefId",
+    "meterRapdrpCode",
+    "meterSerialNumber",
+    "mf",
+    "modemImeiNumber",
+    "modemSerialNumber",
+    "networkLookupTblRefId",
+    "organisationLookupTblRefId",
+    "simNumber",
+    "slNo"
+  ],
+  "hasColumnsGrid": false
+}

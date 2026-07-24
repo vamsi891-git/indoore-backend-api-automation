@@ -1,0 +1,33 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/reports/event-detail",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "address",
+    "division",
+    "dtr",
+    "durationHhMm",
+    "eventClassificationName",
+    "eventCount",
+    "eventId",
+    "eventName",
+    "feeder",
+    "id",
+    "ivrsNumber",
+    "msn",
+    "name",
+    "phase",
+    "slNo",
+    "tariff",
+    "zone"
+  ],
+  "hasColumnsGrid": false
+}

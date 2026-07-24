@@ -1,0 +1,20 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/permissions/roles",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "roles"
+  ],
+  "itemKeys": [
+    "allowsHierarchyScope",
+    "description",
+    "id",
+    "isUltimate",
+    "name",
+    "sortOrder"
+  ],
+  "hasColumnsGrid": false
+}

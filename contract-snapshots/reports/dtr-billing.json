@@ -1,0 +1,15 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/reports/dtr-billing",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [],
+  "hasColumnsGrid": false
+}

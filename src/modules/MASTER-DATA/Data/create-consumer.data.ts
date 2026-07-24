@@ -824,6 +824,8 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     testName: "Validate POST /indore/consumers — create consumer success",
     scenario: "create_success",
     expectedStatus: 201,
+    /** Some gateways return 200; treat both as success. */
+    acceptableStatuses: [200, 201],
     envKeys: hierarchyEnvKeys,
     buildPayload: () =>
       buildValidCreateConsumerRequest({

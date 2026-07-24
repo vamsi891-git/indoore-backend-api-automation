@@ -1,0 +1,23 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/master-data/meter-communication-status",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "activeMeters",
+    "columns",
+    "communicatingCount",
+    "nonCommunicatingCount",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "communicationStatus",
+    "lastCommunication",
+    "meterSerialNumber",
+    "slNo"
+  ],
+  "hasColumnsGrid": false
+}

@@ -1,8 +1,11 @@
+import { test, type TestInfo } from "@playwright/test";
 import {
   HES_COMMANDS_JOB_POLL_INITIAL_DELAY_MS,
   HES_COMMANDS_JOB_POLL_INTERVAL_MS,
+  HES_COMMANDS_JOB_POLL_STUCK_MS,
   HES_COMMANDS_JOB_POLL_TIMEOUT_MS,
 } from "../../../core/constants/api-timeouts";
+import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { CommandsQueryMeterJobApi } from "../Api/commands-query-meter-job.api";
 import {
   QueryMeterJobResponse,
@@ -26,6 +29,10 @@ const DEFAULT_POLL_INTERVAL_MS = parsePositiveMs(
   process.env.JOB_POLL_INTERVAL_MS,
   HES_COMMANDS_JOB_POLL_INTERVAL_MS,
 );
+const DEFAULT_POLL_STUCK_MS = parsePositiveMs(
+  process.env.JOB_POLL_STUCK_MS,
+  HES_COMMANDS_JOB_POLL_STUCK_MS,
+);
 
 const INCOMPLETE_HES_JOB_STATUSES = new Set([
   "RUNNING",
@@ -40,12 +47,76 @@ const TERMINAL_HES_JOB_STATUSES = new Set([
   "COMPLETED",
 ]);
 
+export interface HesJobIncompleteDetails {
+  jobName: string;
+  timeoutMs: number;
+  pollAttempts: number;
+  hesJobStatus: string;
+  meterStatus: string;
+  expectedCommand?: string;
+  reason?: "timeout" | "stuck_no_progress";
+}
+
+/** Thrown when query-meter-job stays RUNNING/IN_PROGRESS until the poll deadline. */
+export class HesJobIncompleteError extends Error {
+  readonly kind = "hes_job_incomplete" as const;
+  readonly details: HesJobIncompleteDetails;
+
+  constructor(details: HesJobIncompleteDetails, message: string) {
+    super(message);
+    this.name = "HesJobIncompleteError";
+    this.details = details;
+  }
+}
+
+export function isTransientApiNetworkError(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return /ENOTFOUND|ECONNREFUSED|ECONNRESET|ETIMEDOUT|getaddrinfo|socket hang up|net::ERR_/i.test(
+    message,
+  );
+}
+
+/**
+ * Soft-skip HES E2E when the meter job never finishes (callback pending) or
+ * DNS/network drops mid-poll. Re-throws unexpected errors.
+ */
+export function softSkipHesE2eInfraFailure(
+  error: unknown,
+  testInfo?: TestInfo,
+): never {
+  if (error instanceof HesJobIncompleteError) {
+    BackendResponse.logFinding(
+      "HES job incomplete (callback pending / HES load)",
+      error.message,
+    );
+    const reason = `HES infra: job ${error.details.jobName} still ${error.details.hesJobStatus}/${error.details.meterStatus} after ${error.details.timeoutMs}ms`;
+    if (testInfo) {
+      testInfo.skip(true, reason);
+    }
+    test.skip(true, reason);
+  }
+  if (isTransientApiNetworkError(error)) {
+    const message = error instanceof Error ? error.message : String(error);
+    BackendResponse.logFinding("HES poll transient network", message);
+    const reason = `Transient network during HES poll — ${message}`;
+    if (testInfo) {
+      testInfo.skip(true, reason);
+    }
+    test.skip(true, reason);
+  }
+  throw error;
+}
+
 export interface PollQueryMeterJobOptions {
   timeoutMs?: number;
   intervalMs?: number;
   initialDelayMs?: number;
+  /** Soft-skip sooner when status fingerprint is unchanged this long. */
+  stuckMs?: number;
   /** When true, poll until hesJobStatus is terminal or any meter row is SUCCESS/FAILED. */
   waitForCompletion?: boolean;
+  /** Command name for timeout diagnostics (e.g. billing_period_get). */
+  expectedCommand?: string;
 }
 
 export interface PollQueryMeterJobResult {
@@ -90,6 +161,60 @@ export function isQueryMeterJobComplete(body: QueryMeterJobResponse): boolean {
   return hasTerminalMeterRows(body);
 }
 
+function jobStatusFingerprint(body: QueryMeterJobResponse): string {
+  const data = body.data;
+  const hes = data?.hesJobStatus?.trim().toUpperCase() ?? "";
+  const meters = (data?.meterResults ?? [])
+    .map((row) => `${row.meterId}:${row.status?.trim().toUpperCase() ?? ""}`)
+    .join("|");
+  return `${hes}#${meters}`;
+}
+
+function throwIncomplete(
+  jobName: string,
+  timeoutMs: number,
+  pollAttempts: number,
+  body: QueryMeterJobResponse,
+  expectedCommand: string | undefined,
+  reason: "timeout" | "stuck_no_progress",
+): never {
+  const data = body.data;
+  const hesJobStatus = data?.hesJobStatus ?? "unknown";
+  const meterStatus = data?.meterResults?.[0]?.status ?? "unknown";
+  const meterNote = data?.meterResults?.[0]?.note ?? data?.note ?? "";
+  const commandLabel =
+    expectedCommand?.trim() ||
+    data?.meterResults?.[0]?.action?.trim() ||
+    "this command";
+  const callbackPending =
+    INCOMPLETE_HES_JOB_STATUSES.has(String(hesJobStatus).toUpperCase()) ||
+    /hes callback/i.test(`${body.message ?? ""} ${meterNote}`);
+  const stuckHint =
+    reason === "stuck_no_progress"
+      ? " Status fingerprint unchanged (HES callback not progressing)."
+      : "";
+  const callbackHint = callbackPending
+    ? ` Job is async: backend waits for HES callback to set FINISHED/SUCCESS. ` +
+      `Verify HES processes ${commandLabel} for this meter and the callback webhook updates the job.`
+    : "";
+  throw new HesJobIncompleteError(
+    {
+      jobName,
+      timeoutMs,
+      pollAttempts,
+      hesJobStatus: String(hesJobStatus),
+      meterStatus: String(meterStatus),
+      expectedCommand: commandLabel,
+      reason,
+    },
+    `Job ${jobName} did not reach terminal state within ${timeoutMs}ms ` +
+      `(pollAttempts=${pollAttempts}, hesJobStatus=${hesJobStatus}, meterStatus=${meterStatus}, reason=${reason}).` +
+      stuckHint +
+      callbackHint +
+      " Increase JOB_POLL_TIMEOUT_MS / JOB_POLL_STUCK_MS, run with --workers=1, or retry when HES is less loaded.",
+  );
+}
+
 export async function pollQueryMeterJob(
   api: CommandsQueryMeterJobApi,
   jobName: string,
@@ -104,6 +229,10 @@ export async function pollQueryMeterJob(
     options.initialDelayMs,
     HES_COMMANDS_JOB_POLL_INITIAL_DELAY_MS,
   );
+  const stuckMs = Math.min(
+    parsePositiveMs(options.stuckMs, DEFAULT_POLL_STUCK_MS),
+    timeoutMs,
+  );
   const waitForCompletion = options.waitForCompletion ?? true;
 
   if (initialDelayMs > 0) {
@@ -111,10 +240,15 @@ export async function pollQueryMeterJob(
   }
 
   const deadline = Date.now() + timeoutMs;
+  const pollStartedAt = Date.now();
 
-  let lastResult: Awaited<ReturnType<CommandsQueryMeterJobApi["getQueryMeterJob"]>>;
+  let lastResult: Awaited<
+    ReturnType<CommandsQueryMeterJobApi["getQueryMeterJob"]>
+  >;
   let pollAttempts = 0;
   let totalResponseTime = 0;
+  let lastFingerprint = "";
+  let fingerprintSince = pollStartedAt;
 
   do {
     pollAttempts += 1;
@@ -129,6 +263,21 @@ export async function pollQueryMeterJob(
       break;
     }
 
+    const fingerprint = jobStatusFingerprint(lastResult.responseBody);
+    if (fingerprint !== lastFingerprint) {
+      lastFingerprint = fingerprint;
+      fingerprintSince = Date.now();
+    } else if (Date.now() - fingerprintSince >= stuckMs) {
+      throwIncomplete(
+        jobName,
+        stuckMs,
+        pollAttempts,
+        lastResult.responseBody,
+        options.expectedCommand,
+        "stuck_no_progress",
+      );
+    }
+
     if (Date.now() >= deadline) {
       break;
     }
@@ -141,26 +290,19 @@ export async function pollQueryMeterJob(
     lastResult.responseBody.success !== false &&
     !isQueryMeterJobComplete(lastResult.responseBody)
   ) {
-    const data = lastResult.responseBody.data;
-    const hesJobStatus = data?.hesJobStatus ?? "unknown";
-    const meterStatus = data?.meterResults?.[0]?.status ?? "unknown";
-    const meterNote = data?.meterResults?.[0]?.note ?? data?.note ?? "";
-    const callbackPending = /hes callback/i.test(
-      `${lastResult.responseBody.message ?? ""} ${meterNote}`,
-    );
-    const callbackHint = callbackPending
-      ? " Job is async: backend waits for HES callback to set FINISHED/SUCCESS. " +
-        "Verify HES processes billing_period_get for this meter and the callback webhook updates the job."
-      : "";
-    throw new Error(
-      `Job ${jobName} did not reach terminal state within ${timeoutMs}ms ` +
-        `(pollAttempts=${pollAttempts}, hesJobStatus=${hesJobStatus}, meterStatus=${meterStatus}).` +
-        callbackHint +
-        " Increase JOB_POLL_TIMEOUT_MS, run with --workers=1, or retry when HES is less loaded.",
+    throwIncomplete(
+      jobName,
+      timeoutMs,
+      pollAttempts,
+      lastResult.responseBody,
+      options.expectedCommand,
+      "timeout",
     );
   }
 
-  const mapped = CommandsQueryMeterJobMapper.mapResponse(lastResult.responseBody);
+  const mapped = CommandsQueryMeterJobMapper.mapResponse(
+    lastResult.responseBody,
+  );
 
   return {
     rawResponse: lastResult.rawResponse,

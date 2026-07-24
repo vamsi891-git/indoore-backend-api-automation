@@ -1,0 +1,21 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/permissions/modules",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "modules"
+  ],
+  "itemKeys": [
+    "description",
+    "id",
+    "isEnabled",
+    "key",
+    "name",
+    "permissions",
+    "sortOrder"
+  ],
+  "hasColumnsGrid": false
+}

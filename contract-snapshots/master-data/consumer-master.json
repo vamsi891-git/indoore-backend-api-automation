@@ -1,0 +1,42 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/master-data/consumer-master-data",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "category",
+    "connectedToDcu",
+    "consumerAddress",
+    "consumerCid",
+    "consumerMobileNumber",
+    "consumerName",
+    "division",
+    "dpCount",
+    "dtr",
+    "dtrNameNew",
+    "existingIvrsNo",
+    "feeder",
+    "feederNameNew",
+    "id",
+    "installationDate",
+    "ivrsNo",
+    "latitude",
+    "longitude",
+    "lsCount",
+    "meterLookupTblRefId",
+    "meterPhase",
+    "meterSerialNumber",
+    "mf",
+    "sanctionedLoadKw",
+    "slNo",
+    "zone"
+  ],
+  "hasColumnsGrid": false
+}

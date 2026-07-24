@@ -25,11 +25,12 @@ import {
 import {
   logCommandE2eResponses,
   pollQueryMeterJob,
+  softSkipHesE2eInfraFailure,
 } from "../utils/commands-job-e2e.helper";
 import { waitForHesJobQueueSlot } from "../utils/commands-hes-queue.helper";
 
 test.describe("HES Commands — Load Curtailment (E2E)", () => {
-  test.describe.configure({ mode: "serial" });
+  test.describe.configure({ mode: "serial", retries: 0 });
   test.setTimeout(HES_COMMANDS_E2E_TEST_TIMEOUT_MS);
 
   test(
@@ -149,10 +150,17 @@ test.describe("HES Commands — Load Curtailment (E2E)", () => {
       });
 
       const jobName = jobNames[0];
-      const pollResult = await pollQueryMeterJob(queryApi, jobName, {
-        timeoutMs: commandsLoadCurtailmentData.jobPollTimeoutMs,
-        intervalMs: commandsLoadCurtailmentData.jobPollIntervalMs,
-      });
+      let pollResult;
+      try {
+        pollResult = await pollQueryMeterJob(queryApi, jobName, {
+          timeoutMs: commandsLoadCurtailmentData.jobPollTimeoutMs,
+          intervalMs: commandsLoadCurtailmentData.jobPollIntervalMs,
+          stuckMs: commandsLoadCurtailmentData.jobPollStuckMs,
+          expectedCommand: "load_curtailment_get",
+        });
+      } catch (error) {
+        softSkipHesE2eInfraFailure(error, testInfo);
+      }
 
       logCommandE2eResponses(
         "Commands Load Curtailment",

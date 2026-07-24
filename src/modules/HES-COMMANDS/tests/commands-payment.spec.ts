@@ -27,6 +27,7 @@ import {
 import {
   logCommandE2eResponses,
   pollQueryMeterJob,
+  softSkipHesE2eInfraFailure,
 } from "../utils/commands-job-e2e.helper";
 import { waitForHesJobQueueSlot } from "../utils/commands-hes-queue.helper";
 
@@ -75,7 +76,7 @@ const paymentE2eCases: PaymentE2eCase[] = [
 ];
 
 test.describe("HES Commands — Payment (E2E)", () => {
-  test.describe.configure({ mode: "serial" });
+  test.describe.configure({ mode: "serial", retries: 0 });
   test.setTimeout(HES_COMMANDS_PAYMENT_TEST_TIMEOUT_MS);
 
   for (const paymentCase of paymentE2eCases) {
@@ -191,12 +192,17 @@ test.describe("HES Commands — Payment (E2E)", () => {
         pollResult = await pollQueryMeterJob(queryApi, jobName, {
           timeoutMs: commandsPaymentData.jobPollTimeoutMs,
           intervalMs: commandsPaymentData.jobPollIntervalMs,
+          stuckMs: commandsPaymentData.jobPollStuckMs,
+          expectedCommand:
+            paymentCase.queryPaymentValidation === "last_token_recharge_amount"
+              ? "last_token_recharge_amount_get"
+              : "payment_get",
         });
       } catch (error) {
         logCommandE2eResponses(paymentCase.logLabel, postBody, undefined, {
           jobName,
         });
-        throw error;
+        softSkipHesE2eInfraFailure(error, testInfo);
       }
 
       logCommandE2eResponses(

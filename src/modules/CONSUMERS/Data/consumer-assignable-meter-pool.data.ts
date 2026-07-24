@@ -269,3 +269,65 @@ export async function ensureConsumerAssignableMeterPool(
   }
   return provisioned;
 }
+
+/** Create one new assignable meter not already in the pool. */
+export async function createOneFreshConsumerAssignableMeter(
+  authenticatedApi: APIRequestContext,
+  options?: ProvisionConsumerAssignableMeterPoolOptions,
+): Promise<string | null> {
+  const before = new Set(assignableMeterPool ?? []);
+  const targetCount = (assignableMeterPool?.length ?? 0) + 1;
+  await provisionConsumerAssignableMeterPool(authenticatedApi, {
+    ...options,
+    targetCount,
+    maxCreateAttempts: options?.maxCreateAttempts ?? 6,
+  });
+
+  for (const serial of assignableMeterPool ?? []) {
+    if (before.has(serial)) {
+      continue;
+    }
+    const ok = await filterStillAssignableMeters(
+      authenticatedApi,
+      [serial],
+      options,
+    );
+    if (ok.includes(serial)) {
+      return serial;
+    }
+  }
+  return null;
+}
+
+/**
+ * Create exactly `count` brand-new assignable meters.
+ * Use for create-consumer success — pool wrap reuses serials already mapped by earlier cases.
+ */
+export async function provisionFreshConsumerAssignableMeters(
+  authenticatedApi: APIRequestContext,
+  count: number,
+  options?: ProvisionConsumerAssignableMeterPoolOptions,
+): Promise<string[]> {
+  const fresh: string[] = [];
+  const maxAttempts =
+    count *
+    (options?.maxCreateAttempts ?? DEFAULT_CONSUMER_METER_MAX_CREATE_ATTEMPTS);
+  let attempts = 0;
+
+  while (fresh.length < count && attempts < maxAttempts) {
+    attempts += 1;
+    const serial = await createOneFreshConsumerAssignableMeter(
+      authenticatedApi,
+      options,
+    );
+    if (serial && !fresh.includes(serial)) {
+      fresh.push(serial);
+    }
+    await new Promise<void>((resolve) => setTimeout(resolve, 800));
+  }
+
+  if (fresh.length > 0) {
+    saveCachedMeterPool(assignableMeterPool ?? fresh);
+  }
+  return fresh;
+}

@@ -54,6 +54,23 @@ const modulesWithMutationProof = new Set([
   "feeder",
   "dashboard",
   "meter-replacement",
+  "billing",
+  "overall-dashboard",
+  "notifications",
+  "audit-logs",
+  "modules-permissions",
+  "role-permissions",
+  "users-admin",
+  "users-profile-image",
+  "reports",
+  "consumption",
+  "dtrs",
+  "energy-audits",
+  "commericial-analysis",
+  "auth",
+  "master-data",
+  "mis-dashboard",
+  "hes-commands",
 ]);
 const includeMutationProofForModule =
   modulesWithMutationProof.has(slug) ||

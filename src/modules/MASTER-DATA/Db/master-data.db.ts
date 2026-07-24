@@ -1,27 +1,89 @@
 import type pg from "pg";
 import { queryReadOnly, queryScalar } from "../../../core/db/postgres.client";
 import {
+  CONSUMER_MASTER_BY_LOOKUP_SQL,
+  CONSUMER_MASTER_COUNT_SQL,
+  DTR_CODE_EXISTS_SQL,
+  DTR_MASTER_BY_LOOKUP_SQL,
   DTR_MASTER_COUNT_SQL,
+  FEEDER_MASTER_BY_NAME_SQL,
   FEEDER_MASTER_COUNT_SQL,
+  METER_ALREADY_ON_DTR_SQL,
+  METER_COMMUNICATION_BY_SERIAL_SQL,
+  METER_MASTER_BY_SERIAL_SQL,
+  METER_MASTER_COUNT_SQL,
+  METER_SERIAL_EXISTS_SQL,
+  SUBSTATION_MASTER_BY_CODE_SQL,
   SUBSTATION_MASTER_COUNT_SQL,
 } from "./master-data-sql";
+
+/** Production default for DTR meters (`M_Meter_Type`); override via env. */
+const DEFAULT_DTR_METER_TYPE_TBL_REF_ID = 2;
+
+export function isMasterDataDbSqlReady(): boolean {
+  return process.env.MASTER_DATA_DB_SQL_READY?.trim().toLowerCase() === "true";
+}
+
+export function resolveDtrMeterTypeTblRefId(): number {
+  const fromEnv = Number(process.env.DTR_METER_TYPE_TBL_REF_ID ?? "");
+  if (Number.isFinite(fromEnv) && fromEnv > 0) {
+    return Math.floor(fromEnv);
+  }
+  return DEFAULT_DTR_METER_TYPE_TBL_REF_ID;
+}
 
 export type DbMeterRow = {
   meterLookupTblRefId: number;
   mf: number;
+  meterSerialNumber: string | null;
+  isActiveStatus?: boolean;
+  networkLookupTblRefId?: number;
+  organisationLookupTblRefId?: number;
+};
+
+export type DbDtrRow = {
+  meterLookupTblRefId: number;
+  dtr: string | null;
+  dtrCode: string | null;
+  feeder: string | null;
+  subStation: string | null;
+  zone: string | null;
+  division: string | null;
+  circle: string | null;
+  meterSerialNumber: string | null;
+  mf: string | null;
+  latitude: string | null;
+  longitude: string | null;
+};
+
+export type DbConsumerRow = {
+  meterLookupTblRefId: number;
+  meterSerialNumber: string | null;
+  ivrsNo: string | null;
+};
+
+export type DbFeederRow = {
+  feederName: string;
+  substationName: string | null;
+  zoneName: string | null;
+  dtrCount: number;
+  consumerCount: number;
+};
+
+export type DbSubstationRow = {
+  substationName: string;
+  substationCode: string | null;
+  zoneName: string | null;
+  dtrCount: number;
+  consumerCount: number;
+};
+
+export type DbMeterCommunicationRow = {
   meterSerialNumber: string;
 };
 
-/** Active meters in L_Meter_Lookup — aligns with listMeterMasterDataFromLookup default scope. */
 export async function countActiveMeters(pool: pg.Pool): Promise<number> {
-  return (
-    (await queryScalar<number>(
-      pool,
-      `SELECT COUNT(*)::int AS total
-       FROM public."L_Meter_Lookup"
-       WHERE "IsActiveStatus" = TRUE`,
-    )) ?? 0
-  );
+  return (await queryScalar<number>(pool, METER_MASTER_COUNT_SQL)) ?? 0;
 }
 
 export async function getActiveMeterBySerial(
@@ -30,101 +92,124 @@ export async function getActiveMeterBySerial(
 ): Promise<DbMeterRow | null> {
   const rows = await queryReadOnly<DbMeterRow>(
     pool,
-    `SELECT lml."MeterLookup_TblRefID" AS "meterLookupTblRefId",
-            mm."MF" AS mf,
-            lml."Meter_Serial_Number" AS "meterSerialNumber"
-     FROM public."L_Meter_Lookup" lml
-     INNER JOIN public."M_Meter" mm
-       ON mm."Meter_TblRefID" = lml."Meter_TblRefID"
-     WHERE lml."Meter_Serial_Number" = $1
-       AND lml."IsActiveStatus" = TRUE
-     LIMIT 1`,
+    METER_MASTER_BY_SERIAL_SQL,
     [serial],
   );
   return rows[0] ?? null;
 }
 
-/** DTR master default list — distinct active DTR networks with service-point meter. */
 export async function countDtrMasterRows(pool: pg.Pool): Promise<number> {
-  return (await queryScalar<number>(pool, DTR_MASTER_COUNT_SQL)) ?? 0;
-}
-
-/**
- * Consumer master default list — active meters with a consumer service point
- * (backend listConsumerMasterDataFromView / meterType=all, no text filter).
- * API may differ when JWT org/network scope is narrower than full DB.
- */
-export async function countConsumerMasterRows(pool: pg.Pool): Promise<number> {
   return (
-    (await queryScalar<number>(
-      pool,
-      `SELECT COUNT(DISTINCT lml."MeterLookup_TblRefID")::int AS total
-       FROM public."L_Meter_Lookup" lml
-       INNER JOIN public."M_Consumer_Connection_ServicePoint" sp
-         ON sp."MeterLookup_TblRefID" = lml."MeterLookup_TblRefID"
-       INNER JOIN public."M_Consumer_Connection" mcc
-         ON mcc."ConsumerConnection_TblRefID" = sp."ConsumerConnection_TblRefID"
-       WHERE lml."IsActiveStatus" = TRUE`,
-    )) ?? 0
+    (await queryScalar<number>(pool, DTR_MASTER_COUNT_SQL, [
+      resolveDtrMeterTypeTblRefId(),
+    ])) ?? 0
   );
 }
 
-/** Active feeder networks — backend listFeederMasterDataFromNetwork base query. */
-export async function countFeederMasterRows(pool: pg.Pool): Promise<number> {
-  return (await queryScalar<number>(pool, FEEDER_MASTER_COUNT_SQL)) ?? 0;
-}
-
-/** Active substation networks — backend listSubstationMasterDataFromNetwork base query. */
-export async function countSubstationMasterRows(pool: pg.Pool): Promise<number> {
-  return (await queryScalar<number>(pool, SUBSTATION_MASTER_COUNT_SQL)) ?? 0;
-}
-
-export type DbConsumerRow = {
-  meterLookupTblRefId: number;
-  meterSerialNumber: string;
-  ivrsNo: string | null;
-};
-
-export type DbMeterCommunicationRow = {
-  meterSerialNumber: string;
-};
-
-/** Lookup by serial — communication list may include inactive meters. */
-export async function getMeterCommunicationBySerial(
+export async function getDtrByMeterLookupId(
   pool: pg.Pool,
-  serial: string,
-): Promise<DbMeterCommunicationRow | null> {
-  const rows = await queryReadOnly<DbMeterCommunicationRow>(
+  meterLookupTblRefId: number,
+): Promise<DbDtrRow | null> {
+  const rows = await queryReadOnly<DbDtrRow>(
     pool,
-    `SELECT lml."Meter_Serial_Number" AS "meterSerialNumber"
-     FROM public."L_Meter_Lookup" lml
-     WHERE lml."Meter_Serial_Number" = $1
-     LIMIT 1`,
-    [serial],
+    DTR_MASTER_BY_LOOKUP_SQL,
+    [meterLookupTblRefId],
   );
   return rows[0] ?? null;
 }
 
-/**
- * Consumer master spot check — backend listConsumerMasterDataFromView uses
- * V_Consumerdetails; IVRS maps to RRNumber (not M_Consumer_Connection.IVRS_Number).
- */
+export async function countConsumerMasterRows(pool: pg.Pool): Promise<number> {
+  return (await queryScalar<number>(pool, CONSUMER_MASTER_COUNT_SQL)) ?? 0;
+}
+
 export async function getConsumerByMeterLookupId(
   pool: pg.Pool,
   meterLookupTblRefId: number,
 ): Promise<DbConsumerRow | null> {
   const rows = await queryReadOnly<DbConsumerRow>(
     pool,
-    `SELECT v."MeterLookup_TblRefID" AS "meterLookupTblRefId",
-            v."Meter_Serial_Number" AS "meterSerialNumber",
-            v."RRNumber" AS "ivrsNo"
-     FROM public."V_Consumerdetails" v
-     INNER JOIN public."L_Meter_Lookup" lml
-       ON lml."MeterLookup_TblRefID" = v."MeterLookup_TblRefID"
-     WHERE v."MeterLookup_TblRefID" = $1
-       AND lml."IsActiveStatus" = TRUE
-     LIMIT 1`,
+    CONSUMER_MASTER_BY_LOOKUP_SQL,
     [meterLookupTblRefId],
   );
   return rows[0] ?? null;
+}
+
+export async function countFeederMasterRows(pool: pg.Pool): Promise<number> {
+  return (await queryScalar<number>(pool, FEEDER_MASTER_COUNT_SQL)) ?? 0;
+}
+
+export async function getFeederByName(
+  pool: pg.Pool,
+  feederName: string,
+): Promise<DbFeederRow | null> {
+  const rows = await queryReadOnly<DbFeederRow>(
+    pool,
+    FEEDER_MASTER_BY_NAME_SQL,
+    [feederName],
+  );
+  return rows[0] ?? null;
+}
+
+export async function countSubstationMasterRows(pool: pg.Pool): Promise<number> {
+  return (await queryScalar<number>(pool, SUBSTATION_MASTER_COUNT_SQL)) ?? 0;
+}
+
+export async function getSubstationByCode(
+  pool: pg.Pool,
+  substationCode: string,
+): Promise<DbSubstationRow | null> {
+  const rows = await queryReadOnly<DbSubstationRow>(
+    pool,
+    SUBSTATION_MASTER_BY_CODE_SQL,
+    [substationCode],
+  );
+  return rows[0] ?? null;
+}
+
+export async function getMeterCommunicationBySerial(
+  pool: pg.Pool,
+  serial: string,
+): Promise<DbMeterCommunicationRow | null> {
+  const rows = await queryReadOnly<DbMeterCommunicationRow>(
+    pool,
+    METER_COMMUNICATION_BY_SERIAL_SQL,
+    [serial],
+  );
+  return rows[0] ?? null;
+}
+
+export async function meterSerialExistsInDb(
+  pool: pg.Pool,
+  serial: string,
+): Promise<boolean> {
+  const rows = await queryReadOnly<{ one: number }>(
+    pool,
+    METER_SERIAL_EXISTS_SQL,
+    [serial.trim()],
+  );
+  return rows.length > 0;
+}
+
+export async function dtrCodeExistsInDb(
+  pool: pg.Pool,
+  dtrCode: string,
+): Promise<boolean> {
+  const rows = await queryReadOnly<{ ok: boolean }>(
+    pool,
+    DTR_CODE_EXISTS_SQL,
+    [dtrCode],
+  );
+  return Boolean(rows[0]?.ok);
+}
+
+export async function isMeterAlreadyOnDtrInDb(
+  pool: pg.Pool,
+  meterLookupId: number,
+): Promise<boolean> {
+  const rows = await queryReadOnly<{ ok: boolean }>(
+    pool,
+    METER_ALREADY_ON_DTR_SQL,
+    [meterLookupId, resolveDtrMeterTypeTblRefId()],
+  );
+  return Boolean(rows[0]?.ok);
 }
