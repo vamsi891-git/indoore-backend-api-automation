@@ -1,0 +1,1 @@
+[{"values":["https://api.bestinfra.app"],"name":"BASE_URL"},{"values":["v20.20.2"],"name":"Node"},{"values":["linux"],"name":"Platform"},{"values":["true"],"name":"CI"},{"values":["refs/heads/main"],"name":"GITHUB_REF"},{"values":["d8e8a05885f0117b3e7fba987de917fa26fff418"],"name":"GITHUB_SHA"}]
