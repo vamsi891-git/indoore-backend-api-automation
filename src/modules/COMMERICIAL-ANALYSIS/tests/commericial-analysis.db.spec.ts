@@ -1,10 +1,12 @@
 import { test as apiDbTest } from "../../../fixtures/api-db.fixture";
 import { isDbConfigured } from "../../../core/db/postgres.client";
+import { COMMERCIAL_ANALYSIS_DB_COVERAGE_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { isCommericialAnalysisDbSqlReady } from "../Db/commericial-analysis.db";
 import { runCommericialAnalysisDbCoverage } from "./commericial-analysis-db.harness";
 
-apiDbTest.describe("COMMERICIAL-ANALYSIS — DB Coverage", () => {
-  apiDbTest.setTimeout(120_000);
+apiDbTest.describe("Commercial Analysis — meter details vs database", () => {
+  apiDbTest.describe.configure({ retries: 0 });
+  apiDbTest.setTimeout(COMMERCIAL_ANALYSIS_DB_COVERAGE_TEST_TIMEOUT_MS);
 
   apiDbTest.beforeEach(() => {
     apiDbTest.skip(!isDbConfigured(), "DB credentials not configured");
@@ -15,10 +17,10 @@ apiDbTest.describe("COMMERICIAL-ANALYSIS — DB Coverage", () => {
   });
 
   apiDbTest(
-    "IND-COM-DB-001 — scaffold DB coverage",
+    "Dashboard totals match the detailed reports and the billing database",
     { tag: ["@commericial-analysis", "@db"] },
-    async ({ authenticatedApi, db }) => {
-      await runCommericialAnalysisDbCoverage(authenticatedApi, db);
+    async ({ authenticatedApi, db, archiveDb }) => {
+      await runCommericialAnalysisDbCoverage(authenticatedApi, db, archiveDb);
     },
   );
 });

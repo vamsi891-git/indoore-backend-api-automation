@@ -124,44 +124,41 @@ export function resolveDtrLoadUnbalanceContractBody(
 
 export const dtrLoadUnbalanceTestCases: DtrLoadUnbalanceTestCase[] = [
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/load-unbalance — live distribution",
+        testName: "DTR load unbalance — chart opens with Severe / Moderate / Balanced counts",
         scenario: "dev_live_primary",
         tags: ["@smoke", "@dashboard", "@dtr-load-unbalance"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/load-unbalance — unknown query params ignored",
+        testName: "DTR load unbalance — extra unused filters are ignored",
         scenario: "dev_ignore_unknown_query",
         tags: ["@dashboard", "@dtr-load-unbalance", "@edge"],
     },
     {
-        testName:
-            "Contract — all-zero Severe/Moderate/Balanced distribution (13 Jul 2026)",
+        testName: "Saved example — all-zero Severe/Moderate/Balanced distribution (13 Jul 2026)",
         scenario: "contract_all_zero",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-load-unbalance", "@edge"],
     },
     {
-        testName: "Contract — mixed Severe/Moderate/Balanced distribution",
+        testName: "Saved example — mixed Severe/Moderate/Balanced distribution",
         scenario: "contract_mixed_distribution",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-load-unbalance", "@edge"],
     },
     {
-        testName: "Contract — all DTRs Balanced",
+        testName: "Saved example — all DTRs Balanced",
         scenario: "contract_all_balanced",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-load-unbalance", "@edge"],
     },
     {
-        testName: "Contract — all DTRs Severe",
+        testName: "Saved example — all DTRs Severe",
         scenario: "contract_all_severe",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-load-unbalance", "@edge"],
     },
     {
-        testName: "Contract — percentage consistency with rounding",
+        testName: "Saved example — percentage consistency with rounding",
         scenario: "contract_percentage_consistency",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-load-unbalance", "@edge"],

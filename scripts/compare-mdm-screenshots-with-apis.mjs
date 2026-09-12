@@ -1,7 +1,13 @@
 /**
- * Compare each MDM PDF screenshot slide (table UI) with live API response structure.
- * Run: node scripts/compare-mdm-screenshots-with-apis.mjs [--ocr] [--screenshots]
- * Then: node scripts/generate-report-pdf.mjs reports/mdm-screenshot-vs-api-comparison.md
+ * Compare MDM PDF slides (and optional screenshots/OCR) against live API shapes.
+ *
+ * When to run: coverage / presentation-alignment reviews (needs auth + API).
+ *   node scripts/extract-mdm-pdf.mjs   # if extract missing
+ *   node scripts/compare-mdm-screenshots-with-apis.mjs [--ocr] [--screenshots]
+ *   node scripts/generate-report-pdf.mjs reports/mdm-screenshot-vs-api-comparison.md
+ *
+ * Output: `reports/mdm-screenshot-vs-api-comparison.{md,json}`
+ *         (optional `reports/mdm-pdf-pages/*` with `--screenshots`)
  */
 import fs from "fs";
 import path from "path";

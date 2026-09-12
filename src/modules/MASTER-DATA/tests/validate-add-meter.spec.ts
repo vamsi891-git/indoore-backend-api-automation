@@ -3,17 +3,21 @@ import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
+import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
 import { ValidateAddMeterApi } from "../Api/validate-add-meter.api";
 import {
   resolveValidateAddMeterSerial,
   validateAddMeterMaxResponseTimeMs,
+  validateAddMeterNegativeCases,
   validateAddMeterTestCases,
 } from "../Data/validate-add-meter.data";
 import { ValidateAddMeterMapper } from "../Mapper/validate-add-meter.mapper";
 import { ValidateAddMeterValidator } from "../Validator/validate-add-meter.validator";
+import { MasterDataCommonValidator } from "../Validator/master-data-common.validator";
+import { ValidateAddMeterSuccessResponseSchema } from "../schemas/master-data.schemas";
 import { ensureValidateMeterRuntimeContext } from "../utils/validate-meter-runtime.helper";
 
-test.describe("Validate Add Meter API", () => {
+test.describe("Master data — can this meter serial be added?", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
@@ -42,16 +46,12 @@ test.describe("Validate Add Meter API", () => {
             meterSerialNumber,
           });
 
-        const qs = new URLSearchParams({
-          meterSerialNumber,
-        }).toString();
-
         await PerformanceTracker.track(
-        rawResponse,
-        testCase.testName,
-        rawResponse.url(),
-        responseTime
-      );
+          rawResponse,
+          testCase.testName,
+          rawResponse.url(),
+          responseTime,
+        );
 
         const assert = new AssertionEngine();
         const validation = new ValidationEngine();
@@ -76,6 +76,12 @@ test.describe("Validate Add Meter API", () => {
         validation.execute("Required Fields", () =>
           assert.validateRequiredFields(responseBody, ["success", "data"]),
         );
+        validation.execute("Zod Response Schema", () =>
+          MasterDataCommonValidator.validateZodResponseSchema(
+            responseBody,
+            ValidateAddMeterSuccessResponseSchema,
+          ),
+        );
         validation.execute("Response", () => validator.validateResponse(mapped));
         validation.execute("Root Structure", () =>
           validator.validateRootStructure(mapped.data),
@@ -93,6 +99,59 @@ test.describe("Validate Add Meter API", () => {
           validator.validateScenario(mapped, testCase.scenario),
         );
 
+        validation.printSummary(testCase.testName, responseTime);
+      },
+    );
+  }
+
+  for (const testCase of validateAddMeterNegativeCases) {
+    test(
+      testCase.testName,
+      { tag: [...testCase.tags] },
+      async ({ authenticatedApi }) => {
+        const start = Date.now();
+        const api = new ValidateAddMeterApi(authenticatedApi);
+        const validator = new ValidateAddMeterValidator();
+        const validation = new ValidationEngine();
+
+        let status: number;
+        let body: {
+          success?: boolean;
+          error?: { code?: string; message?: string };
+        };
+        let responseTime: number;
+        let url: string;
+
+        if (testCase.meterSerialNumber == null) {
+          const raw = await getWithAutoRefresh(
+            authenticatedApi,
+            "/indore/master-data/validate-add-meter",
+          );
+          status = raw.status();
+          body = (await raw.json()) as typeof body;
+          responseTime = Date.now() - start;
+          url = raw.url();
+          await PerformanceTracker.track(raw, testCase.testName, url, responseTime);
+        } else {
+          const { rawResponse, responseBody, responseTime: rt } =
+            await api.validateAddMeter({
+              meterSerialNumber: testCase.meterSerialNumber,
+            });
+          status = rawResponse.status();
+          body = responseBody as typeof body;
+          responseTime = rt;
+          url = rawResponse.url();
+          await PerformanceTracker.track(
+            rawResponse,
+            testCase.testName,
+            url,
+            responseTime,
+          );
+        }
+
+        validation.execute("Validation Error Envelope", () =>
+          validator.validateValidationError(status, body),
+        );
         validation.printSummary(testCase.testName, responseTime);
       },
     );

@@ -20,7 +20,7 @@ export class DashboardMetricsApi extends TimedApiClient {
             }
         }
 
-        return this.getJson<DashboardMetricsResponse>("/indore/dashboard/metrics", {
+        return this.getJson<DashboardMetricsResponse>("/indore/dashboard/consumer/metrics", {
             timeout: MASTER_DATA_REQUEST_TIMEOUT_MS,
             ...(Object.keys(params).length > 0 ? { params } : {}),
         });

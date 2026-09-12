@@ -1,9 +1,18 @@
 import { expect } from "@playwright/test";
+import { EXPECTED_DTR_SEARCH_COLUMNS } from "../Data/dtrsearch.data";
 import {DtrSearchData,DtrSearchResponse,} from "../Mapper/dtrsearch.mapper";
 export class DtrSearchValidator {
   validateResponse(response: DtrSearchResponse): void {
     expect(response.success).toBe(true);
     expect(response.data).toBeDefined();
+  }
+  validateColumns(
+    columns: Array<{ key: string; header: string }> | undefined,
+  ): void {
+    if (!columns?.length) {
+      return;
+    }
+    expect(columns).toEqual([...EXPECTED_DTR_SEARCH_COLUMNS]);
   }
   validatePagination(data: DtrSearchData): void {
     expect(data.page).toBeGreaterThan(0);

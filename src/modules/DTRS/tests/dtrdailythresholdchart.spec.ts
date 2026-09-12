@@ -18,8 +18,9 @@ import {
     type DtrDailyThresholdChartErrorResponse,
 } from "../Mapper/dtrdailythresholdchart.mapper";
 import { DtrDailyThresholdChartValidator } from "../Validator/dtrdailythresholdchart.validator";
+import { skipIfDtrInternalError } from "../utils/dtr-env.helper";
 
-test.describe("DTR Daily Threshold Chart API", () => {
+test.describe("DTR energy over time", () => {
     test.describe.configure({ retries: 1 });
     test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
@@ -97,6 +98,12 @@ test.describe("DTR Daily Threshold Chart API", () => {
                 const { rawResponse, responseBody, responseTime } =
                     await api.getDailyThresholdChart(dtrCode, query);
 
+                skipIfDtrInternalError(
+                    rawResponse.status(),
+                    responseBody,
+                    `/indore/dtr/${dtrCode.trim()}/daily-threshold-chart`,
+                );
+
                 await PerformanceTracker.track(
         rawResponse,
         testCase.testName,
@@ -107,6 +114,10 @@ test.describe("DTR Daily Threshold Chart API", () => {
                 validation.execute("Status Validation", () => {
                     if (testCase.scenario === "dtr_not_found") {
                         expect([200, 404]).toContain(rawResponse.status());
+                        return;
+                    }
+                    if (testCase.scenario === "ddt_uppercase_period") {
+                        expect([200, 400]).toContain(rawResponse.status());
                         return;
                     }
                     assert.validateStatusCode(
@@ -152,7 +163,10 @@ test.describe("DTR Daily Threshold Chart API", () => {
                 }
 
                 if (expectedStatus === 400) {
-                    if (testCase.scenario === "invalid_period") {
+                    if (
+                        testCase.scenario === "invalid_period" ||
+                        testCase.scenario === "ddt_blank_period"
+                    ) {
                         validation.execute("Invalid Period Error", () =>
                             validator.validateInvalidPeriodError(
                                 responseBody as DtrDailyThresholdChartErrorResponse,
@@ -165,6 +179,19 @@ test.describe("DTR Daily Threshold Chart API", () => {
                             ),
                         );
                     }
+                    validation.printSummary(testCase.testName, responseTime);
+                    return;
+                }
+
+                if (
+                    testCase.scenario === "ddt_uppercase_period" &&
+                    rawResponse.status() === 400
+                ) {
+                    validation.execute("Invalid Period Error", () =>
+                        validator.validateInvalidPeriodError(
+                            responseBody as DtrDailyThresholdChartErrorResponse,
+                        ),
+                    );
                     validation.printSummary(testCase.testName, responseTime);
                     return;
                 }

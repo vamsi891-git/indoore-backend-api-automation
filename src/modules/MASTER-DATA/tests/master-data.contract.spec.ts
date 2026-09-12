@@ -15,10 +15,12 @@ import { ConsumerMasterApi } from "../Api/consumer-master.api";
 import { FeederMasterApi } from "../Api/feeder-master.api";
 import { SubstationMasterApi } from "../Api/substation-master.api";
 import { MeterCommunicationStatusApi } from "../Api/meter-communication-status.api";
+import { MasterDataAuditLogsApi } from "../Api/master-data-audit-logs.api";
 import {
   masterDataDefaultQuery,
   meterMasterDefaultQuery,
 } from "../Data/master-data.common.data";
+import { masterDataAuditLogsDefaultQuery } from "../Data/master-data-audit-logs.data";
 
 function asRecord(value: unknown): Record<string, unknown> {
   return value !== null && typeof value === "object"
@@ -29,6 +31,7 @@ function asRecord(value: unknown): Record<string, unknown> {
 function listRows(data: Record<string, unknown>): unknown[] {
   if (Array.isArray(data.rows)) return data.rows;
   if (Array.isArray(data.items)) return data.items;
+  if (Array.isArray(data.logs)) return data.logs;
   return [];
 }
 
@@ -51,11 +54,11 @@ async function snapshotList(
   );
 }
 
-test.describe("MASTER-DATA — Contract Snapshots", () => {
+test.describe("Master data — column names in the response", () => {
   test.setTimeout(180_000);
 
   test(
-    "Meter Master Contract Snapshot",
+    "Meter list — column names in the response stay the same",
     { tag: ["@contract-snapshot", "@master-data", "@meter-master"] },
     async ({ authenticatedApi }) => {
       const { responseBody, rawResponse } = await new MeterMasterApi(
@@ -71,7 +74,7 @@ test.describe("MASTER-DATA — Contract Snapshots", () => {
   );
 
   test(
-    "DTR Master Contract Snapshot",
+    "DTR list — column names in the response stay the same",
     { tag: ["@contract-snapshot", "@master-data", "@dtr-master"] },
     async ({ authenticatedApi }) => {
       const { responseBody, rawResponse } = await new DtrMasterApi(
@@ -87,7 +90,7 @@ test.describe("MASTER-DATA — Contract Snapshots", () => {
   );
 
   test(
-    "Consumer Master Contract Snapshot",
+    "Consumer list — column names in the response stay the same",
     { tag: ["@contract-snapshot", "@master-data", "@consumer-master"] },
     async ({ authenticatedApi }) => {
       const { responseBody, rawResponse } = await new ConsumerMasterApi(
@@ -103,7 +106,7 @@ test.describe("MASTER-DATA — Contract Snapshots", () => {
   );
 
   test(
-    "Feeder Master Contract Snapshot",
+    "Feeder list — column names in the response stay the same",
     { tag: ["@contract-snapshot", "@master-data", "@feeder-master"] },
     async ({ authenticatedApi }) => {
       const { responseBody, rawResponse } = await new FeederMasterApi(
@@ -119,7 +122,7 @@ test.describe("MASTER-DATA — Contract Snapshots", () => {
   );
 
   test(
-    "Substation Master Contract Snapshot",
+    "Substation list — column names in the response stay the same",
     { tag: ["@contract-snapshot", "@master-data", "@substation-master"] },
     async ({ authenticatedApi }) => {
       const { responseBody, rawResponse } = await new SubstationMasterApi(
@@ -135,7 +138,7 @@ test.describe("MASTER-DATA — Contract Snapshots", () => {
   );
 
   test(
-    "Meter Communication Contract Snapshot",
+    "Meter communication — column names in the response stay the same",
     { tag: ["@contract-snapshot", "@master-data", "@meter-communication"] },
     async ({ authenticatedApi }) => {
       const { responseBody, rawResponse } =
@@ -146,6 +149,22 @@ test.describe("MASTER-DATA — Contract Snapshots", () => {
       await snapshotList(
         "master-data/meter-communication",
         "/indore/master-data/meter-communication-status",
+        responseBody,
+      );
+    },
+  );
+
+  test(
+    "Master data change history — column names in the response stay the same",
+    { tag: ["@contract-snapshot", "@master-data", "@audit-logs"] },
+    async ({ authenticatedApi }) => {
+      const { responseBody, rawResponse } = await new MasterDataAuditLogsApi(
+        authenticatedApi,
+      ).getAuditLogs({ ...masterDataAuditLogsDefaultQuery });
+      expect(rawResponse.status()).toBe(200);
+      await snapshotList(
+        "master-data/audit-logs",
+        "/indore/master-data/audit-logs",
         responseBody,
       );
     },

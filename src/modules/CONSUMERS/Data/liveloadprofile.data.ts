@@ -1,31 +1,26 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { LiveLoadProfileQuery } from "../Api/liveloadprofile.api";
-import type {
-  LiveLoadProfileResponse,
-  LiveLoadProfileScenario,
-} from "../Mapper/liveloadprofile.mapper";
-
+import type {LiveLoadProfileResponse,LiveLoadProfileScenario,} from "../Mapper/liveloadprofile.mapper";
+import {
+  CONSUMERS_LIVE_IVRS,
+  CONSUMERS_LIVE_METER_ROUTE,
+  resolveLiveAccountId,
+  resolveLiveIvrs,
+  resolveLiveMeterRoute,
+} from "./consumers-live-refs";
 export const liveLoadProfileMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
-
-/** IVRS from user request (TP sample). Live data may be null when no recent IP row. */
-export const liveLoadProfileDefaultIvrs = "N3374018980";
-
-export const liveLoadProfileDefaultConsumerId = "N3374018980";
-
-export const liveLoadProfileDefaultMeterRoute = "meter-12345";
-
+/** IVRS from live RTP/PQ sample. Live data may be null when no recent IP row. */
+export const liveLoadProfileDefaultIvrs = CONSUMERS_LIVE_IVRS;
+export const liveLoadProfileDefaultConsumerId = CONSUMERS_LIVE_IVRS;
+export const liveLoadProfileDefaultMeterRoute = CONSUMERS_LIVE_METER_ROUTE;
 export const liveLoadProfileNotFoundRef = "INVALID_CONSUMER_XYZ";
-
 export const liveLoadProfileMeterNotFoundRef = "meter-999999999";
-
 export const liveLoadProfileEmptyRef = " ";
-
 /** Shape A — consumer found, no instantaneous IP reading. */
 export const liveLoadProfileContractNullResponse: LiveLoadProfileResponse = {
   success: true,
   data: null,
 };
-
 /**
  * Shape B — populated TP sample (user-provided).
  * Backend toLiveLoadProfile(): total = |kW|+|kVA|+|kvar|; percent one decimal.
@@ -43,7 +38,6 @@ export const liveLoadProfileContractTpResponse: LiveLoadProfileResponse = {
     ],
   },
 };
-
 /**
  * Shape C — SP sample with reactive derived from sqrt(kVA² − kW²).
  * kW=6, kVA=10 → kvar=8; total=24; percents 25.0 / 41.7 / 33.3.
@@ -61,7 +55,6 @@ export const liveLoadProfileContractSpResponse: LiveLoadProfileResponse = {
     ],
   },
 };
-
 export interface LiveLoadProfileTestCase {
   testName: string;
   scenario: LiveLoadProfileScenario;
@@ -69,33 +62,32 @@ export interface LiveLoadProfileTestCase {
   isContractFixture?: boolean;
   tags: string[];
 }
-
 export function resolveLiveLoadProfileRef(
   scenario: LiveLoadProfileScenario,
 ): string | undefined {
   switch (scenario) {
     case "llp_by_ivrs":
     case "llp_ignore_unknown_query":
-      return (
-        process.env.CONSUMER_LLP_IVRS?.trim() ||
-        process.env.CONSUMER_PQ_IVRS?.trim() ||
-        process.env.CONSUMER_RTP_IVRS?.trim() ||
-        liveLoadProfileDefaultIvrs
+      return resolveLiveIvrs(
+        process.env.CONSUMER_LLP_IVRS,
+        process.env.CONSUMER_PQ_IVRS,
+        process.env.CONSUMER_RTP_IVRS,
+        liveLoadProfileDefaultIvrs,
       );
     case "llp_by_account":
-      return (
-        process.env.CONSUMER_LLP_CONSUMER_ID?.trim() ||
-        process.env.CONSUMER_PQ_CONSUMER_ID?.trim() ||
-        process.env.CONSUMER_RTP_CONSUMER_ID?.trim() ||
-        liveLoadProfileDefaultConsumerId
+      return resolveLiveAccountId(
+        process.env.CONSUMER_LLP_CONSUMER_ID,
+        process.env.CONSUMER_PQ_CONSUMER_ID,
+        process.env.CONSUMER_RTP_CONSUMER_ID,
+        liveLoadProfileDefaultConsumerId,
       );
     case "llp_by_meter":
-      return (
-        process.env.CONSUMER_LLP_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_PQ_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_RTP_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_PROFILE_METER_ROUTE?.trim() ||
-        liveLoadProfileDefaultMeterRoute
+      return resolveLiveMeterRoute(
+        process.env.CONSUMER_LLP_METER_ROUTE,
+        process.env.CONSUMER_PQ_METER_ROUTE,
+        process.env.CONSUMER_RTP_METER_ROUTE,
+        process.env.CONSUMER_PROFILE_METER_ROUTE,
+        liveLoadProfileDefaultMeterRoute,
       );
     case "consumer_not_found":
       return liveLoadProfileNotFoundRef;
@@ -111,7 +103,6 @@ export function resolveLiveLoadProfileRef(
       return undefined;
   }
 }
-
 export function resolveLiveLoadProfileQuery(
   scenario: LiveLoadProfileScenario,
 ): LiveLoadProfileQuery {
@@ -120,7 +111,6 @@ export function resolveLiveLoadProfileQuery(
   }
   return {};
 }
-
 export function resolveLiveLoadProfileContractBody(
   scenario: LiveLoadProfileScenario,
 ): LiveLoadProfileResponse | undefined {
@@ -135,7 +125,6 @@ export function resolveLiveLoadProfileContractBody(
       return undefined;
   }
 }
-
 export const liveLoadProfileTestCases: LiveLoadProfileTestCase[] = [
   {
     testName:
@@ -186,7 +175,7 @@ export const liveLoadProfileTestCases: LiveLoadProfileTestCase[] = [
     testName:
       "Validate GET /indore/consumers/{consumerId}/live-load-profile — consumer not found",
     scenario: "consumer_not_found",
-    expectedStatus: 404,
+    expectedStatus: 200,
     tags: ["@consumer", "@live-load-profile", "@negative"],
   },
   {

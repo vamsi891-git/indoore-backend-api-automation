@@ -37,7 +37,7 @@ function validateConnectionStatus(
 }
 
 registerCatalogLookupTests({
-  describeTitle: "Connection Status API",
+  describeTitle: "Connection statuses",
   testCases: connectionStatusTestCases,
   fetch: (api) => new ConnectionStatusApi(api).getConnectionStatuses(),
   validate: validateConnectionStatus,

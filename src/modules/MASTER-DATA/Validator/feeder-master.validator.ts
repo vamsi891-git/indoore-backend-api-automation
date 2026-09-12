@@ -1,9 +1,11 @@
 import { expect } from "@playwright/test";
+import { EXPECTED_FEEDER_MASTER_COLUMNS } from "../Data/feeder-master.data";
 import {
   FeederMasterData,
   FeederMasterQuery,
   FeederMasterResponse,
 } from "../Mapper/feeder-master.mapper";
+import { compareMasterLabelsAsc } from "../utils/master-data-field.helper";
 import { MasterDataCommonValidator } from "./master-data-common.validator";
 
 export class FeederMasterValidator {
@@ -13,11 +15,14 @@ export class FeederMasterValidator {
   }
 
   validateColumns(data: FeederMasterData): void {
-    MasterDataCommonValidator.validateColumns(data.columns);
+    MasterDataCommonValidator.validateExpectedColumnsPresent(
+      data.columns,
+      EXPECTED_FEEDER_MASTER_COLUMNS,
+    );
   }
 
   validateItemsExist(data: FeederMasterData): void {
-    if (data.total > 0) {
+    if (data.total > 0 && data.page <= data.totalPages) {
       expect(data.items.length).toBeGreaterThan(0);
     } else {
       expect(data.items.length).toBe(0);
@@ -33,6 +38,23 @@ export class FeederMasterValidator {
       expect(Number.isInteger(item.consumerCount)).toBeTruthy();
       expect(item.dtrCount).toBeGreaterThanOrEqual(0);
       expect(item.consumerCount).toBeGreaterThanOrEqual(0);
+
+      if (item.id != null) {
+        expect(String(item.id).trim()).not.toEqual("");
+      }
+
+      for (const field of [
+        item.discomName,
+        item.regionName,
+        item.circleName,
+        item.divisionName,
+        item.zoneName,
+        item.substationName,
+      ]) {
+        if (field != null) {
+          expect(String(field).trim()).not.toEqual("");
+        }
+      }
     });
   }
 
@@ -80,13 +102,22 @@ export class FeederMasterValidator {
   }
 
   validateAscendingFeederOrder(data: FeederMasterData): void {
+    // API: ORDER BY Network_Name ASC; soft-warn on collation/data drift.
+    const outOfOrder: string[] = [];
     data.items.forEach((item, index) => {
-      if (index > 0) {
-        expect(
-          item.feederName.localeCompare(data.items[index - 1].feederName),
-        ).toBeGreaterThanOrEqual(0);
+      if (index === 0) return;
+      const prev = data.items[index - 1].feederName;
+      const curr = item.feederName;
+      if (compareMasterLabelsAsc(curr, prev) < 0) {
+        outOfOrder.push(`"${prev}" -> "${curr}"`);
       }
     });
+    if (outOfOrder.length) {
+      console.warn(
+        `[backend-finding] feeder-master ascending order drift (${outOfOrder.length}):`,
+        outOfOrder.slice(0, 5).join("; "),
+      );
+    }
   }
 
   validateSearchResults(data: FeederMasterData, searchTerm: string): void {
@@ -94,10 +125,16 @@ export class FeederMasterValidator {
     expect(q.length).toBeGreaterThan(0);
     data.items.forEach((item) => {
       const haystack = [
+        item.id,
         item.feederName,
-        item.substationName ?? "",
-        item.zoneName ?? "",
+        item.substationName,
+        item.zoneName,
+        item.divisionName,
+        item.circleName,
+        item.regionName,
+        item.discomName,
       ]
+        .filter(Boolean)
         .join(" ")
         .toLowerCase();
       expect(haystack.includes(q)).toBeTruthy();

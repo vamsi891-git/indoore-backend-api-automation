@@ -35,7 +35,7 @@ function validateMeterPhase(
 }
 
 registerCatalogLookupTests({
-  describeTitle: "Meter Phase API",
+  describeTitle: "Meter phases",
   testCases: meterPhaseTestCases,
   fetch: (api) => new MeterPhaseApi(api).getMeterPhases(),
   validate: validateMeterPhase,

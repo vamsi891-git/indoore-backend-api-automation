@@ -9,6 +9,7 @@ import {
   MeterCommunicationStatusQuery,
   MeterCommunicationStatusResponse,
 } from "../Mapper/meter-communication-status.mapper";
+import { MasterDataCommonValidator } from "./master-data-common.validator";
 
 const ISO_DATE_REGEX =
   /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?)?$/;
@@ -19,30 +20,33 @@ export class MeterCommunicationStatusValidator {
     expect(response.data).toBeDefined();
   }
 
-  /** Backend: communicating + nonCommunicating + unknown = activeMeters; activeMeters = pagination.total */
-  validateSummaryCounts(data: MeterCommunicationStatusData): void {
+  /** Live may omit unknownCount; treat missing as 0. Unfiltered: status buckets = activeMeters = total. */
+  validateSummaryCounts(
+    data: MeterCommunicationStatusData,
+    options?: { requireBucketEquality?: boolean },
+  ): void {
     expect(data.communicatingCount).toBeGreaterThanOrEqual(0);
     expect(data.nonCommunicatingCount).toBeGreaterThanOrEqual(0);
     expect(data.unknownCount).toBeGreaterThanOrEqual(0);
     expect(data.activeMeters).toBeGreaterThanOrEqual(0);
 
-    expect(
-      data.communicatingCount + data.nonCommunicatingCount + data.unknownCount,
-    ).toEqual(data.activeMeters);
-
-    expect(data.activeMeters).toEqual(data.total);
+    if (options?.requireBucketEquality !== false) {
+      expect(
+        data.communicatingCount + data.nonCommunicatingCount + data.unknownCount,
+      ).toEqual(data.activeMeters);
+      expect(data.activeMeters).toEqual(data.total);
+    }
   }
 
   validateColumns(data: MeterCommunicationStatusData): void {
-    expect(data.columns.length).toEqual(EXPECTED_METER_COMM_COLUMNS.length);
-    EXPECTED_METER_COMM_COLUMNS.forEach((expected, index) => {
-      expect(data.columns[index]?.key).toEqual(expected.key);
-      expect(data.columns[index]?.header).toEqual(expected.header);
-    });
+    MasterDataCommonValidator.validateExpectedColumnsPresent(
+      data.columns,
+      EXPECTED_METER_COMM_COLUMNS,
+    );
   }
 
   validateItemsExist(data: MeterCommunicationStatusData): void {
-    if (data.total > 0) {
+    if (data.total > 0 && data.page <= data.totalPages) {
       expect(data.items.length).toBeGreaterThan(0);
     } else {
       expect(data.items.length).toBe(0);

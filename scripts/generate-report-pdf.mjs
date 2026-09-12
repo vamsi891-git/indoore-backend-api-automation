@@ -1,6 +1,11 @@
 /**
- * Generate shareable PDF from reports/mdm-pdf-vs-test-cases.md
- * Run: node scripts/generate-report-pdf.mjs
+ * Convert a markdown report to HTML + PDF via Playwright Chromium.
+ *
+ * When to run: after producing an `.md` report (e.g. MDM compare output).
+ *   node scripts/generate-report-pdf.mjs [input.md] [optional-output.pdf]
+ * Defaults: `reports/mdm-pdf-vs-test-cases.md` → sibling `.pdf`
+ *
+ * Output: `.html` and `.pdf` next to / from the input path.
  */
 import fs from "fs";
 import path from "path";

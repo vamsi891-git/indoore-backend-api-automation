@@ -6,14 +6,36 @@
     "success"
   ],
   "dataKeys": [
-    "date",
-    "delayed",
-    "intervals"
+    "canPing",
+    "communicationState",
+    "delaySeconds",
+    "intervalMinutes",
+    "isDelayed",
+    "isSeverelyDelayed",
+    "lastCommunicationAt",
+    "meterId",
+    "nextExpectedIntervalAt",
+    "receivedIntervals",
+    "receivedPercentage",
+    "selectedDate",
+    "signalState",
+    "totalIntervalsPerDay"
   ],
   "itemKeys": [
-    "date",
-    "delayed",
-    "intervals"
+    "canPing",
+    "communicationState",
+    "delaySeconds",
+    "intervalMinutes",
+    "isDelayed",
+    "isSeverelyDelayed",
+    "lastCommunicationAt",
+    "meterId",
+    "nextExpectedIntervalAt",
+    "receivedIntervals",
+    "receivedPercentage",
+    "selectedDate",
+    "signalState",
+    "totalIntervalsPerDay"
   ],
   "hasColumnsGrid": false
 }

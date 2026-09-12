@@ -40,7 +40,7 @@ function runNetworkSearchValidations(
 }
 
 registerSearchLookupTests({
-  describeTitle: "Network Search API",
+  describeTitle: "Network search",
   testCases: networkSearchTestCases,
   resolveQuery: resolveNetworkSearchQuery,
   fetch: (authenticatedApi, query) =>

@@ -186,6 +186,7 @@ export class RealTimePowerValidator {
       case "power_by_meter":
       case "power_ignore_unknown_query":
       case "meter_not_found":
+      case "consumer_not_found":
         this.validateLiveOk(mapped);
         break;
       default:

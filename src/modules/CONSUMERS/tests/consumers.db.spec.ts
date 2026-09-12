@@ -16,10 +16,10 @@ apiDbTest.describe("CONSUMERS — DB Coverage", () => {
   });
 
   apiDbTest(
-    "IND-CON-DB-001 — Profile + validate-meter + activation spot-checks vs DB",
+    "IND-CON-DB-001 — Profile + meter + activation + billing + communication + real-time-power + power-quality vs DB",
     { tag: ["@consumers", "@db", "@profile"] },
-    async ({ authenticatedApi, db }) => {
-      await runConsumersDbCoverage(authenticatedApi, db);
+    async ({ authenticatedApi, db, archiveDb }) => {
+      await runConsumersDbCoverage(authenticatedApi, db, archiveDb);
     },
   );
 });

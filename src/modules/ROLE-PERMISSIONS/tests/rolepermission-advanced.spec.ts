@@ -6,7 +6,8 @@ import { RolePermissionData } from "../Data/rolepermission.data";
 import { RolePermissionMapper } from "../Mapper/rolepermission.mapper";
 import { RolePermissionValidator } from "../Validator/rolepermission.validator";
 
-test.describe("Role Permission — Advanced", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Role Permission — Advanced", () => {
   test.describe.configure({ mode: "serial" });
   test("PUT /roles/:roleId/modules/:moduleId — toggle module enabled",
     { tag: ["@permissions", "@role-permissions"] },

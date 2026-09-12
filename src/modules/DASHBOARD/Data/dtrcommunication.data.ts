@@ -205,85 +205,73 @@ export const DtrCommunicationData = {
 
 export const dtrCommunicationTestCases: DtrCommunicationTestCase[] = [
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/communication-status — period=hourly (live)",
+        testName: "DTR communication chart — hourly view loads",
         scenario: "dev_period_hourly",
         tags: ["@dashboard", "@dtr-communication", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/communication-status — period=daily (live)",
+        testName: "DTR communication chart — daily view loads",
         scenario: "dev_period_daily",
         tags: ["@smoke", "@dashboard", "@dtr-communication"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/communication-status — period=weekly",
+        testName: "DTR communication chart — weekly view loads",
         scenario: "dev_period_weekly",
         tags: ["@dashboard", "@dtr-communication", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/communication-status — period=monthly",
+        testName: "DTR communication chart — monthly view loads",
         scenario: "dev_period_monthly",
         tags: ["@dashboard", "@dtr-communication", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/communication-status — period=yearly",
+        testName: "DTR communication chart — yearly view loads",
         scenario: "dev_period_yearly",
         tags: ["@dashboard", "@dtr-communication", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/communication-status — unknown query params ignored",
+        testName: "DTR communication chart — extra unused filters are ignored",
         scenario: "dev_ignore_unknown_query",
         tags: ["@dashboard", "@dtr-communication", "@edge"],
     },
     {
-        testName:
-            "Contract — hourly null communicating/non-communicating buckets (10 Jul 2026)",
+        testName: "Saved example — hourly null communicating/non-communicating buckets (10 Jul 2026)",
         scenario: "contract_null_hourly",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-communication", "@edge"],
     },
     {
-        testName:
-            "Contract — daily null communicating/non-communicating buckets (10 Jul 2026)",
+        testName: "Saved example — daily null communicating/non-communicating buckets (10 Jul 2026)",
         scenario: "contract_null_daily",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-communication", "@edge"],
     },
     {
-        testName:
-            "Contract — weekly null communicating/non-communicating buckets (10 Jul 2026)",
+        testName: "Saved example — weekly null communicating/non-communicating buckets (10 Jul 2026)",
         scenario: "contract_null_weekly",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-communication", "@edge"],
     },
     {
-        testName:
-            "Contract — monthly null communicating/non-communicating buckets (10 Jul 2026)",
+        testName: "Saved example — monthly null communicating/non-communicating buckets (10 Jul 2026)",
         scenario: "contract_null_monthly",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-communication", "@edge"],
     },
     {
-        testName:
-            "Contract — yearly null communicating/non-communicating buckets (10 Jul 2026)",
+        testName: "Saved example — yearly null communicating/non-communicating buckets (10 Jul 2026)",
         scenario: "contract_null_yearly",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-communication", "@edge"],
     },
     {
-        testName: "Contract — populated communicating/non-communicating points",
+        testName: "Saved example — populated communicating/non-communicating points",
         scenario: "contract_populated_daily",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-communication", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/communication-status — invalid period rejected",
+        testName: "DTR communication chart — an invalid time period is rejected",
         scenario: "invalid_period",
         expectedStatus: 400,
         tags: ["@dashboard", "@dtr-communication", "@negative"],

@@ -364,8 +364,7 @@ const hierarchyEnvKeys = [...DTR_BULK_UPLOAD_HIERARCHY_ENV_KEYS];
 export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
   // ─── File validation ─────────────────────────────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — only .xlsx allowed",
+    testName: "Excel upload (DTRs) — only an Excel .xlsx file is allowed",
     scenario: "file_invalid_type",
     expectedStatus: 400,
     buildUpload: async () => ({
@@ -379,8 +378,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — required columns must be present",
+    testName: "Excel upload (DTRs) — required Excel columns must be present",
     scenario: "file_missing_columns",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -395,8 +393,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — duplicate column names rejected",
+    testName: "Excel upload (DTRs) — duplicate column names are rejected",
     scenario: "file_duplicate_columns",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -410,8 +407,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — at least one data row required",
+    testName: "Excel upload (DTRs) — the file must contain at least one data row",
     scenario: "file_no_data_rows",
     expectedStatus: 400,
     buildUpload: async () => {
@@ -421,8 +417,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — Zone must exist",
+    testName: "Excel upload (DTRs) — zone must be a known value",
     scenario: "file_invalid_zone",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -437,8 +432,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
 
   // ─── DTR validation (manual §1) ──────────────────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — DTR Code required",
+    testName: "Excel upload (DTRs) — DTR code is required",
     scenario: "row_missing_dtr_code",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -451,8 +445,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — DTR Name required",
+    testName: "Excel upload (DTRs) — DTR name is required",
     scenario: "row_missing_dtr_name",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -465,8 +458,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — duplicate DTR Code within file",
+    testName: "Excel upload (DTRs) — the same DTR code cannot appear twice in the file",
     scenario: "row_duplicate_dtr_code",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -480,8 +472,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — existing DTR Code rejected",
+    testName: "Excel upload (DTRs) — a DTR code that already exists is rejected",
     scenario: "row_dtr_code_exists",
     expectedStatus: 400,
     envKeys: [...hierarchyEnvKeys, "CREATE_DTR_EXISTS_CODE"],
@@ -496,8 +487,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — DTR Capacity must be greater than zero",
+    testName: "Excel upload (DTRs) — DTR capacity must be greater than zero",
     scenario: "row_capacity_zero",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -510,8 +500,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — Status must be valid",
+    testName: "Excel upload (DTRs) — status must be valid",
     scenario: "row_invalid_status",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -526,8 +515,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
 
   // ─── Network hierarchy ───────────────────────────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — Sub Station must belong to Zone",
+    testName: "Excel upload (DTRs) — substation must belong to the selected zone",
     scenario: "row_invalid_substation",
     expectedStatus: 400,
     envKeys: ["BULK_DTR_ZONE_NAME", "BULK_DTR_FEEDER_NAME"],
@@ -544,8 +532,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
 
   // ─── Meter mapping (manual §2) ───────────────────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — Meter Serial Number required",
+    testName: "Excel upload (DTRs) — meter serial is required",
     scenario: "row_missing_meter_serial",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -558,8 +545,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — meter must exist",
+    testName: "Excel upload (DTRs) — meter serial must already exist",
     scenario: "row_meter_not_found",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -574,8 +560,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — meter must be active",
+    testName: "Excel upload (DTRs) — meter must be active",
     scenario: "row_meter_inactive",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -590,8 +575,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative", "@backend-defect"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — meter already on another DTR",
+    testName: "Excel upload (DTRs) — meter cannot already be on another DTR",
     scenario: "row_meter_on_dtr",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -606,8 +590,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — Main/Sub Meter must be valid",
+    testName: "Excel upload (DTRs) — main/sub meter type must be valid",
     scenario: "row_invalid_main_sub_meter",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -620,8 +603,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — Meter Phase must be valid",
+    testName: "Excel upload (DTRs) — meter phase must be valid",
     scenario: "row_invalid_meter_phase",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -634,8 +616,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — Service Point ID required",
+    testName: "Excel upload (DTRs) — service point ID is required",
     scenario: "row_missing_service_point",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -650,8 +631,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
 
   // ─── Communication (manual §3) ───────────────────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — SIM No. required",
+    testName: "Excel upload (DTRs) — SIM number is required",
     scenario: "row_missing_sim",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -664,8 +644,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — IMSI No. must contain digits only",
+    testName: "Excel upload (DTRs) — IMSI must contain digits only",
     scenario: "row_invalid_imsi",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -678,8 +657,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — IP Address must be valid",
+    testName: "Excel upload (DTRs) — IP address must be valid",
     scenario: "row_invalid_ip",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -692,8 +670,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — Modem Serial Number required",
+    testName: "Excel upload (DTRs) — modem serial is required",
     scenario: "row_missing_modem_serial",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -706,8 +683,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — Modem IMEI must be 15 digits",
+    testName: "Excel upload (DTRs) — modem IMEI must be 15 digits",
     scenario: "row_invalid_imei",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -722,8 +698,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
 
   // ─── Date validation (manual §4) ─────────────────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — Service Date must be valid",
+    testName: "Excel upload (DTRs) — service date must be a valid date",
     scenario: "row_invalid_service_date",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -736,8 +711,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — future Service Date rejected",
+    testName: "Excel upload (DTRs) — service date cannot be in the future",
     scenario: "row_future_service_date",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -753,8 +727,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — future EntryDateTime rejected",
+    testName: "Excel upload (DTRs) — entry date cannot be in the future",
     scenario: "row_future_entry_date",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -770,8 +743,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — Meter Initial Reading must be greater than zero",
+    testName: "Excel upload (DTRs) — initial reading must be greater than zero",
     scenario: "row_reading_zero",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -786,8 +758,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
 
   // ─── Success (multi-row first — needs two fresh meters before single-row consumes pool) ─
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — two unique DTRs created",
+    testName: "Excel upload (DTRs) — two DTRs are created from the file",
     scenario: "bulk_success_multi",
     expectedStatus: 200,
     envKeys: hierarchyEnvKeys,
@@ -814,8 +785,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@master-data", "@bulk-upload-dtr"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — bulk create one DTR",
+    testName: "Excel upload (DTRs) — one DTR is created from the file",
     scenario: "bulk_success",
     expectedStatus: 200,
     envKeys: hierarchyEnvKeys,
@@ -828,8 +798,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     tags: ["@smoke", "@master-data", "@bulk-upload-dtr", "@dtr-master"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-dtr — blank rows ignored",
+    testName: "Excel upload (DTRs) — blank rows are ignored",
     scenario: "bulk_success_blank_row",
     expectedStatus: 200,
     envKeys: hierarchyEnvKeys,

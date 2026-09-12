@@ -1,4 +1,4 @@
-import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
+﻿import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
 import type {
   DbConsumerRow,
   DbDtrRow,
@@ -13,24 +13,18 @@ export function compareMasterDataCountLteDb(options: {
   dbCount: number;
   obs?: DbCompareObs;
 }): void {
-  if (options.apiCount > options.dbCount) {
-    throw new Error(
-      `${options.label}: API ${options.apiCount} exceeds DB ${options.dbCount}`,
-    );
-  }
-  if (options.apiCount === options.dbCount) {
-    compareApiToDb(
-      [
-        {
-          label: options.label,
-          apiValue: options.apiCount,
-          dbValue: options.dbCount,
-        },
-      ],
-      `DB vs API — ${options.label}`,
-      options.obs,
-    );
-  }
+  // Exact match: API pagination total must equal DB count when records are compared.
+  compareApiToDb(
+    [
+      {
+        label: options.label,
+        apiValue: options.apiCount,
+        dbValue: options.dbCount,
+      },
+    ],
+    `DB vs API - ${options.label}`,
+    options.obs,
+  );
 }
 
 export function compareMeterMasterSpotToDb(options: {
@@ -60,7 +54,7 @@ export function compareMeterMasterSpotToDb(options: {
         dbValue: options.dbRow.meterSerialNumber?.trim() ?? null,
       },
     ],
-    "DB vs API — Meter Master spot check",
+    "DB vs API â€” Meter Master spot check",
     options.obs,
   );
 }
@@ -106,7 +100,7 @@ export function compareDtrMasterSpotToDb(options: {
         optional: true,
       },
     ],
-    "DB vs API — DTR Master spot check",
+    "DB vs API â€” DTR Master spot check",
     options.obs,
   );
 }
@@ -139,7 +133,7 @@ export function compareConsumerMasterSpotToDb(options: {
         optional: true,
       },
     ],
-    "DB vs API — Consumer Master spot check",
+    "DB vs API â€” Consumer Master spot check",
     options.obs,
   );
 }
@@ -171,7 +165,7 @@ export function compareFeederMasterSpotToDb(options: {
         dbValue: options.dbRow.consumerCount,
       },
     ],
-    "DB vs API — Feeder Master spot check",
+    "DB vs API â€” Feeder Master spot check",
     options.obs,
   );
 }
@@ -203,7 +197,7 @@ export function compareSubstationMasterSpotToDb(options: {
         dbValue: options.dbRow.consumerCount,
       },
     ],
-    "DB vs API — Substation Master spot check",
+    "DB vs API â€” Substation Master spot check",
     options.obs,
   );
 }

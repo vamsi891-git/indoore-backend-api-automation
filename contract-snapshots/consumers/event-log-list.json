@@ -13,12 +13,26 @@
     "totalPages"
   ],
   "itemKeys": [
+    "Event",
     "description",
-    "durationDisplay",
+    "duration",
+    "durationSeconds",
+    "eventAtIso",
+    "eventCategory",
+    "eventCode",
+    "eventName",
+    "eventTblRefId",
+    "id",
     "meterNo",
+    "meterSerialNumber",
     "occurDateTime",
+    "phase",
+    "restorationState",
     "restoreDateTime",
+    "restoredAtIso",
     "serialNo",
+    "severity",
+    "source",
     "status"
   ],
   "hasColumnsGrid": false

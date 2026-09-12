@@ -13,7 +13,7 @@ import { ConsumerMasterValidator } from "../Validator/consumer-master.validator"
 import { MasterDataCommonValidator } from "../Validator/master-data-common.validator";
 import { ConsumerMasterSuccessResponseSchema } from "../schemas/master-data.schemas";
 
-test.describe("Consumer Master API", () => {
+test.describe("Master data — consumer list", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
@@ -30,6 +30,12 @@ test.describe("Consumer Master API", () => {
         params.set("page", String(testCase.query.page ?? 1));
         params.set("limit", String(testCase.query.limit ?? 20));
         params.set("meterType", testCase.query.meterType ?? "all");
+        if (testCase.query.includeArchiveCounts != null) {
+          params.set(
+            "includeArchiveCounts",
+            String(testCase.query.includeArchiveCounts),
+          );
+        }
         if (testCase.query.q?.trim()) {
           params.set("q", testCase.query.q.trim());
         }

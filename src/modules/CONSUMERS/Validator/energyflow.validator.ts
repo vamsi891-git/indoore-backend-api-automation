@@ -190,6 +190,9 @@ export class EnergyFlowValidator {
     expectedPeriod: EnergyFlowPeriod,
   ) {
     expect(mapped.period).toBe(expectedPeriod);
+    if (mapped.points.length === 0) {
+      return;
+    }
     this.validatePointsCount(expectedPeriod, mapped.points);
     this.validateLabelFormat(expectedPeriod, mapped.points);
   }
@@ -214,6 +217,9 @@ export class EnergyFlowValidator {
     this.validateSuccess(mapped.success);
     this.validatePeriod(mapped.period);
     this.validatePeriodMatchesQuery(mapped, expectedPeriod);
+    if (mapped.points.length === 0) {
+      return;
+    }
     this.validatePointStructure(mapped.points);
     this.validateEnergyRounding(mapped.points);
     this.validateCumulativeMonotonicity(mapped.points);

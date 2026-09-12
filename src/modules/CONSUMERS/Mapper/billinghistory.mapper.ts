@@ -6,9 +6,19 @@ export interface BillingHistoryRow {
   paymentStatus: string | null;
 }
 
+/** Paginated envelope returned by live billing-history. */
+export interface BillingHistoryPage {
+  items: BillingHistoryRow[];
+  page?: number;
+  pageSize?: number;
+  total?: number;
+  totalPages?: number;
+}
+
 export interface BillingHistoryResponse {
   success: boolean;
-  data?: BillingHistoryRow[] | null;
+  /** Legacy bare array or live `{ items, page, ... }` envelope. */
+  data?: BillingHistoryRow[] | BillingHistoryPage | null;
 }
 
 export interface BillingHistoryErrorResponse {
@@ -43,11 +53,23 @@ export interface MappedBillingHistory {
   items: BillingHistoryRow[];
 }
 
+function extractBillingHistoryItems(
+  data: BillingHistoryResponse["data"],
+): BillingHistoryRow[] {
+  if (Array.isArray(data)) {
+    return data;
+  }
+  if (data && typeof data === "object" && Array.isArray(data.items)) {
+    return data.items;
+  }
+  return [];
+}
+
 export class BillingHistoryMapper {
   static map(response: BillingHistoryResponse): MappedBillingHistory {
     return {
       success: response.success,
-      items: Array.isArray(response.data) ? response.data : [],
+      items: extractBillingHistoryItems(response.data),
     };
   }
 }

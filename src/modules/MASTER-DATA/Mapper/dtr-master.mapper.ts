@@ -3,6 +3,7 @@ import {
   MasterDataList,
   MasterDataListRaw,
 } from "./master-data-list.mapper";
+import { firstNonBlank } from "../utils/master-data-field.helper";
 
 export interface DtrMasterQuery {
   page?: number;
@@ -28,13 +29,34 @@ export interface DtrMasterItem {
   division: string | null;
   zone: string | null;
   subStation: string | null;
+  /** Normalized display feeder (feederName || feederCode || legacy feeder) */
   feeder: string | null;
+  feederCode?: string | null;
+  feederName?: string | null;
+  /** Normalized display DTR (dtrCode || dtrName || legacy dtr) */
   dtr: string;
+  dtrCode?: string | null;
+  dtrName?: string | null;
+  newDtrCode?: string | null;
+  dtrCapacity?: string | null;
   meterSerialNumber: string | null;
+  meterMake?: string | null;
   mf: string | null;
   latitude: string | null;
   longitude: string | null;
   serviceDate: string | null;
+}
+
+function normalizeDtrItem(item: DtrMasterItem): DtrMasterItem {
+  // Prefer name for display/sort alignment with API ORDER BY "DTR Name"
+  const dtr =
+    firstNonBlank(item.dtrName, item.dtr, item.dtrCode, item.newDtrCode) ?? "";
+  const feeder = firstNonBlank(item.feederName, item.feeder, item.feederCode);
+  return {
+    ...item,
+    dtr,
+    feeder,
+  };
 }
 
 export class DtrMasterMapper {
@@ -45,6 +67,7 @@ export class DtrMasterMapper {
     const list = mapMasterDataList(data ?? {}, defaultLimit);
     return {
       ...list,
+      items: list.items.map(normalizeDtrItem),
       columns: data?.columns ?? [],
     };
   }

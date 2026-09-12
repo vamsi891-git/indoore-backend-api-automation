@@ -16,14 +16,14 @@ function runConsumerSearchValidations(
   responseBody: unknown,
   validation: import("../../../core/engine/validation.engine").ValidationEngine,
 ): void {
-  const data = SearchConsumerMapper.mapData(
-    getLookupResponseData<SearchConsumerRawData>(responseBody),
-  );
+  const raw = getLookupResponseData<SearchConsumerRawData>(responseBody);
+  const data = SearchConsumerMapper.mapData(raw);
   const validator = new SearchConsumerValidator();
 
   validation.execute("Response", () =>
     validator.validateResponse(responseBody as never),
   );
+  validation.execute("Columns", () => validator.validateColumns(raw.columns));
   validation.execute("Pagination", () => validator.validatePagination(data));
 
   if (scenario === "edge_page_beyond") {
@@ -71,7 +71,7 @@ function runConsumerSearchValidations(
 }
 
 registerSearchLookupTests({
-  describeTitle: "Consumer Search API",
+  describeTitle: "Consumer search",
   testCases: consumerSearchTestCases,
   resolveQuery: resolveConsumerSearchQuery,
   fetch: (authenticatedApi, query) =>

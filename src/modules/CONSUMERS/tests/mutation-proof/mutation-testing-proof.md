@@ -27,10 +27,15 @@ npm run test:consumers:mutation-proof
 | Consumer Profile | ✅ Account_ID + IVRS vs `V_Consumerdetails` | ✅ | `CONSUMERS_DB_SQL_READY=true` |
 | Validate meter | ✅ not-in-system + assigned vs `L_Meter_Lookup` / service point | — | Mirrors `ConsumersService.validateMeter` |
 | Activation | ✅ `M_Consumer.IsActiveStatus` | — | Mirrors `updateConsumerActivation` |
-| Telemetry / billing / nearest | deferred | deferred | Need `ConsumersRepository` SQL paste |
+| Billing history | ✅ archive floor (`Billing_Class_D1`/`D3`) + length (`min(limit,db)` or pad-to-limit) | ✅ pad / empty calendar | Fixture IVRS with archive rows |
+| Communication status | ✅ presence when API + `meter_last_seen` both set | ✅ archive-sourced lastSeen / absent lastSeen | `general.meter_last_seen` |
+| Real-time power | ✅ V / I / PF per phase | ✅ null data skips | SP: `meter_ip_today_sp`; TP: archive `T_IPData_CateTP` |
+| Power quality | ✅ PF / Hz / neutral / MD kW / MD kVA | ✅ empty/null skips | Archive `T_IPData_CateSP` / `T_IPData_CateTP` (IVRS `1019258045`) |
+| Energy / event / nearest | deferred | deferred | Remaining `ConsumersRepository` SQL |
 | Energy Consumption Graph | — | — | Deliberate skip (derived viz) |
-| Activation | — | — | Deliberate skip (PATCH action) |
 
 ```bash
 npm run test:consumers:db
 ```
+
+Verified live: **9/9** checks (profile, meter, activation, billing archive, communication lastSeen).

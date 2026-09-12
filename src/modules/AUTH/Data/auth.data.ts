@@ -1,5 +1,6 @@
 export const AuthPaths = {
   login: "/indore/auth/login",
+  login2fa: "/indore/auth/login/2fa",
   refresh: "/indore/auth/refresh",
   me: "/indore/auth/me",
   devices: "/indore/auth/devices",
@@ -36,6 +37,9 @@ export const AuthTestData = {
   },
   get hasValidCredentials(): boolean {
     return Boolean(this.validEmail && this.validPassword);
+  },
+  get totpSecret(): string {
+    return (process.env.TOTP_SECRET ?? "").trim();
   },
   unknownDeviceId: "00000000-0000-0000-0000-000000000001",
   expectedUnauthorizedStatus: 401,

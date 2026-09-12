@@ -4,7 +4,7 @@ import { UTILS_LOOKUP_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeou
 import { missingLookupRouteTestCases } from "../Data/lookup-catalogs.data";
 import { runLookupApiTest } from "../utils/lookup-spec.harness";
 
-test.describe("UTILS-LOOKUP — missing routes probe", () => {
+test.describe("Utils lookup — missing routes", () => {
   test.describe.configure({ retries: 0 });
   test.setTimeout(UTILS_LOOKUP_TEST_TIMEOUT_MS);
 

@@ -21,6 +21,7 @@ export interface SubstationMasterData extends MasterDataList<SubstationMasterIte
 }
 
 export interface SubstationMasterItem {
+  id?: string;
   slNo: number;
   discomName: string | null;
   regionName: string | null;

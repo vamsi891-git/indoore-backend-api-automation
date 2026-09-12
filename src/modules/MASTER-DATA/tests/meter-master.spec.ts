@@ -13,7 +13,7 @@ import { MeterMasterValidator } from "../Validator/meter-master.validator";
 import { MasterDataCommonValidator } from "../Validator/master-data-common.validator";
 import { MeterMasterSuccessResponseSchema } from "../schemas/master-data.schemas";
 
-test.describe("Meter Master API", () => {
+test.describe("Master data — meter list", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

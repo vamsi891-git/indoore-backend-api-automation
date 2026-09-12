@@ -1,0 +1,50 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/reports/consumer-report",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "current",
+    "dateTime",
+    "id",
+    "kVAh",
+    "kWh",
+    "phases",
+    "slNo",
+    "voltage"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "slNo",
+      "header": "S No."
+    },
+    {
+      "key": "dateTime",
+      "header": "Date Time"
+    },
+    {
+      "key": "voltage",
+      "header": "Voltage"
+    },
+    {
+      "key": "current",
+      "header": "Current"
+    },
+    {
+      "key": "kWh",
+      "header": "kWh"
+    },
+    {
+      "key": "kVAh",
+      "header": "kVAh"
+    }
+  ]
+}

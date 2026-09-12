@@ -1,40 +1,31 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { BillingHistoryQuery } from "../Api/billinghistory.api";
-import type {
-  BillingHistoryResponse,
-  BillingHistoryRow,
-  BillingHistoryScenario,
-} from "../Mapper/billinghistory.mapper";
-
+import type {BillingHistoryResponse,BillingHistoryRow,BillingHistoryScenario,} from "../Mapper/billinghistory.mapper";
+import {
+  CONSUMERS_LIVE_IVRS,
+  CONSUMERS_LIVE_METER_ROUTE,
+  resolveLiveAccountId,
+  resolveLiveIvrs,
+  resolveLiveMeterRoute,
+} from "./consumers-live-refs";
 export const billingHistoryMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
-
 /** Backend consumerBillingHistoryQuerySchema: `0` = all archive periods (max 120). */
 export const BILLING_HISTORY_MAX_ARCHIVE_PERIODS = 120;
-
 /** Fixture / legacy empty calendar length used in contract samples. */
 export const BILLING_HISTORY_DEFAULT_SPAN_MONTHS = 18;
-
 /**
  * Unresolved / not-found routes use getEmptyConsumerBillingHistory —
  * live env still often returns a 24-month IST empty calendar.
  */
 export const BILLING_HISTORY_EMPTY_FALLBACK_SPAN_MONTHS = 24;
-
-/** IVRS from user request; live archive may return all-empty month rows. */
-export const billingHistoryDefaultIvrs = "N3374018980";
-
-export const billingHistoryDefaultConsumerId = "N3374018980";
-
-export const billingHistoryDefaultMeterRoute = "meter-12345";
-
+/** IVRS from live RTP/PQ sample; archive may still return empty month rows. */
+export const billingHistoryDefaultIvrs = CONSUMERS_LIVE_IVRS;
+export const billingHistoryDefaultConsumerId = CONSUMERS_LIVE_IVRS;
+export const billingHistoryDefaultMeterRoute = CONSUMERS_LIVE_METER_ROUTE;
 export const billingHistoryNotFoundRef = "INVALID_CONSUMER_XYZ";
-
 export const billingHistoryMeterNotFoundRef = "meter-999999999";
-
 export const billingHistoryEmptyRef = " ";
-
 const EM_DASH = "—";
-
 function emptyBillingMonthRow(periodLabel: string): BillingHistoryRow {
   return {
     periodLabel,
@@ -44,7 +35,6 @@ function emptyBillingMonthRow(periodLabel: string): BillingHistoryRow {
     paymentStatus: null,
   };
 }
-
 /** Live billingLimit=0 sample (18 IST months, newest first). */
 const CONTRACT_EMPTY_DEFAULT_LABELS = [
   "July 2026",
@@ -66,23 +56,19 @@ const CONTRACT_EMPTY_DEFAULT_LABELS = [
   "March 2025",
   "February 2025",
 ] as const;
-
 const CONTRACT_EMPTY_12_LABELS = CONTRACT_EMPTY_DEFAULT_LABELS.slice(0, 12);
-
 export const billingHistoryContractEmpty24Response: BillingHistoryResponse = {
   success: true,
   data: CONTRACT_EMPTY_DEFAULT_LABELS.map((periodLabel) =>
     emptyBillingMonthRow(periodLabel),
   ),
 };
-
 export const billingHistoryContractEmpty12Response: BillingHistoryResponse = {
   success: true,
   data: CONTRACT_EMPTY_12_LABELS.map((periodLabel) =>
     emptyBillingMonthRow(periodLabel),
   ),
 };
-
 /**
  * Archive cumulative registers (raw ÷ 1000 = kWh):
  * Jan 100 → period 0 (no previous); Feb 250 → period 150; Mar 250 → period 0.
@@ -114,7 +100,6 @@ export const billingHistoryContractNonzeroResponse: BillingHistoryResponse = {
     },
   ],
 };
-
 export const billingHistoryContractConsumptionFormulaMeta = {
   archiveRows: [
     { monthKey: "2026-01", importKwhRaw: 100_000 },
@@ -134,7 +119,6 @@ export interface BillingHistoryTestCase {
   isContractFixture?: boolean;
   tags: string[];
 }
-
 export function resolveBillingHistoryRef(
   scenario: BillingHistoryScenario,
 ): string | undefined {
@@ -144,26 +128,26 @@ export function resolveBillingHistoryRef(
     case "bh_limit_6":
     case "bh_ignore_unknown_query":
     case "invalid_billing_limit":
-      return (
-        process.env.CONSUMER_BH_IVRS?.trim() ||
-        process.env.CONSUMER_EF_IVRS?.trim() ||
-        process.env.CONSUMER_ECG_IVRS?.trim() ||
-        billingHistoryDefaultIvrs
+      return resolveLiveIvrs(
+        process.env.CONSUMER_BH_IVRS,
+        process.env.CONSUMER_EF_IVRS,
+        process.env.CONSUMER_ECG_IVRS,
+        billingHistoryDefaultIvrs,
       );
     case "bh_by_account":
-      return (
-        process.env.CONSUMER_BH_CONSUMER_ID?.trim() ||
-        process.env.CONSUMER_EF_CONSUMER_ID?.trim() ||
-        process.env.CONSUMER_ECG_CONSUMER_ID?.trim() ||
-        billingHistoryDefaultConsumerId
+      return resolveLiveAccountId(
+        process.env.CONSUMER_BH_CONSUMER_ID,
+        process.env.CONSUMER_EF_CONSUMER_ID,
+        process.env.CONSUMER_ECG_CONSUMER_ID,
+        billingHistoryDefaultConsumerId,
       );
     case "bh_by_meter":
-      return (
-        process.env.CONSUMER_BH_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_EF_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_ECG_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_PROFILE_METER_ROUTE?.trim() ||
-        billingHistoryDefaultMeterRoute
+      return resolveLiveMeterRoute(
+        process.env.CONSUMER_BH_METER_ROUTE,
+        process.env.CONSUMER_EF_METER_ROUTE,
+        process.env.CONSUMER_ECG_METER_ROUTE,
+        process.env.CONSUMER_PROFILE_METER_ROUTE,
+        billingHistoryDefaultMeterRoute,
       );
     case "consumer_not_found":
       return billingHistoryNotFoundRef;
@@ -180,7 +164,6 @@ export function resolveBillingHistoryRef(
       return undefined;
   }
 }
-
 export function resolveBillingHistoryQuery(
   scenario: BillingHistoryScenario,
 ): BillingHistoryQuery {
@@ -203,14 +186,12 @@ export function resolveBillingHistoryQuery(
       return { billingLimit: 0 };
   }
 }
-
 export function resolveBillingHistoryExpectedLimit(
   scenario: BillingHistoryScenario,
 ): number {
   const query = resolveBillingHistoryQuery(scenario);
   return typeof query.billingLimit === "number" ? query.billingLimit : 0;
 }
-
 export function resolveBillingHistoryContractBody(
   scenario: BillingHistoryScenario,
 ): BillingHistoryResponse | undefined {
@@ -227,7 +208,6 @@ export function resolveBillingHistoryContractBody(
       return undefined;
   }
 }
-
 export const billingHistoryTestCases: BillingHistoryTestCase[] = [
   {
     testName:

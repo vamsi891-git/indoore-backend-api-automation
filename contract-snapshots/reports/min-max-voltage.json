@@ -1,0 +1,99 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/reports/min-max-voltage",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "address",
+    "category",
+    "circle",
+    "division",
+    "dtr",
+    "feeder",
+    "id",
+    "ivrsNumber",
+    "meterReadingDateTime",
+    "meterSerialNumber",
+    "name",
+    "phase",
+    "sanctionedLoadKw",
+    "slNo",
+    "subStation",
+    "voltage",
+    "zone"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "slNo",
+      "header": "S No."
+    },
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "subStation",
+      "header": "Substation"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtr",
+      "header": "DTR"
+    },
+    {
+      "key": "sanctionedLoadKw",
+      "header": "Sanctioned Load (kW)"
+    },
+    {
+      "key": "name",
+      "header": "Consumer Name"
+    },
+    {
+      "key": "address",
+      "header": "Address"
+    },
+    {
+      "key": "ivrsNumber",
+      "header": "IVRS Number"
+    },
+    {
+      "key": "category",
+      "header": "Category"
+    },
+    {
+      "key": "meterSerialNumber",
+      "header": "Meter Serial Number"
+    },
+    {
+      "key": "phase",
+      "header": "Phase"
+    },
+    {
+      "key": "voltage",
+      "header": "Voltage"
+    },
+    {
+      "key": "meterReadingDateTime",
+      "header": "Meter Reading Date Time"
+    }
+  ]
+}

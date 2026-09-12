@@ -1,5 +1,9 @@
 import { expect } from "@playwright/test";
 import {DailyConsumptionData,DailyConsumptionItem,} from "../Mapper/dailyconsumption.mapper";
+import {
+    validateSharedHierarchyAllowed as assertSharedHierarchyAllowed,
+    validateUniqueConsumerKeys,
+} from "../utils/consumption-identity.helper";
 const ITEM_REQUIRED_FIELDS = [
     "slNo",
     "division",
@@ -18,8 +22,9 @@ const ITEM_REQUIRED_FIELDS = [
     "fr",
     "kwh",
 ] as const;
-const ISO_DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
-const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+/** Backend service/bound dates: `YYYY-MM-DD` or `YYYY-MM-DD 00:00:00.000` (also ISO-Z). */
+const SERVICE_OR_BOUND_DATE =
+  /^\d{4}-\d{2}-\d{2}(?:[ T]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z)?)?$/;
 function round5(n: number): number {
     return Number(n.toFixed(5));
 }
@@ -95,7 +100,9 @@ export class DailyConsumptionValidator {
                 item.serviceDate === null || typeof item.serviceDate === "string",
             ).toBeTruthy();
             if (item.serviceDate) {
-                expect(ISO_DATE.test(item.serviceDate)).toBeTruthy();
+                expect(
+                    SERVICE_OR_BOUND_DATE.test(item.serviceDate.trim()),
+                ).toBeTruthy();
             }
             expect(
                 item.minDate === null || typeof item.minDate === "string",
@@ -106,6 +113,10 @@ export class DailyConsumptionValidator {
             expect(item.ir === null || typeof item.ir === "number").toBeTruthy();
             expect(item.fr === null || typeof item.fr === "number").toBeTruthy();
             expect(item.kwh === null || typeof item.kwh === "number").toBeTruthy();
+            // New optional field — present when API includes MF; do not require it.
+            if (item.mf !== undefined) {
+                expect(item.mf === null || typeof item.mf === "number").toBeTruthy();
+            }
         });
     }
     validateSerialSequence(items: DailyConsumptionItem[],page: number,limit: number,) {
@@ -115,17 +126,20 @@ export class DailyConsumptionValidator {
         });
     }
     validateUniqueSerialNumbers(items: DailyConsumptionItem[]) {
-        const serials = items.map((item) => item.slNo);
-        expect(new Set(serials).size).toBe(serials.length);
+        validateUniqueConsumerKeys(items);
+    }
+
+    validateSharedHierarchyAllowed(items: DailyConsumptionItem[]) {
+        assertSharedHierarchyAllowed(items);
     }
 
     validateReadingDateFormat(items: DailyConsumptionItem[]) {
         items.forEach((item) => {
             if (item.minDate) {
-                expect(ISO_DATE_TIME.test(item.minDate)).toBeTruthy();
+                expect(SERVICE_OR_BOUND_DATE.test(item.minDate.trim())).toBeTruthy();
             }
             if (item.maxDate) {
-                expect(ISO_DATE_TIME.test(item.maxDate)).toBeTruthy();
+                expect(SERVICE_OR_BOUND_DATE.test(item.maxDate.trim())).toBeTruthy();
             }
         });
     }

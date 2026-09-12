@@ -240,6 +240,39 @@ export const dtrDailyThresholdContractPfResponse: DtrDailyThresholdChartResponse
         },
     };
 
+export const dtrDailyThresholdContractEmptyPointsResponse: DtrDailyThresholdChartResponse =
+    {
+        success: true,
+        data: {
+            period: "daily",
+            points: [],
+        },
+    };
+
+export const dtrDailyThresholdContractUniqueLabelsResponse: DtrDailyThresholdChartResponse =
+    {
+        success: true,
+        data: {
+            period: "daily",
+            points: [
+                {
+                    label: "1 Sept",
+                    activeEnergyKwh: 10,
+                    reactiveEnergyKvarh: 6,
+                    apparentEnergyKvah: 12,
+                    powerFactor: 0.83,
+                },
+                {
+                    label: "2 Sept",
+                    activeEnergyKwh: 11,
+                    reactiveEnergyKvarh: 6.63,
+                    apparentEnergyKvah: 13,
+                    powerFactor: 0.85,
+                },
+            ],
+        },
+    };
+
 export interface DtrDailyThresholdChartTestCase {
     testName: string;
     scenario: DtrDailyThresholdChartScenario;
@@ -250,7 +283,7 @@ export interface DtrDailyThresholdChartTestCase {
 
 export function resolveDtrDailyThresholdChartPeriod(
     scenario: DtrDailyThresholdChartScenario,
-): DtrDailyThresholdPeriod {
+): DtrDailyThresholdPeriod | undefined {
     switch (scenario) {
         case "ddt_by_code_primary_hourly":
         case "contract_null_hourly":
@@ -259,6 +292,8 @@ export function resolveDtrDailyThresholdChartPeriod(
         case "ddt_by_code_primary_daily":
         case "contract_null_daily":
         case "contract_populated_energy":
+        case "contract_unique_labels":
+        case "contract_empty_points":
             return "daily";
         case "ddt_by_code_primary_weekly":
         case "contract_null_weekly":
@@ -272,11 +307,15 @@ export function resolveDtrDailyThresholdChartPeriod(
             return "yearly";
         case "ddt_by_code_alt":
         case "ddt_ignore_unknown_query":
+            return "daily";
+        case "ddt_uppercase_period":
+        case "ddt_missing_period":
+        case "ddt_blank_period":
         case "dtr_not_found":
         case "empty_dtr_code":
         case "invalid_period":
         default:
-            return "monthly";
+            return undefined;
     }
 }
 
@@ -290,6 +329,10 @@ export function resolveDtrDailyThresholdChartCode(
         case "ddt_by_code_primary_monthly":
         case "ddt_by_code_primary_yearly":
         case "ddt_ignore_unknown_query":
+        case "ddt_missing_period":
+        case "ddt_blank_period":
+        case "ddt_uppercase_period":
+        case "invalid_period":
             return (
                 process.env.DTR_DAILY_THRESHOLD_CHART_CODE?.trim() ||
                 process.env.DTR_FEEDERS_CODE?.trim() ||
@@ -314,7 +357,8 @@ export function resolveDtrDailyThresholdChartCode(
         case "contract_populated_energy":
         case "contract_reactive_derivation":
         case "contract_pf_from_energy":
-        case "invalid_period":
+        case "contract_empty_points":
+        case "contract_unique_labels":
             return undefined;
         default:
             return undefined;
@@ -325,12 +369,24 @@ export function resolveDtrDailyThresholdChartQuery(
     scenario: DtrDailyThresholdChartScenario,
 ): DtrDailyThresholdChartQuery {
     if (scenario === "invalid_period") {
-        return { period: "invalid" as DtrDailyThresholdPeriod };
+        return { period: "invalid" };
+    }
+    if (scenario === "ddt_blank_period") {
+        return { period: "" };
+    }
+    if (scenario === "ddt_uppercase_period") {
+        return { period: "DAILY" };
+    }
+    if (scenario === "ddt_missing_period") {
+        return {};
     }
 
     const period = resolveDtrDailyThresholdChartPeriod(scenario);
     if (scenario === "ddt_ignore_unknown_query") {
         return { period, foo: 1, bar: "baz" };
+    }
+    if (!period) {
+        return {};
     }
     return { period };
 }
@@ -355,6 +411,10 @@ export function resolveDtrDailyThresholdChartContractBody(
             return dtrDailyThresholdContractReactiveResponse;
         case "contract_pf_from_energy":
             return dtrDailyThresholdContractPfResponse;
+        case "contract_empty_points":
+            return dtrDailyThresholdContractEmptyPointsResponse;
+        case "contract_unique_labels":
+            return dtrDailyThresholdContractUniqueLabelsResponse;
         default:
             return undefined;
     }
@@ -372,117 +432,128 @@ export const dtrDailyThresholdChartTestCases: DtrDailyThresholdChartTestCase[] =
     [
         {
             testName:
-                "Validate GET /indore/dtr/{code}/daily-threshold-chart — primary DTR hourly (11IW3)",
+                "DTR energy over time — hour by hour, each hour listed once",
             scenario: "ddt_by_code_primary_hourly",
             tags: ["@smoke", "@dtr", "@daily-threshold-chart"],
         },
         {
             testName:
-                "Validate GET /indore/dtr/{code}/daily-threshold-chart — primary DTR daily",
+                "DTR energy over time — day by day, each day listed once",
             scenario: "ddt_by_code_primary_daily",
             tags: ["@dtr", "@daily-threshold-chart", "@edge"],
         },
         {
             testName:
-                "Validate GET /indore/dtr/{code}/daily-threshold-chart — primary DTR weekly",
+                "DTR energy over time — week by week, each week listed once",
             scenario: "ddt_by_code_primary_weekly",
             tags: ["@dtr", "@daily-threshold-chart", "@edge"],
         },
         {
             testName:
-                "Validate GET /indore/dtr/{code}/daily-threshold-chart — primary DTR monthly",
-            scenario: "ddt_by_code_primary_monthly",
-            tags: ["@dtr", "@daily-threshold-chart", "@edge"],
-        },
-        {
-            testName:
-                "Validate GET /indore/dtr/{code}/daily-threshold-chart — primary DTR yearly",
-            scenario: "ddt_by_code_primary_yearly",
-            tags: ["@dtr", "@daily-threshold-chart", "@edge"],
-        },
-        {
-            testName:
-                "Validate GET /indore/dtr/{code}/daily-threshold-chart — alternate DTR code",
+                "DTR energy over time — a second transformer still shows a chart",
             scenario: "ddt_by_code_alt",
             tags: ["@dtr", "@daily-threshold-chart", "@edge"],
         },
         {
             testName:
-                "Validate GET /indore/dtr/{code}/daily-threshold-chart — unknown query params ignored",
+                "DTR energy over time — extra filters that nobody uses are ignored",
             scenario: "ddt_ignore_unknown_query",
             tags: ["@dtr", "@daily-threshold-chart", "@edge"],
         },
         {
             testName:
-                "Contract — null hourly buckets (06:00–17:00) when no archive data",
+                "DTR energy over time — DAILY in capital letters still works or is rejected",
+            scenario: "ddt_uppercase_period",
+            tags: ["@dtr", "@daily-threshold-chart", "@edge"],
+        },
+        {
+            testName:
+                "Sample chart — hours with no energy yet",
             scenario: "contract_null_hourly",
             isContractFixture: true,
             tags: ["@dtr", "@daily-threshold-chart", "@edge"],
         },
         {
-            testName:
-                "Contract — null daily buckets (rolling 12 IST days)",
+            testName: "Sample chart — days with no energy yet",
             scenario: "contract_null_daily",
             isContractFixture: true,
             tags: ["@dtr", "@daily-threshold-chart", "@edge"],
         },
         {
-            testName: "Contract — null weekly buckets (W1–W8)",
+            testName: "Sample chart — weeks with no energy yet",
             scenario: "contract_null_weekly",
             isContractFixture: true,
             tags: ["@dtr", "@daily-threshold-chart", "@edge"],
         },
         {
-            testName:
-                "Contract — null monthly buckets (12 rolling months)",
+            testName: "Sample chart — months with no energy yet, each month listed once",
             scenario: "contract_null_monthly",
             isContractFixture: true,
             tags: ["@dtr", "@daily-threshold-chart", "@edge"],
         },
         {
-            testName:
-                "Contract — null yearly buckets (12 rolling years)",
+            testName: "Sample chart — years with no energy yet, each year listed once",
             scenario: "contract_null_yearly",
             isContractFixture: true,
             tags: ["@dtr", "@daily-threshold-chart", "@edge"],
         },
         {
             testName:
-                "Contract — populated energy deltas with PF and derived kVArh",
+                "Sample chart — days with energy, power factor, and reactive energy",
             scenario: "contract_populated_energy",
             isContractFixture: true,
             tags: ["@dtr", "@daily-threshold-chart", "@edge"],
         },
         {
             testName:
-                "Contract — reactive kVArh derived from √(kVAh² − kWh²)",
+                "Sample chart — reactive energy calculated from kWh and kVAh",
             scenario: "contract_reactive_derivation",
             isContractFixture: true,
             tags: ["@dtr", "@daily-threshold-chart", "@edge"],
         },
         {
             testName:
-                "Contract — power factor derived from kWh/kVAh when PF column missing",
+                "Sample chart — power factor calculated from kWh and kVAh",
             scenario: "contract_pf_from_energy",
             isContractFixture: true,
             tags: ["@dtr", "@daily-threshold-chart", "@edge"],
         },
         {
+            testName: "Sample chart — no points yet is allowed",
+            scenario: "contract_empty_points",
+            isContractFixture: true,
+            tags: ["@dtr", "@daily-threshold-chart", "@edge"],
+        },
+        {
             testName:
-                "Validate GET /indore/dtr/{code}/daily-threshold-chart — DTR not found",
+                "Sample chart — 1 Sept and 2 Sept each appear only once",
+            scenario: "contract_unique_labels",
+            isContractFixture: true,
+            tags: ["@dtr", "@daily-threshold-chart", "@edge"],
+        },
+        {
+            testName:
+                "DTR energy over time — unknown transformer is not shown",
             scenario: "dtr_not_found",
             tags: ["@dtr", "@daily-threshold-chart", "@negative"],
         },
         {
             testName:
-                "Validate GET /indore/dtr/{code}/daily-threshold-chart — blank DTR code rejected",
+                "DTR energy over time — a blank transformer code is not allowed",
             scenario: "empty_dtr_code",
             expectedStatus: 400,
             tags: ["@dtr", "@daily-threshold-chart", "@negative"],
         },
         {
             testName:
-                "Validate GET /indore/dtr/{code}/daily-threshold-chart — invalid period rejected",
+                "DTR energy over time — a blank time grouping is not allowed",
+            scenario: "ddt_blank_period",
+            expectedStatus: 400,
+            tags: ["@dtr", "@daily-threshold-chart", "@negative"],
+        },
+        {
+            testName:
+                "DTR energy over time — an unknown time grouping is not allowed",
             scenario: "invalid_period",
             expectedStatus: 400,
             tags: ["@dtr", "@daily-threshold-chart", "@negative"],

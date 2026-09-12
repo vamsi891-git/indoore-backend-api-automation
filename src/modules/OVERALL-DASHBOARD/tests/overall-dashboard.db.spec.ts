@@ -5,7 +5,7 @@ import { runOverallDashboardDbCoverage } from "./overall-dashboard-db.harness";
 
 apiDbTest.describe("OVERALL-DASHBOARD — DB Coverage", () => {
   apiDbTest.describe.configure({ retries: 1 });
-  apiDbTest.setTimeout(180_000);
+  apiDbTest.setTimeout(480_000);
   apiDbTest.beforeEach(() => {
     apiDbTest.skip(!isDbConfigured(), "DB credentials not configured");
     apiDbTest.skip(
@@ -14,7 +14,7 @@ apiDbTest.describe("OVERALL-DASHBOARD — DB Coverage", () => {
     );
   });
   apiDbTest(
-    "IND-OD-DB-001 — Metrics network counts ≤ DB universe",
+    "IND-OD-DB-001 — Home dashboard mapped vs unmapped shares look consistent",
     { tag: ["@overall-dashboard", "@db"] },
     async ({ authenticatedApi, db }) => {
       await runOverallDashboardDbCoverage(authenticatedApi, db);

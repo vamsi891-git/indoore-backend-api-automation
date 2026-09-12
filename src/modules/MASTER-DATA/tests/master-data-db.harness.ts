@@ -128,7 +128,7 @@ export async function runMasterDataDbCoverage(
         rowCount: responseBody.data?.rows?.length ?? 0,
       },
       { total: dbTotal },
-      { totalMode: "lte" },
+      { totalMode: "exact" },
     );
     validation.execute("DTR Master total ≤ DB DTR-type meter universe", () => {
       compareMasterDataCountLteDb({
@@ -174,7 +174,6 @@ export async function runMasterDataDbCoverage(
     const apiTotal =
       responseBody.data?.pagination?.total ?? responseBody.data?.total ?? 0;
     const dbTotal = await countConsumerMasterRows(db);
-    const tolerance = Math.max(200, Math.ceil(dbTotal * 0.001));
     logDbVsApiSection(
       "Consumer Master",
       {
@@ -184,14 +183,15 @@ export async function runMasterDataDbCoverage(
         rowCount: responseBody.data?.rows?.length ?? 0,
       },
       { total: dbTotal },
-      { totalMode: "tolerance", tolerance },
+      { totalMode: "exact" },
     );
-    validation.execute("Consumer Master total within tolerance of DB", () => {
-      const delta = Math.abs(apiTotal - dbTotal);
-      expect(
-        delta,
-        `API total ${apiTotal} should be within ${tolerance} of DB ${dbTotal}`,
-      ).toBeLessThanOrEqual(tolerance);
+    validation.execute("Consumer Master total equals DB", () => {
+      expect(apiTotal).toBe(dbTotal);
+      compareMasterDataCountLteDb({
+        label: "consumer-master.total",
+        apiCount: apiTotal,
+        dbCount: dbTotal,
+      });
     });
 
     const apiRow = (responseBody.data?.rows ?? []).find(

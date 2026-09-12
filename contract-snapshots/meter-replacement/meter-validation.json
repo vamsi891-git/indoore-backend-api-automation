@@ -6,14 +6,12 @@
     "success"
   ],
   "dataKeys": [
-    "code",
     "message",
     "meterLookupId",
     "meterSerial",
     "valid"
   ],
   "itemKeys": [
-    "code",
     "message",
     "meterLookupId",
     "meterSerial",

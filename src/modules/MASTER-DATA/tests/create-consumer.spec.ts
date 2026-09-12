@@ -69,7 +69,8 @@ function needsNearestAcctId(
   );
 }
 
-test.describe("Create Consumer API", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Master data — add consumer", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

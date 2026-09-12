@@ -1,14 +1,17 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { ValidateAddMeterScenario } from "../Mapper/validate-add-meter.mapper";
-import { generateProvisionedMeterSerial } from "./dtr-assignable-meter-pool.data";
 import { getValidateMeterSerial } from "../utils/validate-meter-runtime.helper";
 
 export const validateAddMeterMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 
+/** Live exact copy for duplicate serials. */
+export const VALIDATE_ADD_METER_ALREADY_EXISTS_MESSAGE =
+  "Meter serial number already exists";
+
 export interface ValidateAddMeterTestCase {
   testName: string;
   scenario: ValidateAddMeterScenario;
-  envKey: ValidateAddMeterRuntimeEnvKey;
+  envKey?: ValidateAddMeterRuntimeEnvKey;
   tags: string[];
 }
 
@@ -17,31 +20,50 @@ export type ValidateAddMeterRuntimeEnvKey =
   | "VALIDATE_ADD_METER_EXISTS_SERIAL";
 
 /**
- * "valid_new" must always use a unique unused serial.
- * Fixed CI/env values for VALIDATE_ADD_METER_VALID_SERIAL often already exist
- * in shared environments and make `valid=false`.
+ * Prefer runtime-verified serials from `ensureValidateMeterRuntimeContext`
+ * (avoids truncated random collisions and stale env values).
  */
 export function resolveValidateAddMeterSerial(
   scenario: ValidateAddMeterScenario,
 ): string {
   if (scenario === "valid_new") {
-    return generateProvisionedMeterSerial();
+    return getValidateMeterSerial("VALIDATE_ADD_METER_VALID_SERIAL");
   }
-  return getValidateMeterSerial("VALIDATE_ADD_METER_EXISTS_SERIAL");
+  if (scenario === "already_exists") {
+    return getValidateMeterSerial("VALIDATE_ADD_METER_EXISTS_SERIAL");
+  }
+  return "";
 }
 
 export const validateAddMeterTestCases: ValidateAddMeterTestCase[] = [
   {
-    testName:
-      "Validate GET /indore/master-data/validate-add-meter — new meter serial allowed",
+    testName: "Can this meter serial be added? — a new serial is allowed",
     scenario: "valid_new",
     envKey: "VALIDATE_ADD_METER_VALID_SERIAL",
     tags: ["@smoke", "@master-data", "@validate-add-meter", "@meter-master"],
   },
   {
-    testName: "Validate meter serial already exists — METER_ALREADY_EXISTS",
+    testName: "Can this meter serial be added? — a serial that already exists is rejected",
     scenario: "already_exists",
     envKey: "VALIDATE_ADD_METER_EXISTS_SERIAL",
     tags: ["@master-data", "@validate-add-meter", "@negative"],
   },
 ];
+
+export const validateAddMeterNegativeCases = [
+  {
+    testName: "Can this meter serial be added? — an empty serial is rejected",
+    meterSerialNumber: "",
+    tags: ["@master-data", "@validate-add-meter", "@negative", "@edge"],
+  },
+  {
+    testName: "Can this meter serial be added? — a serial that is only spaces is rejected",
+    meterSerialNumber: "   ",
+    tags: ["@master-data", "@validate-add-meter", "@negative", "@edge"],
+  },
+  {
+    testName: "Can this meter serial be added? — the check is rejected when no serial is entered",
+    meterSerialNumber: null as string | null,
+    tags: ["@master-data", "@validate-add-meter", "@negative", "@edge"],
+  },
+] as const;

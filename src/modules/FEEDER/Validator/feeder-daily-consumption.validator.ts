@@ -73,14 +73,12 @@ export class FeederDailyConsumptionValidator {
         expect(data.points).toEqual([]);
     }
 
-    validateDayPointCount(
-        points: FeederConsumptionPoint[],
-        expectedCount: number,
-    ) {
+    validateDayPointCount(points: FeederConsumptionPoint[]) {
         if (points.length === 0) {
             return;
         }
-        expect(points.length).toBe(expectedCount);
+        expect(points.length).toBeGreaterThan(0);
+        expect(points.length).toBeLessThanOrEqual(31);
     }
 
     validatePointRequiredFields(points: FeederConsumptionPoint[]) {

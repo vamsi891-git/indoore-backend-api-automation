@@ -9,7 +9,6 @@ export const ConsumerSearchItemSchema = z
     consumerCid: z.string(),
     consumerAddress: z.string(),
     ivrsNo: z.string(),
-    existingIvrsNo: z.string(),
     meterSerialNumber: z.string(),
     consumerMobileNumber: z.string(),
   })

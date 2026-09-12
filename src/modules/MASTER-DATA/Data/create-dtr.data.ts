@@ -252,8 +252,7 @@ const hierarchyEnvKeys = [...CREATE_DTR_HIERARCHY_ENV_KEYS];
 export const createDtrTestCases: CreateDtrTestCase[] = [
   // ─── DTR identification (manual §2) ────────────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — DTR Code required",
+    testName: "Add DTR — DTR code is required",
     scenario: "validation_error",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -265,8 +264,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — DTR Name required",
+    testName: "Add DTR — DTR name is required",
     scenario: "validation_error",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -278,8 +276,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — DTR Code must be unique",
+    testName: "Add DTR — DTR code must be unique",
     scenario: "dtr_code_exists",
     expectedStatus: 400,
     acceptableStatuses: [400, 409],
@@ -291,8 +288,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — DTR Capacity must be greater than zero",
+    testName: "Add DTR — DTR capacity must be greater than zero",
     scenario: "validation_error",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -304,8 +300,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — DTR Capacity cannot be negative",
+    testName: "Add DTR — DTR capacity cannot be negative",
     scenario: "validation_error",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -317,8 +312,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — Status must be valid",
+    testName: "Add DTR — status must be valid",
     scenario: "validation_error",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -332,8 +326,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
 
   // ─── Date validation (manual §2 / §3) ────────────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — Service Date must use YYYY-MM-DD",
+    testName: "Add DTR — service date must be a valid date",
     scenario: "validation_error",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -345,8 +338,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — Installation Date must use YYYY-MM-DD",
+    testName: "Add DTR — installation date must be a valid date",
     scenario: "validation_error",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -358,8 +350,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — future Service Date rejected",
+    testName: "Add DTR — service date cannot be in the future",
     scenario: "validation_error",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -371,8 +362,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — future Installation Date rejected",
+    testName: "Add DTR — installation date cannot be in the future",
     scenario: "validation_error",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -386,8 +376,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
 
   // ─── Meter details (manual §2) ─────────────────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — MSN required",
+    testName: "Add DTR — meter serial is required",
     scenario: "validation_error",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -399,8 +388,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — meter must exist",
+    testName: "Add DTR — meter serial must already exist",
     scenario: "meter_not_found",
     expectedStatus: 400,
     acceptableStatuses: [400, 404],
@@ -414,8 +402,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — meter must be active",
+    testName: "Add DTR — meter must be active",
     scenario: "meter_inactive",
     expectedStatus: 409,
     acceptableStatuses: [400, 409],
@@ -427,8 +414,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — meter already on another DTR",
+    testName: "Add DTR — meter cannot already be on another DTR",
     scenario: "meter_on_dtr",
     expectedStatus: 400,
     acceptableStatuses: [400, 409],
@@ -440,8 +426,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — meter already assigned to consumer",
+    testName: "Add DTR — meter cannot already be assigned to a consumer",
     scenario: "meter_assigned",
     expectedStatus: 400,
     acceptableStatuses: [400, 409],
@@ -453,8 +438,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — Main/Sub Meter must be valid",
+    testName: "Add DTR — main/sub meter type must be valid",
     scenario: "validation_error",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -466,8 +450,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — Meter Phase must be valid",
+    testName: "Add DTR — meter phase must be valid",
     scenario: "validation_error",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -479,8 +462,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — Service Point ID required",
+    testName: "Add DTR — service point ID is required",
     scenario: "validation_error",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -494,8 +476,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
 
   // ─── Communication (manual §3) ───────────────────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — SIM No. required",
+    testName: "Add DTR — SIM number is required",
     scenario: "validation_error",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -507,8 +488,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — IMSI No. must contain digits only",
+    testName: "Add DTR — IMSI must contain digits only",
     scenario: "validation_error",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -520,8 +500,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — IP Address must be valid IPv4",
+    testName: "Add DTR — IP address must be a valid IPv4 address",
     scenario: "validation_error",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -533,8 +512,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — Modem Serial Number required",
+    testName: "Add DTR — modem serial is required",
     scenario: "validation_error",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -546,8 +524,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — Modem IMEI must be 15 digits",
+    testName: "Add DTR — modem IMEI must be 15 digits",
     scenario: "validation_error",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -559,8 +536,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — Meter Initial Reading must be greater than zero",
+    testName: "Add DTR — initial reading must be greater than zero",
     scenario: "validation_error",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -574,8 +550,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
 
   // ─── Success (last — consumes a provisioned meter) ─────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/add-dtr — create DTR successfully",
+    testName: "Add DTR — new DTR is created",
     scenario: "success",
     expectedStatus: 201,
     envKeys: [...hierarchyEnvKeys],

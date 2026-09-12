@@ -1,7 +1,9 @@
 import { test } from "../../../fixtures/api.fixture";
+import { test as authTest } from "../../../fixtures/auth.fixture";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { DashboardMetricsApi } from "../Api/dashboardmetrics.api";
 import {
@@ -10,10 +12,20 @@ import {
     resolveDashboardMetricsContractBody,
     resolveDashboardMetricsQuery,
 } from "../Data/dashboardmetrics.data";
+import {
+    dtrUnbalanceAccessTokenInvalidCode,
+    dtrUnbalanceAccessTokenInvalidMessage,
+    dtrUnbalanceAuthNegativeCases,
+    dtrUnbalanceUnauthorizedCode,
+    dtrUnbalanceUnauthorizedMessage,
+} from "../Data/dtr-unbalance-auth.data";
 import { DashboardMetricsMapper } from "../Mapper/dashboardmetrics.mapper";
 import { DashboardMetricsValidator } from "../Validator/dashboardmetrics.validator";
+import { expect } from "@playwright/test";
 
-test.describe("Dashboard Metrics API", () => {
+const CONSUMER_METRICS_PATH = "/indore/dashboard/consumer/metrics";
+
+test.describe("Dashboard — overview numbers", () => {
     test.describe.configure({ retries: 1 });
     test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
@@ -51,27 +63,16 @@ test.describe("Dashboard Metrics API", () => {
 
                 const api = new DashboardMetricsApi(authenticatedApi);
                 const query = resolveDashboardMetricsQuery(testCase.scenario);
-                const queryString = new URLSearchParams(
-                    Object.entries(query).reduce<Record<string, string>>(
-                        (acc, [key, value]) => {
-                            if (value !== undefined) {
-                                acc[key] = String(value);
-                            }
-                            return acc;
-                        },
-                        {},
-                    ),
-                ).toString();
 
                 const { rawResponse, responseBody, responseTime } =
                     await api.getDashboardMetrics(query);
 
                 await PerformanceTracker.track(
-        rawResponse,
-        testCase.testName,
-        rawResponse.url(),
-        responseTime
-      );
+                    rawResponse,
+                    testCase.testName,
+                    rawResponse.url(),
+                    responseTime,
+                );
 
                 validation.execute("Status Validation", () =>
                     assert.validateStatusCode(rawResponse, 200, responseBody),
@@ -104,6 +105,83 @@ test.describe("Dashboard Metrics API", () => {
                 );
 
                 validation.printSummary(testCase.testName, responseTime);
+            },
+        );
+    }
+});
+
+authTest.describe("Dashboard overview — cannot open without a valid login", () => {
+    authTest.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
+
+    for (const authCase of dtrUnbalanceAuthNegativeCases) {
+        authTest(
+            `${authCase.testName}`,
+            { tag: [...authCase.tags, "@metrics"] },
+            async ({ unauthenticatedApi }) => {
+                const assert = new AssertionEngine();
+                const validation = new ValidationEngine();
+                const started = Date.now();
+
+                const rawResponse = await unauthenticatedApi.get(
+                    CONSUMER_METRICS_PATH,
+                    { headers: authCase.headers },
+                );
+                if (
+                    BackendResponse.shouldSkipRateLimit(
+                        rawResponse.status(),
+                        `Dashboard metrics ${authCase.testName}`,
+                    )
+                ) {
+                    authTest.skip(
+                        true,
+                        `Rate limited (429) on ${CONSUMER_METRICS_PATH} — retry later`,
+                    );
+                    return;
+                }
+                const responseBody = await rawResponse.json().catch(() => ({}));
+                const responseTime = Date.now() - started;
+
+                await PerformanceTracker.track(
+                    rawResponse,
+                    `Dashboard metrics ${authCase.expectedErrorCode}`,
+                    rawResponse.url(),
+                    responseTime,
+                );
+
+                validation.execute("Status (auth negative)", () =>
+                    assert.validateStatusCode(
+                        rawResponse,
+                        authCase.expectedStatus,
+                        responseBody,
+                    ),
+                );
+                validation.execute("Content Type", () =>
+                    assert.validateContentType(rawResponse),
+                );
+                validation.execute("Auth Error Envelope", () => {
+                    const body = responseBody as {
+                        success?: boolean;
+                        error?: { code?: string; message?: string };
+                    };
+                    expect(body.success).toBeFalsy();
+                    expect(body.error?.code).toBe(authCase.expectedErrorCode);
+                    const expectedMessage =
+                        authCase.expectedErrorCode ===
+                        dtrUnbalanceAccessTokenInvalidCode
+                            ? dtrUnbalanceAccessTokenInvalidMessage
+                            : authCase.expectedErrorCode ===
+                                dtrUnbalanceUnauthorizedCode
+                              ? dtrUnbalanceUnauthorizedMessage
+                              : authCase.expectedMessage;
+                    expect(String(body.error?.message ?? "").toLowerCase()).toContain(
+                        expectedMessage.toLowerCase(),
+                    );
+                });
+
+                validation.printSummary(
+                    `Dashboard Metrics — ${authCase.expectedErrorCode}`,
+                    responseTime,
+                );
             },
         );
     }

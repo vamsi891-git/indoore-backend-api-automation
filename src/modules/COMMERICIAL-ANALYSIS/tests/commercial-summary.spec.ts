@@ -7,13 +7,14 @@ import { CommercialSummaryValidator } from "../Validator/commercial-summary.vali
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { shouldSkipCommercialResponse } from "../utils/commercial-request.helper";
 
-test.describe("Commercial Summary API", () => {
+test.describe("Commercial dashboard — report cards", () => {
     test.describe.configure({ retries: 2 });
     test.setTimeout(480_000);
 
     test(
-        "Validate Commercial Summary API",
+        "Commercial dashboard — all report cards load for the selected month",
         {
             tag: ["@commercial", "@commercial-summary", "@smoke"],
         },
@@ -28,12 +29,20 @@ test.describe("Commercial Summary API", () => {
                 expectedCategory,
                 expectedAnalysisTypes,
                 expectedReportNames,
-                reportsExpectedAllZero,
+                reportsExpectedUnavailable,
                 reportGroups,
             } = commercialSummaryData;
 
             const { rawResponse, responseBody, responseTime, attempts } =
                 await api.getCommercialSummary(month, year, pfThreshold);
+
+            if (shouldSkipCommercialResponse(rawResponse.status(), responseBody)) {
+                test.skip(
+                    true,
+                    `Commercial summary unavailable (HTTP ${rawResponse.status()})`,
+                );
+                return;
+            }
 
             await PerformanceTracker.track(
         rawResponse,
@@ -136,10 +145,10 @@ test.describe("Commercial Summary API", () => {
                 validation.execute("Commercial Category", () =>
                     validator.validateCommercialCategory(reports, expectedCategory),
                 );
-                validation.execute("Night Reports Placeholder", () =>
+                validation.execute("Unavailable reports", () =>
                     validator.validateNightReportsPlaceholder(
                         reports,
-                        reportsExpectedAllZero,
+                        reportsExpectedUnavailable,
                     ),
                 );
                 validation.execute("Aggregate Totals", () =>
@@ -182,6 +191,9 @@ test.describe("Commercial Summary API", () => {
                     );
                     validation.execute(`${label} No Nullish Counts`, () =>
                         validator.validateNoNullishCounts(report),
+                    );
+                    validation.execute(`${label} Availability`, () =>
+                        validator.validateAvailability(report),
                     );
                     validation.execute(`${label} Dom/Non-Dom Split`, () =>
                         validator.validateDomesticNonDomesticSplit(report),

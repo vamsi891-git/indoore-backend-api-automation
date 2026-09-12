@@ -40,7 +40,8 @@ async function createPublicApiContext() {
   });
 }
 
-test.describe("Auth Invite Accept Validate Flow", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Auth Invite Accept Validate Flow", () => {
   test.describe.configure({
     mode: "serial",
     timeout: INVITE_PROVISION_TEST_TIMEOUT_MS,

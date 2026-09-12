@@ -23,6 +23,7 @@ import {
   extractJobNamesFromInitResponse,
 } from "../shared/commands-job-init.mapper";
 import {
+  assertHesE2eQueryPhase,
   logCommandE2eResponses,
   pollQueryMeterJob,
   softSkipHesE2eInfraFailure,
@@ -193,66 +194,59 @@ test.describe("HES Commands — Metering Mode (E2E)", () => {
         maxResponseTimeMs: commandsMeteringModeData.maxResponseTimeMs,
       });
 
-      validation.execute("Query Success Response", () =>
-        queryValidator.validateResponse(pollResult.responseBody),
-      );
-      validation.execute("Query Response Envelope", () =>
-        meteringValidator.validateQueryResponseEnvelope(pollResult.mapped),
-      );
-      validation.execute("Query Finished Message", () =>
-        meteringValidator.validateQueryFinishedMessage(pollResult.mapped.message),
-      );
-      validation.execute("Query Job Name Echo", () =>
-        queryValidator.validateJobNameEcho(pollResult.mapped, jobName),
-      );
-      validation.execute("Query Sync Flags", () =>
-        queryValidator.validateSyncFlags(pollResult.mapped),
-      );
-      validation.execute("Query HES Job Status FINISHED", () => {
-        expect(pollResult.mapped.job.hesJobStatus).toBe("FINISHED");
+      assertHesE2eQueryPhase({
+        validation,
+        queryValidator,
+        pollResult,
+        jobName,
+        meterId: requestedMeters[0],
+        onFinished: () => {
+          validation.execute("Query Response Envelope", () =>
+            meteringValidator.validateQueryResponseEnvelope(pollResult.mapped),
+          );
+          validation.execute("Query Finished Message", () =>
+            meteringValidator.validateQueryFinishedMessage(
+              pollResult.mapped.message,
+            ),
+          );
+          validation.execute("Query HES Job Status FINISHED", () => {
+            expect(pollResult.mapped.job.hesJobStatus).toBe("FINISHED");
+          });
+          validation.execute("Query Summary Counts", () =>
+            queryValidator.validateSummaryCounts(pollResult.mapped.job.summary),
+          );
+          validation.execute("Query Summary vs Meter Results", () =>
+            queryValidator.validateSummaryMatchesMeterResults(
+              pollResult.mapped.job.summary,
+              pollResult.mapped.job.meterResults,
+            ),
+          );
+          validation.execute("Query Status Summary Alignment", () =>
+            queryValidator.validateStatusSummaryAlignment(
+              pollResult.mapped.job.summary,
+              pollResult.mapped.job.meterResults,
+            ),
+          );
+          validation.execute("Query All Meter Results", () =>
+            queryValidator.validateAllMeterResults(
+              pollResult.mapped.job.meterResults,
+            ),
+          );
+          validation.execute("Query Metering Mode HES Response — All Fields", () =>
+            meteringValidator.validateMeteringModeQueryMeterResults(
+              pollResult.mapped.job.meterResults,
+              requestedMeters[0],
+            ),
+          );
+          validation.execute("Query Full Contract", () =>
+            queryValidator.validateFullContract(
+              pollResult.mapped,
+              jobName,
+              requestedMeters[0],
+            ),
+          );
+        },
       });
-      validation.execute("Query HES Status Code", () =>
-        queryValidator.validateHesStatusCode(pollResult.mapped),
-      );
-      validation.execute("Query Summary Counts", () =>
-        queryValidator.validateSummaryCounts(pollResult.mapped.job.summary),
-      );
-      validation.execute("Query Summary vs Meter Results", () =>
-        queryValidator.validateSummaryMatchesMeterResults(
-          pollResult.mapped.job.summary,
-          pollResult.mapped.job.meterResults,
-        ),
-      );
-      validation.execute("Query Status Summary Alignment", () =>
-        queryValidator.validateStatusSummaryAlignment(
-          pollResult.mapped.job.summary,
-          pollResult.mapped.job.meterResults,
-        ),
-      );
-      validation.execute("Query All Meter Results", () =>
-        queryValidator.validateAllMeterResults(
-          pollResult.mapped.job.meterResults,
-        ),
-      );
-      validation.execute("Query Expected Meter Present", () =>
-        queryValidator.validateExpectedMeterPresent(
-          pollResult.mapped.job.meterResults,
-          requestedMeters[0],
-        ),
-      );
-      validation.execute("Query Metering Mode HES Response — All Fields", () =>
-        meteringValidator.validateMeteringModeQueryMeterResults(
-          pollResult.mapped.job.meterResults,
-          requestedMeters[0],
-        ),
-      );
-      validation.execute("Query Full Contract", () =>
-        queryValidator.validateFullContract(
-          pollResult.mapped,
-          jobName,
-          requestedMeters[0],
-        ),
-      );
 
       ApiValidationHelper.finalize(validation, {
         apiName: "Commands Metering Mode E2E",
@@ -266,14 +260,16 @@ test.describe("HES Commands — Metering Mode (E2E)", () => {
             body,
             jobName,
             pollAttempts: pollResult.pollAttempts,
+            completed: pollResult.completed,
           },
           responseStatus: pollResult.rawResponse.status(),
           responseBody: {
             init: postBody,
             query: pollResult.responseBody,
           },
-          expectedBehavior:
-            "POST metering_mode_get returns jobName; GET query-meter-job returns FINISHED with GET_CONFIG/SUCCESS and hesResponse (meterId, status, failureStep, progress null, response null).",
+          expectedBehavior: pollResult.completed
+            ? "POST metering_mode_get returns jobName; GET query-meter-job returns FINISHED with GET_CONFIG/SUCCESS and hesResponse (meterId, status, failureStep, progress null, response null)."
+            : "POST metering_mode_get returns jobName; GET query-meter-job remains RUNNING/IN_PROGRESS until HES callback (set HES_E2E_REQUIRE_COMPLETION=true to require FINISHED).",
         },
       });
     },

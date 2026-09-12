@@ -1,0 +1,68 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/dashboard/dtr/voltage-unbalance-details",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "header",
+    "key"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "subStation",
+      "header": "Sub Station"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtr",
+      "header": "DTR"
+    },
+    {
+      "key": "logDate",
+      "header": "Log Date"
+    },
+    {
+      "key": "loadingCondition",
+      "header": "Loading Condition"
+    },
+    {
+      "key": "voltageUnbalance",
+      "header": "Voltage Unbalance"
+    },
+    {
+      "key": "vrn",
+      "header": "VRN"
+    },
+    {
+      "key": "vyn",
+      "header": "VYN"
+    },
+    {
+      "key": "vbn",
+      "header": "VBN"
+    }
+  ]
+}

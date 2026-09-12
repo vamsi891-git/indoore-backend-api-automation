@@ -17,6 +17,7 @@ import { feederProfileData } from "../Data/feederprofile.data";
 import { feederAlertsData } from "../Data/feeder-alerts.data";
 import { feederElectricalParametersData } from "../Data/feeder-electrical-parameters.data";
 import { feederDailyConsumptionData } from "../Data/feeder-daily-consumption.data";
+import { resolveFeederCode } from "../utils/feeder-env.helper";
 
 function asRecord(value: unknown): Record<string, unknown> {
   return value !== null && typeof value === "object"
@@ -24,15 +25,11 @@ function asRecord(value: unknown): Record<string, unknown> {
     : {};
 }
 
-function resolveFeederCode(fallback: string): string {
-  return process.env.FEEDER_CODE?.trim() || fallback;
-}
-
-test.describe("FEEDER — Contract Snapshots", () => {
+test.describe("Feeder — saved field lists", () => {
   test.setTimeout(180_000);
 
   test(
-    "Feeder Profile Contract Snapshot",
+    "Feeder profile — the field list still matches what we saved",
     { tag: ["@contract-snapshot", "@feeder", "@profile"] },
     async ({ authenticatedApi }) => {
       const code = resolveFeederCode(feederProfileData.feederCode);
@@ -55,7 +52,7 @@ test.describe("FEEDER — Contract Snapshots", () => {
   );
 
   test(
-    "Feeder Alerts Contract Snapshot",
+    "Feeder alerts — the field list still matches what we saved",
     { tag: ["@contract-snapshot", "@feeder", "@feeder-alerts"] },
     async ({ authenticatedApi }) => {
       const code = resolveFeederCode(feederAlertsData.feederCode);
@@ -77,7 +74,7 @@ test.describe("FEEDER — Contract Snapshots", () => {
   );
 
   test(
-    "Feeder Electrical Parameters Contract Snapshot",
+    "Feeder voltage and current — the field list still matches what we saved",
     { tag: ["@contract-snapshot", "@feeder", "@electrical-parameters"] },
     async ({ authenticatedApi }) => {
       const code = resolveFeederCode(
@@ -101,7 +98,7 @@ test.describe("FEEDER — Contract Snapshots", () => {
   );
 
   test(
-    "Feeder Daily Consumption Contract Snapshot",
+    "Feeder daily energy — the field list still matches what we saved",
     { tag: ["@contract-snapshot", "@feeder", "@daily-consumption"] },
     async ({ authenticatedApi }) => {
       const code = resolveFeederCode(feederDailyConsumptionData.feederCode);

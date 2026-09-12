@@ -18,7 +18,7 @@ import {
 } from "../Mapper/dtrstatistics.mapper";
 import { DtrStatisticsValidator } from "../Validator/dtrstatistics.validator";
 
-test.describe("DTR Statistics API", () => {
+test.describe("DTR statistic cards", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

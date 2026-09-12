@@ -49,6 +49,12 @@ export const ListConsumerMasterDataQuerySchema = z
         s === "true" ? true : s === "false" ? false : undefined,
       ),
     meterType: z.enum(["all", "live", "test"]).optional().default("all"),
+    includeArchiveCounts: z
+      .enum(["true", "false"])
+      .optional()
+      .transform((s) =>
+        s === "true" ? true : s === "false" ? false : undefined,
+      ),
     fromDate: ymd.optional(),
     toDate: ymd.optional(),
   })

@@ -1,0 +1,151 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/reports/dtr-data",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "avgPf",
+    "bPf",
+    "circle",
+    "dataSource",
+    "division",
+    "dtr",
+    "feeder",
+    "freq",
+    "ib",
+    "id",
+    "ir",
+    "iy",
+    "kVA",
+    "kVAR",
+    "kVAh",
+    "kW",
+    "kWh",
+    "meterLookupId",
+    "meterSerialNumber",
+    "meterTime",
+    "mf",
+    "rPf",
+    "slNo",
+    "subStation",
+    "vlB",
+    "vlR",
+    "vlY",
+    "yPf",
+    "zone"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "slNo",
+      "header": "S No."
+    },
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "subStation",
+      "header": "Substation"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtr",
+      "header": "DTR"
+    },
+    {
+      "key": "meterSerialNumber",
+      "header": "Meter Serial Number"
+    },
+    {
+      "key": "meterTime",
+      "header": "Meter Time"
+    },
+    {
+      "key": "mf",
+      "header": "MF"
+    },
+    {
+      "key": "vlR",
+      "header": "VL R"
+    },
+    {
+      "key": "vlY",
+      "header": "VL Y"
+    },
+    {
+      "key": "vlB",
+      "header": "VL B"
+    },
+    {
+      "key": "ir",
+      "header": "IR"
+    },
+    {
+      "key": "iy",
+      "header": "IY"
+    },
+    {
+      "key": "ib",
+      "header": "IB"
+    },
+    {
+      "key": "rPf",
+      "header": "R PF"
+    },
+    {
+      "key": "yPf",
+      "header": "Y PF"
+    },
+    {
+      "key": "bPf",
+      "header": "B PF"
+    },
+    {
+      "key": "avgPf",
+      "header": "Avg PF"
+    },
+    {
+      "key": "kW",
+      "header": "kW"
+    },
+    {
+      "key": "kWh",
+      "header": "kWh"
+    },
+    {
+      "key": "kVA",
+      "header": "kVA"
+    },
+    {
+      "key": "kVAh",
+      "header": "kVAh"
+    },
+    {
+      "key": "kVAR",
+      "header": "kVAR"
+    },
+    {
+      "key": "freq",
+      "header": "Frequency"
+    }
+  ]
+}

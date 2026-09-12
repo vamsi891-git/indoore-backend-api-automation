@@ -3,13 +3,15 @@ import {
   MdAnalysisResponse,
   MdAnalysisRow,
 } from "../Mapper/mdanalysis.mapper";
-import type { MdAnalysisType } from "../Data/mdanalysis.data";
+import { mdGridColumnKeys, type MdAnalysisType } from "../Data/mdanalysis.data";
 import {
   isCommercialGridData,
   validateCommercialPagination,
   validateCommercialQueryParams,
   validateCommercialTotalCount,
   validateNoDuplicateMeterRows,
+  validateUniqueMeterIdentityAllowingDistinctMetric,
+  formatCommercialMetricKey,
 } from "./commercial-analysis.shared";
 
 export interface MdAnalysisQueryShape {
@@ -19,6 +21,7 @@ export interface MdAnalysisQueryShape {
   months?: number;
   page: number;
   pageSize: number;
+  connectionCategory?: "domestic" | "non-domestic";
 }
 
 function isCdCompareType(type: MdAnalysisType): boolean {
@@ -48,6 +51,20 @@ export class MdAnalysisValidator {
     }
   }
 
+  validateGridColumns(
+    response: MdAnalysisResponse,
+    type: MdAnalysisType,
+  ): void {
+    const columns = response.data.columns;
+    if (!columns?.length) {
+      return;
+    }
+    const keys = columns.map((column) => column.key);
+    for (const expected of mdGridColumnKeys(type)) {
+      expect(keys, `missing MD column ${expected}`).toContain(expected);
+    }
+  }
+
   validateQueryParams(
     response: MdAnalysisResponse,
     query: MdAnalysisQueryShape,
@@ -72,29 +89,34 @@ export class MdAnalysisValidator {
     }
   }
 
-  validateMandatoryFields(rows: MdAnalysisRow[]): void {
+  validateMandatoryFields(
+    rows: MdAnalysisRow[],
+    type: MdAnalysisType,
+  ): void {
     for (const row of rows) {
       expect(row.meterLookupId).toBeGreaterThan(0);
       expect(row.msn).toBeTruthy();
+      expect(row.ivrsNumber).toBeTruthy();
+      if (isImproperType(type)) {
+        expect(row.mdDate, `MSN ${row.msn}: Improper MD requires mdDate`).toBeTruthy();
+        continue;
+      }
       expect(Number.isFinite(row.sanctionedLoad)).toBeTruthy();
       expect(Number.isFinite(row.md)).toBeTruthy();
       expect(row.sanctionedLoad).toBeGreaterThanOrEqual(0);
     }
   }
 
-  /** Backend billing filter: md_kw IS NOT NULL AND md_kw > 0 */
+  /** Backend billing filter: md_kw IS NOT NULL AND md_kw > 0. */
   validateMdPositive(rows: MdAnalysisRow[]): void {
     for (const row of rows) {
-      expect(
-        row.md,
-        `MSN ${row.msn}: MD must be > 0`,
-      ).toBeGreaterThan(0);
+      expect(row.md, `MSN ${row.msn}: MD must be > 0`).toBeGreaterThan(0);
     }
   }
 
   /**
-   * Backend fetchMdAnalysis for cd_compare / sanction_load:
-   * Sanctioned_Load_KW > 0 AND max_md > Sanctioned_Load_KW
+   * MD > CD / Sanction Load: sanctionedLoad > 0 AND md > sanctionedLoad.
+   * Live grid is not ordered by md DESC.
    */
   validateMdExceedsSanctionedLoad(rows: MdAnalysisRow[]): void {
     for (const row of rows) {
@@ -110,25 +132,44 @@ export class MdAnalysisValidator {
   }
 
   validateBusinessRules(rows: MdAnalysisRow[], type: MdAnalysisType): void {
+    if (isImproperType(type)) {
+      for (const row of rows) {
+        expect(row.mdDate, `MSN ${row.msn}: Improper MD requires mdDate`).toBeTruthy();
+      }
+      return;
+    }
     this.validateMdPositive(rows);
-
     if (requiresMdExceedsSanctionedLoad(type)) {
       this.validateMdExceedsSanctionedLoad(rows);
     }
   }
 
-  /** Backend ORDER BY md_rows.max_md DESC */
-  validateMdDescendingOrder(rows: MdAnalysisRow[]): void {
-    for (let i = 1; i < rows.length; i++) {
-      expect(
-        rows[i - 1].md,
-        `MD not descending at index ${i - 1} (MSN ${rows[i - 1].msn} vs ${rows[i].msn})`,
-      ).toBeGreaterThanOrEqual(rows[i].md);
-    }
-  }
-
   validateNoDuplicateMdRecords(rows: MdAnalysisRow[]): void {
     validateNoDuplicateMeterRows(rows, "MD Analysis");
+  }
+
+  mdMetricKey(row: MdAnalysisRow): string {
+    if (row.mdDate) {
+      return `date=${row.mdDate}`;
+    }
+    return `${formatCommercialMetricKey(row.md)}|sl=${formatCommercialMetricKey(row.sanctionedLoad)}`;
+  }
+
+  /**
+   * This report has no duplicate records. Still checks lookupId + DTR uniqueness
+   * and same-MSN same-MD same-DTR on the page.
+   */
+  validateUniqueIdentityFields(rows: MdAnalysisRow[]): void {
+    validateUniqueMeterIdentityAllowingDistinctMetric(
+      rows,
+      "MD Analysis",
+      (row) => this.mdMetricKey(row),
+    );
+  }
+
+  /** Unique meterLookupId + row id on the page. This report has no duplicate records. */
+  validateDuplicateContract(rows: MdAnalysisRow[]): void {
+    this.validateNoDuplicateMdRecords(rows);
   }
 
   validatePagination(
@@ -143,5 +184,23 @@ export class MdAnalysisValidator {
     query: MdAnalysisQueryShape,
   ): void {
     validateCommercialTotalCount(response.data, query);
+  }
+
+  /**
+   * MD > CD and Sanction Load honor connectionCategory:
+   * domestic.total + non-domestic.total === unfiltered.total.
+   */
+  validateDomesticNonDomesticTotals(options: {
+    allTotal: number;
+    domesticTotal: number;
+    nonDomesticTotal: number;
+  }): void {
+    const { allTotal, domesticTotal, nonDomesticTotal } = options;
+    expect(domesticTotal, "domestic MD total").toBeGreaterThan(0);
+    expect(nonDomesticTotal, "non-domestic MD total").toBeGreaterThan(0);
+    expect(
+      domesticTotal + nonDomesticTotal,
+      "domestic + non-domestic must equal unfiltered total",
+    ).toBe(allTotal);
   }
 }

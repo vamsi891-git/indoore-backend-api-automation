@@ -2,9 +2,11 @@ import { APIRequestContext } from "@playwright/test";
 import { ApiCallResult } from "../../../core/models/api-result.model";
 import { AuthPaths } from "../Data/auth.data";
 import { AuthMapper } from "../Mapper/auth.mapper";
+import { generateTotp, getTotpSecret } from "../../../core/utils/totp.util";
 import {
   AuthLoginSuccessResponseSchema,
   isDeviceSelectionPayload,
+  isTwoFactorChallengePayload,
   type AuthLoginSession,
 } from "../schemas/auth.schemas";
 
@@ -43,6 +45,24 @@ export class AuthenticationApi {
     const rawResponse = await this.request.post(AuthPaths.login, {
       headers: this.buildCsrfHeaders(csrfToken),
       data: { email, password },
+    });
+    const responseBody = await rawResponse.json();
+    return {
+      rawResponse,
+      responseBody,
+      responseTime: Date.now() - start,
+    };
+  }
+
+  async postLogin2fa(
+    challengeToken: string,
+    otp: string,
+    csrfToken: string,
+  ): Promise<ApiCallResult> {
+    const start = Date.now();
+    const rawResponse = await this.request.post(AuthPaths.login2fa, {
+      headers: this.buildCsrfHeaders(csrfToken),
+      data: { challengeToken, otp },
     });
     const responseBody = await rawResponse.json();
     return {
@@ -103,24 +123,68 @@ export class AuthenticationApi {
     }
 
     let parsed = AuthLoginSuccessResponseSchema.parse(login.responseBody);
-    const maxAttempts = isDeviceSelectionPayload(parsed.data)
-      ? parsed.data.devices.length + 2
-      : 2;
+    let hitDeviceLimit = false;
+    let maxAttempts = 4;
+    const opening = parsed.data;
+    if (isDeviceSelectionPayload(opening)) {
+      hitDeviceLimit = true;
+      maxAttempts = opening.devices.length + 3;
+    }
 
     for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
       if (AuthMapper.hasDirectSession(parsed.data)) {
         const freshCsrf = await AuthMapper.resolveCsrfToken(this.request, {});
-        return {
+        const session = {
           accessToken: parsed.data.accessToken,
           expiresIn: parsed.data.expiresIn ?? 900,
           csrfToken: freshCsrf,
         };
+        if (hitDeviceLimit) {
+          await this.revokeOtherDevices();
+        }
+        return session;
+      }
+
+      if (isTwoFactorChallengePayload(parsed.data)) {
+        const totpSecret = getTotpSecret();
+        if (!totpSecret) {
+          throw new Error(
+            "2FA required but TOTP_SECRET is not set — add the authenticator base32 secret to .env",
+          );
+        }
+        csrfToken = await AuthMapper.resolveCsrfToken(this.request, {});
+        let verify = await this.postLogin2fa(
+          parsed.data.challengeToken,
+          generateTotp(totpSecret, 0),
+          csrfToken,
+        );
+        if (verify.rawResponse.status() !== 200) {
+          csrfToken = await AuthMapper.resolveCsrfToken(this.request, {});
+          verify = await this.postLogin2fa(
+            parsed.data.challengeToken,
+            generateTotp(totpSecret, -1),
+            csrfToken,
+          );
+        }
+        if (verify.rawResponse.status() !== 200) {
+          throw new Error(
+            `2FA verification failed: ${JSON.stringify(verify.responseBody)}`,
+          );
+        }
+        parsed = AuthLoginSuccessResponseSchema.parse(verify.responseBody);
+        continue;
       }
 
       const selection = AuthMapper.mapDeviceSelection(parsed.data);
       if (!selection) {
         break;
       }
+
+      hitDeviceLimit = true;
+
+      console.log(
+        `Device limit reached (${selection.devices.length} sessions). Closing listed sessions.`,
+      );
 
       const keepDeviceId = process.env.DEVICE_ID?.trim();
       const sorted = [...selection.devices].sort((left, right) => {
@@ -131,24 +195,79 @@ export class AuthenticationApi {
       const releasable = keepDeviceId
         ? sorted.filter((device) => device.id !== keepDeviceId)
         : sorted;
-      const deviceToRelease = releasable[0] ?? sorted[0];
+      const targets = releasable.length > 0 ? releasable : sorted;
 
       csrfToken = await AuthMapper.resolveCsrfToken(this.request, {});
-      const release = await this.postReleaseDevice(
-        selection.challengeToken,
-        deviceToRelease.id,
-        csrfToken,
-      );
+      let challengeToken = selection.challengeToken;
 
-      if (release.rawResponse.status() !== 200) {
-        throw new Error(
-          `Device release failed: ${JSON.stringify(release.responseBody)}`,
+      for (const deviceToRelease of targets) {
+        const release = await this.postReleaseDevice(
+          challengeToken,
+          deviceToRelease.id,
+          csrfToken,
         );
-      }
 
-      parsed = AuthLoginSuccessResponseSchema.parse(release.responseBody);
+        if (release.rawResponse.status() !== 200) {
+          throw new Error(
+            `Device release failed: ${JSON.stringify(release.responseBody)}`,
+          );
+        }
+
+        parsed = AuthLoginSuccessResponseSchema.parse(release.responseBody);
+        if (AuthMapper.hasDirectSession(parsed.data)) {
+          break;
+        }
+
+        const nextSelection = AuthMapper.mapDeviceSelection(parsed.data);
+        if (!nextSelection) {
+          break;
+        }
+        challengeToken = nextSelection.challengeToken;
+        csrfToken = await AuthMapper.resolveCsrfToken(this.request, {});
+      }
     }
 
     throw new Error("Login did not return a session after device selection");
+  }
+
+  private async revokeOtherDevices(): Promise<void> {
+    const listed = await this.request.get(AuthPaths.devices, {
+      headers: { Accept: "application/json" },
+    });
+    if (listed.status() !== 200) {
+      return;
+    }
+    const body = (await listed.json()) as {
+      data?: {
+        devices?: Array<{ id?: string; isCurrentDevice?: boolean; revokedAt?: string | null }>;
+        deviceGroups?: Array<{
+          devices?: Array<{
+            id?: string;
+            isCurrentDevice?: boolean;
+            revokedAt?: string | null;
+          }>;
+        }>;
+      };
+    };
+    const keepDeviceId = process.env.DEVICE_ID?.trim();
+    const grouped = Array.isArray(body.data?.deviceGroups)
+      ? body.data!.deviceGroups.flatMap((group) => group.devices ?? [])
+      : [];
+    const root = Array.isArray(body.data?.devices) ? body.data!.devices : [];
+    const seen = new Set<string>();
+    for (const device of [...root, ...grouped]) {
+      const id = device.id?.trim();
+      if (
+        !id ||
+        seen.has(id) ||
+        device.isCurrentDevice ||
+        device.revokedAt ||
+        (keepDeviceId && id === keepDeviceId)
+      ) {
+        continue;
+      }
+      seen.add(id);
+      await this.request.delete(AuthPaths.deviceById(id));
+    }
   }
 }

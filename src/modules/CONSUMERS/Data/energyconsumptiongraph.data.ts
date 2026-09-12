@@ -1,27 +1,22 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { EnergyConsumptionGraphQuery } from "../Api/energyconsumptiongraph.api";
-import type {
-  EnergyConsumptionGraphResponse,
-  EnergyConsumptionGraphScenario,
-  EnergyConsumptionPeriod,
-} from "../Mapper/energyconsumptiongraph.mapper";
-
+import type {EnergyConsumptionGraphResponse,EnergyConsumptionGraphScenario,EnergyConsumptionPeriod,} from "../Mapper/energyconsumptiongraph.mapper";
+import {
+  CONSUMERS_LIVE_IVRS,
+  CONSUMERS_LIVE_METER_ROUTE,
+  resolveLiveAccountId,
+  resolveLiveIvrs,
+  resolveLiveMeterRoute,
+} from "./consumers-live-refs";
 export const energyConsumptionGraphMaxResponseTimeMs =
   MASTER_DATA_MAX_RESPONSE_TIME_MS;
-
-/** IVRS from user request; live archive may return all-zero consumption. */
-export const energyConsumptionGraphDefaultIvrs = "N3374018980";
-
-export const energyConsumptionGraphDefaultConsumerId = "N3374018980";
-
-export const energyConsumptionGraphDefaultMeterRoute = "meter-12345";
-
+/** IVRS from live RTP/PQ sample; archive may return all-zero consumption. */
+export const energyConsumptionGraphDefaultIvrs = CONSUMERS_LIVE_IVRS;
+export const energyConsumptionGraphDefaultConsumerId = CONSUMERS_LIVE_IVRS;
+export const energyConsumptionGraphDefaultMeterRoute = CONSUMERS_LIVE_METER_ROUTE;
 export const energyConsumptionGraphNotFoundRef = "INVALID_CONSUMER_XYZ";
-
 export const energyConsumptionGraphMeterNotFoundRef = "meter-999999999";
-
 export const energyConsumptionGraphEmptyRef = " ";
-
 /** Backend CONSUMER_CONSUMPTION_BUCKET_COUNT (consumption view). */
 export const CONSUMPTION_POINT_COUNT: Record<EnergyConsumptionPeriod, number> =
   {
@@ -31,7 +26,6 @@ export const CONSUMPTION_POINT_COUNT: Record<EnergyConsumptionPeriod, number> =
     monthly: 12,
     yearly: 12,
   };
-
 const ZERO_HOURLY_LABELS = [
   "23:00",
   "00:00",
@@ -46,7 +40,6 @@ const ZERO_HOURLY_LABELS = [
   "09:00",
   "10:00",
 ] as const;
-
 const ZERO_DAILY_LABELS = [
   "28 Jun",
   "29 Jun",
@@ -61,7 +54,6 @@ const ZERO_DAILY_LABELS = [
   "8 Jul",
   "9 Jul",
 ] as const;
-
 const ZERO_WEEKLY_LABELS = [
   "W1",
   "W2",
@@ -72,7 +64,6 @@ const ZERO_WEEKLY_LABELS = [
   "W7",
   "W8",
 ] as const;
-
 const ZERO_MONTHLY_LABELS = [
   "Aug 2025",
   "Sept 2025",
@@ -87,7 +78,6 @@ const ZERO_MONTHLY_LABELS = [
   "Jun 2026",
   "Jul 2026",
 ] as const;
-
 const ZERO_YEARLY_LABELS = [
   "2015",
   "2016",
@@ -102,14 +92,12 @@ const ZERO_YEARLY_LABELS = [
   "2025",
   "2026",
 ] as const;
-
 function zeroPoints(labels: readonly string[]): {
   label: string;
   consumptionKwh: number;
 }[] {
   return labels.map((label) => ({ label, consumptionKwh: 0 }));
 }
-
 /** User-provided hourly sample (all zeros). */
 export const energyConsumptionGraphContractHourlyResponse: EnergyConsumptionGraphResponse =
   {
@@ -119,7 +107,6 @@ export const energyConsumptionGraphContractHourlyResponse: EnergyConsumptionGrap
       points: zeroPoints(ZERO_HOURLY_LABELS),
     },
   };
-
 /** User-provided daily sample (all zeros). */
 export const energyConsumptionGraphContractDailyResponse: EnergyConsumptionGraphResponse =
   {
@@ -129,7 +116,6 @@ export const energyConsumptionGraphContractDailyResponse: EnergyConsumptionGraph
       points: zeroPoints(ZERO_DAILY_LABELS),
     },
   };
-
 /** User-provided weekly sample (all zeros). */
 export const energyConsumptionGraphContractWeeklyResponse: EnergyConsumptionGraphResponse =
   {
@@ -139,7 +125,6 @@ export const energyConsumptionGraphContractWeeklyResponse: EnergyConsumptionGrap
       points: zeroPoints(ZERO_WEEKLY_LABELS),
     },
   };
-
 /** User-provided monthly sample (all zeros). */
 export const energyConsumptionGraphContractMonthlyResponse: EnergyConsumptionGraphResponse =
   {
@@ -149,7 +134,6 @@ export const energyConsumptionGraphContractMonthlyResponse: EnergyConsumptionGra
       points: zeroPoints(ZERO_MONTHLY_LABELS),
     },
   };
-
 /** User-provided yearly sample (all zeros). */
 export const energyConsumptionGraphContractYearlyResponse: EnergyConsumptionGraphResponse =
   {
@@ -159,7 +143,6 @@ export const energyConsumptionGraphContractYearlyResponse: EnergyConsumptionGrap
       points: zeroPoints(ZERO_YEARLY_LABELS),
     },
   };
-
 /** Non-zero consumption deltas (backend roundEnergy to 2 decimals). */
 export const energyConsumptionGraphContractNonzeroResponse: EnergyConsumptionGraphResponse =
   {
@@ -182,7 +165,6 @@ export const energyConsumptionGraphContractNonzeroResponse: EnergyConsumptionGra
       ],
     },
   };
-
 export interface EnergyConsumptionGraphTestCase {
   testName: string;
   scenario: EnergyConsumptionGraphScenario;
@@ -190,7 +172,6 @@ export interface EnergyConsumptionGraphTestCase {
   isContractFixture?: boolean;
   tags: string[];
 }
-
 export function resolveEnergyConsumptionGraphRef(
   scenario: EnergyConsumptionGraphScenario,
 ): string | undefined {
@@ -202,23 +183,23 @@ export function resolveEnergyConsumptionGraphRef(
     case "ecg_period_yearly":
     case "ecg_ignore_unknown_query":
     case "invalid_period":
-      return (
-        process.env.CONSUMER_ECG_IVRS?.trim() ||
-        process.env.CONSUMER_LLP_IVRS?.trim() ||
-        energyConsumptionGraphDefaultIvrs
+      return resolveLiveIvrs(
+        process.env.CONSUMER_ECG_IVRS,
+        process.env.CONSUMER_LLP_IVRS,
+        energyConsumptionGraphDefaultIvrs,
       );
     case "ecg_by_account":
-      return (
-        process.env.CONSUMER_ECG_CONSUMER_ID?.trim() ||
-        process.env.CONSUMER_LLP_CONSUMER_ID?.trim() ||
-        energyConsumptionGraphDefaultConsumerId
+      return resolveLiveAccountId(
+        process.env.CONSUMER_ECG_CONSUMER_ID,
+        process.env.CONSUMER_LLP_CONSUMER_ID,
+        energyConsumptionGraphDefaultConsumerId,
       );
     case "ecg_by_meter":
-      return (
-        process.env.CONSUMER_ECG_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_LLP_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_PROFILE_METER_ROUTE?.trim() ||
-        energyConsumptionGraphDefaultMeterRoute
+      return resolveLiveMeterRoute(
+        process.env.CONSUMER_ECG_METER_ROUTE,
+        process.env.CONSUMER_LLP_METER_ROUTE,
+        process.env.CONSUMER_PROFILE_METER_ROUTE,
+        energyConsumptionGraphDefaultMeterRoute,
       );
     case "consumer_not_found":
       return energyConsumptionGraphNotFoundRef;
@@ -237,7 +218,6 @@ export function resolveEnergyConsumptionGraphRef(
       return undefined;
   }
 }
-
 export function resolveEnergyConsumptionGraphQuery(
   scenario: EnergyConsumptionGraphScenario,
 ): EnergyConsumptionGraphQuery {
@@ -264,7 +244,6 @@ export function resolveEnergyConsumptionGraphQuery(
       return { period: "daily" };
   }
 }
-
 export function resolveEnergyConsumptionGraphExpectedPeriod(
   scenario: EnergyConsumptionGraphScenario,
 ): EnergyConsumptionPeriod {
@@ -281,7 +260,6 @@ export function resolveEnergyConsumptionGraphExpectedPeriod(
   }
   return "daily";
 }
-
 export function resolveEnergyConsumptionGraphContractBody(
   scenario: EnergyConsumptionGraphScenario,
 ): EnergyConsumptionGraphResponse | undefined {

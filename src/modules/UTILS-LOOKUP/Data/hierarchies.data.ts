@@ -8,12 +8,12 @@ export interface HierarchyTestCase extends LookupTestCase {
 
 export const organizationHierarchyTestCases: HierarchyTestCase[] = [
   {
-    testName: "Validate organisation hierarchy — live tree",
+    testName: "Organisation hierarchy — live tree",
     scenario: "smoke",
     tags: ["@smoke", "@utils-lookup", "@organisation-hierarchy"],
   },
   {
-    testName: "Validate organisation hierarchy — order sequence 1..n",
+    testName: "Organisation hierarchy — order is 1 through n",
     scenario: "edge_order_sequence",
     tags: ["@utils-lookup", "@organisation-hierarchy", "@edge"],
   },
@@ -21,12 +21,12 @@ export const organizationHierarchyTestCases: HierarchyTestCase[] = [
 
 export const networkHierarchyTestCases: HierarchyTestCase[] = [
   {
-    testName: "Validate network hierarchy — live tree",
+    testName: "Network hierarchy — live tree",
     scenario: "smoke",
     tags: ["@smoke", "@utils-lookup", "@network-hierarchy"],
   },
   {
-    testName: "Validate network hierarchy — order sequence 1..n",
+    testName: "Network hierarchy — order is 1 through n",
     scenario: "edge_order_sequence",
     tags: ["@utils-lookup", "@network-hierarchy", "@edge"],
   },

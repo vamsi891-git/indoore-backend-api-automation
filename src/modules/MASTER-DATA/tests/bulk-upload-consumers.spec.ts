@@ -6,23 +6,11 @@ import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { BulkUploadConsumersApi } from "../Api/bulk-upload-consumers.api";
-import {
-  bulkUploadConsumersMaxResponseTimeMs,
-  bulkUploadConsumersTestCases,
-  ensureBulkConsumerExistingCid,
-  ensureBulkConsumerNearestAcctId,
-  hasBulkConsumerExistingCid,
-  hasBulkConsumerMeterPool,
-  hasBulkConsumerNearestAcctId,
-} from "../Data/bulk-upload-consumers.data";
+import {bulkUploadConsumersMaxResponseTimeMs,bulkUploadConsumersTestCases,ensureBulkConsumerExistingCid,ensureBulkConsumerNearestAcctId,hasBulkConsumerExistingCid,hasBulkConsumerMeterPool,hasBulkConsumerNearestAcctId,} from "../Data/bulk-upload-consumers.data";
 import { shouldSkipMasterDataTestForEnv } from "../utils/master-data-env.helper";
 import { shouldSkipKnownBackendDefects } from "../utils/master-data-manual-validations.helper";
 import { ensureConsumerLookupContext } from "../utils/consumer-lookup.helper";
-import {
-  ensureValidateMeterRuntimeContext,
-  getValidateMeterSerial,
-  runtimeMeterSerialEnvKey,
-} from "../utils/validate-meter-runtime.helper";
+import {ensureValidateMeterRuntimeContext,getValidateMeterSerial,runtimeMeterSerialEnvKey,} from "../utils/validate-meter-runtime.helper";
 import { ensureConsumerMeterRuntimeContext } from "../utils/consumer-meter-runtime.helper";
 import { ensureConsumerBulkHierarchyFromMasterData } from "../utils/consumer-bulk-hierarchy.helper";
 import { BulkUploadConsumersMapper } from "../Mapper/bulk-upload-consumers.mapper";
@@ -47,6 +35,7 @@ const BULK_SUCCESS_SCENARIOS = new Set([
   "bulk_success",
   "bulk_success_multi",
   "bulk_success_blank_row",
+  "bulk_success_manual_sample",
 ]);
 
 const METER_SCENARIO_SCENARIOS = new Set([
@@ -178,7 +167,11 @@ async function runBulkUploadConsumerTestCase(
   const { rawResponse, responseBody, responseTime } =
     await api.bulkUploadConsumers(upload);
 
-  if (testCase.scenario === "bulk_success") {
+  if (
+    testCase.scenario === "bulk_success" ||
+    testCase.scenario === "bulk_success_multi" ||
+    testCase.scenario === "bulk_success_manual_sample"
+  ) {
     console.log(JSON.stringify(responseBody, null, 2));
   }
 
@@ -201,15 +194,11 @@ async function runBulkUploadConsumerTestCase(
     assert.validateContentType(rawResponse),
   );
   validation.execute("Response Time", () =>
-    assert.validateResponseTime(
-      responseTime,
-      bulkUploadConsumersMaxResponseTimeMs,
-    ),
+    assert.validateResponseTime(responseTime,bulkUploadConsumersMaxResponseTimeMs,),
   );
   validation.execute("Security Validation", () =>
     assert.validateSensitiveData(responseBody),
   );
-
   if (BULK_SUCCESS_SCENARIOS.has(testCase.scenario)) {
     validation.execute("Zod Response Schema", () =>
       MasterDataCommonValidator.validateZodResponseSchema(
@@ -299,14 +288,19 @@ const backendDefectTestCases = bulkUploadConsumersTestCases.filter(
   (testCase) => isBackendDefectTestCase(testCase),
 );
 
-test.describe("Bulk Upload Consumers API", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Master data — Excel upload (consumers)", () => {
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
   test.beforeAll(async ({ authenticatedApi }) => {
     test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
     await ensureConsumerLookupContext(authenticatedApi);
     await ensureValidateMeterRuntimeContext(authenticatedApi);
-    const runtime = await ensureConsumerMeterRuntimeContext(authenticatedApi);
+    const runtime = await ensureConsumerMeterRuntimeContext(authenticatedApi, {
+      // bulk_success(2) + bulk_success_multi(6) + blank_row(1) + headroom
+      targetPoolCount: 12,
+      maxCreateAttempts: 30,
+    });
     await ensureConsumerBulkHierarchyFromMasterData(authenticatedApi);
     const nearestAcctId = await ensureBulkConsumerNearestAcctId(authenticatedApi);
     const existingCid = await ensureBulkConsumerExistingCid(authenticatedApi);
@@ -325,12 +319,12 @@ test.describe("Bulk Upload Consumers API", () => {
     await new Promise<void>((resolve) => setTimeout(resolve, 1200));
   });
 
-  test.describe("manual enforcement", () => {
+  test.describe("Excel rules that match the screen", () => {
     test.describe.configure({ retries: 1 });
     registerBulkUploadConsumerTests(enforcementTestCases);
   });
 
-  test.describe("known backend defects", () => {
+  test.describe("Excel rules that still fail on the server", () => {
     test.describe.configure({ retries: 1 });
     registerBulkUploadConsumerTests(backendDefectTestCases, {
       expectKnownDefect: !shouldSkipKnownBackendDefects(),

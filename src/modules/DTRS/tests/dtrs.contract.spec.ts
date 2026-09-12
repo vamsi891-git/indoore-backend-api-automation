@@ -12,11 +12,11 @@ function asRecord(value: unknown): Record<string, unknown> {
     : {};
 }
 
-test.describe("DTRS — Contract Snapshots", () => {
+test.describe("DTR saved field list", () => {
   test.setTimeout(120_000);
 
   test(
-    "DTR Profile Contract Snapshot",
+    "DTR profile — saved list of the fields we expect",
     { tag: ["@contract-snapshot", "@dtrs"] },
     async ({ authenticatedApi }) => {
       const code = process.env.DTR_CODE?.trim() || dtrProfileDefaultCode;

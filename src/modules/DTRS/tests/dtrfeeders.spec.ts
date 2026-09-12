@@ -18,7 +18,7 @@ import {
 } from "../Mapper/dtrfeeders.mapper";
 import { DtrFeedersValidator } from "../Validator/dtrfeeders.validator";
 
-test.describe("DTR Feeders API", () => {
+test.describe("DTR feeders", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

@@ -184,8 +184,7 @@ function xlsxUpload(
 export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
   // ─── File validation (manual doc) ────────────────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — only .xlsx allowed",
+    testName: "Excel upload (meters) — only an Excel .xlsx file is allowed",
     scenario: "file_invalid_type",
     expectedStatus: 400,
     buildUpload: async () => ({
@@ -199,8 +198,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — required columns must be present",
+    testName: "Excel upload (meters) — required Excel columns must be present",
     scenario: "file_missing_columns",
     expectedStatus: 400,
     buildUpload: async () => {
@@ -216,8 +214,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — duplicate column names rejected",
+    testName: "Excel upload (meters) — duplicate column names are rejected",
     scenario: "file_duplicate_columns",
     expectedStatus: 400,
     buildUpload: async () => {
@@ -230,8 +227,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — at least one data row required",
+    testName: "Excel upload (meters) — the file must contain at least one data row",
     scenario: "file_no_data_rows",
     expectedStatus: 400,
     buildUpload: async () => {
@@ -243,8 +239,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
 
   // ─── Meter identification (manual doc §1) ────────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — bulk create one meter",
+    testName: "Excel upload (meters) — one meter is created from the file",
     scenario: "bulk_success",
     expectedStatus: 200,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -257,8 +252,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@smoke", "@master-data", "@bulk-upload-meters", "@meter-master"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — two unique meters created",
+    testName: "Excel upload (meters) — two meters are created from the file",
     scenario: "bulk_success_multi",
     expectedStatus: 200,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -274,8 +268,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — blank rows ignored",
+    testName: "Excel upload (meters) — blank rows are ignored",
     scenario: "bulk_success_blank_row",
     expectedStatus: 200,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -296,8 +289,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — meter serial required",
+    testName: "Excel upload (meters) — meter serial is required",
     scenario: "row_missing_serial",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -310,8 +302,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — duplicate serial within file",
+    testName: "Excel upload (meters) — the same serial cannot appear twice in the file",
     scenario: "row_duplicate_serial",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -325,8 +316,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — existing meter serial rejected",
+    testName: "Excel upload (meters) — a serial that already exists is rejected",
     scenario: "row_already_exists",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -340,8 +330,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — asset and RAPDRP mismatch rejected",
+    testName: "Excel upload (meters) — asset number and RAPDRP number must match the serial",
     scenario: "row_asset_mismatch",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -357,8 +346,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
 
   // ─── Meter master (manual doc §2) ────────────────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — manufacturer must exist",
+    testName: "Excel upload (meters) — manufacturer must be a known value",
     scenario: "file_manufacturer_invalid",
     expectedStatus: 400,
     buildUpload: async () => {
@@ -370,8 +358,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — invalid DLMS value",
+    testName: "Excel upload (meters) — DLMS type must be valid",
     scenario: "row_invalid_dlms",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -384,8 +371,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — invalid meter model rejected",
+    testName: "Excel upload (meters) — meter model must be valid",
     scenario: "row_invalid_model",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -398,8 +384,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — invalid meter status rejected",
+    testName: "Excel upload (meters) — meter status must be valid",
     scenario: "row_invalid_meter_status",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -414,8 +399,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
 
   // ─── Configuration (manual doc §3) ─────────────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — MF must be greater than zero",
+    testName: "Excel upload (meters) — multiplication factor must be greater than zero",
     scenario: "row_mf_zero",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -428,8 +412,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — display digit must be positive",
+    testName: "Excel upload (meters) — display digits must be greater than zero",
     scenario: "row_display_digit_zero",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -442,8 +425,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — MPTR must be non-negative",
+    testName: "Excel upload (meters) — MPTR cannot be negative",
     scenario: "row_negative_mptr",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -456,8 +438,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — display digit must match serial length",
+    testName: "Excel upload (meters) — display digits must match the serial number length",
     scenario: "row_display_digit_mismatch",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -470,8 +451,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — MCTR must be a valid integer",
+    testName: "Excel upload (meters) — MCTR must be a whole number",
     scenario: "row_invalid_mctr",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -484,8 +464,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — LPTR must be a valid integer",
+    testName: "Excel upload (meters) — LPTR must be a whole number",
     scenario: "row_invalid_lptr",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -498,8 +477,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — LCTR must be a valid integer",
+    testName: "Excel upload (meters) — LCTR must be a whole number",
     scenario: "row_invalid_lctr",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -514,8 +492,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
 
   // ─── Date validation (manual doc §4) ───────────────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — Meter PO Date must be valid",
+    testName: "Excel upload (meters) — purchase date must be a valid date",
     scenario: "row_invalid_po_date",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -528,8 +505,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — Meter Testing Date must be valid",
+    testName: "Excel upload (meters) — testing date must be a valid date",
     scenario: "row_invalid_testing_date",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -542,8 +518,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — testing date before PO date rejected",
+    testName: "Excel upload (meters) — testing date cannot be before the purchase date",
     scenario: "row_testing_before_po",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -557,8 +532,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — future PO date rejected",
+    testName: "Excel upload (meters) — purchase date cannot be in the future",
     scenario: "row_future_date",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -574,8 +548,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
 
   // ─── Field length (manual doc §5) ────────────────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — accuracy class max 8 chars",
+    testName: "Excel upload (meters) — accuracy class cannot be longer than 8 characters",
     scenario: "row_accuracy_too_long",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -588,8 +561,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — PO number max 32 chars",
+    testName: "Excel upload (meters) — purchase order number cannot be longer than 32 characters",
     scenario: "row_po_number_too_long",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -604,8 +576,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — meter version max 32 chars",
+    testName: "Excel upload (meters) — meter version cannot be longer than 32 characters",
     scenario: "row_version_too_long",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
@@ -620,8 +591,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-meters — meter rating max 15 chars",
+    testName: "Excel upload (meters) — meter rating cannot be longer than 15 characters",
     scenario: "row_rating_too_long",
     expectedStatus: 400,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],

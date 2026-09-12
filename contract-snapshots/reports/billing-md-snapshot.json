@@ -1,0 +1,125 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/reports/billing-md-snapshot",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "circle",
+    "consumerName",
+    "division",
+    "dtr",
+    "feeder",
+    "id",
+    "ivrsNumber",
+    "kvahC",
+    "kwhC",
+    "mdKva",
+    "mdKvaOt",
+    "mdKw",
+    "mdKwOt",
+    "meterLookupTblRefId",
+    "meterNumber",
+    "meterTimestamp",
+    "pf",
+    "phase",
+    "sanctionedLoadKw",
+    "slNo",
+    "substation",
+    "tariff",
+    "zone"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "slNo",
+      "header": "S No."
+    },
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "substation",
+      "header": "Substation"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtr",
+      "header": "DTR"
+    },
+    {
+      "key": "consumerName",
+      "header": "Consumer Name"
+    },
+    {
+      "key": "ivrsNumber",
+      "header": "IVRS Number"
+    },
+    {
+      "key": "meterNumber",
+      "header": "Meter Number"
+    },
+    {
+      "key": "phase",
+      "header": "Phase"
+    },
+    {
+      "key": "tariff",
+      "header": "Category"
+    },
+    {
+      "key": "sanctionedLoadKw",
+      "header": "Sanctioned Load (kW)"
+    },
+    {
+      "key": "meterTimestamp",
+      "header": "Billing Date"
+    },
+    {
+      "key": "mdKw",
+      "header": "MD kW"
+    },
+    {
+      "key": "mdKwOt",
+      "header": "MD kW OT"
+    },
+    {
+      "key": "mdKva",
+      "header": "MD kVA"
+    },
+    {
+      "key": "mdKvaOt",
+      "header": "MD kVA OT"
+    },
+    {
+      "key": "pf",
+      "header": "PF"
+    },
+    {
+      "key": "kwhC",
+      "header": "kWh (C)"
+    },
+    {
+      "key": "kvahC",
+      "header": "kVAh (C)"
+    }
+  ]
+}

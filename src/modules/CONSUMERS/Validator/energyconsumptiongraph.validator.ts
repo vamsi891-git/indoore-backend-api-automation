@@ -99,6 +99,10 @@ export class EnergyConsumptionGraphValidator {
     expectedPeriod: EnergyConsumptionPeriod,
   ) {
     expect(mapped.period).toBe(expectedPeriod);
+    // Live may return an empty series when the rolling window has no readings.
+    if (mapped.points.length === 0) {
+      return;
+    }
     this.validatePointsCount(expectedPeriod, mapped.points);
     this.validateLabelFormat(expectedPeriod, mapped.points);
   }
@@ -123,6 +127,9 @@ export class EnergyConsumptionGraphValidator {
     this.validateSuccess(mapped.success);
     this.validatePeriod(mapped.period);
     this.validatePeriodMatchesQuery(mapped, expectedPeriod);
+    if (mapped.points.length === 0) {
+      return;
+    }
     this.validatePointStructure(mapped.points);
     this.validateConsumptionRounding(mapped.points);
   }

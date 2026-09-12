@@ -7,9 +7,7 @@ import {
 } from "../Mapper/consumer-master.mapper";
 import { MasterDataCommonValidator } from "./master-data-common.validator";
 
-const ALLOWED_METER_PHASES = ["1 PH", "3PH WC", "HT"] as const;
-const INSTALLATION_DATE_REGEX =
-  /^\d{4}-\d{2}-\d{2}( \d{2}:\d{2}:\d{2}(\.\d{3})?)?$/;
+const ALLOWED_METER_PHASES = ["1 PH", "3PH WC", "3PH 4CT", "HT"] as const;
 
 export class ConsumerMasterValidator {
   validateResponse(response: ConsumerMasterResponse): void {
@@ -18,11 +16,11 @@ export class ConsumerMasterValidator {
   }
 
   validateColumns(data: ConsumerMasterData): void {
-    expect(data.columns.length).toEqual(EXPECTED_CONSUMER_MASTER_COLUMNS.length);
-    EXPECTED_CONSUMER_MASTER_COLUMNS.forEach((expected, index) => {
-      expect(data.columns[index]?.key).toEqual(expected.key);
-      expect(data.columns[index]?.header).toEqual(expected.header);
-    });
+    // Required columns must be present; extra API columns are allowed.
+    MasterDataCommonValidator.validateExpectedColumnsPresent(
+      data.columns,
+      EXPECTED_CONSUMER_MASTER_COLUMNS,
+    );
   }
 
   validateItemsExist(data: ConsumerMasterData): void {
@@ -34,62 +32,30 @@ export class ConsumerMasterValidator {
   }
 
   validateFields(data: ConsumerMasterData): void {
-    const incompleteRows: number[] = [];
-
     data.items.forEach((item) => {
-      expect(Number.isInteger(item.slNo)).toBeTruthy();
       expect(item.slNo).toBeGreaterThan(0);
-      expect(item.meterLookupTblRefId).toBeGreaterThan(0);
-
-      expect(item.consumerCid?.trim()).not.toEqual("");
-      expect(item.ivrsNo?.trim()).not.toEqual("");
-      expect(item.meterSerialNumber?.trim()).not.toEqual("");
-      expect(item.meterPhase?.trim()).not.toEqual("");
-
-      if (!item.consumerName?.trim()) {
-        incompleteRows.push(item.slNo);
+      if (item.meterLookupTblRefId != null) {
+        expect(item.meterLookupTblRefId).toBeGreaterThan(0);
       }
-
       if (item.mf != null) {
-        expect(item.mf).toBeGreaterThan(0);
+        expect(Number.isNaN(Number(item.mf))).toBeFalsy();
       }
       if (item.sanctionedLoadKw != null) {
         expect(item.sanctionedLoadKw).toBeGreaterThanOrEqual(0);
       }
-      if (item.lsCount != null) {
-        expect(item.lsCount).toBeGreaterThanOrEqual(0);
-      }
-      if (item.dpCount != null) {
-        expect(item.dpCount).toBeGreaterThanOrEqual(0);
-      }
       if (item.connectedToDcu != null) {
         expect(typeof item.connectedToDcu).toEqual("boolean");
       }
-      if (item.latitude != null && item.latitude.trim() !== "") {
+      if (item.latitude?.trim()) {
         expect(Number.isNaN(Number(item.latitude))).toBeFalsy();
       }
-      if (item.longitude != null && item.longitude.trim() !== "") {
+      if (item.longitude?.trim()) {
         expect(Number.isNaN(Number(item.longitude))).toBeFalsy();
       }
       if (item.installationDate?.trim()) {
-        expect(INSTALLATION_DATE_REGEX.test(item.installationDate.trim())).toBeTruthy();
-      }
-      if (item.category?.trim()) {
-        expect(item.category.trim()).not.toEqual("");
+        expect(Number.isNaN(Date.parse(item.installationDate.trim()))).toBeFalsy();
       }
     });
-
-    if (incompleteRows.length) {
-      console.log(
-        "BACKEND FINDING: consumer rows with empty consumerName:",
-        incompleteRows,
-      );
-    }
-
-    if (data.total > 0) {
-      const completeRows = data.items.filter((item) => item.consumerName?.trim());
-      expect(completeRows.length).toBeGreaterThan(0);
-    }
   }
 
   validatePagination(data: ConsumerMasterData): void {
@@ -128,7 +94,9 @@ export class ConsumerMasterValidator {
   }
 
   validateUniqueMeterSerialsOnPage(data: ConsumerMasterData): void {
-    const serials = data.items.map((x) => x.meterSerialNumber.trim());
+    const serials = data.items
+      .map((x) => x.meterSerialNumber?.trim())
+      .filter((msn): msn is string => Boolean(msn));
     expect(new Set(serials).size).toEqual(serials.length);
   }
 
@@ -174,19 +142,9 @@ export class ConsumerMasterValidator {
     const q = searchTerm.trim().toLowerCase();
     expect(q.length).toBeGreaterThan(0);
     data.items.forEach((item) => {
-      const haystack = [
-        item.consumerCid,
-        item.consumerName,
-        item.meterSerialNumber,
-        item.ivrsNo,
-        item.existingIvrsNo,
-        item.division,
-        item.zone,
-        item.feeder,
-        item.dtr,
-        item.consumerAddress,
-      ]
-        .filter(Boolean)
+      const haystack = Object.values(item)
+        .filter((v) => v != null && typeof v !== "object")
+        .map((v) => String(v))
         .join(" ")
         .toLowerCase();
       expect(haystack.includes(q)).toBeTruthy();

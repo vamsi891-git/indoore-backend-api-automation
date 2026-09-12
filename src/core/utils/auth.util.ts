@@ -1,5 +1,7 @@
 import { request } from "@playwright/test";
 import { LoggerEngine } from "../engine/logger.engine";
+import { resolveApiPath } from "./api-path.util";
+import { generateTotp, getTotpSecret } from "./totp.util";
 
 export interface LoginResponse {
   accessToken: string;
@@ -17,22 +19,37 @@ interface DeviceSelectionDevice {
   lastSeenAt?: string | null;
 }
 
-interface DeviceSelectionBody {
+interface TwoFactorBody {
   accessToken?: string;
   expiresIn?: number;
+  requires2FA?: boolean;
   requiresDeviceSelection?: boolean;
   challengeToken?: string;
   devices?: DeviceSelectionDevice[];
 }
 
+type DeviceSelectionBody = TwoFactorBody;
+
 export class AuthApi {
   private static readonly loginPath = "/indore/auth/login";
+  private static readonly login2faPath = "/indore/auth/login/2fa";
   private static readonly refreshPath = "/indore/auth/refresh";
   private static readonly releaseDevicePath = "/indore/auth/login/release-device";
+  private static readonly devicesPath = "/indore/auth/devices";
   private static readonly csrfPreflightRetryMs = [0, 5_000, 10_000, 15_000, 30_000];
-  private static readonly loginRetryMs = [0, 3_000, 5_000, 10_000, 15_000, 30_000];
+  /**
+   * Login backoff including room for API `DB_BUSY` (503) pool contention.
+   * Total wait ≈ 2.8 minutes across attempts before failing global setup.
+   */
+  private static readonly loginRetryMs = [
+    0, 5_000, 10_000, 20_000, 30_000, 45_000, 60_000,
+  ];
   private static readonly retriablePreflightStatuses = new Set([502, 503, 504]);
   private static readonly retriableAuthStatuses = new Set([429, 502, 503, 504]);
+
+  private static path(p: string): string {
+    return resolveApiPath(p);
+  }
 
   private static async createContext() {
     return request.newContext({ baseURL: process.env.BASE_URL });
@@ -112,7 +129,7 @@ export class AuthApi {
         await new Promise((resolve) => setTimeout(resolve, waitMs));
       }
 
-      const response = await apiContext.get(this.loginPath);
+      const response = await apiContext.get(this.path(this.loginPath));
       lastStatus = response.status();
       lastBody = (await response.text()).slice(0, 300);
 
@@ -126,7 +143,7 @@ export class AuthApi {
       } catch (csrfError) {
         if (this.retriablePreflightStatuses.has(lastStatus)) {
           LoggerEngine.info(
-            `CSRF preflight retry: GET ${this.loginPath} returned ${lastStatus}`,
+            `CSRF preflight retry: GET ${this.path(this.loginPath)} returned ${lastStatus}`,
           );
           continue;
         }
@@ -137,7 +154,7 @@ export class AuthApi {
             : "CSRF token missing";
 
         throw new Error(
-          `CSRF preflight GET ${this.loginPath} failed with status ${lastStatus} ` +
+          `CSRF preflight GET ${this.path(this.loginPath)} failed with status ${lastStatus} ` +
             `(BASE_URL=${baseUrl}). ${csrfMessage}. Body: ${lastBody}`,
         );
       }
@@ -156,7 +173,7 @@ export class AuthApi {
       const csrfToken = await this.fetchCsrf(apiContext);
       const startTime = Date.now();
 
-      const response = await apiContext.post(this.refreshPath, {
+      const response = await apiContext.post(this.path(this.refreshPath), {
         headers: {
           ...this.buildAuthHeaders(csrfToken),
           Authorization: `Bearer ${accessToken}`
@@ -167,7 +184,7 @@ export class AuthApi {
 
       LoggerEngine.api({
         method: "POST",
-        url: this.refreshPath,
+        url: this.path(this.refreshPath),
         status: response.status(),
         responseTimeMs: Date.now() - startTime
       });
@@ -187,9 +204,18 @@ export class AuthApi {
     }
   }
 
+  private static isDbBusyError(error: unknown): boolean {
+    const message = error instanceof Error ? error.message : String(error);
+    return /DB_BUSY|database is busy|please retry shortly/i.test(message);
+  }
+
   private static isRetriableLoginError(error: unknown): boolean {
     const message =
       error instanceof Error ? error.message : String(error);
+
+    if (this.isDbBusyError(error)) {
+      return true;
+    }
 
     if (this.retriableAuthStatuses.has(Number(message.match(/status (\d+)/)?.[1]))) {
       return true;
@@ -201,14 +227,16 @@ export class AuthApi {
       message.includes("Device selection required but login response was incomplete") ||
       message.includes("Device selection succeeded but no access token was returned") ||
       message.includes("Device selection exhausted all release attempts") ||
+      message.includes("2FA required but TOTP_SECRET is not set") ||
+      message.includes("2FA verification did not return an access token") ||
       message.includes("CSRF preflight unavailable") ||
       message.includes("CSRF token missing")
     );
   }
 
-  private static pickDeviceToRelease(
+  private static pickDevicesToTerminate(
     devices: DeviceSelectionDevice[],
-  ): DeviceSelectionDevice {
+  ): DeviceSelectionDevice[] {
     const keepDeviceId = process.env.DEVICE_ID?.trim();
     const sorted = [...devices].sort((left, right) => {
       const leftTime = Date.parse(left.lastSeenAt ?? "") || 0;
@@ -216,11 +244,165 @@ export class AuthApi {
       return leftTime - rightTime;
     });
 
-    const releasable = keepDeviceId
-      ? sorted.filter((device) => device.id !== keepDeviceId)
-      : sorted;
+    if (!keepDeviceId) {
+      return sorted;
+    }
 
-    return releasable[0] ?? sorted[0]!;
+    const releasable = sorted.filter((device) => device.id !== keepDeviceId);
+    return releasable.length > 0 ? releasable : sorted;
+  }
+
+  private static pickDeviceToRelease(
+    devices: DeviceSelectionDevice[],
+  ): DeviceSelectionDevice {
+    return this.pickDevicesToTerminate(devices)[0] ?? devices[0]!;
+  }
+
+  private static flattenCatalogDevices(body: {
+    data?: {
+      devices?: Array<{ id?: string; isCurrentDevice?: boolean; revokedAt?: string | null }>;
+      deviceGroups?: Array<{
+        devices?: Array<{ id?: string; isCurrentDevice?: boolean; revokedAt?: string | null }>;
+      }>;
+    };
+  }): Array<{ id: string; isCurrentDevice?: boolean; revokedAt?: string | null }> {
+    const data = body.data ?? {};
+    const fromRoot = Array.isArray(data.devices) ? data.devices : [];
+    const fromGroups = Array.isArray(data.deviceGroups)
+      ? data.deviceGroups.flatMap((group) =>
+          Array.isArray(group.devices) ? group.devices : [],
+        )
+      : [];
+    const seen = new Set<string>();
+    const merged: Array<{
+      id: string;
+      isCurrentDevice?: boolean;
+      revokedAt?: string | null;
+    }> = [];
+    for (const device of [...fromRoot, ...fromGroups]) {
+      const id = device.id?.trim();
+      if (!id || seen.has(id)) {
+        continue;
+      }
+      seen.add(id);
+      merged.push(device as { id: string; isCurrentDevice?: boolean; revokedAt?: string | null });
+    }
+    return merged;
+  }
+
+  /** After a device-limit login, revoke every other session so the cap of 4 does not block the next run. */
+  private static async revokeOtherSessions(
+    apiContext: Awaited<ReturnType<typeof request.newContext>>,
+    session: LoginResponse,
+  ): Promise<void> {
+    const listResponse = await apiContext.get(this.path(this.devicesPath), {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${session.accessToken}`,
+      },
+    });
+    if (!listResponse.ok()) {
+      LoggerEngine.info(
+        `Could not list sessions to terminate (${listResponse.status()}); continuing with current login`,
+      );
+      return;
+    }
+
+    const listBody = (await listResponse.json()) as {
+      data?: {
+        devices?: Array<{ id?: string; isCurrentDevice?: boolean; revokedAt?: string | null }>;
+        deviceGroups?: Array<{
+          devices?: Array<{ id?: string; isCurrentDevice?: boolean; revokedAt?: string | null }>;
+        }>;
+      };
+    };
+    const keepDeviceId = process.env.DEVICE_ID?.trim();
+    const targets = this.flattenCatalogDevices(listBody).filter((device) => {
+      if (device.isCurrentDevice || device.revokedAt) {
+        return false;
+      }
+      if (keepDeviceId && device.id === keepDeviceId) {
+        return false;
+      }
+      return true;
+    });
+
+    for (const device of targets) {
+      const csrfToken = this.resolveCsrfToken(
+        (await apiContext.storageState()).cookies,
+        {},
+      );
+      const deleted = await apiContext.delete(
+        this.path(`${this.devicesPath}/${device.id}`),
+        {
+          headers: {
+            ...this.buildAuthHeaders(csrfToken),
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+        },
+      );
+      LoggerEngine.info(
+        `Terminated session ${device.id} (${deleted.status()}) after device-limit login`,
+      );
+    }
+  }
+
+  private static async completeTwoFactor(
+    apiContext: Awaited<ReturnType<typeof request.newContext>>,
+    initialBody: TwoFactorBody,
+    responseHeaders: Record<string, string>,
+  ): Promise<TwoFactorBody> {
+    const challengeToken = initialBody.challengeToken?.trim();
+    const totpSecret = getTotpSecret();
+    if (!challengeToken) {
+      throw new Error("2FA required but login response was missing challengeToken");
+    }
+    if (!totpSecret) {
+      throw new Error(
+        "2FA required but TOTP_SECRET is not set — add the authenticator base32 secret to .env",
+      );
+    }
+
+    let lastError = "2FA verification failed";
+    for (const periodOffset of [0, -1, 1]) {
+      const csrfToken = this.resolveCsrfToken(
+        (await apiContext.storageState()).cookies,
+        responseHeaders,
+      );
+      const otp = generateTotp(totpSecret, periodOffset);
+      const startTime = Date.now();
+      const verifyResponse = await apiContext.post(this.path(this.login2faPath), {
+        headers: this.buildAuthHeaders(csrfToken),
+        data: { challengeToken, otp },
+      });
+      const verifyBody = (await verifyResponse.json()) as { data?: TwoFactorBody };
+
+      LoggerEngine.api({
+        method: "POST",
+        url: this.path(this.login2faPath),
+        status: verifyResponse.status(),
+        responseTimeMs: Date.now() - startTime,
+      });
+
+      if (verifyResponse.ok() && verifyBody.data) {
+        return verifyBody.data;
+      }
+
+      lastError = `2FA verification failed with status ${verifyResponse.status()} - ${JSON.stringify(verifyBody)}`;
+      const code = (verifyBody as { error?: { code?: string } }).error?.code ?? "";
+      if (code === "TWO_FACTOR_SECRET_UNAVAILABLE") {
+        throw new Error(
+          "TWO_FACTOR_SECRET_UNAVAILABLE: the API cannot read this user's stored authenticator secret. " +
+            "TOTP_SECRET in .env is only used to generate the 6-digit code; the server must already have " +
+            "the same secret from 2FA enrollment. On this local API the user has 2FA enabled but the " +
+            "encrypted secret is missing or the backend 2FA encryption key does not match. " +
+            "Fix: disable 2FA for this account in local DB, or re-enroll 2FA on localhost and put the new " +
+            "base32 secret in TOTP_SECRET, or point BASE_URL at the environment where this authenticator was enrolled.",
+        );
+      }
+    }
+
+    throw new Error(lastError);
   }
 
   private static async completeDeviceSelection(
@@ -235,17 +417,29 @@ export class AuthApi {
       throw new Error("Device selection required but login response was incomplete");
     }
 
-    const maxAttempts = devices.length + 1;
+    LoggerEngine.info(
+      `Device limit reached (${devices.length} active sessions). Terminating listed sessions so login can continue.`,
+    );
+    console.log(
+      `Device limit reached (${devices.length} sessions). Closing all listed sessions.`,
+    );
+
+    const maxAttempts = Math.max(devices.length, 4) + 2;
 
     for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
-      const deviceToRelease = this.pickDeviceToRelease(devices);
+      const toTerminate = this.pickDevicesToTerminate(devices);
+      const deviceToRelease = toTerminate[0] ?? devices[0];
+      if (!deviceToRelease) {
+        throw new Error("Device selection required but no session was available to terminate");
+      }
+
       const csrfToken = this.resolveCsrfToken(
         (await apiContext.storageState()).cookies,
         responseHeaders,
       );
 
       const releaseStartTime = Date.now();
-      const releaseResponse = await apiContext.post(this.releaseDevicePath, {
+      const releaseResponse = await apiContext.post(this.path(this.releaseDevicePath), {
         headers: this.buildAuthHeaders(csrfToken),
         data: { challengeToken, deviceId: deviceToRelease.id },
       });
@@ -256,7 +450,7 @@ export class AuthApi {
 
       LoggerEngine.api({
         method: "POST",
-        url: this.releaseDevicePath,
+        url: this.path(this.releaseDevicePath),
         status: releaseResponse.status(),
         responseTimeMs: Date.now() - releaseStartTime,
       });
@@ -288,7 +482,7 @@ export class AuthApi {
       }
 
       LoggerEngine.info(
-        `Device release attempt ${attempt + 1}/${maxAttempts} released ${deviceToRelease.id}; continuing selection`,
+        `Terminated session ${deviceToRelease.id} (${attempt + 1}/${maxAttempts}); ${devices.length} still active`,
       );
     }
 
@@ -313,7 +507,7 @@ export class AuthApi {
       const startTime = Date.now();
       let csrfToken = await this.fetchCsrf(apiContext);
 
-      const loginResponse = await apiContext.post(this.loginPath, {
+      const loginResponse = await apiContext.post(this.path(this.loginPath), {
         headers: this.buildAuthHeaders(csrfToken),
         data: { email, password },
       });
@@ -322,7 +516,7 @@ export class AuthApi {
 
       LoggerEngine.api({
         method: "POST",
-        url: this.loginPath,
+        url: this.path(this.loginPath),
         status: loginResponse.status(),
         responseTimeMs: Date.now() - startTime,
       });
@@ -337,14 +531,29 @@ export class AuthApi {
         return this.toLoginResponse(apiContext, loginBody);
       }
 
-      if (loginBody.data?.requiresDeviceSelection) {
+      let nextBody = loginBody.data as TwoFactorBody;
+
+      if (nextBody?.requires2FA) {
+        nextBody = await this.completeTwoFactor(
+          apiContext,
+          nextBody,
+          loginResponse.headers(),
+        );
+        if (nextBody.accessToken) {
+          return this.toLoginResponse(apiContext, { data: nextBody });
+        }
+      }
+
+      if (nextBody?.requiresDeviceSelection) {
         const session = await this.completeDeviceSelection(
           apiContext,
-          loginBody.data as DeviceSelectionBody,
+          nextBody as DeviceSelectionBody,
           loginResponse.headers(),
         );
 
-        return this.toLoginResponse(apiContext, { data: session });
+        const login = await this.toLoginResponse(apiContext, { data: session });
+        await this.revokeOtherSessions(apiContext, login);
+        return login;
       }
 
       throw new Error(
@@ -360,13 +569,16 @@ export class AuthApi {
     password: string;
   }): Promise<LoginResponse> {
     let lastError: Error | null = null;
+    let sawDbBusy = false;
 
     for (let attempt = 0; attempt < this.loginRetryMs.length; attempt += 1) {
       const waitMs = this.loginRetryMs[attempt] ?? 0;
       if (waitMs > 0) {
-        LoggerEngine.info(
-          `Login retry ${attempt + 1}/${this.loginRetryMs.length} after ${waitMs}ms`,
-        );
+        const msg =
+          `Login retry ${attempt + 1}/${this.loginRetryMs.length} after ${waitMs}ms` +
+          (sawDbBusy ? " (DB_BUSY backoff)" : "");
+        LoggerEngine.info(msg);
+        console.log(msg);
         await new Promise((resolve) => setTimeout(resolve, waitMs));
       }
 
@@ -380,14 +592,29 @@ export class AuthApi {
           throw lastError;
         }
 
-        LoggerEngine.info(
-          `Login attempt ${attempt + 1}/${this.loginRetryMs.length} failed (retriable): ${lastError.message}`,
-        );
+        if (this.isDbBusyError(lastError)) {
+          sawDbBusy = true;
+          const finding =
+            "BACKEND FINDING: login returned DB_BUSY — retrying while database recovers";
+          LoggerEngine.info(finding);
+          console.log(finding);
+        }
+
+        const failMsg = `Login attempt ${attempt + 1}/${this.loginRetryMs.length} failed (retriable): ${lastError.message}`;
+        LoggerEngine.info(failMsg);
+        console.log(failMsg);
       }
     }
 
     LoggerEngine.error("AuthApi.login failed after retries", lastError);
-    throw lastError ?? new Error("Login failed after retries");
+    throw (
+      lastError ??
+      new Error(
+        sawDbBusy
+          ? "Login failed after DB_BUSY retries — database still busy; retry the suite shortly"
+          : "Login failed after retries",
+      )
+    );
   }
 
   static async loginAs(email: string, password: string): Promise<LoginResponse> {

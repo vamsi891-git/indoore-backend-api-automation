@@ -6,8 +6,26 @@
     "success"
   ],
   "dataKeys": [
-    "(null)"
+    "available",
+    "communicationState",
+    "lastCommunicationAt",
+    "lastReadingIso",
+    "meterPhase",
+    "meterSerialNumber",
+    "metrics",
+    "snapshotAt",
+    "total"
   ],
-  "itemKeys": [],
+  "itemKeys": [
+    "available",
+    "communicationState",
+    "lastCommunicationAt",
+    "lastReadingIso",
+    "meterPhase",
+    "meterSerialNumber",
+    "metrics",
+    "snapshotAt",
+    "total"
+  ],
   "hasColumnsGrid": false
 }

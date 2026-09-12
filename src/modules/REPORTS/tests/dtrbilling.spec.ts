@@ -1,34 +1,70 @@
-import { test } from "../../../fixtures/observability.fixture";
+import { test } from "../../../fixtures/api.fixture";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { DtrBillingApi } from "../Api/dtrbilling.api";
-import { dtrBillingMaxResponseTimeMs, dtrBillingTestCases, resolveDtrBillingQuery,} from "../Data/dtrbilling.data";
-import { DtrBillingMapper } from "../Mapper/dtrbilling.mapper";
-import { DtrBillingValidator, type DtrBillingErrorBody,} from "../Validator/dtrbilling.validator";
-import { shouldSkipReportsBackendDefect } from "../utils/reports-env.helper";
-test.describe("DTR Billing Report API", () => {
+import {
+  dtrBillingMaxResponseTimeMs,
+  dtrBillingTestCases,
+  resolveDtrBillingContractBody,
+  resolveDtrBillingQuery,
+} from "../Data/dtrbilling.data";
+import {
+  DtrBillingMapper,
+  type DtrBillingErrorBody,
+} from "../Mapper/dtrbilling.mapper";
+import { DtrBillingValidator } from "../Validator/dtrbilling.validator";
+import { skipIfReportsInternalError } from "../utils/reports-env.helper";
+
+test.describe("DTR billing report", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
+
   for (const testCase of dtrBillingTestCases) {
-    test(testCase.testName,
+    test(
+      testCase.testName,
       { tag: testCase.tags },
-      async ({ authenticatedApi, obs }) => {
-        if (shouldSkipReportsBackendDefect(testCase.tags)) {
-          test.skip(
-            true,
-            "REPORTS_SKIP_BACKEND_DEFECTS=1 — skipping @backend-defect",
-          );
-          return;
-        }
+      async ({ authenticatedApi }) => {
         const expectedStatus = testCase.expectedStatus ?? 200;
         const validator = new DtrBillingValidator();
         const assert = new AssertionEngine();
-        const validation = new ValidationEngine(obs);
+        const validation = new ValidationEngine();
+
+        if (testCase.isContractFixture) {
+          const fixtureBody = resolveDtrBillingContractBody(testCase.scenario);
+          if (!fixtureBody) {
+            test.skip(true, "Missing dtr-billing contract body");
+            return;
+          }
+          const mapped = DtrBillingMapper.map(fixtureBody);
+          validation.execute("Required Fields", () =>
+            assert.validateRequiredFields(fixtureBody, ["success", "data"]),
+          );
+          validation.execute("Contract Scenario", () =>
+            validator.validateScenario(mapped, testCase.scenario),
+          );
+          validation.printSummary(testCase.testName, 0);
+          return;
+        }
+
         const api = new DtrBillingApi(authenticatedApi);
         const query = resolveDtrBillingQuery(testCase.scenario);
+        const queryString = new URLSearchParams(
+          Object.entries(query).reduce<Record<string, string>>(
+            (acc, [key, value]) => {
+              if (value === undefined) return acc;
+              if (Array.isArray(value)) {
+                acc[key] = value.join(",");
+              } else {
+                acc[key] = String(value);
+              }
+              return acc;
+            },
+            {},
+          ),
+        ).toString();
+
         const { rawResponse, responseBody, responseTime } =
           await api.getDtrBilling(query);
         await PerformanceTracker.track(
@@ -37,94 +73,87 @@ test.describe("DTR Billing Report API", () => {
           rawResponse.url(),
           responseTime,
         );
-        if (BackendResponse.isServerError(rawResponse.status()) &&expectedStatus === 200) {
-          BackendResponse.logFinding(
-            testCase.testName,
-            rawResponse.status(),
-            responseBody,
-          );
-        }
+
+        skipIfReportsInternalError(
+          rawResponse.status(),
+          responseBody,
+          "/indore/reports/dtr-billing",
+        );
+
         validation.execute("Status Validation", () =>
-          assert.validateStatusCode(rawResponse,expectedStatus,responseBody,),
+          assert.validateStatusCode(rawResponse, expectedStatus, responseBody),
         );
         validation.execute("Content Type", () =>
           assert.validateContentType(rawResponse),
         );
         validation.execute("Response Time", () =>
-          assert.validateResponseTime(responseTime,dtrBillingMaxResponseTimeMs,),
+          assert.validateResponseTime(
+            responseTime,
+            dtrBillingMaxResponseTimeMs,
+          ),
         );
         validation.execute("Sensitive Data", () =>
           assert.validateSensitiveData(responseBody),
         );
+
         if (expectedStatus !== 200) {
           validation.execute("Validation Error", () =>
-            validator.validateValidationError(responseBody as DtrBillingErrorBody,),
+            validator.validateValidationError(
+              responseBody as DtrBillingErrorBody,
+            ),
           );
           validation.printSummary(testCase.testName, responseTime);
           return;
         }
+
         validation.execute("Required Fields", () =>
           assert.validateRequiredFields(responseBody, ["success", "data"]),
         );
         const mapped = DtrBillingMapper.map(responseBody);
-        const data = mapped.data;
-        const rows = data.rows;
-        validation.execute("Success", () => validator.validateSuccess(mapped));
-        validation.execute("Root Structure", () =>
-          validator.validateRootStructure(mapped),
-        );
-        validation.execute("Columns", () => validator.validateColumns(data));
-        validation.execute("Query Echo", () =>
-          validator.validateQueryEcho(data, query.page, query.limit),
-        );
-        validation.execute("Request Date Range Format", () =>
-          validator.validateDateRangeFormat(query.fromDate, query.toDate),
-        );
-        validation.execute("Pagination", () =>
-          validator.validatePagination(data, query.includeTotal),
-        );
-        validation.execute("No Data Scenario", () =>
-          validator.validateNoDataScenario(data),
-        );
-        validation.execute("Rows Present When Total Positive", () =>
-          validator.validateRowsPresentWhenTotalPositive(data),
-        );
-        if (rows.length > 0) {
-          validation.execute("Rows Structure", () =>
-            validator.validateRowsStructure(rows),
-          );
-          validation.execute("Hierarchy Fields", () =>
-            validator.validateHierarchyFields(rows),
-          );
-          validation.execute("Meter Serial Number", () =>
-            validator.validateMeterSerialNumber(rows),
-          );
-          validation.execute("Date Time Format", () =>
-            validator.validateDateTimeFormat(rows),
-          );
-          validation.execute("Billing Date In Range", () =>
-            validator.validateBillingDateInRange(rows,query.fromDate,query.toDate,),
-          );
-          validation.execute("Energy Fields", () =>
-            validator.validateEnergyFields(rows),
-          );
-          validation.execute("Electrical Business Rules", () =>
-            validator.validateElectricalBusinessRules(rows),
-          );
-          validation.execute("Export Energy", () =>
-            validator.validateExportEnergy(rows),
-          );
-          validation.execute("MF", () => validator.validateMf(rows));
-          validation.execute("SL No Sequence", () =>
-            validator.validateSlNoSequence(rows, query.page, query.limit),
-          );
-          validation.execute("Unique SL No", () =>
-            validator.validateUniqueSlNo(rows),
-          );
-          validation.execute("Unique Meter Serial", () =>
-            validator.validateUniqueMeterSerial(rows),
+        if (
+          testCase.scenario === "dev_live_without_total" ||
+          testCase.scenario === "dev_live_include_total"
+        ) {
+          console.info(
+            JSON.stringify(
+              {
+                msg: "dtr_billing_live_response",
+                scenario: testCase.scenario,
+                query: {
+                  fromDate: query.fromDate,
+                  toDate: query.toDate,
+                  page: query.page,
+                  limit: query.limit,
+                  includeTotal: query.includeTotal,
+                },
+                queryString,
+                pagination: mapped.data.pagination,
+                columnKeys: mapped.data.columns.map((c) => c.key),
+                rowCount: mapped.data.rows.length,
+                note:
+                  mapped.data.pagination.total === null &&
+                  mapped.data.rows.length > 0
+                    ? "includeTotal=false: null total with rows is valid"
+                    : undefined,
+                sampleRow: mapped.data.rows[0] ?? null,
+              },
+              null,
+              2,
+            ),
           );
         }
+        validation.execute("Response Envelope", () =>
+          validator.validateResponseEnvelope(responseBody),
+        );
+        validation.execute("DTR Billing Scenario", () =>
+          validator.validateScenario(
+            mapped,
+            testCase.scenario,
+            query.page,
+            query.limit,
+          ),
+        );
+
         validation.printSummary(testCase.testName, responseTime);
       },
     );

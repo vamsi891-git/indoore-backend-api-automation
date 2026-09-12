@@ -6,6 +6,7 @@ import {
   CommandJobInitResponse,
   MappedCommandJobInitData,
 } from "../shared/commands-job-init.mapper";
+import { QUERY_FINISHED_MESSAGE } from "../utils/commands-job-e2e.helper";
 
 export class CommandsMeteringModeValidator {
   validateInitMessage(mapped: MappedCommandJobInitData): void {
@@ -46,9 +47,7 @@ export class CommandsMeteringModeValidator {
   }
 
   validateQueryFinishedMessage(message: string): void {
-    expect(
-      commandsMeteringModeData.queryFinishedMessagePattern.test(message),
-    ).toBe(true);
+    expect(QUERY_FINISHED_MESSAGE.test(message)).toBe(true);
   }
 
   validateQueryResponseEnvelope(body: MappedQueryMeterJobData): void {

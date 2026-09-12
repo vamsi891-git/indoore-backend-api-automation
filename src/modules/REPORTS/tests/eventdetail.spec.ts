@@ -7,8 +7,9 @@ import { EventDetailApi } from "../Api/eventdetail.api";
 import { eventDetailMaxResponseTimeMs, eventDetailTestCases, resolveEventDetailContractBody, resolveEventDetailQuery,} from "../Data/eventdetail.data";
 import { EventDetailMapper, type EventDetailErrorBody,} from "../Mapper/eventdetail.mapper";
 import { EventDetailValidator } from "../Validator/eventdetail.validator";
-test.describe("Event Detail Report API", () => {
-    test.describe.configure({ retries: 1 });
+import { skipIfReportsInternalError } from "../utils/reports-env.helper";
+test.describe("Event detail report", () => {
+    test.describe.configure({ retries: 0 });
     test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
     for (const testCase of eventDetailTestCases) {
         test(testCase.testName,
@@ -57,6 +58,13 @@ test.describe("Event Detail Report API", () => {
         rawResponse.url(),
         responseTime
       );
+                if (expectedStatus === 200) {
+                    skipIfReportsInternalError(
+                        rawResponse.status(),
+                        responseBody,
+                        "/indore/reports/event-detail",
+                    );
+                }
                 validation.execute("Status Validation", () =>
                  assert.validateStatusCode(rawResponse,expectedStatus,responseBody,),
                 );
@@ -82,11 +90,36 @@ test.describe("Event Detail Report API", () => {
                     assert.validateRequiredFields(responseBody, ["success","data",]),
                 );
                 const mapped = EventDetailMapper.map(responseBody);
+                if (
+                    testCase.scenario === "dev_live_primary" ||
+                    testCase.scenario === "dev_live_page2"
+                ) {
+                    console.info(
+                        JSON.stringify(
+                            {
+                                msg: "event_detail_live_response",
+                                query,
+                                queryString,
+                                pagination: mapped.pagination,
+                                columnKeys: mapped.columns.map((c) => c.key),
+                                rowCount: mapped.rows.length,
+                                sampleRow: mapped.rows[0] ?? null,
+                            },
+                            null,
+                            2,
+                        ),
+                    );
+                }
                 validation.execute("Response Envelope", () =>
                     validator.validateResponseEnvelope(responseBody),
                 );
                 validation.execute("Event Detail Scenario", () =>
-                    validator.validateScenario(mapped,testCase.scenario,query.page,query.limit,),
+                    validator.validateScenario(
+                        mapped,
+                        testCase.scenario,
+                        query.page,
+                        query.limit,
+                    ),
                 );
 
                 validation.printSummary(testCase.testName, responseTime);

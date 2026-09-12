@@ -1,25 +1,25 @@
+import { commercialAnalysisWindow } from "./commercial-window.data";
+
 export const commercialSummaryData = {
-    month: 12,
-    year: 2025,
+    ...commercialAnalysisWindow,
     pfThreshold: 0.8,
     maxResponseTime: 180_000,
-    expectedReportCount: 24,
+    expectedReportCount: 23,
     expectedCategory: "commercial",
-    /** Backend hardcodes night/day-night counts to zero until load-profile integration */
-    reportsExpectedAllZero: [
-        "night_zero_consumption",
-        "night_lte_threshold",
-    ] as const,
-    expectedAnalysisTypes: [
-        "pf_violation",
-        "md_gt_cd_last_three_months",
-        "sanction_load_violation",
-        "lf_lt_5",
-        "lf_gt_100",
-        "consumption_compare_prev_month",
+    /** Oct 2025: these reports stay unavailable (missing billing months). */
+    reportsExpectedUnavailable: [
+        "zero_consumption_6m",
+        "zero_consumption_9m",
+        "zero_consumption_12m",
+        "zero_consumption_gt_12m",
+        "low_consumption_100_units_6m",
+        "low_consumption_100_units_9m",
+        "lf_lt_5_last_6m",
         "consumption_compare_same_month_last_year",
         "abnormal_high",
         "abnormal_low",
+    ] as const,
+    expectedAnalysisTypes: [
         "zero_consumption_1m",
         "zero_consumption_3m",
         "zero_consumption_6m",
@@ -29,9 +29,17 @@ export const commercialSummaryData = {
         "low_consumption_100_units_3m",
         "low_consumption_100_units_6m",
         "low_consumption_100_units_9m",
-        "avg_less_than_initial_6m",
+        "pf_violation",
+        "md_gt_cd_last_three_months",
+        "sanction_load_violation",
+        "lf_lt_5",
+        "lf_gt_100",
         "lf_lt_5_last_3m",
         "lf_lt_5_last_6m",
+        "consumption_compare_prev_month",
+        "consumption_compare_same_month_last_year",
+        "abnormal_high",
+        "abnormal_low",
         "improper_md",
         "night_zero_consumption",
         "night_lte_threshold",
@@ -54,13 +62,11 @@ export const commercialSummaryData = {
         zero_consumption_12m: "Zero Consumption for Last 12 months",
         zero_consumption_gt_12m: "Zero Consumption More than 12 months",
         low_consumption_100_units_3m:
-            "100 unit kwh from Last Three months continuous",
+            "100 unit kWh from Last Three Months Continuously",
         low_consumption_100_units_6m:
             "100 unit kwh from Last Six months continuous",
         low_consumption_100_units_9m:
             "100 unit kwh from Last Nine months continuous",
-        avg_less_than_initial_6m:
-            "LAST SIX MONTH 50 % AVG CONSUMPTION < Initial Consumption",
         lf_lt_5_last_3m: "LF < 5% Last Three month",
         lf_lt_5_last_6m: "LF < 5% Last Six Month",
         improper_md: "Improper MD",

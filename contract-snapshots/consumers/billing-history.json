@@ -6,14 +6,18 @@
     "success"
   ],
   "dataKeys": [
-    "(array)"
+    "items",
+    "page",
+    "pageSize",
+    "total",
+    "totalPages"
   ],
   "itemKeys": [
-    "billAmount",
-    "consumptionKwh",
-    "consumptionSummaryText",
-    "paymentStatus",
-    "periodLabel"
+    "items",
+    "page",
+    "pageSize",
+    "total",
+    "totalPages"
   ],
   "hasColumnsGrid": false
 }

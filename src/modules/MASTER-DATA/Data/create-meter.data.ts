@@ -83,7 +83,6 @@ function buildBaseTemplate(): Omit<CreateMeterRequestBody, "meterSerialNumber"> 
 function uniqueSuffix(): string {
   return String(Date.now());
 }
-
 /** ≤16 chars; asset/RAPDRP match serial (manual doc §1). */
 function buildMeterSerial(suffix: string = uniqueSuffix()): string {
   const rnd = Math.floor(Math.random() * 10_000);
@@ -120,16 +119,14 @@ export function buildCreateMeterRequest(
 export const createMeterTestCases: CreateMeterTestCase[] = [
   // ─── 1. Meter Identification (manual doc §1) ─────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/add-meter — create meter successfully",
+    testName: "Add meter — new meter is created",
     scenario: "success",
     expectedStatus: 201,
     buildPayload: () => buildCreateMeterRequest(),
     tags: ["@smoke", "@master-data", "@create-meter", "@meter-master"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-meter — asset and RAPDRP match serial",
+    testName: "Add meter — asset number and RAPDRP number match the serial",
     scenario: "success_matching_asset",
     expectedStatus: 201,
     buildPayload: () => {
@@ -139,8 +136,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
     tags: ["@master-data", "@create-meter", "@meter-master"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-meter — METER_ALREADY_EXISTS",
+    testName: "Add meter — serial already exists",
     scenario: "already_exists",
     expectedStatus: 400,
     envKey: "VALIDATE_ADD_METER_EXISTS_SERIAL",
@@ -151,8 +147,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
     tags: ["@master-data", "@create-meter", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-meter — meter serial required",
+    testName: "Add meter — meter serial is required",
     scenario: "validation_error",
     expectedStatus: 400,
     validationField: "meterSerialNumber",
@@ -165,8 +160,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
 
   // ─── 2. Meter Master (manual doc §2) ─────────────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/add-meter — DEVICE_MANUFACTURER_NOT_FOUND",
+    testName: "Add meter — unknown manufacturer is rejected",
     scenario: "manufacturer_not_found",
     expectedStatus: 400,
     buildPayload: () => ({
@@ -176,8 +170,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
     tags: ["@master-data", "@create-meter", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-meter — invalid DLMS / Non-DLMS value",
+    testName: "Add meter — DLMS type must be valid",
     scenario: "validation_error",
     expectedStatus: 400,
     validationField: "dlmsNonDlms",
@@ -188,8 +181,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
     tags: ["@master-data", "@create-meter", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-meter — meter status true accepted",
+    testName: "Add meter — active status is accepted",
     scenario: "success_active_status",
     expectedStatus: 201,
     buildPayload: () => ({
@@ -201,8 +193,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
 
   // ─── 3. Meter Configuration (manual doc §3) ──────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/add-meter — MF must be greater than zero",
+    testName: "Add meter — multiplication factor must be greater than zero",
     scenario: "validation_error",
     expectedStatus: 400,
     validationField: "mf",
@@ -213,8 +204,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
     tags: ["@master-data", "@create-meter", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-meter — display digit must be positive",
+    testName: "Add meter — display digits must be greater than zero",
     scenario: "validation_error",
     expectedStatus: 400,
     validationField: "displayDigitCount",
@@ -225,8 +215,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
     tags: ["@master-data", "@create-meter", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-meter — MPTR must be non-negative",
+    testName: "Add meter — MPTR cannot be negative",
     scenario: "validation_error",
     expectedStatus: 400,
     validationField: "mtr",
@@ -239,8 +228,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
 
   // ─── 4. Date Validation (manual doc §4) ──────────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/add-meter — valid PO and testing date order",
+    testName: "Add meter — testing date is on or after the purchase date",
     scenario: "success",
     expectedStatus: 201,
     buildPayload: () => ({
@@ -251,8 +239,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
     tags: ["@master-data", "@create-meter"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-meter — testing date before PO date rejected",
+    testName: "Add meter — testing date cannot be before the purchase date",
     scenario: "validation_error",
     expectedStatus: 400,
     validationField: "meterTestingDate",
@@ -264,8 +251,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
     tags: ["@master-data", "@create-meter", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-meter — future PO date rejected",
+    testName: "Add meter — purchase date cannot be in the future",
     scenario: "validation_error",
     expectedStatus: 400,
     validationField: "meterPoDate",
@@ -279,8 +265,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
 
   // ─── 5. Field Length (manual doc §5) ─────────────────────────────────────
   {
-    testName:
-      "Validate POST /indore/master-data/add-meter — accuracy class max 8 chars",
+    testName: "Add meter — accuracy class cannot be longer than 8 characters",
     scenario: "validation_error",
     expectedStatus: 400,
     validationField: "accuracyClass",
@@ -291,8 +276,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
     tags: ["@master-data", "@create-meter", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-meter — PO number max 32 chars",
+    testName: "Add meter — purchase order number cannot be longer than 32 characters",
     scenario: "validation_error",
     expectedStatus: 400,
     validationField: "meterPoNumber",
@@ -303,8 +287,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
     tags: ["@master-data", "@create-meter", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-meter — meter version max 32 chars",
+    testName: "Add meter — meter version cannot be longer than 32 characters",
     scenario: "validation_error",
     expectedStatus: 400,
     validationField: "meterVersion",
@@ -315,8 +298,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
     tags: ["@master-data", "@create-meter", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-meter — meter rating max 15 chars",
+    testName: "Add meter — meter rating cannot be longer than 15 characters",
     scenario: "validation_error",
     expectedStatus: 400,
     validationField: "meterRating",
@@ -327,8 +309,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
     tags: ["@master-data", "@create-meter", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/add-meter — missing required fields",
+    testName: "Add meter — required fields cannot be blank",
     scenario: "validation_error",
     expectedStatus: 400,
     validationField: "meterRapdrpCode",

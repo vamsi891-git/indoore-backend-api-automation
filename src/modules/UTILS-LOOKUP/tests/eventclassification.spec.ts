@@ -35,7 +35,7 @@ function validateEventClassification(
 }
 
 registerCatalogLookupTests({
-  describeTitle: "Event Classification API",
+  describeTitle: "Event classifications",
   testCases: eventClassificationTestCases,
   fetch: (api) => new EventClassificationApi(api).getEventClassifications(),
   validate: validateEventClassification,

@@ -2,6 +2,7 @@ import { expect } from "@playwright/test";
 import { QueryMeterJobMeterResult } from "../Mapper/commands-query-meter-job.mapper";
 import { commandsLoadCurtailmentData } from "../Data/commands-load-curtailment.data";
 import { MappedCommandJobInitData } from "../shared/commands-job-init.mapper";
+import { QUERY_FINISHED_MESSAGE } from "../utils/commands-job-e2e.helper";
 
 export interface LoadCurtailmentEntry {
   type: string;
@@ -28,9 +29,7 @@ export class CommandsLoadCurtailmentValidator {
   }
 
   validateQueryFinishedMessage(message: string): void {
-    expect(/job finished|synced from meterStatusForJob/i.test(message)).toBe(
-      true,
-    );
+    expect(QUERY_FINISHED_MESSAGE.test(message)).toBe(true);
   }
 
   validateLoadCurtailmentEntry(entry: LoadCurtailmentEntry): void {

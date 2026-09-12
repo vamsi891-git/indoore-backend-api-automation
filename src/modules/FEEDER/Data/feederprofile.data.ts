@@ -1,10 +1,11 @@
-export const feederProfileData = {
-    feederCode: "UVZ73",
+import { DEFAULT_FEEDER_CODE } from "../utils/feeder-env.helper";
 
-    expectedOverviewTitles: [
-        "DTR Number",
-        "DTR Capacity",
-        "Feeder Capacity",
-        "Feeder Status"
-    ]
+export const feederProfileData = {
+  feederCode: DEFAULT_FEEDER_CODE,
+  expectedOverviewTitles: [
+    "DTR Number",
+    "DTR Capacity",
+    "Feeder Capacity",
+    "Feeder Status",
+  ],
 };

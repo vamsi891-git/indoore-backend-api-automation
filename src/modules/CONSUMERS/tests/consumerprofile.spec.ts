@@ -4,22 +4,12 @@ import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { ConsumerProfileApi } from "../Api/consumerprofile.api";
-import {
-  consumerProfileMaxResponseTimeMs,
-  consumerProfileTestCases,
-  resolveConsumerProfileQuery,
-  resolveConsumerProfileRef,
-} from "../Data/consumerprofile.data";
-import {
-  ConsumerProfileMapper,
-  type ConsumerProfileErrorResponse,
-} from "../Mapper/consumerprofile.mapper";
+import {consumerProfileMaxResponseTimeMs,consumerProfileTestCases,resolveConsumerProfileQuery,resolveConsumerProfileRef,} from "../Data/consumerprofile.data";
+import {ConsumerProfileMapper,type ConsumerProfileErrorResponse,} from "../Mapper/consumerprofile.mapper";
 import { ConsumerProfileValidator } from "../Validator/consumerprofile.validator";
-
 test.describe("Consumer Profile API", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
-
   for (const testCase of consumerProfileTestCases) {
     test(
       testCase.testName,
@@ -29,29 +19,24 @@ test.describe("Consumer Profile API", () => {
         const api = new ConsumerProfileApi(authenticatedApi);
         const validator = new ConsumerProfileValidator();
         const consumerRef = resolveConsumerProfileRef(testCase.scenario);
-
         if (!consumerRef) {
           test.skip(true, "Could not resolve consumer profile route ref");
           return;
         }
-
         const query = resolveConsumerProfileQuery(testCase.scenario);
         const {
           rawResponse,
           responseBody,
           responseTime,
         } = await api.getConsumerProfile(consumerRef, query);
-
         await PerformanceTracker.track(
         rawResponse,
         testCase.testName,
         rawResponse.url(),
         responseTime
       );
-
         const assert = new AssertionEngine();
         const validation = new ValidationEngine();
-
         validation.execute("Status Validation", () =>
           assert.validateStatusCode(rawResponse, expectedStatus, responseBody),
         );
@@ -86,7 +71,7 @@ test.describe("Consumer Profile API", () => {
         const identityOptions =
           testCase.scenario === "profile_found" ||
           testCase.scenario === "profile_no_query"
-            ? { routeRef: consumerRef, expectedUniqueId: consumerRef }
+            ? { routeRef: consumerRef }
             : testCase.scenario === "profile_by_ivrs"
               ? { routeRef: consumerRef, expectedConsumerNumber: consumerRef }
               : { routeRef: consumerRef };
@@ -98,7 +83,6 @@ test.describe("Consumer Profile API", () => {
             identityOptions,
           ),
         );
-
         validation.printSummary(testCase.testName, responseTime);
       },
     );

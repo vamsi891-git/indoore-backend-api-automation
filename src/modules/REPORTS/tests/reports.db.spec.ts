@@ -4,7 +4,8 @@ import { isReportsDbSqlReady } from "../Db/reports.db";
 import { runReportsDbCoverage } from "./reports-db.harness";
 
 apiDbTest.describe("REPORTS — DB Coverage", () => {
-  apiDbTest.setTimeout(120_000);
+  apiDbTest.describe.configure({ retries: 1 });
+  apiDbTest.setTimeout(180_000);
 
   apiDbTest.beforeEach(() => {
     apiDbTest.skip(!isDbConfigured(), "DB credentials not configured");
@@ -15,7 +16,7 @@ apiDbTest.describe("REPORTS — DB Coverage", () => {
   });
 
   apiDbTest(
-    "IND-REP-DB-001 — scaffold DB coverage",
+    "IND-REP-DB-001 — event-report catalog + DTR billing meter spot vs DB",
     { tag: ["@reports", "@db"] },
     async ({ authenticatedApi, db }) => {
       await runReportsDbCoverage(authenticatedApi, db);

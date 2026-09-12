@@ -1,16 +1,12 @@
 /**
- * Run all tests (or a scoped subset) for one module folder.
+ * Run tests for one module folder. Always 1 worker (easier to debug).
  *
- * Usage:
- *   node scripts/run-module-tests.mjs <module-slug> [--smoke|--api|--db]
- *   npm run test:module -- revenue-protection
- *   npm run test:module -- revenue-protection --smoke
- *   npm run test:module -- revenue-protection --api
- *   npm run test:module -- revenue-protection --db
+ *   npm run test:module -- master-data
+ *   npm run test:module -- master-data --smoke
+ *   npm run test:module -- master-data --db
  *
- * Revenue Protection + Utils Lookup + Asset Management + Consumers:
- * mutation-proof + contract-snapshot specs are included for --all and --api.
- * Other modules still exclude @mutation-proof unless INCLUDE_MUTATION_PROOF=true.
+ * Mutation-proof tests stay off unless INCLUDE_MUTATION_PROOF=true
+ * or you run npm run test:<slug>:mutation-proof
  */
 import { spawnSync } from "child_process";
 import {
@@ -44,66 +40,27 @@ if (!module) {
 
 const playwrightArgs = ["playwright", "test", module.testPath, "--workers=1"];
 let scopeLabel = "all";
-
-const modulesWithMutationProof = new Set([
-  "revenue-protection",
-  "utils-lookup",
-  "asset-management",
-  "consumers",
-  "technical-analysis",
-  "feeder",
-  "dashboard",
-  "meter-replacement",
-  "billing",
-  "overall-dashboard",
-  "notifications",
-  "audit-logs",
-  "modules-permissions",
-  "role-permissions",
-  "users-admin",
-  "users-profile-image",
-  "reports",
-  "consumption",
-  "dtrs",
-  "energy-audits",
-  "commericial-analysis",
-  "auth",
-  "master-data",
-  "mis-dashboard",
-  "hes-commands",
-]);
-const includeMutationProofForModule =
-  modulesWithMutationProof.has(slug) ||
+const wantMutationProof =
   process.env.INCLUDE_MUTATION_PROOF?.trim().toLowerCase() === "true";
 
 if (smoke) {
   playwrightArgs.push("--grep", "@smoke");
   scopeLabel = "smoke";
 } else if (apiOnly) {
-  // Exclude @db only. For RP, keep @mutation-proof in the api suite.
-  playwrightArgs.push(
-    "--grep-invert",
-    includeMutationProofForModule ? "@db" : "@db|@mutation-proof",
-  );
+  playwrightArgs.push("--grep-invert", "@db");
   scopeLabel = "api";
 } else if (dbOnly) {
   playwrightArgs.push("--grep", "@db");
   scopeLabel = "db";
-} else if (!includeMutationProofForModule) {
-  playwrightArgs.push("--grep-invert", "@mutation-proof");
 }
 
 const env = { ...process.env };
-if (includeMutationProofForModule) {
-  // Disable playwright.config grepInvert for @mutation-proof.
+if (wantMutationProof) {
   env.INCLUDE_MUTATION_PROOF = "true";
 }
 
 console.log(
-  `Running ${scopeLabel} tests for ${module.moduleName} (${module.testPath})` +
-    (includeMutationProofForModule && !smoke && !dbOnly
-      ? " [includes @mutation-proof]"
-      : ""),
+  `Running ${scopeLabel} tests for ${module.moduleName} (${module.testPath})`,
 );
 
 const result = spawnSync(

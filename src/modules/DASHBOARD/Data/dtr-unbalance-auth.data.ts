@@ -26,7 +26,7 @@ export interface DtrUnbalanceAuthNegativeCase {
 
 export const dtrUnbalanceAuthNegativeCases: DtrUnbalanceAuthNegativeCase[] = [
     {
-        testName: "without Authorization header returns 401 UNAUTHORIZED",
+        testName: "cannot open without logging in",
         headers: {},
         expectedStatus: 401,
         expectedErrorCode: dtrUnbalanceUnauthorizedCode,
@@ -34,7 +34,7 @@ export const dtrUnbalanceAuthNegativeCases: DtrUnbalanceAuthNegativeCase[] = [
         tags: ["@negative", "@dashboard", "@auth"],
     },
     {
-        testName: "empty Bearer token returns 401 UNAUTHORIZED",
+        testName: "cannot open with an empty login token",
         headers: { Authorization: "Bearer " },
         expectedStatus: 401,
         expectedErrorCode: dtrUnbalanceUnauthorizedCode,
@@ -42,7 +42,7 @@ export const dtrUnbalanceAuthNegativeCases: DtrUnbalanceAuthNegativeCase[] = [
         tags: ["@negative", "@dashboard", "@auth", "@edge"],
     },
     {
-        testName: "malformed Authorization scheme returns 401 UNAUTHORIZED",
+        testName: "cannot open with a badly formed login token",
         headers: { Authorization: "Token abc" },
         expectedStatus: 401,
         expectedErrorCode: dtrUnbalanceUnauthorizedCode,
@@ -50,7 +50,7 @@ export const dtrUnbalanceAuthNegativeCases: DtrUnbalanceAuthNegativeCase[] = [
         tags: ["@negative", "@dashboard", "@auth", "@edge"],
     },
     {
-        testName: "garbage Bearer JWT returns 401 ACCESS_TOKEN_INVALID",
+        testName: "cannot open with an invalid login token",
         headers: { Authorization: "Bearer not.a.jwt" },
         expectedStatus: 401,
         expectedErrorCode: dtrUnbalanceAccessTokenInvalidCode,
@@ -58,7 +58,7 @@ export const dtrUnbalanceAuthNegativeCases: DtrUnbalanceAuthNegativeCase[] = [
         tags: ["@negative", "@dashboard", "@auth", "@edge"],
     },
     {
-        testName: "expired-looking Bearer JWT returns 401 ACCESS_TOKEN_INVALID",
+        testName: "cannot open with an expired login token",
         headers: {
             Authorization: `Bearer ${dtrUnbalanceExpiredLookingJwt}`,
         },

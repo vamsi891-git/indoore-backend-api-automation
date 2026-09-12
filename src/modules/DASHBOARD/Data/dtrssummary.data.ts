@@ -173,85 +173,73 @@ export const DtrsSummaryData = {
 
 export const dtrSummaryTestCases: DtrSummaryTestCase[] = [
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/summary — period=daily (live)",
+        testName: "DTR summary cards — daily view loads",
         scenario: "dev_period_daily",
         tags: ["@smoke", "@dashboard", "@dtr-summary"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/summary — period=hourly",
+        testName: "DTR summary cards — hourly view loads",
         scenario: "dev_period_hourly",
         tags: ["@dashboard", "@dtr-summary", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/summary — period=weekly",
+        testName: "DTR summary cards — weekly view loads",
         scenario: "dev_period_weekly",
         tags: ["@dashboard", "@dtr-summary", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/summary — period=monthly",
+        testName: "DTR summary cards — monthly view loads",
         scenario: "dev_period_monthly",
         tags: ["@dashboard", "@dtr-summary", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/summary — period=yearly",
+        testName: "DTR summary cards — yearly view loads",
         scenario: "dev_period_yearly",
         tags: ["@dashboard", "@dtr-summary", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/summary — unknown query params ignored",
+        testName: "DTR summary cards — extra unused filters are ignored",
         scenario: "dev_ignore_unknown_query",
         tags: ["@dashboard", "@dtr-summary", "@edge"],
     },
     {
-        testName:
-            "Contract — hourly summary cards with 12-point trends (10 Jul 2026)",
+        testName: "Saved example — hourly summary cards with 12-point trends (10 Jul 2026)",
         scenario: "contract_live_hourly",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-summary", "@edge"],
     },
     {
-        testName:
-            "Contract — daily summary cards with 12-point trends (10 Jul 2026)",
+        testName: "Saved example — daily summary cards with 12-point trends (10 Jul 2026)",
         scenario: "contract_live_daily",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-summary", "@edge"],
     },
     {
-        testName:
-            "Contract — weekly summary cards with 8-point trends (10 Jul 2026)",
+        testName: "Saved example — weekly summary cards with 8-point trends (10 Jul 2026)",
         scenario: "contract_live_weekly",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-summary", "@edge"],
     },
     {
-        testName:
-            "Contract — monthly summary cards with 12-point trends (10 Jul 2026)",
+        testName: "Saved example — monthly summary cards with 12-point trends (10 Jul 2026)",
         scenario: "contract_live_monthly",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-summary", "@edge"],
     },
     {
-        testName:
-            "Contract — yearly summary cards with 12-point trends (10 Jul 2026)",
+        testName: "Saved example — yearly summary cards with 12-point trends (10 Jul 2026)",
         scenario: "contract_live_yearly",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-summary", "@edge"],
     },
     {
-        testName: "Contract — all DTRs OFF scenario",
+        testName: "Saved example — all DTRs OFF scenario",
         scenario: "contract_all_off_scenario",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-summary", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/summary — invalid period rejected",
+        testName: "DTR summary cards — an invalid time period is rejected",
         scenario: "invalid_period",
         expectedStatus: 400,
         tags: ["@dashboard", "@dtr-summary", "@negative"],

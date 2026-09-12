@@ -32,23 +32,23 @@ export interface OrganizationSearchTestCase extends LookupTestCase {
 
 export const organizationSearchTestCases: OrganizationSearchTestCase[] = [
   {
-    testName: "Validate organisation search — default limit",
+    testName: "Organisation search — default limit returns records",
     scenario: "smoke_default",
     tags: ["@smoke", "@utils-lookup", "@organisation-search"],
   },
   {
-    testName: "Validate organisation search — limit 1",
+    testName: "Organisation search — limit 1 returns at most 1 record",
     scenario: "edge_limit_one",
     tags: ["@utils-lookup", "@organisation-search", "@edge"],
   },
   {
-    testName: "Validate organisation search — limit=0 rejected",
+    testName: "Organisation search — limit 0 is rejected",
     scenario: "negative_limit_zero",
     expectedStatus: 400,
     tags: ["@utils-lookup", "@organisation-search", "@negative"],
   },
   {
-    testName: "Validate organisation search — negative limit rejected",
+    testName: "Organisation search — a negative limit is rejected",
     scenario: "negative_limit_negative",
     expectedStatus: 400,
     tags: ["@utils-lookup", "@organisation-search", "@negative"],

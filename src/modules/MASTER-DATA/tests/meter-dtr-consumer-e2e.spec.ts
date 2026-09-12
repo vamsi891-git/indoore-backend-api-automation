@@ -56,7 +56,7 @@ import {
  * Two meters are required: a DTR-bound meter cannot also be assigned to a consumer.
  */
 const E2E_LABEL =
-  "E2E: create meter → assign to DTR → create meter → assign to consumer → profile";
+  "Add meters, assign one to a DTR and one to a consumer, then open the profile";
 const VALIDATE_SETTLE_MS = 1500;
 const VALIDATE_RETRIES = 6;
 
@@ -64,7 +64,8 @@ async function sleep(ms: number): Promise<void> {
   await new Promise<void>((resolve) => setTimeout(resolve, ms));
 }
 
-test.describe("Meter → DTR → Consumer E2E", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Master data — add meters, a DTR, and a consumer", () => {
   test.describe.configure({ mode: "serial", retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

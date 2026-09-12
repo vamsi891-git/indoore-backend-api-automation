@@ -30,7 +30,7 @@
   "columns": [
     {
       "key": "subDivision",
-      "header": "Sub Division"
+      "header": "Zone"
     },
     {
       "key": "subStation",
@@ -46,7 +46,7 @@
     },
     {
       "key": "name",
-      "header": "Consumer Name"
+      "header": "Name"
     },
     {
       "key": "address",
@@ -62,7 +62,7 @@
     },
     {
       "key": "msn",
-      "header": "Meter Sl No"
+      "header": "MSN"
     },
     {
       "key": "phase",
@@ -70,11 +70,11 @@
     },
     {
       "key": "eventName",
-      "header": "Event Name"
+      "header": "Event_name"
     },
     {
       "key": "durationInHours",
-      "header": "Duration (Hours)"
+      "header": "Duration in Hours"
     }
   ]
 }

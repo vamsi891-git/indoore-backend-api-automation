@@ -15,7 +15,7 @@ apiDbTest.describe("HES-COMMANDS — DB Coverage", () => {
   });
 
   apiDbTest(
-    "IND-HES-DB-001 — scaffold DB coverage",
+    "IND-HES-DB-001 — history total + spot vs hes_command_logs",
     { tag: ["@hes-commands", "@db"] },
     async ({ authenticatedApi, db }) => {
       await runHesCommandsDbCoverage(authenticatedApi, db);

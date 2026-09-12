@@ -16,7 +16,7 @@ import {
   getValidateDtrMeterSerialForScenario,
 } from "../utils/validate-meter-runtime.helper";
 
-test.describe("Validate DTR Meter API", () => {
+test.describe("Master data — can this meter be put on a DTR?", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
@@ -37,7 +37,7 @@ test.describe("Validate DTR Meter API", () => {
         if (!meterSerialNumber) {
           test.skip(
             true,
-            `Could not resolve ${testCase.envKey ?? "meter serial"} at runtime`,
+            `No meter serial for ${testCase.scenario}. Set ${testCase.envKey ?? "serial"} in .env or skip this case.`,
           );
           return;
         }

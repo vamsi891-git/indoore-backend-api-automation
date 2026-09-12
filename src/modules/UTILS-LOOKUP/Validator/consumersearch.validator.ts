@@ -1,4 +1,5 @@
 import { expect } from "@playwright/test";
+import { EXPECTED_CONSUMER_SEARCH_COLUMNS } from "../Data/consumersearch.data";
 import {
   SearchConsumerData,
   SearchConsumerResponse,
@@ -26,6 +27,14 @@ export class SearchConsumerValidator {
       expect(item.slNo).toBe(offset + index + 1);
     });
   }
+  validateColumns(
+    columns: Array<{ key: string; header: string }> | undefined,
+  ): void {
+    if (!columns?.length) {
+      return;
+    }
+    expect(columns).toEqual([...EXPECTED_CONSUMER_SEARCH_COLUMNS]);
+  }
   validateRequiredFields(data: SearchConsumerData): void {
     data.items.forEach((item) => {
       expect(item.consumerCid?.trim()).not.toEqual("");
@@ -33,7 +42,6 @@ export class SearchConsumerValidator {
       expect(typeof item.consumerName).toBe("string");
       expect(typeof item.consumerAddress).toBe("string");
       expect(typeof item.ivrsNo).toBe("string");
-      expect(typeof item.existingIvrsNo).toBe("string");
       expect(typeof item.consumerMobileNumber).toBe("string");
     });
   }
@@ -45,7 +53,6 @@ export class SearchConsumerValidator {
       expect(typeof item.consumerAddress).toBe("string");
       expect(typeof item.meterSerialNumber).toBe("string");
       expect(typeof item.ivrsNo).toBe("string");
-      expect(typeof item.existingIvrsNo).toBe("string");
       expect(typeof item.consumerMobileNumber).toBe("string");
       if (item.id !== undefined) {
         expect(typeof item.id).toBe("string");
@@ -67,7 +74,6 @@ export class SearchConsumerValidator {
   validateIvrsFields(data: SearchConsumerData): void {
     data.items.forEach((item) => {
       expect(typeof item.ivrsNo).toBe("string");
-      expect(typeof item.existingIvrsNo).toBe("string");
     });
   }
   validateEmptyPage(data: SearchConsumerData): void {

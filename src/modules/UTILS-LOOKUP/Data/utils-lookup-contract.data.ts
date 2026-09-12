@@ -39,7 +39,7 @@ export interface UtilsLookupContractCase {
 export const utilsLookupContractCases: UtilsLookupContractCase[] = [
   {
     testCaseId: "IND-UL-CONTRACT-001",
-    testName: "IND-UL-CONTRACT-001 — Consumer search contract snapshot",
+    testName: "Consumer search — column and field names stay the same",
     snapshotName: "utils-lookup/consumer-search",
     pathPattern: SearchConsumerApi.PATH,
     kind: "grid",
@@ -49,7 +49,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
   },
   {
     testCaseId: "IND-UL-CONTRACT-002",
-    testName: "IND-UL-CONTRACT-002 — DTR search contract snapshot",
+    testName: "DTR search — column and field names stay the same",
     snapshotName: "utils-lookup/dtr-search",
     pathPattern: DtrSearchApi.PATH,
     kind: "grid",
@@ -58,7 +58,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
   },
   {
     testCaseId: "IND-UL-CONTRACT-003",
-    testName: "IND-UL-CONTRACT-003 — Network search contract snapshot",
+    testName: "Network search — field names stay the same",
     snapshotName: "utils-lookup/network-search",
     pathPattern: NetworkSearchApi.PATH,
     kind: "items",
@@ -67,7 +67,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
   },
   {
     testCaseId: "IND-UL-CONTRACT-004",
-    testName: "IND-UL-CONTRACT-004 — Organisation search contract snapshot",
+    testName: "Organisation search — field names stay the same",
     snapshotName: "utils-lookup/organisation-search",
     pathPattern: OrganizationApi.PATH,
     kind: "items",
@@ -77,7 +77,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
   },
   {
     testCaseId: "IND-UL-CONTRACT-005",
-    testName: "IND-UL-CONTRACT-005 — Connection statuses contract snapshot",
+    testName: "Connection statuses — field names stay the same",
     snapshotName: "utils-lookup/connection-statuses",
     pathPattern: ConnectionStatusApi.PATH,
     kind: "items",
@@ -86,7 +86,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
   },
   {
     testCaseId: "IND-UL-CONTRACT-006",
-    testName: "IND-UL-CONTRACT-006 — Consumer categories contract snapshot",
+    testName: "Consumer categories — field names stay the same",
     snapshotName: "utils-lookup/consumer-categories",
     pathPattern: ConsumerCategoryApi.PATH,
     kind: "items",
@@ -95,7 +95,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
   },
   {
     testCaseId: "IND-UL-CONTRACT-007",
-    testName: "IND-UL-CONTRACT-007 — Device manufacturers contract snapshot",
+    testName: "Device manufacturers — field names stay the same",
     snapshotName: "utils-lookup/device-manufacturers",
     pathPattern: DeviceManufacturerApi.PATH,
     kind: "items",
@@ -104,7 +104,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
   },
   {
     testCaseId: "IND-UL-CONTRACT-008",
-    testName: "IND-UL-CONTRACT-008 — Events contract snapshot",
+    testName: "Events — field names stay the same",
     snapshotName: "utils-lookup/events",
     pathPattern: EventApi.PATH,
     kind: "items",
@@ -113,7 +113,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
   },
   {
     testCaseId: "IND-UL-CONTRACT-009",
-    testName: "IND-UL-CONTRACT-009 — Event classifications contract snapshot",
+    testName: "Event classifications — field names stay the same",
     snapshotName: "utils-lookup/event-classifications",
     pathPattern: EventClassificationApi.PATH,
     kind: "items",
@@ -122,7 +122,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
   },
   {
     testCaseId: "IND-UL-CONTRACT-010",
-    testName: "IND-UL-CONTRACT-010 — Event priorities contract snapshot",
+    testName: "Event priorities — field names stay the same",
     snapshotName: "utils-lookup/event-priorities",
     pathPattern: EventPriorityApi.PATH,
     kind: "items",
@@ -131,7 +131,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
   },
   {
     testCaseId: "IND-UL-CONTRACT-011",
-    testName: "IND-UL-CONTRACT-011 — Meter phases contract snapshot",
+    testName: "Meter phases — field names stay the same",
     snapshotName: "utils-lookup/meter-phases",
     pathPattern: MeterPhaseApi.PATH,
     kind: "items",
@@ -140,7 +140,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
   },
   {
     testCaseId: "IND-UL-CONTRACT-012",
-    testName: "IND-UL-CONTRACT-012 — Payment contracts contract snapshot",
+    testName: "Payment contracts — field names stay the same",
     snapshotName: "utils-lookup/payment-contracts",
     pathPattern: PaymentContractApi.PATH,
     kind: "items",
@@ -149,7 +149,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
   },
   {
     testCaseId: "IND-UL-CONTRACT-013",
-    testName: "IND-UL-CONTRACT-013 — Network hierarchy contract snapshot",
+    testName: "Network hierarchy — field names stay the same",
     snapshotName: "utils-lookup/network-hierarchy",
     pathPattern: NetworkApi.PATH,
     kind: "items",
@@ -158,7 +158,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
   },
   {
     testCaseId: "IND-UL-CONTRACT-014",
-    testName: "IND-UL-CONTRACT-014 — Organisation hierarchy contract snapshot",
+    testName: "Organisation hierarchy — field names stay the same",
     snapshotName: "utils-lookup/organisation-hierarchy",
     pathPattern: OrganisationApi.PATH,
     kind: "items",

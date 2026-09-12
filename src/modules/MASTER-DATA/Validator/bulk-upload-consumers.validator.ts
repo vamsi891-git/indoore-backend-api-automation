@@ -1,27 +1,13 @@
 import { expect } from "@playwright/test";
-import {
-  BulkUploadConsumersData,
-  BulkUploadConsumersMapped,
-  BulkUploadConsumersRowResult,
-  BulkUploadConsumersScenario,
-} from "../Mapper/bulk-upload-consumers.mapper";
-
-const KNOWN_ERROR_CODES = [
-  "VALIDATION_ERROR",
-  "INVALID_FILE_TYPE",
-  "INVALID_TEMPLATE",
-  "BAD_REQUEST",
-] as const;
-
+import {BulkUploadConsumersData,BulkUploadConsumersMapped,BulkUploadConsumersRowResult,BulkUploadConsumersScenario,} from "../Mapper/bulk-upload-consumers.mapper";
+const KNOWN_ERROR_CODES = ["VALIDATION_ERROR","INVALID_FILE_TYPE","INVALID_TEMPLATE","BAD_REQUEST",] as const;
 const ROW_FAILURE_STATUSES = ["FAILED", "VALIDATION_FAILED"] as const;
-
 function rowMessages(row: BulkUploadConsumersRowResult | undefined): string {
   if (!row) {
     return "";
   }
   return `${row.message ?? ""} ${(row.messages ?? []).join(" ")}`.toLowerCase();
 }
-
 function firstFailedRow(
   data: BulkUploadConsumersData,
 ): BulkUploadConsumersRowResult | undefined {
@@ -31,17 +17,14 @@ function firstFailedRow(
     ),
   );
 }
-
 export class BulkUploadConsumersValidator {
   validateResponse(mapped: BulkUploadConsumersMapped): void {
     expect(mapped).toBeDefined();
   }
-
   validateUploadSuccess(mapped: BulkUploadConsumersMapped): void {
     expect(mapped.isUploadSuccess).toBeTruthy();
     expect(mapped.data).not.toBeNull();
   }
-
   validateRootStructure(data: BulkUploadConsumersData): void {
     expect(data.fileName).toBeTruthy();
     expect(typeof data.totalRows).toBe("number");
@@ -52,7 +35,6 @@ export class BulkUploadConsumersValidator {
     }
     expect(Array.isArray(data.rowResults)).toBeTruthy();
   }
-
   validateCountsConsistency(data: BulkUploadConsumersData): void {
     expect(data.totalRows).toBeGreaterThanOrEqual(0);
     expect(data.createdCount).toBeGreaterThanOrEqual(0);
@@ -62,7 +44,6 @@ export class BulkUploadConsumersValidator {
     }
     expect(data.rowResults.length).toBeGreaterThanOrEqual(data.totalRows);
   }
-
   validateRowResultsStructure(rows: BulkUploadConsumersRowResult[]): void {
     rows.forEach((row) => {
       expect(row.rowNumber).toBeGreaterThan(1);
@@ -78,7 +59,6 @@ export class BulkUploadConsumersValidator {
       }
     });
   }
-
   validateCreatedRows(rows: BulkUploadConsumersRowResult[],expectedCount: number,): void {
     const created = rows.filter((row) => row.status === "CREATED");
     expect(created.length).toBe(expectedCount);
@@ -162,12 +142,15 @@ export class BulkUploadConsumersValidator {
   validateScenario(mapped: BulkUploadConsumersMapped,scenario: BulkUploadConsumersScenario,): void {
     switch (scenario) {
       case "bulk_success":
-        this.validateBulkSuccess(mapped, 1);
-        break;
-      case "bulk_success_multi":
         this.validateBulkSuccess(mapped, 2);
         break;
+      case "bulk_success_multi":
+        this.validateBulkSuccess(mapped, 6);
+        break;
       case "bulk_success_blank_row":
+        this.validateBulkSuccess(mapped, 1);
+        break;
+      case "bulk_success_manual_sample":
         this.validateBulkSuccess(mapped, 1);
         break;
       case "file_invalid_type":

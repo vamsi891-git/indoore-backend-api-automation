@@ -1,15 +1,14 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { ConsumerActivationStatus } from "../Mapper/activation.mapper";
 import type { ActivationScenario } from "../Mapper/activation.mapper";
-
+import {
+  CONSUMERS_LIVE_ACCOUNT_ID,
+  resolveLiveAccountId,
+} from "./consumers-live-refs";
 export const activationMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
-
-export const activationDefaultConsumerId = "5633025000";
-
+export const activationDefaultConsumerId = CONSUMERS_LIVE_ACCOUNT_ID;
 export const activationNotFoundConsumerId = "INVALID_CONSUMER_XYZ";
-
 export const activationMeterRouteConsumerId = "meter-12345";
-
 export interface ActivationTestCase {
   testName: string;
   scenario: ActivationScenario;
@@ -21,9 +20,7 @@ export interface ActivationTestCase {
   tags: string[];
 }
 
-export function resolveActivationConsumerId(
-  scenario: ActivationScenario,
-): string | undefined {
+export function resolveActivationConsumerId(scenario: ActivationScenario,): string | undefined {
   switch (scenario) {
     case "activate":
     case "deactivate":
@@ -31,9 +28,9 @@ export function resolveActivationConsumerId(
     case "invalid_status":
     case "empty_status":
     case "missing_status":
-      return (
-        process.env.CONSUMER_ACTIVATION_CONSUMER_ID?.trim() ||
-        activationDefaultConsumerId
+      return resolveLiveAccountId(
+        process.env.CONSUMER_ACTIVATION_CONSUMER_ID,
+        activationDefaultConsumerId,
       );
     case "consumer_not_found":
       return activationNotFoundConsumerId;

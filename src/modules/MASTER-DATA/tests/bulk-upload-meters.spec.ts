@@ -5,25 +5,14 @@ import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { BulkUploadMetersApi } from "../Api/bulk-upload-meters.api";
-import {
-  bulkUploadMetersMaxResponseTimeMs,
-  bulkUploadMetersTestCases,
-} from "../Data/bulk-upload-meters.data";
+import { bulkUploadMetersMaxResponseTimeMs, bulkUploadMetersTestCases,} from "../Data/bulk-upload-meters.data";
 import { BulkUploadMetersMapper } from "../Mapper/bulk-upload-meters.mapper";
 import { BulkUploadMetersValidator } from "../Validator/bulk-upload-meters.validator";
 import { MasterDataCommonValidator } from "../Validator/master-data-common.validator";
-import {
-  BulkUploadMetersRowOutcomeResponseSchema,
-  BulkUploadMetersSuccessResponseSchema,
-} from "../schemas/master-data.schemas";
+import {BulkUploadMetersRowOutcomeResponseSchema,BulkUploadMetersSuccessResponseSchema,} from "../schemas/master-data.schemas";
 import { shouldSkipMasterDataTestForEnv } from "../utils/master-data-env.helper";
 import { assertNegativeMasterDataHttpStatus } from "../utils/master-data-negative-outcome.helper";
-import {
-  ensureValidateMeterRuntimeContext,
-  getValidateMeterSerial,
-  runtimeMeterSerialEnvKey,
-} from "../utils/validate-meter-runtime.helper";
-
+import { ensureValidateMeterRuntimeContext, getValidateMeterSerial, runtimeMeterSerialEnvKey,} from "../utils/validate-meter-runtime.helper";
 const FILE_ERROR_SCENARIOS = new Set([
   "file_invalid_type",
   "file_missing_columns",
@@ -52,7 +41,8 @@ function missingRuntimeMeterSerial(
   return !getValidateMeterSerial(envKey);
 }
 
-test.describe("Bulk Upload Meters API", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Master data — Excel upload (meters)", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
@@ -90,23 +80,19 @@ test.describe("Bulk Upload Meters API", () => {
         const api = new BulkUploadMetersApi(authenticatedApi);
         const { rawResponse, responseBody, responseTime } =
           await api.bulkUploadMeters(upload);
-
         if (testCase.scenario === "bulk_success") {
           console.log(JSON.stringify(responseBody, null, 2));
         }
-
         await PerformanceTracker.track(
         rawResponse,
         testCase.testName,
         rawResponse.url(),
         responseTime
       );
-
         const assert = new AssertionEngine();
         const validation = new ValidationEngine();
         const validator = new BulkUploadMetersValidator();
         const mapped = BulkUploadMetersMapper.map(responseBody);
-
         validation.execute("Status Validation", () => {
           if (BULK_SUCCESS_SCENARIOS.has(testCase.scenario)) {
             expect(rawResponse.status()).toBe(testCase.expectedStatus);
@@ -171,7 +157,6 @@ test.describe("Bulk Upload Meters API", () => {
         validation.execute("Scenario Outcome", () =>
           validator.validateScenario(mapped, testCase.scenario),
         );
-
         validation.printSummary(testCase.testName, responseTime);
       },
     );

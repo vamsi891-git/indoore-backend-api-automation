@@ -16,7 +16,8 @@ import { clearSuiteAcceptSnapshot } from "../utils/invite-token.store";
  * Runs first (00- prefix) — provisions one shared pending invite for preview/validate.
  * Accept/e2e specs use their own dedicated invites via provisionFreshPendingInvite.
  */
-test.describe("Auth Invite Suite Setup", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Auth Invite Suite Setup", () => {
   test.describe.configure({ mode: "serial", timeout: INVITE_PROVISION_TEST_TIMEOUT_MS });
 
   test.beforeAll(() => {

@@ -20,7 +20,6 @@ export const SHARED_RUNTIME_PREFIXES = [
   "package-lock.json",
   "tsconfig.json",
   "scripts/run-module-tests.mjs",
-  "scripts/sync-module-workflow.mjs",
   "scripts/lib/modules.mjs",
   "scripts/lib/detect-changed-modules.mjs",
   "scripts/detect-changed-modules.mjs",

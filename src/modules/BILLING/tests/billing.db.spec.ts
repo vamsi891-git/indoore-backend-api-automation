@@ -6,19 +6,21 @@ import { BillingDataApi } from "../Api/billingdata.api";
 import { BillingDataTestData } from "../Data/billingdata.data";
 import { BillingDataMapper } from "../Mapper/billingdata.mapper";
 import { BillingDataResponseSchema } from "../schemas/billing.schemas";
-import { countBillingClassD3RowsInMonth } from "../Db/billing.db";
+import {
+  countBillingArchiveUniverseDistinct,
+} from "../Db/billing.db";
 import {
   assertBillingMeterHeaderMatchesDb,
   firstBillingRowWithMeter,
 } from "./billing-db.helpers";
 import { BILLING_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 
-apiDbTest.describe("Billing — DB validation", () => {
+apiDbTest.describe("Monthly billing vs database", () => {
   apiDbTest.describe.configure({ retries: 1, mode: "serial" });
   apiDbTest.setTimeout(BILLING_TEST_TIMEOUT_MS);
 
   apiDbTest(
-    "Billing Data — first page row matches DB meter header",
+    "Monthly billing — first page meter name and IVRS match the database",
     { tag: ["@billing", "@db"] },
     async ({ authenticatedApi, db }) => {
       const api = new BillingDataApi(authenticatedApi);
@@ -29,12 +31,7 @@ apiDbTest.describe("Billing — DB validation", () => {
         limit: BillingDataTestData.limit,
       };
 
-      const { responseBody } = await api.getBillingData(
-        query.month,
-        query.year,
-        query.page,
-        query.limit,
-      );
+      const { responseBody } = await api.getBillingData(query);
 
       const parsed = BillingDataResponseSchema.parse(responseBody);
       const data = BillingDataMapper.mapData(parsed.data, query);
@@ -50,9 +47,9 @@ apiDbTest.describe("Billing — DB validation", () => {
   );
 
   apiDbTest(
-    "Billing Data — API total within archive Billing_Class_D3 month count",
+    "Monthly billing — billed meter count is not higher than the archive database",
     { tag: ["@billing", "@db"] },
-    async ({ authenticatedApi, db: _db, archiveDb }) => {
+    async ({ authenticatedApi, db, archiveDb }) => {
       if (!isArchiveDbConfigured()) {
         apiDbTest.skip(true, "DB_ARCHIVE_NAME not configured — archive billing check skipped");
         return;
@@ -66,24 +63,29 @@ apiDbTest.describe("Billing — DB validation", () => {
         limit: BillingDataTestData.limit,
       };
 
-      const { responseBody } = await api.getBillingData(
-        query.month,
-        query.year,
-        query.page,
-        query.limit,
-      );
+      const { responseBody } = await api.getBillingData(query);
 
       const parsed = BillingDataResponseSchema.parse(responseBody);
       const data = BillingDataMapper.mapData(parsed.data, query);
       const apiTotal = data.total;
-      const dbTotal = await countBillingClassD3RowsInMonth(
+      if (apiTotal == null) {
+        apiDbTest.skip(
+          true,
+          "Billing data total is null — skip archive count until includeTotal returns a number",
+        );
+        return;
+      }
+      // Live total = DISTINCT serial across D1∪D2∪D3 (1st-of-month midnight) minus DT meters.
+      // Unscoped JWT may still filter further — API must never exceed this universe.
+      const dbTotal = await countBillingArchiveUniverseDistinct(
         archiveDb,
+        db,
         query.year,
         query.month,
       );
 
       logDbVsApiSection(
-        "Billing Data (archive Billing_Class_D3)",
+        "Billing Data (archive D1∪D2∪D3 minus DT)",
         {
           total: apiTotal,
           page: query.page,
@@ -96,8 +98,13 @@ apiDbTest.describe("Billing — DB validation", () => {
 
       expect(
         apiTotal,
-        "JWT-scoped API total should not exceed unscoped archive month count",
+        "API total must not exceed archive universe (D1∪D2∪D3 minus DT)",
       ).toBeLessThanOrEqual(dbTotal);
+      if (apiTotal !== dbTotal) {
+        console.log(
+          `BACKEND FINDING: billing API total=${apiTotal} < archive DB=${dbTotal} (delta=${dbTotal - apiTotal}) — JWT scope / shared-DB check`,
+        );
+      }
     },
   );
 });

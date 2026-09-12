@@ -18,11 +18,11 @@ export function compareDtrMeterTotalToDb(options: {
   page: number;
   limit: number;
   rowCount: number;
-  /** JWT-scoped API total may be ≤ unscoped DB meter universe. */
+  /** API total must equal DB meter universe when records are compared. */
   mode?: "exact" | "lte";
   obs?: DbCompareObs;
 }): void {
-  const mode = options.mode ?? "lte";
+  const mode = options.mode ?? "exact";
   logDbVsApiSection(
     "Asset Management — DTR Detail total (meters)",
     {
@@ -62,6 +62,12 @@ export function compareDtrMeterTotalToDb(options: {
   );
 }
 
+/**
+ * Hierarchy API returns DTRs reachable under the recursive network tree
+ * (active roots → children). DB universe counts all active DTR rows in
+ * L_Network_Lookup — orphans / out-of-tree nodes inflate DB only.
+ * Hard rule: API ≤ DB (never exact for this check).
+ */
 export function compareVisibleDtrNetworksToDb(options: {
   visibleDtrCount: number;
   dbDtrNetworkTotal: number;
@@ -83,8 +89,9 @@ export function compareVisibleDtrNetworksToDb(options: {
     throw new Error(
       [
         "Visible DTR networks exceed unscoped DB universe",
-        `  API visible=${options.visibleDtrCount}`,
-        `  DB active DTR networks=${options.dbDtrNetworkTotal}`,
+        `  API=${options.visibleDtrCount}`,
+        `  DB=${options.dbDtrNetworkTotal}`,
+        "  Hint: JWT scope / hierarchy should only reduce the set — never inflate it.",
       ].join("\n"),
     );
   }

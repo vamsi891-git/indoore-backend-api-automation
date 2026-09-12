@@ -6,8 +6,18 @@
     "success"
   ],
   "dataKeys": [
-    "(null)"
+    "frequency",
+    "mdKva",
+    "mdKw",
+    "neutralCurrent",
+    "overallPf"
   ],
-  "itemKeys": [],
+  "itemKeys": [
+    "frequency",
+    "mdKva",
+    "mdKw",
+    "neutralCurrent",
+    "overallPf"
+  ],
   "hasColumnsGrid": false
 }

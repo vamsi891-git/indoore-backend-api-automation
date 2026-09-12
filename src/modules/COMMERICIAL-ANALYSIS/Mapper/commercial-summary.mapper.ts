@@ -5,6 +5,9 @@ export interface CommercialSummaryReport {
     totalCount: number;
     domesticCount: number;
     nonDomesticCount: number;
+    available?: boolean;
+    unavailableReason?: "BILLING_PERIOD_NOT_READY" | "LS_DAY_PERIOD_NOT_READY";
+    missingMonths?: string[];
 }
 
 export interface CommercialSummaryData {
@@ -28,7 +31,17 @@ export class CommercialSummaryMapper {
             success: response.success,
             month: data.month ?? 1,
             year: data.year ?? new Date().getFullYear(),
-            reports: data.reports ?? [],
+            reports: (data.reports ?? []).map((report) => ({
+                analysisType: report.analysisType,
+                reportName: report.reportName,
+                category: report.category,
+                totalCount: Number(report.totalCount),
+                domesticCount: Number(report.domesticCount),
+                nonDomesticCount: Number(report.nonDomesticCount),
+                available: report.available,
+                unavailableReason: report.unavailableReason,
+                missingMonths: report.missingMonths,
+            })),
         };
     }
 }

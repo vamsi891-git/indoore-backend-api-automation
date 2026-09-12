@@ -11,6 +11,37 @@ function isBlank(value: unknown): boolean {
   return value == null || String(value).trim() === "";
 }
 
+function collectDuplicateFieldWarnings(
+  rows: Record<string, unknown>[],
+  field: string,
+  code: string,
+): DataQualityWarning[] {
+  const seen = new Map<string, number[]>();
+  rows.forEach((row, index) => {
+    const value = row[field];
+    if (isBlank(value)) {
+      return;
+    }
+    const key = String(value).trim();
+    const indices = seen.get(key) ?? [];
+    indices.push(index);
+    seen.set(key, indices);
+  });
+
+  const warnings: DataQualityWarning[] = [];
+  for (const [value, indices] of seen) {
+    if (indices.length > 1) {
+      warnings.push({
+        code,
+        message: `duplicate ${field} on ${indices.length} rows`,
+        field,
+        actual: value,
+      });
+    }
+  }
+  return warnings;
+}
+
 export function collectTechnicalAnalysisDataQualityFindings(
   kind: "summary" | "report",
   data: Record<string, unknown> | null | undefined,
@@ -19,9 +50,14 @@ export function collectTechnicalAnalysisDataQualityFindings(
   let emptyIvrs = 0;
   let emptyMsn = 0;
   let emptyAnalysisType = 0;
+  let duplicateMsn = 0;
+  let duplicateIvrs = 0;
 
   if (data == null) {
-    return { warnings, counts: { emptyIvrs, emptyMsn, emptyAnalysisType } };
+    return {
+      warnings,
+      counts: { emptyIvrs, emptyMsn, emptyAnalysisType, duplicateMsn, duplicateIvrs },
+    };
   }
 
   if (kind === "summary" && Array.isArray(data.reports)) {
@@ -39,7 +75,8 @@ export function collectTechnicalAnalysisDataQualityFindings(
   }
 
   if (kind === "report" && Array.isArray(data.rows)) {
-    for (const row of data.rows) {
+    const rows = data.rows as Record<string, unknown>[];
+    for (const row of rows) {
       const r = row as Record<string, unknown>;
       if (isBlank(r.ivrsNumber)) {
         emptyIvrs += 1;
@@ -58,11 +95,23 @@ export function collectTechnicalAnalysisDataQualityFindings(
         });
       }
     }
+
+    const msnDupes = collectDuplicateFieldWarnings(rows, "msn", "DUPLICATE_MSN");
+    duplicateMsn = msnDupes.length;
+    warnings.push(...msnDupes);
+
+    const ivrsDupes = collectDuplicateFieldWarnings(
+      rows,
+      "ivrsNumber",
+      "DUPLICATE_IVRS",
+    );
+    duplicateIvrs = ivrsDupes.length;
+    warnings.push(...ivrsDupes);
   }
 
   return {
     warnings,
-    counts: { emptyIvrs, emptyMsn, emptyAnalysisType },
+    counts: { emptyIvrs, emptyMsn, emptyAnalysisType, duplicateMsn, duplicateIvrs },
   };
 }
 

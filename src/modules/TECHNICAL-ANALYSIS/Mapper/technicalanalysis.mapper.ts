@@ -12,6 +12,7 @@ export interface TechnicalReportRow {
   msn: string;
   phase: string;
   durationInHours?: number;
+  eventCount?: number;
   eventName: string;
 }
 
@@ -112,6 +113,10 @@ export class TechnicalReportMapper {
 
     if (isTechnicalGridData(data)) {
       const { pagination, rows } = data;
+      const totalCount = pagination.total ?? rows.length;
+      const totalPages =
+        pagination.totalPages ??
+        Math.max(1, Math.ceil(totalCount / pagination.limit));
       return {
         analysisType: query.analysisType,
         category,
@@ -119,8 +124,8 @@ export class TechnicalReportMapper {
         year: query.year,
         page: pagination.page,
         pageSize: pagination.limit,
-        totalCount: pagination.total,
-        totalPages: pagination.totalPages,
+        totalCount,
+        totalPages,
         rows,
       };
     }

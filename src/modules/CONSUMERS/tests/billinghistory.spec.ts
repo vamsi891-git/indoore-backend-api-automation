@@ -5,24 +5,12 @@ import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { BillingHistoryApi } from "../Api/billinghistory.api";
-import {
-  billingHistoryMaxResponseTimeMs,
-  billingHistoryTestCases,
-  resolveBillingHistoryContractBody,
-  resolveBillingHistoryExpectedLimit,
-  resolveBillingHistoryQuery,
-  resolveBillingHistoryRef,
-} from "../Data/billinghistory.data";
-import {
-  BillingHistoryMapper,
-  type BillingHistoryErrorResponse,
-} from "../Mapper/billinghistory.mapper";
+import {billingHistoryMaxResponseTimeMs,billingHistoryTestCases,resolveBillingHistoryContractBody,resolveBillingHistoryExpectedLimit,resolveBillingHistoryQuery,resolveBillingHistoryRef,} from "../Data/billinghistory.data";
+import {BillingHistoryMapper,type BillingHistoryErrorResponse,} from "../Mapper/billinghistory.mapper";
 import { BillingHistoryValidator } from "../Validator/billinghistory.validator";
-
 test.describe("Billing History API", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
-
   for (const testCase of billingHistoryTestCases) {
     test(
       testCase.testName,
@@ -33,14 +21,12 @@ test.describe("Billing History API", () => {
         const assert = new AssertionEngine();
         const validation = new ValidationEngine();
         const billingLimit = resolveBillingHistoryExpectedLimit(testCase.scenario);
-
         if (testCase.isContractFixture) {
           const fixtureBody = resolveBillingHistoryContractBody(testCase.scenario);
           if (!fixtureBody) {
             test.skip(true, "Missing billing-history contract fixture body");
             return;
           }
-
           const mapped = BillingHistoryMapper.map(fixtureBody);
           validation.execute("Required Fields", () =>
             assert.validateRequiredFields(fixtureBody, ["success", "data"]),
@@ -51,15 +37,12 @@ test.describe("Billing History API", () => {
           validation.printSummary(testCase.testName, 0);
           return;
         }
-
         const api = new BillingHistoryApi(authenticatedApi);
         const consumerRef = resolveBillingHistoryRef(testCase.scenario);
-
         if (!consumerRef) {
           test.skip(true, "Could not resolve billing-history route ref");
           return;
         }
-
         const query = resolveBillingHistoryQuery(testCase.scenario);
         const queryString = new URLSearchParams(
           Object.entries(query).reduce<Record<string, string>>(
@@ -72,17 +55,14 @@ test.describe("Billing History API", () => {
             {},
           ),
         ).toString();
-
         const { rawResponse, responseBody, responseTime } =
           await api.getBillingHistory(consumerRef, query);
-
         await PerformanceTracker.track(
         rawResponse,
         testCase.testName,
         rawResponse.url(),
         responseTime
       );
-
         validation.execute("Status Validation", () => {
           if (
             testCase.scenario === "meter_not_found" ||
@@ -97,15 +77,11 @@ test.describe("Billing History API", () => {
           assert.validateContentType(rawResponse),
         );
         validation.execute("Response Time", () =>
-          assert.validateResponseTime(
-            responseTime,
-            billingHistoryMaxResponseTimeMs,
-          ),
+          assert.validateResponseTime(responseTime,billingHistoryMaxResponseTimeMs,),
         );
         validation.execute("Sensitive Data", () =>
           assert.validateSensitiveData(responseBody),
         );
-
         if (expectedStatus === 404) {
           validation.execute("Not Found Error", () =>
             validator.validateNotFoundError(
@@ -115,7 +91,6 @@ test.describe("Billing History API", () => {
           validation.printSummary(testCase.testName, responseTime);
           return;
         }
-
         if (testCase.scenario === "meter_not_found" && rawResponse.status() === 404) {
           validation.execute("Not Found Error", () =>
             validator.validateNotFoundError(
@@ -125,7 +100,6 @@ test.describe("Billing History API", () => {
           validation.printSummary(testCase.testName, responseTime);
           return;
         }
-
         if (testCase.scenario === "consumer_not_found" && rawResponse.status() === 404) {
           validation.execute("Not Found Error", () =>
             validator.validateNotFoundError(
@@ -135,7 +109,6 @@ test.describe("Billing History API", () => {
           validation.printSummary(testCase.testName, responseTime);
           return;
         }
-
         if (expectedStatus === 400) {
           if (testCase.scenario === "invalid_billing_limit") {
             validation.execute("Invalid Billing Limit Error", () =>

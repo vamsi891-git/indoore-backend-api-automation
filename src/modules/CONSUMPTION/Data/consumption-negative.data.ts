@@ -1,5 +1,11 @@
 import { patternConsumptionData } from "./patternconsumption.data";
 import { dailyConsumptionData } from "./dailyconsumption.data";
+import {
+  consumptionReportFromDate,
+  consumptionReportMonth,
+  consumptionReportToDate,
+  consumptionReportYear,
+} from "./consumption-report-window.data";
 export type ConsumptionNegativeCase = {
   testName: string;
   tags: string[];
@@ -10,7 +16,7 @@ export type ConsumptionNegativeCase = {
 };
 export const patternConsumptionNegativeCases: ConsumptionNegativeCase[] = [
   {
-    testName: "pattern consumption missing patternType returns client error",
+    testName: "Pattern consumption — leaving out the pattern type is rejected",
     tags: ["@consumption", "@pattern-consumption", "@negative"],
     path: "/indore/consumption/pattern-consumption",
     params: {
@@ -23,7 +29,7 @@ export const patternConsumptionNegativeCases: ConsumptionNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "pattern consumption invalid patternType returns client error",
+    testName: "Pattern consumption — an unknown pattern type is rejected",
     tags: ["@consumption", "@pattern-consumption", "@negative"],
     path: "/indore/consumption/pattern-consumption",
     params: {
@@ -37,7 +43,7 @@ export const patternConsumptionNegativeCases: ConsumptionNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "pattern consumption month zero returns client error",
+    testName: "Pattern consumption — month zero is rejected",
     tags: ["@consumption", "@pattern-consumption", "@negative"],
     path: "/indore/consumption/pattern-consumption",
     params: {
@@ -51,7 +57,7 @@ export const patternConsumptionNegativeCases: ConsumptionNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "pattern consumption month thirteen returns client error",
+    testName: "Pattern consumption — month thirteen is rejected",
     tags: ["@consumption", "@pattern-consumption", "@negative"],
     path: "/indore/consumption/pattern-consumption",
     params: {
@@ -65,7 +71,7 @@ export const patternConsumptionNegativeCases: ConsumptionNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "pattern consumption page zero returns client error",
+    testName: "Pattern consumption — page zero is rejected",
     tags: ["@consumption", "@pattern-consumption", "@negative"],
     path: "/indore/consumption/pattern-consumption",
     params: {
@@ -79,7 +85,7 @@ export const patternConsumptionNegativeCases: ConsumptionNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "pattern consumption limit zero returns client error",
+    testName: "Pattern consumption — limit zero is rejected",
     tags: ["@consumption", "@pattern-consumption", "@negative"],
     path: "/indore/consumption/pattern-consumption",
     params: {
@@ -96,26 +102,31 @@ export const patternConsumptionNegativeCases: ConsumptionNegativeCase[] = [
 
 export const monthlyNetMeterNegativeCases: ConsumptionNegativeCase[] = [
   {
-    testName: "monthly net meter month zero returns client error",
+    testName: "Monthly net meter — month zero is rejected",
     tags: ["@consumption", "@monthly-net-meter", "@negative"],
     path: "/indore/consumption/monthly-net-meter",
-    params: { page: 1, limit: 10, month: 0, year: 2025 },
+    params: { page: 1, limit: 10, month: 0, year: consumptionReportYear },
     expectedStatuses: [400, 422],
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "monthly net meter year zero returns client error",
+    testName: "Monthly net meter — year zero is rejected",
     tags: ["@consumption", "@monthly-net-meter", "@negative"],
     path: "/indore/consumption/monthly-net-meter",
-    params: { page: 1, limit: 10, month: 12, year: 0 },
+    params: { page: 1, limit: 10, month: consumptionReportMonth, year: 0 },
     expectedStatuses: [400, 422],
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "monthly net meter page zero returns client error",
+    testName: "Monthly net meter — page zero is rejected",
     tags: ["@consumption", "@monthly-net-meter", "@negative"],
     path: "/indore/consumption/monthly-net-meter",
-    params: { page: 0, limit: 10, month: 12, year: 2025 },
+    params: {
+      page: 0,
+      limit: 10,
+      month: consumptionReportMonth,
+      year: consumptionReportYear,
+    },
     expectedStatuses: [400, 422],
     expectedCodes: ["VALIDATION_ERROR"],
   },
@@ -123,7 +134,7 @@ export const monthlyNetMeterNegativeCases: ConsumptionNegativeCase[] = [
 
 export const consumptionReportNegativeCases: ConsumptionNegativeCase[] = [
   {
-    testName: "consumption report missing reportType returns client error",
+    testName: "Daily consumption — leaving out the report type is rejected",
     tags: ["@consumption", "@consumption-report", "@negative"],
     path: "/indore/consumption/report",
     params: {
@@ -138,7 +149,7 @@ export const consumptionReportNegativeCases: ConsumptionNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "consumption report invalid reportType returns client error",
+    testName: "Daily consumption — an unknown report type is rejected",
     tags: ["@consumption", "@consumption-report", "@negative"],
     path: "/indore/consumption/report",
     params: {
@@ -154,15 +165,15 @@ export const consumptionReportNegativeCases: ConsumptionNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "consumption report fromDate after toDate returns client error",
+    testName: "Daily consumption — start date after end date is rejected",
     tags: ["@consumption", "@consumption-report", "@negative"],
     path: "/indore/consumption/report",
     params: {
       reportType: "daily",
       page: dailyConsumptionData.page,
       limit: dailyConsumptionData.limit,
-      fromDate: "2025-12-25",
-      toDate: "2025-12-20",
+      fromDate: consumptionReportToDate,
+      toDate: consumptionReportFromDate,
       month: dailyConsumptionData.month,
       year: dailyConsumptionData.year,
     },
@@ -170,7 +181,7 @@ export const consumptionReportNegativeCases: ConsumptionNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "consumption report invalid fromDate format returns client error",
+    testName: "Daily consumption — a badly formatted start date is rejected",
     tags: ["@consumption", "@consumption-report", "@negative"],
     path: "/indore/consumption/report",
     params: {
@@ -187,52 +198,102 @@ export const consumptionReportNegativeCases: ConsumptionNegativeCase[] = [
   },
 ];
 
+const reportWindow = {
+  fromDate: consumptionReportFromDate,
+  toDate: consumptionReportToDate,
+  month: consumptionReportMonth,
+  year: consumptionReportYear,
+};
+
 export const consumptionEdgeCases = {
-  patternComparisonPage2: {
-    patternType: "comparison" as const,
+  patternPage2: {
     page: 2,
-    limit: 10,
-    month: 12,
-    year: 2025,
+    limit: 5,
+    month: consumptionReportMonth,
+    year: consumptionReportYear,
   },
-  patternYearlyLimit1: {
-    patternType: "yearly" as const,
+  patternLimit1: {
     page: 1,
     limit: 1,
-    month: 12,
-    year: 2025,
+    month: consumptionReportMonth,
+    year: consumptionReportYear,
+  },
+  patternUnusedQuery: {
+    page: 1,
+    limit: 30,
+    month: consumptionReportMonth,
+    year: consumptionReportYear,
+  },
+  patternFarPage: {
+    page: 99999,
+    limit: 30,
+    month: consumptionReportMonth,
+    year: consumptionReportYear,
   },
   monthlyNetMeterPage2: {
     page: 2,
     limit: 5,
-    month: 12,
-    year: 2025,
+    month: consumptionReportMonth,
+    year: consumptionReportYear,
+  },
+  monthlyNetMeterLimit1: {
+    page: 1,
+    limit: 1,
+    month: consumptionReportMonth,
+    year: consumptionReportYear,
+  },
+  monthlyNetMeterUnusedQuery: {
+    page: 1,
+    limit: 10,
+    month: consumptionReportMonth,
+    year: consumptionReportYear,
+  },
+  monthlyNetMeterFarPage: {
+    page: 99999,
+    limit: 10,
+    month: consumptionReportMonth,
+    year: consumptionReportYear,
   },
   reportDailyPage2: {
     reportType: "daily" as const,
     page: 2,
     limit: 5,
-    fromDate: "2025-12-19",
-    toDate: "2025-12-20",
-    month: 12,
-    year: 2025,
+    ...reportWindow,
+  },
+  reportDailyLimit1: {
+    reportType: "daily" as const,
+    page: 1,
+    limit: 1,
+    ...reportWindow,
+  },
+  reportDailyUnusedQuery: {
+    reportType: "daily" as const,
+    page: 1,
+    limit: 10,
+    ...reportWindow,
+  },
+  reportDailyFarPage: {
+    reportType: "daily" as const,
+    page: 99999,
+    limit: 10,
+    ...reportWindow,
   },
   reportHourlyLimit1: {
     reportType: "hourly" as const,
     page: 1,
     limit: 1,
-    fromDate: "2025-12-19",
-    toDate: "2025-12-20",
-    month: 12,
-    year: 2025,
+    ...reportWindow,
   },
-  reportMonthlyPage1: {
+  reportMonthlyPage2: {
     reportType: "monthly" as const,
-    page: 1,
-    limit: 10,
-    fromDate: "2025-12-19",
-    toDate: "2025-12-20",
-    month: 12,
-    year: 2025,
+    page: 2,
+    limit: 5,
+    ...reportWindow,
+  },
+  reportNightZeroPage2: {
+    reportType: "nightZero" as const,
+    page: 2,
+    limit: 5,
+    ...reportWindow,
   },
 };

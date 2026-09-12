@@ -7,7 +7,6 @@ export const sampleConsumerItem = {
   consumerCid: "CID-1",
   consumerAddress: "Address",
   ivrsNo: "123",
-  existingIvrsNo: "123",
   meterSerialNumber: "MSN-1",
   consumerMobileNumber: "9999999999",
 };

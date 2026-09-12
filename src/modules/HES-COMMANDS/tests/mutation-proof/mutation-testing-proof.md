@@ -7,4 +7,7 @@ npm run test:hes-commands:mutation-proof
 npm run test:hes-commands:db
 ```
 
-Gate: `HES_COMMANDS_DB_SQL_READY=true` · SQL may be TODO until repository paste.
+Gate: `HES_COMMANDS_DB_SQL_READY=true` · SQL aligned with `CommandsRepository.getCommandsHistory`
+(`general.hes_command_logs` count + request_id/selected spot).
+
+Async E2E: default accepts IN_PROGRESS until HES callback; set `HES_E2E_REQUIRE_COMPLETION=true` for strict FINISHED.

@@ -6,7 +6,8 @@ import { RolePermissionApi } from "../Api/rolepermission.api";
 import { RolePermissionData } from "../Data/rolepermission.data";
 import { RolePermissionMapper } from "../Mapper/rolepermission.mapper";
 import {  RolePermissionValidator } from "../Validator/rolepermission.validator";
-test.describe("Role Permission CRUD Flow", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Role Permission CRUD Flow", () => {
   test.describe.configure({ mode: "serial" });
   test("Validate Role Permission Module",
     { tag: ["@permissions", "@role-permissions"] },

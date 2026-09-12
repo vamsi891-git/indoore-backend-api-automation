@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import { TechnicalReportSuccessResponseSchema } from "../../schemas/technical-analysis.schemas";
 import { collectTechnicalAnalysisDataQualityFindings } from "../../Db/technical-analysis-db.validator";
 import { sampleTechnicalReportSuccess } from "./fixtures/technical-sample.fixture";
+import { TechnicalReportValidator } from "../../Validator/technical-analysis.shared";
 
 test.describe("Mutation proof — Technical Report", () => {
   test(
@@ -65,6 +66,25 @@ test.describe("Mutation proof — Technical Report", () => {
       expect(report.warnings.length + report.counts.emptyIvrs).toBeGreaterThan(
         0,
       );
+    },
+  );
+
+  test(
+    "MUT-TA-RPT-006 — same meter on two DTRs is allowed; same meter and DTR is a duplicate",
+    { tag: ["@mutation-proof", "@technical-analysis"] },
+    async () => {
+      const validator = new TechnicalReportValidator();
+      const base = sampleTechnicalReportSuccess.data.rows[0];
+      validator.validateDuplicateContract([
+        { ...base, dtr: "DTR-A" },
+        { ...base, dtr: "DTR-B" },
+      ]);
+      expect(() =>
+        validator.validateDuplicateContract([
+          { ...base, dtr: "DTR-A" },
+          { ...base, dtr: "DTR-A" },
+        ]),
+      ).toThrow();
     },
   );
 });

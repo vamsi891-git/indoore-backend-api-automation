@@ -17,7 +17,7 @@ import {
 } from "../Mapper/dtrcommunication.mapper";
 import { DtrCommunicationValidator } from "../Validator/dtrcommunication.validator";
 
-test.describe("DTR Communication API", () => {
+test.describe("Dashboard — DTR communication", () => {
     test.describe.configure({ retries: 1 });
     test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

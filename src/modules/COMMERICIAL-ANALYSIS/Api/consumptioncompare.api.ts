@@ -2,6 +2,7 @@ import { APIRequestContext, APIResponse } from "@playwright/test";
 import { CONSUMPTION_REQUEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { ConsumptionCompareResponse } from "../Mapper/consumptioncompare.mapper";
 import { getCommercialWithRetry } from "../utils/commercial-request.helper";
+import type { CommercialRetryConfig } from "../utils/commercial-request.helper";
 
 export interface ConsumptionCompareApiResult {
   rawResponse: APIResponse;
@@ -14,6 +15,7 @@ export class ConsumptionCompareApi {
 
   async getConsumptionCompare(
     params: Record<string, string | number | boolean>,
+    retryConfig?: CommercialRetryConfig,
   ): Promise<ConsumptionCompareApiResult> {
     const { response, responseTime } = await getCommercialWithRetry(
       this.authenticatedApi,
@@ -23,6 +25,7 @@ export class ConsumptionCompareApi {
         maxAttempts: 5,
         timeoutMs: CONSUMPTION_REQUEST_TIMEOUT_MS,
         exponentialBackoff: true,
+        ...retryConfig,
       },
     );
 

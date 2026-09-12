@@ -1,13 +1,15 @@
 /**
  * Offline verification harness for the observability substrate.
  *
- * Drives the REAL instrumented modules (ValidationEngine, compareApiToDb) under
- * an ambient context so their appendEvent() wiring produces events exactly as
- * they would during a dtr-billing test. Retry + outcome events are emitted via
- * the same appendEvent() the layer wrappers use. Lets us validate trace
- * reconstruction without a live backend (used when the API is unavailable).
+ * What: drives ValidationEngine + compareApiToDb under an ambient ObsContext so
+ * appendEvent() wiring matches a real test (e.g. dtr-billing) without a live API.
  *
- * Run: ts-node --compilerOptions '{"module":"commonjs"}' scripts/observability-verify.ts
+ * When to run: after changing `src/observability/*` or db-compare/validation event
+ * emission — local smoke only (not wired into npm/CI).
+ *   ts-node --compilerOptions '{"module":"commonjs"}' scripts/observability-verify.ts
+ *
+ * Output: observability log events under `observability-logs/` (via appendEvent);
+ * console summary of pass/fail checks. Optional `OBS_RUN_ID` env.
  */
 
 import { setCurrentContext } from "../src/observability/context";

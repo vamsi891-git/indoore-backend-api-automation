@@ -19,6 +19,8 @@ export interface MetricItem {
     trend?: MetricTrend;
     sparkline?: number[];
     trends?: number[];
+    /** Present on prepaid / postpaid consumerType buckets. */
+    paymentContractTblRefId?: number;
 }
 
 /** Raw API metric shape — percentages may be strings before mapper normalization. */
@@ -29,6 +31,7 @@ export interface MetricItemInput {
     trend?: MetricTrend;
     sparkline?: number[];
     trends?: number[];
+    paymentContractTblRefId?: number;
 }
 
 export interface ConnectionStatusInput {
@@ -90,6 +93,13 @@ function normalizeSection(
                     ...(value.trend ? { trend: value.trend } : {}),
                     ...(value.sparkline ? { sparkline: value.sparkline } : {}),
                     ...(value.trends ? { trends: value.trends } : {}),
+                    ...(value.paymentContractTblRefId != null
+                        ? {
+                              paymentContractTblRefId: Number(
+                                  value.paymentContractTblRefId,
+                              ),
+                          }
+                        : {}),
                 },
             ]),
     );

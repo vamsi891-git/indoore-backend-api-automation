@@ -1,6 +1,7 @@
 /**
- * Reuses DASHBOARD network universe counts (same /indore/dashboard/metrics).
+ * Soft DB helpers for overall-metrics installationSummary.
  * Gated by OVERALL_DASHBOARD_DB_SQL_READY=true.
+ * Endpoint-specific overall-metrics KPI SQL not provided — reuse active meter universe.
  */
 export {
   DASHBOARD_ACTIVE_DTR_COUNT_SQL as OD_ACTIVE_DTR_COUNT_SQL,

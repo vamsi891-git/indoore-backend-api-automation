@@ -35,8 +35,15 @@ export const AuthDeviceSelectionSchema = z.object({
   devices: z.array(AuthDeviceSchema).min(1),
 });
 
+export const AuthTwoFactorChallengeSchema = z.object({
+  requires2FA: z.literal(true),
+  challengeToken: z.string().min(1),
+  expiresIn: z.number().int().positive().optional(),
+});
+
 export const AuthLoginDataSchema = z.union([
   AuthLoginSessionSchema,
+  AuthTwoFactorChallengeSchema,
   AuthDeviceSelectionSchema,
 ]);
 
@@ -65,6 +72,7 @@ export type AuthRefreshSuccessResponse = z.infer<
 export type AuthLoginData = z.infer<typeof AuthLoginDataSchema>;
 export type AuthLoginSession = z.infer<typeof AuthLoginSessionSchema>;
 export type AuthDeviceSelection = z.infer<typeof AuthDeviceSelectionSchema>;
+export type AuthTwoFactorChallenge = z.infer<typeof AuthTwoFactorChallengeSchema>;
 
 // --- Current session (GET /indore/auth/me) ---
 
@@ -200,6 +208,12 @@ export function isDeviceSelectionPayload(
   data: AuthLoginData,
 ): data is AuthDeviceSelection {
   return "requiresDeviceSelection" in data && data.requiresDeviceSelection === true;
+}
+
+export function isTwoFactorChallengePayload(
+  data: AuthLoginData,
+): data is AuthTwoFactorChallenge {
+  return "requires2FA" in data && data.requires2FA === true;
 }
 
 export function isLoginSessionPayload(
