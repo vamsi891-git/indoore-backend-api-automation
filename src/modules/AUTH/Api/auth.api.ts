@@ -217,6 +217,9 @@ export class AuthenticationApi {
         if (AuthMapper.hasDirectSession(parsed.data)) {
           break;
         }
+        if (isTwoFactorChallengePayload(parsed.data)) {
+          break;
+        }
 
         const nextSelection = AuthMapper.mapDeviceSelection(parsed.data);
         if (!nextSelection) {
