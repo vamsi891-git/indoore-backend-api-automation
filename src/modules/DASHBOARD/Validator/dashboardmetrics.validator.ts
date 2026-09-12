@@ -172,22 +172,36 @@ export class DashboardMetricsValidator {
 
     validateLiveFullContract(mapped: MappedDashboardMetrics): void {
         this.validateLiveOk(mapped);
-        expect(mapped.totalMeterCount).toBe(132808);
-        expect(mapped.connectionStatus.cd?.count).toBe(127910);
-        expect(mapped.categoryWiseConsumer.residential?.count).toBe(95806);
-        expect(mapped.oemWiseConsumer["L&T"]?.count).toBe(123825);
-        expect(mapped.consumerType.prepaid?.count).toBe(16);
-        expect(mapped.consumerType.netMeter?.count).toBe(200);
-        expect(mapped.networkDetails.dtrs?.count).toBe(5281);
-        expect(mapped.networkDetails.substations?.percentage).toBe(0.4);
+        expect(mapped.totalMeterCount).toBe(133137);
+        expect(mapped.connectionStatus.cd?.count).toBe(128239);
+        expect(mapped.categoryWiseConsumer.residential?.count).toBe(95863);
+        expect(
+            mapped.categoryWiseConsumer.electricVehicleChargingStation?.count,
+        ).toBe(45);
+        expect(mapped.oemWiseConsumer["L&T"]?.count).toBe(123911);
+        expect(mapped.consumerType.prepaid?.count).toBe(329);
+        expect(mapped.consumerType.prepaid?.paymentContractTblRefId).toBe(1);
+        expect(mapped.consumerType.postpaid?.paymentContractTblRefId).toBe(2);
+        expect(mapped.consumerType.netMeter?.count).toBe(199);
+        expect(mapped.networkDetails.dtrs?.count).toBe(5059);
+        expect(mapped.networkDetails.substations?.percentage).toBe(0.42);
     }
     validateConnectionContract(mapped: MappedDashboardMetrics): void {
         this.validateConnectionPercentageTotal(mapped);
         this.validateConnectionCounts(mapped);
-        expect(mapped.totalMeterCount).toBe(132808);
-        expect(mapped.connectionStatus.cd?.count).toBe(127910);
+        expect(mapped.totalMeterCount).toBe(133137);
+        expect(mapped.connectionStatus.cd?.count).toBe(128239);
         expect(mapped.connectionStatus.cd?.label).toBe("Connected");
-        expect(mapped.connectionStatus.inactive?.count).toBe(0);
+        expect(mapped.connectionStatus.td?.label).toBe("Disconnected");
+        expect(mapped.connectionStatus.pd?.label).toBe(
+            "Permanently Disconnected",
+        );
+        // `inactive` may be omitted when count is zero (Aug 2026 live shape).
+        if (mapped.connectionStatus.inactive) {
+            expect(mapped.connectionStatus.inactive.count).toBeGreaterThanOrEqual(
+                0,
+            );
+        }
     }
     validateConsumerTrendsContract(mapped: MappedDashboardMetrics): void {
         this.validateSuccess(mapped.success);
@@ -196,9 +210,10 @@ export class DashboardMetricsValidator {
             dashboardMetricsConsumerTrendLength,
         );
         expect(mapped.consumerType.totalConsumers?.trends?.at(-1)).toBe(
-            132808,
+            133137,
         );
-        expect(mapped.consumerType.prepaid?.trends?.at(-1)).toBe(16);
+        expect(mapped.consumerType.prepaid?.trends?.at(-1)).toBe(329);
+        expect(mapped.consumerType.prepaid?.paymentContractTblRefId).toBe(1);
     }
     validateNetworkTrendsContract(mapped: MappedDashboardMetrics): void {
         this.validateSuccess(mapped.success);
@@ -206,7 +221,7 @@ export class DashboardMetricsValidator {
         expect(mapped.networkDetails.substations?.trends?.length).toBe(
             dashboardMetricsNetworkTrendLength,
         );
-        expect(mapped.networkDetails.dtrs?.trends?.at(-1)).toBe(5281);
+        expect(mapped.networkDetails.dtrs?.trends?.at(-1)).toBe(5059);
         this.validateNetworkHierarchyPercentageTotal(mapped);
     }
 

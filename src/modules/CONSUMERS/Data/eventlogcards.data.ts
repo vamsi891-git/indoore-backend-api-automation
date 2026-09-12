@@ -1,25 +1,21 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { EventLogCardsQuery } from "../Api/eventlogcards.api";
-import type {
-  EventLogCardsResponse,
-  EventLogCardsScenario,
-} from "../Mapper/eventlogcards.mapper";
-
+import type {EventLogCardsResponse,EventLogCardsScenario,} from "../Mapper/eventlogcards.mapper";
+import {
+  CONSUMERS_LIVE_IVRS,
+  CONSUMERS_LIVE_METER_ROUTE,
+  resolveLiveAccountId,
+  resolveLiveIvrs,
+  resolveLiveMeterRoute,
+} from "./consumers-live-refs";
 export const eventLogCardsMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
-
-/** IVRS from user request; live archive may return all-zero cards. */
-export const eventLogCardsDefaultIvrs = "N3374018980";
-
-export const eventLogCardsDefaultConsumerId = "N3374018980";
-
-export const eventLogCardsDefaultMeterRoute = "meter-12345";
-
-export const eventLogCardsNotFoundRef = "INVALID_CONSUMER_XYZ";
-
+/** IVRS from live RTP/PQ sample; archive may return all-zero cards. */
+export const eventLogCardsDefaultIvrs = CONSUMERS_LIVE_IVRS;
+export const eventLogCardsDefaultConsumerId = CONSUMERS_LIVE_IVRS;
+export const eventLogCardsDefaultMeterRoute = CONSUMERS_LIVE_METER_ROUTE;
+export const eventLogCardsNotFoundRef = "INVALID_CONSUMER_XYZ"
 export const eventLogCardsMeterNotFoundRef = "meter-999999999";
-
-export const eventLogCardsEmptyRef = " ";
-
+export const eventLogCardsEmptyRef = " "
 /** User-provided live sample — getEmptyEventCards() shape. */
 export const eventLogCardsContractEmptyResponse: EventLogCardsResponse = {
   success: true,
@@ -45,7 +41,6 @@ export const eventLogCardsContractEmptyResponse: EventLogCardsResponse = {
     },
   },
 };
-
 /** Nonzero counts with yesterday comparison labels from buildEventSummaryCards. */
 export const eventLogCardsContractNonzeroResponse: EventLogCardsResponse = {
   success: true,
@@ -147,26 +142,26 @@ export function resolveEventLogCardsRef(
   switch (scenario) {
     case "elc_by_ivrs":
     case "elc_ignore_unknown_query":
-      return (
-        process.env.CONSUMER_ELC_IVRS?.trim() ||
-        process.env.CONSUMER_LLP_IVRS?.trim() ||
-        process.env.CONSUMER_BH_IVRS?.trim() ||
-        eventLogCardsDefaultIvrs
+      return resolveLiveIvrs(
+        process.env.CONSUMER_ELC_IVRS,
+        process.env.CONSUMER_LLP_IVRS,
+        process.env.CONSUMER_BH_IVRS,
+        eventLogCardsDefaultIvrs,
       );
     case "elc_by_account":
-      return (
-        process.env.CONSUMER_ELC_CONSUMER_ID?.trim() ||
-        process.env.CONSUMER_LLP_CONSUMER_ID?.trim() ||
-        process.env.CONSUMER_BH_CONSUMER_ID?.trim() ||
-        eventLogCardsDefaultConsumerId
+      return resolveLiveAccountId(
+        process.env.CONSUMER_ELC_CONSUMER_ID,
+        process.env.CONSUMER_LLP_CONSUMER_ID,
+        process.env.CONSUMER_BH_CONSUMER_ID,
+        eventLogCardsDefaultConsumerId,
       );
     case "elc_by_meter":
-      return (
-        process.env.CONSUMER_ELC_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_LLP_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_BH_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_PROFILE_METER_ROUTE?.trim() ||
-        eventLogCardsDefaultMeterRoute
+      return resolveLiveMeterRoute(
+        process.env.CONSUMER_ELC_METER_ROUTE,
+        process.env.CONSUMER_LLP_METER_ROUTE,
+        process.env.CONSUMER_BH_METER_ROUTE,
+        process.env.CONSUMER_PROFILE_METER_ROUTE,
+        eventLogCardsDefaultMeterRoute,
       );
     case "consumer_not_found":
       return eventLogCardsNotFoundRef;

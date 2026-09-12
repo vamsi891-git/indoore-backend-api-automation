@@ -39,8 +39,9 @@ export class SubmissionHistoryMapper {
                 id: item.id,
                 consumerName:item.consumerName?.trim() ?? "",
                 oldMeterSerial:item.oldMeterSerial?.trim() ?? "",
-                newMeterSerial:item.newMeterSerial?.trim() ?? null,
-                replacementReason:item.replacementReason?.trim() ?? null,
+                // Blank strings are treated as null — live rows may omit new meter / reason.
+                newMeterSerial: item.newMeterSerial?.trim() || null,
+                replacementReason: item.replacementReason?.trim() || null,
                 status:item.status ?? "PENDING",
                 createdAt:item.createdAt?.trim() ?? "",
             })),

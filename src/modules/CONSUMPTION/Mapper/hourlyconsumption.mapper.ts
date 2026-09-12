@@ -9,6 +9,8 @@ export interface HourlyConsumptionItem {
   ivrsNumber: string | null;
   msn: string | null;
   phase: string | null;
+  /** Present on current API; optional for older snapshots */
+  mf?: number | null;
   h1: number | null;
   h2: number | null;
   h3: number | null;

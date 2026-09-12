@@ -37,7 +37,7 @@ function runOrganisationHierarchyValidations(
 }
 
 registerCatalogLookupTests({
-  describeTitle: "Organisation Hierarchy API",
+  describeTitle: "Organisation hierarchy",
   testCases: organizationHierarchyTestCases,
   fetch: (authenticatedApi) =>
     new OrganisationApi(authenticatedApi).getOrganisationHierarchy(),

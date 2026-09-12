@@ -1,6 +1,6 @@
 {
   "httpMethod": "GET",
-  "pathPattern": "/indore/dashboard/metrics",
+  "pathPattern": "/indore/dashboard/consumer/metrics",
   "successEnvelopeKeys": [
     "data",
     "success"

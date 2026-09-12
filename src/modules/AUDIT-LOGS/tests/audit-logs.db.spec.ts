@@ -15,7 +15,7 @@ apiDbTest.describe("AUDIT-LOGS — DB Coverage", () => {
   });
 
   apiDbTest(
-    "IND-AUD-DB-001 — scaffold DB coverage",
+    "IND-AUD-DB-001 — list total ≤ DB + row spot by id",
     { tag: ["@audit-logs", "@db"] },
     async ({ authenticatedApi, db }) => {
       await runAuditLogsDbCoverage(authenticatedApi, db);

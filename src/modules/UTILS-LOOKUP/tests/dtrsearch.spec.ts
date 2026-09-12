@@ -15,14 +15,14 @@ function runDtrSearchValidations(
   responseBody: unknown,
   validation: import("../../../core/engine/validation.engine").ValidationEngine,
 ): void {
-  const data = DtrSearchMapper.mapData(
-    getLookupResponseData<DtrSearchRawData>(responseBody),
-  );
+  const raw = getLookupResponseData<DtrSearchRawData>(responseBody);
+  const data = DtrSearchMapper.mapData(raw);
   const validator = new DtrSearchValidator();
 
   validation.execute("Response", () =>
     validator.validateResponse(responseBody as never),
   );
+  validation.execute("Columns", () => validator.validateColumns(raw.columns));
   validation.execute("Pagination", () => validator.validatePagination(data));
 
   if (scenario === "edge_page_beyond") {
@@ -64,7 +64,7 @@ function runDtrSearchValidations(
 }
 
 registerSearchLookupTests({
-  describeTitle: "DTR Search API",
+  describeTitle: "DTR search",
   testCases: dtrSearchTestCases,
   resolveQuery: resolveDtrSearchQuery,
   fetch: (authenticatedApi, query) =>

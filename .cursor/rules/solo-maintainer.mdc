@@ -1,0 +1,24 @@
+---
+description: Keep this API test repo simple for a solo junior maintainer.
+alwaysApply: true
+---
+
+# Solo maintainer (team of 1)
+
+This repo is maintained by one person with little framework experience. Prefer the simple path.
+
+## Do
+
+- Copy an existing module (`Api` + `Data` + `Mapper` + `Validator` + `tests`) instead of inventing new layers.
+- Keep Playwright `workers: 1`. Do not turn on parallel workers unless asked.
+- For GET/list tests: check status 200, schema, and column headers in `Data/*.data.ts`.
+- If an API column header changes, update `EXPECTED_*_COLUMNS` only.
+- Write tests (POST/PUT/PATCH) stay skipped. To re-enable: remove the file from `playwright.config.ts` `skippedWriteSpecs` and change `test.describe.skip` to `test.describe`.
+- Never set `ALLOW_WRITE_TESTS=true` on production. Create meter/DTR/consumer must stay blocked.
+
+## Do not
+
+- Do not add new helper engines, skip regex, or auto-create meters to make a test green.
+- Do not run mutation-proof tests in the default module command.
+- Do not skip with a stale `.env` serial; skip the case if no matching meter exists.
+- Do not add Excel/test-pack generator scripts.

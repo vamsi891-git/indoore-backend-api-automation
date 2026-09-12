@@ -16,12 +16,13 @@ export class MonthlyNetMeterApi {
     limit: number,
     month: number,
     year: number,
+    extras: Record<string, string | number | boolean> = {},
   ): Promise<MonthlyNetMeterApiResult> {
     const { response, responseTime } = await getConsumptionWithRetry(
       this.authenticatedApi,
       "/indore/consumption/monthly-net-meter",
       {
-        params: { page, limit, month, year },
+        params: { page, limit, month, year, ...extras },
       },
     );
 

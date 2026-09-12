@@ -2,6 +2,7 @@ import { expect } from "@playwright/test";
 import { QueryMeterJobMeterResult } from "../Mapper/commands-query-meter-job.mapper";
 import { MappedCommandJobInitData } from "../shared/commands-job-init.mapper";
 import { commandsBillingData } from "../Data/commands-billing.data";
+import { QUERY_FINISHED_MESSAGE } from "../utils/commands-job-e2e.helper";
 
 export class CommandsBillingValidator {
   validateInitMessage(mapped: MappedCommandJobInitData): void {
@@ -17,9 +18,7 @@ export class CommandsBillingValidator {
   }
 
   validateQueryFinishedMessage(message: string): void {
-    expect(/job finished|synced from meterStatusForJob/i.test(message)).toBe(
-      true,
-    );
+    expect(QUERY_FINISHED_MESSAGE.test(message)).toBe(true);
   }
 
   validateBillingMeterResultRow(row: QueryMeterJobMeterResult): void {

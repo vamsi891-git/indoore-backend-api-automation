@@ -20,7 +20,8 @@ import { assertNegativeMasterDataHttpStatus } from "../utils/master-data-negativ
 
 const SUCCESS_SCENARIOS = new Set(["success", "already_inactive"]);
 
-test.describe("Deactivate Meter API", () => {
+// SKIPPED: deactivate meter is a mutating write (same hold as PUT/update).
+test.describe.skip("Master data — deactivate meter", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

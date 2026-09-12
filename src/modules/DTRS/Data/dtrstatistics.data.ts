@@ -18,26 +18,22 @@ export const dtrStatisticsNotFoundCode = "INVALID_DTR_XYZ";
 export const dtrStatisticsEmptyCode = " ";
 
 export const dtrStatisticsExpectedCardTitles = [
-  "Total LT Feeders",
+  "Total Consumer",
   "Total KW",
   "Total KVA",
   "Total KWh",
   "Total KVAh",
-  "LT Feeders Fuse Blown",
-  "Unbalanced LT Feeders",
   "Power On",
   "Power Off",
   "Status",
 ] as const;
 
 export const dtrStatisticsExpectedSubtitles = {
-  "Total LT Feeders": "Connected to DTR",
+  "Total Consumer": "Linked to this DTR",
   "Total KW": "Active Power",
   "Total KVA": "Apparent Power",
   "Total KWh": "Cumulative Active Energy",
   "Total KVAh": "Cumulative Apparent Energy",
-  "LT Feeders Fuse Blown": "Requires maintenance",
-  "Unbalanced LT Feeders": "Last Month",
   "Power On": null,
   "Power Off": null,
 } as const;
@@ -57,9 +53,9 @@ export const dtrStatisticsContractDegradedResponse: DtrStatisticsResponse = {
   data: {
     statisticCards: [
       {
-        title: "Total LT Feeders",
+        title: "Total Consumer",
         value: "0",
-        subtitle: "Connected to DTR",
+        subtitle: "Linked to this DTR",
         trendPercent: null,
       },
       {
@@ -84,18 +80,6 @@ export const dtrStatisticsContractDegradedResponse: DtrStatisticsResponse = {
         title: "Total KVAh",
         value: EM_DASH,
         subtitle: "Cumulative Apparent Energy",
-        trendPercent: null,
-      },
-      {
-        title: "LT Feeders Fuse Blown",
-        value: "0",
-        subtitle: "Requires maintenance",
-        trendPercent: null,
-      },
-      {
-        title: "Unbalanced LT Feeders",
-        value: EM_DASH,
-        subtitle: "Last Month",
         trendPercent: null,
       },
       {
@@ -126,9 +110,9 @@ export const dtrStatisticsContractPopulatedResponse: DtrStatisticsResponse = {
   data: {
     statisticCards: [
       {
-        title: "Total LT Feeders",
+        title: "Total Consumer",
         value: "12",
-        subtitle: "Connected to DTR",
+        subtitle: "Linked to this DTR",
         trendPercent: null,
       },
       {
@@ -153,18 +137,6 @@ export const dtrStatisticsContractPopulatedResponse: DtrStatisticsResponse = {
         title: "Total KVAh",
         value: "13000.12",
         subtitle: "Cumulative Apparent Energy",
-        trendPercent: null,
-      },
-      {
-        title: "LT Feeders Fuse Blown",
-        value: "2",
-        subtitle: "Requires maintenance",
-        trendPercent: null,
-      },
-      {
-        title: "Unbalanced LT Feeders",
-        value: "8.5%",
-        subtitle: "Last Month",
         trendPercent: null,
       },
       {
@@ -207,9 +179,9 @@ export const dtrStatisticsContractTrendFormulaResponse: DtrStatisticsResponse =
     data: {
       statisticCards: [
         {
-          title: "Total LT Feeders",
+          title: "Total Consumer",
           value: "5",
-          subtitle: "Connected to DTR",
+          subtitle: "Linked to this DTR",
           trendPercent: null,
         },
         {
@@ -239,18 +211,6 @@ export const dtrStatisticsContractTrendFormulaResponse: DtrStatisticsResponse =
           subtitle: "Cumulative Apparent Energy",
           trendPercent:
             dtrStatisticsContractTrendFormulaMeta.kvah.expectedTrend,
-        },
-        {
-          title: "LT Feeders Fuse Blown",
-          value: "0",
-          subtitle: "Requires maintenance",
-          trendPercent: null,
-        },
-        {
-          title: "Unbalanced LT Feeders",
-          value: "0%",
-          subtitle: "Last Month",
-          trendPercent: null,
         },
         {
           title: "Power On",
@@ -313,8 +273,8 @@ export const dtrStatisticsContractUnbalancedResponse: DtrStatisticsResponse = {
   data: {
     statisticCards: dtrStatisticsContractDegradedResponse.data!.statisticCards.map(
       (card) =>
-        card.title === "Unbalanced LT Feeders"
-          ? { ...card, value: "12.5%" }
+        card.title === "Total Consumer"
+          ? { ...card, value: "42" }
           : card,
     ),
   },
@@ -336,11 +296,8 @@ export const dtrStatisticsContractIntegerFeedersResponse: DtrStatisticsResponse 
     data: {
       statisticCards: dtrStatisticsContractDegradedResponse.data!.statisticCards.map(
         (card) => {
-          if (card.title === "Total LT Feeders") {
+          if (card.title === "Total Consumer") {
             return { ...card, value: "25" };
-          }
-          if (card.title === "LT Feeders Fuse Blown") {
-            return { ...card, value: "3" };
           }
           return card;
         },
@@ -436,88 +393,78 @@ export const dtrStatisticsData = {
 
 export const dtrStatisticsTestCases: DtrStatisticsTestCase[] = [
   {
-    testName:
-      "Validate GET /indore/dtr/{code}/statistics — primary DTR (10IW1) statistic cards",
+    testName: "DTR statistic cards — load, energy, consumers, and status",
     scenario: "dts_by_code_primary",
     tags: ["@smoke", "@dtr", "@statistics"],
   },
   {
-    testName:
-      "Validate GET /indore/dtr/{code}/statistics — alternate DTR code",
+    testName: "DTR statistic cards — a second transformer still shows cards",
     scenario: "dts_by_code_alt",
     tags: ["@dtr", "@statistics", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/dtr/{code}/statistics — unknown query params ignored",
+      "DTR statistic cards — extra filters that nobody uses are ignored",
     scenario: "dts_ignore_unknown_query",
     tags: ["@dtr", "@statistics", "@edge"],
   },
   {
-    testName:
-      "Contract — degraded em-dash cards (buildStatisticCards unavailable metrics)",
+    testName: "Sample statistic cards — dashes when numbers are missing",
     scenario: "contract_degraded_em_dash",
     isContractFixture: true,
     tags: ["@dtr", "@statistics", "@edge"],
   },
   {
     testName:
-      "Contract — populated KW/KVA/KWh/KVAh with feeder counts and power-on clock",
+      "Sample statistic cards — kW, kVA, kWh, kVAh, consumers, and power-on time",
     scenario: "contract_populated_metrics",
     isContractFixture: true,
     tags: ["@dtr", "@statistics", "@edge"],
   },
   {
-    testName:
-      "Contract — trendPercent matches ((current − previous) / previous) × 100",
+    testName: "Sample statistic cards — up/down percent vs last period",
     scenario: "contract_trend_formula",
     isContractFixture: true,
     tags: ["@dtr", "@statistics", "@edge"],
   },
   {
-    testName:
-      "Contract — Status card shows Limited when load limit function active",
+    testName: "Sample statistic cards — status shows Limited when load is capped",
     scenario: "contract_status_limited",
     isContractFixture: true,
     tags: ["@dtr", "@statistics", "@edge"],
   },
   {
-    testName:
-      "Contract — Status card shows Under Load with numeric load-limit subtitle",
+    testName: "Sample statistic cards — status shows Under Load",
     scenario: "contract_status_under_load",
     isContractFixture: true,
     tags: ["@dtr", "@statistics", "@edge"],
   },
   {
-    testName:
-      "Contract — Unbalanced LT Feeders displays percent (calculateUnbalance)",
+    testName: "Sample statistic cards — consumer count is zero or more",
     scenario: "contract_unbalanced_percent",
     isContractFixture: true,
     tags: ["@dtr", "@statistics", "@edge"],
   },
   {
-    testName:
-      "Contract — Power On uses HH:MM:SS clock from cumulative minutes",
+    testName: "Sample statistic cards — power-on time looks like a clock",
     scenario: "contract_power_on_clock",
     isContractFixture: true,
     tags: ["@dtr", "@statistics", "@edge"],
   },
   {
-    testName:
-      "Contract — Total LT Feeders and Fuse Blown are non-negative integers",
+    testName: "Sample statistic cards — feeder and fuse counts are whole numbers",
     scenario: "contract_integer_feeders_fuse",
     isContractFixture: true,
     tags: ["@dtr", "@statistics", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/dtr/{code}/statistics — DTR not found or degraded cards",
+      "DTR statistic cards — unknown transformer is not shown or cards are empty",
     scenario: "dtr_not_found",
     tags: ["@dtr", "@statistics", "@negative"],
   },
   {
-    testName:
-      "Validate GET /indore/dtr/{code}/statistics — blank DTR code rejected",
+    testName: "DTR statistic cards — a blank transformer code is not allowed",
     scenario: "empty_dtr_code",
     expectedStatus: 400,
     tags: ["@dtr", "@statistics", "@negative"],

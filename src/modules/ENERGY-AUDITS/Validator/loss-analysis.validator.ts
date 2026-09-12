@@ -146,10 +146,11 @@ export class LossAnalysisValidator {
     for (const row of rows) {
       expect(row.inputUnits).toBeGreaterThanOrEqual(0);
       expect(row.totalSoldUnits).toBeGreaterThanOrEqual(0);
-      expect(row.lossKwh).toBeGreaterThanOrEqual(0);
+      // lossKwh / lossPct are signed: sold > input → negative "gain" (backend does not floor at 0)
+      expect(Number.isFinite(row.lossKwh)).toBe(true);
       expect(row.consumerCount).toBeGreaterThanOrEqual(0);
       expect(row.billingEfficiencyPct).toBeGreaterThanOrEqual(0);
-      expect(row.lossPct).toBeGreaterThanOrEqual(0);
+      expect(Number.isFinite(row.lossPct)).toBe(true);
       expect(Number.isInteger(row.consumerCount)).toBe(true);
       if (isSummaryRow(row)) {
         continue;
@@ -237,16 +238,19 @@ export class LossAnalysisValidator {
     expect(new Set(names).size).toBe(names.length);
   }
   /**
-   * Backend: lossKwh = GREATEST(0, inputUnits - totalSoldUnits)
-   * billingEfficiencyPct = (totalSoldUnits / inputUnits) * 100 when inputUnits > 0
-   * lossPct = (lossKwh / inputUnits) * 100 when inputUnits > 0
+   * Backend (energy-audit.service): lossKwh = inputUnits - totalSoldUnits (signed, not floored).
+   * billingEfficiencyPct = (sold / input) * 100 when input > 0 (can exceed 100%).
+   * lossPct = (lossKwh / input) * 100 when input > 0 (can be negative).
+   * When input === 0: efficiency and lossPct are 0; lossKwh still equals input - sold.
    */
   validateLossCalculations(rows: LossAnalysisRow[]): void {
     for (const row of rows) {
-      const expectedLoss = Math.max(0, row.inputUnits - row.totalSoldUnits);
-      expect(Math.abs(row.lossKwh - expectedLoss),`DTR ${row.dtrName}: lossKwh ${row.lossKwh} != max(0, input - sold) ${expectedLoss}`,).toBeLessThanOrEqual(METRIC_EPSILON);
+      const expectedLoss = row.inputUnits - row.totalSoldUnits;
+      expect(
+        Math.abs(row.lossKwh - expectedLoss),
+        `DTR ${row.dtrName}: lossKwh ${row.lossKwh} != input - sold ${expectedLoss}`,
+      ).toBeLessThanOrEqual(METRIC_EPSILON);
       if (row.inputUnits === 0) {
-        expect(row.lossKwh).toBe(0);
         expect(row.billingEfficiencyPct).toBe(0);
         expect(row.lossPct).toBe(0);
         continue;

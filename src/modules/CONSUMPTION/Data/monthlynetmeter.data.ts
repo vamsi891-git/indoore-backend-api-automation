@@ -1,8 +1,15 @@
-import { CONSUMPTION_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
+import {
+  consumptionReportLimit,
+  consumptionReportMaxResponseTime,
+  consumptionReportMonth,
+  consumptionReportPage,
+  consumptionReportYear,
+} from "./consumption-report-window.data";
+
 export const monthlyNetMeterData = {
-  page: 1,
-  limit: 30,
-  month: 12,
-  year: 2025,
-  maxResponseTime: CONSUMPTION_MAX_RESPONSE_TIME_MS,
+  page: consumptionReportPage,
+  limit: consumptionReportLimit,
+  month: consumptionReportMonth,
+  year: consumptionReportYear,
+  maxResponseTime: consumptionReportMaxResponseTime,
 };

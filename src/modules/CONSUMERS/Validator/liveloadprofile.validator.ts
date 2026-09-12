@@ -132,7 +132,8 @@ export class LiveLoadProfileValidator {
   validatePowerRanges(data: LiveLoadProfileData) {
     for (const metric of data.metrics) {
       if (metric.value != null) {
-        expect(metric.value).toBeGreaterThanOrEqual(0);
+        // Live meters can report signed reactive / small negative floats.
+        expect(Number.isFinite(metric.value)).toBeTruthy();
       }
     }
   }
@@ -217,6 +218,7 @@ export class LiveLoadProfileValidator {
       case "llp_by_meter":
       case "llp_ignore_unknown_query":
       case "meter_not_found":
+      case "consumer_not_found":
         this.validateLiveOk(mapped);
         break;
       default:

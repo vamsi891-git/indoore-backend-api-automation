@@ -1,15 +1,19 @@
 import type pg from "pg";
 import type { APIRequestContext } from "@playwright/test";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 
-/** Placeholder harness — expand when repository SQL is pasted. */
+/**
+ * Scaffold only — must not report green when the DB gate is on.
+ * Leave `USERS_PROFILE_IMAGE_DB_SQL_READY` unset until real SQL is pasted.
+ */
 export async function runUsersProfileImageDbCoverage(
   _authenticatedApi: APIRequestContext,
   _db: pg.Pool,
 ): Promise<void> {
-  const validation = new ValidationEngine();
-  validation.execute("USERS-PROFILE-IMAGE DB scaffold ready", () => {
-    // Gate is on; SQL_TODO until paste — no-op pass.
-  });
-  validation.printSummary("USERS-PROFILE-IMAGE DB Coverage", 0);
+  void _authenticatedApi;
+  void _db;
+  throw new Error(
+    "USERS-PROFILE-IMAGE DB SQL not implemented (SQL_TODO). " +
+      "Unset USERS_PROFILE_IMAGE_DB_SQL_READY until repository SQL is pasted — " +
+      "scaffold harnesses must not pass.",
+  );
 }

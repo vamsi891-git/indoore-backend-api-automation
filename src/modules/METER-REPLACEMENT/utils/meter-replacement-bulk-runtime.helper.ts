@@ -1,9 +1,13 @@
 import type { APIRequestContext } from "@playwright/test";
 import { ConsumerDetailApi } from "../Api/consumer-detail.api";
+import { MeterValidationApi } from "../Api/meter-validation.api";
+import { SubmissionHistoryApi } from "../Api/submission-history.api";
 import {
   ConsumerDetail,
   ConsumerDetailMapper,
 } from "../Mapper/consumer-detail.mapper";
+import { MeterValidationMapper } from "../Mapper/meter-validation.mapper";
+import { SubmissionHistoryMapper } from "../Mapper/submission-history.mapper";
 import {
   ensureEligibleConsumer,
   findUsableConsumer,
@@ -78,14 +82,55 @@ export async function resolvePendingConsumerOldMeterSerial(
   const result = await detailApi.getConsumerDetail(
     createSubmissionData.ineligibleConsumerId,
   );
-  if (result.rawResponse.status() !== 200 || !result.responseBody?.data) {
+  if (result.rawResponse.status() === 200 && result.responseBody?.data) {
+    const mapped = ConsumerDetailMapper.map(result.responseBody);
+    if (!mapped.replacementEligible) {
+      const serial = mapped.oldMeterSerial?.trim() || null;
+      if (serial) return serial;
+    }
+  }
+
+  // Fallback: any PENDING history row's old meter serial.
+  const historyApi = new SubmissionHistoryApi(authenticatedApi);
+  const history = await historyApi.getSubmissionHistory(1, 50, undefined, "PENDING");
+  if (history.rawResponse.status() !== 200) return null;
+  const items = SubmissionHistoryMapper.map(history.responseBody).items;
+  for (const item of items) {
+    const serial = item.oldMeterSerial?.trim();
+    if (serial) return serial;
+  }
+  return null;
+}
+
+/** New meter already tied to an active PENDING replacement (lookup id + serial). */
+export async function resolveActiveReplacementNewMeter(
+  authenticatedApi: APIRequestContext,
+): Promise<{ newMeterLookupId: number; newMeterSerial: string } | null> {
+  const historyApi = new SubmissionHistoryApi(authenticatedApi);
+  const history = await historyApi.getSubmissionHistory(1, 50, undefined, "PENDING");
+  if (history.rawResponse.status() !== 200) return null;
+  const items = SubmissionHistoryMapper.map(history.responseBody).items;
+  const fromHistory = items
+    .map((i) => i.newMeterSerial?.trim())
+    .find((s) => !!s);
+  const serial =
+    fromHistory ||
+    createSubmissionData.activeReplacementNewMeter.newMeterSerial.trim() ||
+    null;
+  if (!serial) return null;
+
+  const validated = await new MeterValidationApi(authenticatedApi).validateMeter(
+    serial,
+  );
+  if (validated.rawResponse.status() !== 200 || !validated.responseBody?.data) {
     return null;
   }
-  const mapped = ConsumerDetailMapper.map(result.responseBody);
-  if (mapped.replacementEligible) {
-    return null;
-  }
-  return mapped.oldMeterSerial?.trim() || null;
+  const mapped = MeterValidationMapper.map(validated.responseBody);
+  if (!mapped.meterLookupId) return null;
+  return {
+    newMeterLookupId: mapped.meterLookupId,
+    newMeterSerial: mapped.meterSerial || serial,
+  };
 }
 
 /** Use another consumer's assigned meter as an invalid "new" meter. */

@@ -42,7 +42,7 @@ function runOrganizationSearchValidations(
 }
 
 registerSearchLookupTests({
-  describeTitle: "Organisation Search API",
+  describeTitle: "Organisation search",
   testCases: organizationSearchTestCases,
   resolveQuery: resolveOrganizationSearchQuery,
   fetch: (authenticatedApi, query) =>

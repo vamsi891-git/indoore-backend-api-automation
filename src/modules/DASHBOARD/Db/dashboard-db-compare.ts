@@ -1,31 +1,16 @@
-import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
-import { DashboardDbValidator } from "./dashboard-db.validator";
+﻿import { assertDbVsApiScalar } from "../../../core/db/db-compare.engine";
 
-export function compareNetworkCountLteDb(options: {
+/** Fail when the API number is not the same as the SQL count. */
+export function compareApiEqualsSql(options: {
   label: string;
   apiCount: number;
-  dbCount: number;
-  obs?: DbCompareObs;
+  sqlCount: number;
+  sqlName?: string;
 }): void {
-  DashboardDbValidator.assertApiLteDb(
-    options.label,
-    options.apiCount,
-    options.dbCount,
-  );
-  // Soft equality table for observability when counts match exactly.
-  if (options.apiCount === options.dbCount) {
-    compareApiToDb(
-      [
-        {
-          label: options.label,
-          apiValue: options.apiCount,
-          dbValue: options.dbCount,
-        },
-      ],
-      `DB vs API — ${options.label}`,
-      options.obs,
-    );
-  }
+  const title = options.sqlName
+    ? `Dashboard — ${options.label} [${options.sqlName}]`
+    : `Dashboard — ${options.label}`;
+  assertDbVsApiScalar(options.label, options.apiCount, options.sqlCount, title);
 }
 
 export function compareDashboardMetricMissingRow(): never {

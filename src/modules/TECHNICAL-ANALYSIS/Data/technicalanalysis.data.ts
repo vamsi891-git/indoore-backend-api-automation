@@ -1,4 +1,8 @@
-import { TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
+import {
+  TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
+  TECHNICAL_ANALYSIS_PHASE_MAX_RESPONSE_TIME_MS,
+  TECHNICAL_ANALYSIS_PHASE_PAGE_SIZE,
+} from "../../../core/constants/api-timeouts";
 import type { TechnicalReportQuery } from "../Api/technicalanalysis.api";
 import type {
   TechnicalReportResponse,
@@ -21,14 +25,77 @@ export interface TechnicalAnalysisLiveConfig {
 }
 
 export const technicalAnalysisDefaultAnalysisType = "power_failure";
-export const technicalAnalysisDefaultMonth = 12;
+export const technicalAnalysisDefaultMonth = 10;
 export const technicalAnalysisDefaultYear = 2025;
 export const technicalAnalysisDefaultPageSize = 100;
+
+export const technicalAnalysisReportNames: Record<string, string> = {
+  power_failure: "Power Failure",
+  voltage_missing: "Voltage Missing",
+  voltage_unbalance: "Voltage Unbalance",
+  low_voltage: "Low Voltage in any Phase",
+  over_voltage: "Over Voltage in any phase",
+  single_wire_operation: "Single Wire Operation",
+  neutral_disturbance: "Neutral Disturbance",
+  current_without_voltage: "Current Without Voltage",
+  ct_open: "CT Open",
+  current_bypass: "Current Bypass",
+  current_unbalance: "Current Unbalance",
+  earth_loading: "Earth Loading",
+  low_power_factor: "Low Power Factor",
+  phase_neutral_mismatch:
+    "Ip!=In (Phase current is not equal to neutral current)",
+  phase_zero_neutral_nonzero: "Ip=0 & In!=0",
+  phase_nonzero_neutral_zero: "Ip!=0 & In=0",
+  magnet_event: "Magnet Event",
+  cover_open: "Cover Open",
+  ynr_over_voltage: "Over Voltage in any phase",
+  ynr_neutral_disturbance: "Neutral Disturbance",
+  ynr_ct_open_unbalance: "CT Open/Unbalance in any phase",
+  ynr_ct_bypass: "CT Bypass",
+  ynr_earth_loading: "Earth Loading",
+  ynr_low_power_factor: "Low Power Factor",
+  ynr_magnet_event: "Magnet Event",
+  ynr_cover_open: "Cover Open",
+};
+
+export function technicalAnalysisReportTitle(analysisType: string): string {
+  const name = technicalAnalysisReportNames[analysisType] ?? analysisType;
+  return analysisType.startsWith("ynr_") ? `YNR ${name}` : name;
+}
+
+/** Empty duration reports (e.g. CT Open) omit Duration in Hours. */
+export const EXPECTED_TECHNICAL_EVENT_COLUMNS = [
+  { key: "subDivision", header: "Zone" },
+  { key: "subStation", header: "Sub Station" },
+  { key: "feeder", header: "Feeder" },
+  { key: "dtr", header: "DTR" },
+  { key: "name", header: "Name" },
+  { key: "address", header: "Address" },
+  { key: "ivrsNumber", header: "IVRS Number" },
+  { key: "category", header: "Category" },
+  { key: "msn", header: "MSN" },
+  { key: "phase", header: "Phase" },
+  { key: "eventName", header: "Event_name" },
+] as const;
+
+/** Live duration grids with meters. Empty duration reports omit this last column. */
+export const EXPECTED_TECHNICAL_DURATION_COLUMNS = [
+  ...EXPECTED_TECHNICAL_EVENT_COLUMNS,
+  { key: "durationInHours", header: "Duration in Hours" },
+] as const;
+
+/** YNR duration grids include occurrence time (API header spelling) plus duration. */
+export const EXPECTED_TECHNICAL_YNR_DURATION_COLUMNS = [
+  ...EXPECTED_TECHNICAL_EVENT_COLUMNS,
+  { key: "occurrenceTime", header: "Occurence_Time" },
+  { key: "durationInHours", header: "Duration in Hours" },
+] as const;
 
 export const technicalAnalysisLiveConfigs: TechnicalAnalysisLiveConfig[] = [
   {
     analysisType: "power_failure",
-    month: 12,
+    month: 10,
     year: 2025,
     hasData: true,
     pageSize: 100,
@@ -37,16 +104,16 @@ export const technicalAnalysisLiveConfigs: TechnicalAnalysisLiveConfig[] = [
   },
   {
     analysisType: "voltage_missing",
-    month: 12,
+    month: 10,
     year: 2025,
-    hasData: false,
+    hasData: true,
     pageSize: 100,
     maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration100",
   },
   {
     analysisType: "voltage_unbalance",
-    month: 1,
+    month: 10,
     year: 2025,
     hasData: true,
     pageSize: 100,
@@ -55,16 +122,16 @@ export const technicalAnalysisLiveConfigs: TechnicalAnalysisLiveConfig[] = [
   },
   {
     analysisType: "low_voltage",
-    month: 12,
+    month: 10,
     year: 2025,
-    hasData: false,
+    hasData: true,
     pageSize: 100,
     maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration100",
   },
   {
     analysisType: "over_voltage",
-    month: 1,
+    month: 10,
     year: 2025,
     hasData: true,
     pageSize: 100,
@@ -73,7 +140,7 @@ export const technicalAnalysisLiveConfigs: TechnicalAnalysisLiveConfig[] = [
   },
   {
     analysisType: "single_wire_operation",
-    month: 12,
+    month: 10,
     year: 2025,
     hasData: true,
     pageSize: 100,
@@ -82,7 +149,7 @@ export const technicalAnalysisLiveConfigs: TechnicalAnalysisLiveConfig[] = [
   },
   {
     analysisType: "neutral_disturbance",
-    month: 12,
+    month: 10,
     year: 2025,
     hasData: true,
     pageSize: 100,
@@ -91,16 +158,16 @@ export const technicalAnalysisLiveConfigs: TechnicalAnalysisLiveConfig[] = [
   },
   {
     analysisType: "current_without_voltage",
-    month: 12,
+    month: 10,
     year: 2025,
-    hasData: false,
+    hasData: true,
     pageSize: 100,
     maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration12",
   },
   {
     analysisType: "ct_open",
-    month: 12,
+    month: 10,
     year: 2025,
     hasData: false,
     pageSize: 100,
@@ -109,16 +176,16 @@ export const technicalAnalysisLiveConfigs: TechnicalAnalysisLiveConfig[] = [
   },
   {
     analysisType: "current_bypass",
-    month: 12,
+    month: 10,
     year: 2025,
-    hasData: false,
+    hasData: true,
     pageSize: 100,
     maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration12",
   },
   {
     analysisType: "current_unbalance",
-    month: 12,
+    month: 10,
     year: 2025,
     hasData: true,
     pageSize: 100,
@@ -127,7 +194,7 @@ export const technicalAnalysisLiveConfigs: TechnicalAnalysisLiveConfig[] = [
   },
   {
     analysisType: "earth_loading",
-    month: 12,
+    month: 10,
     year: 2025,
     hasData: true,
     pageSize: 100,
@@ -136,7 +203,7 @@ export const technicalAnalysisLiveConfigs: TechnicalAnalysisLiveConfig[] = [
   },
   {
     analysisType: "low_power_factor",
-    month: 11,
+    month: 10,
     year: 2025,
     hasData: true,
     pageSize: 100,
@@ -145,43 +212,43 @@ export const technicalAnalysisLiveConfigs: TechnicalAnalysisLiveConfig[] = [
   },
   {
     analysisType: "phase_neutral_mismatch",
-    month: 12,
+    month: 10,
     year: 2025,
-    hasData: false,
-    pageSize: 100,
-    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
+    hasData: true,
+    pageSize: TECHNICAL_ANALYSIS_PHASE_PAGE_SIZE,
+    maxResponseTime: TECHNICAL_ANALYSIS_PHASE_MAX_RESPONSE_TIME_MS,
     validationType: "phase",
   },
   {
     analysisType: "phase_zero_neutral_nonzero",
-    month: 12,
+    month: 10,
     year: 2025,
-    hasData: false,
-    pageSize: 100,
-    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
+    hasData: true,
+    pageSize: TECHNICAL_ANALYSIS_PHASE_PAGE_SIZE,
+    maxResponseTime: TECHNICAL_ANALYSIS_PHASE_MAX_RESPONSE_TIME_MS,
     validationType: "phase",
   },
   {
     analysisType: "phase_nonzero_neutral_zero",
-    month: 12,
+    month: 10,
     year: 2025,
-    hasData: false,
-    pageSize: 100,
-    maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
+    hasData: true,
+    pageSize: TECHNICAL_ANALYSIS_PHASE_PAGE_SIZE,
+    maxResponseTime: TECHNICAL_ANALYSIS_PHASE_MAX_RESPONSE_TIME_MS,
     validationType: "phase",
   },
   {
     analysisType: "magnet_event",
-    month: 9,
+    month: 10,
     year: 2025,
-    hasData: true,
+    hasData: false,
     pageSize: 100,
     maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "count",
   },
   {
     analysisType: "cover_open",
-    month: 12,
+    month: 10,
     year: 2025,
     hasData: true,
     pageSize: 100,
@@ -190,16 +257,16 @@ export const technicalAnalysisLiveConfigs: TechnicalAnalysisLiveConfig[] = [
   },
   {
     analysisType: "ynr_over_voltage",
-    month: 1,
+    month: 10,
     year: 2025,
-    hasData: true,
+    hasData: false,
     pageSize: 100,
     maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration100",
   },
   {
     analysisType: "ynr_neutral_disturbance",
-    month: 12,
+    month: 10,
     year: 2025,
     hasData: true,
     pageSize: 100,
@@ -208,16 +275,16 @@ export const technicalAnalysisLiveConfigs: TechnicalAnalysisLiveConfig[] = [
   },
   {
     analysisType: "ynr_ct_open_unbalance",
-    month: 12,
+    month: 10,
     year: 2025,
-    hasData: true,
+    hasData: false,
     pageSize: 100,
     maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "duration10",
   },
   {
     analysisType: "ynr_ct_bypass",
-    month: 4,
+    month: 10,
     year: 2025,
     hasData: true,
     pageSize: 100,
@@ -226,7 +293,7 @@ export const technicalAnalysisLiveConfigs: TechnicalAnalysisLiveConfig[] = [
   },
   {
     analysisType: "ynr_earth_loading",
-    month: 12,
+    month: 10,
     year: 2025,
     hasData: true,
     pageSize: 100,
@@ -235,7 +302,7 @@ export const technicalAnalysisLiveConfigs: TechnicalAnalysisLiveConfig[] = [
   },
   {
     analysisType: "ynr_low_power_factor",
-    month: 11,
+    month: 10,
     year: 2025,
     hasData: true,
     pageSize: 100,
@@ -244,17 +311,17 @@ export const technicalAnalysisLiveConfigs: TechnicalAnalysisLiveConfig[] = [
   },
   {
     analysisType: "ynr_magnet_event",
-    month: 9,
+    month: 10,
     year: 2025,
-    hasData: true,
+    hasData: false,
     pageSize: 100,
     maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
     validationType: "count",
   },
   {
     analysisType: "ynr_cover_open",
-    month: 12,
-    year: 2024,
+    month: 10,
+    year: 2025,
     hasData: false,
     pageSize: 100,
     maxResponseTime: TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS,
@@ -394,7 +461,7 @@ export function resolveTechnicalReportQuery(
         analysisType: technicalAnalysisDefaultAnalysisType,
         month: technicalAnalysisDefaultMonth,
         year: technicalAnalysisDefaultYear,
-        category: "non_domestic",
+        category: "non-domestic",
         pageSize: 10,
         page: 1,
       };
@@ -461,42 +528,39 @@ export function resolveTechnicalReportQuery(
 const technicalReportEdgeCases: TechnicalReportTestCase[] = [
   {
     testName:
-      "Validate GET /indore/analysis/technical/report — page beyond total returns empty rows",
+      "Technical report — a page past the last page shows no records",
     scenario: "dev_page_beyond",
     tags: ["@technical-analysis", "@report", "@edge"],
   },
   {
-    testName:
-      "Validate GET /indore/analysis/technical/report — custom pageSize",
+    testName: "Technical report — a smaller page size shows fewer records",
     scenario: "dev_custom_page_size",
     tags: ["@technical-analysis", "@report", "@edge"],
   },
   {
-    testName:
-      "Validate GET /indore/analysis/technical/report — domestic category filter",
+    testName: "Technical report — household filter shows household meters",
     scenario: "dev_category_domestic",
     tags: ["@technical-analysis", "@report", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/analysis/technical/report — non-domestic category filter",
+      "Technical report — non-household filter shows non-household meters",
     scenario: "dev_category_non_domestic",
     tags: ["@technical-analysis", "@report", "@edge"],
   },
   {
-    testName:
-      "Validate GET /indore/analysis/technical/report — unknown query params ignored",
+    testName: "Technical report — unknown query params are ignored",
     scenario: "dev_ignore_unknown_query",
     tags: ["@technical-analysis", "@report", "@edge"],
   },
   {
-    testName: "Contract — empty rows with zero pagination total",
+    testName: "Technical report — empty page fixture",
     scenario: "contract_empty_page",
     isContractFixture: true,
     tags: ["@technical-analysis", "@report", "@edge"],
   },
   {
-    testName: "Contract — duration report row shape",
+    testName: "Technical report — duration row fixture",
     scenario: "contract_duration_row",
     isContractFixture: true,
     tags: ["@technical-analysis", "@report", "@edge"],
@@ -505,36 +569,31 @@ const technicalReportEdgeCases: TechnicalReportTestCase[] = [
 
 const technicalReportNegativeCases: TechnicalReportTestCase[] = [
   {
-    testName:
-      "Validate GET /indore/analysis/technical/report — invalid analysisType rejected",
+    testName: "Technical report — unknown analysis type is rejected",
     scenario: "invalid_analysis_type",
     expectedStatus: 400,
     tags: ["@technical-analysis", "@report", "@negative"],
   },
   {
-    testName:
-      "Validate GET /indore/analysis/technical/report — missing analysisType rejected",
+    testName: "Technical report — missing analysis type is rejected",
     scenario: "missing_analysis_type",
     expectedStatus: 400,
     tags: ["@technical-analysis", "@report", "@negative"],
   },
   {
-    testName:
-      "Validate GET /indore/analysis/technical/report — invalid month rejected",
+    testName: "Technical report — invalid month is rejected",
     scenario: "invalid_month",
     expectedStatus: 400,
     tags: ["@technical-analysis", "@report", "@negative"],
   },
   {
-    testName:
-      "Validate GET /indore/analysis/technical/report — missing month rejected",
+    testName: "Technical report — missing month is rejected",
     scenario: "missing_month",
     expectedStatus: 400,
     tags: ["@technical-analysis", "@report", "@negative"],
   },
   {
-    testName:
-      "Validate GET /indore/analysis/technical/report — pageSize zero rejected",
+    testName: "Technical report — page size zero is rejected",
     scenario: "invalid_page_size_zero",
     expectedStatus: 400,
     tags: ["@technical-analysis", "@report", "@negative"],
@@ -543,7 +602,9 @@ const technicalReportNegativeCases: TechnicalReportTestCase[] = [
 
 const technicalReportLiveCases: TechnicalReportTestCase[] =
   technicalAnalysisLiveConfigs.map((liveConfig) => ({
-    testName: `Validate GET /indore/analysis/technical/report — ${liveConfig.analysisType} live report`,
+    testName: liveConfig.hasData
+      ? `${technicalAnalysisReportTitle(liveConfig.analysisType)} report — first page shows columns and meters`
+      : `${technicalAnalysisReportTitle(liveConfig.analysisType)} report — empty list is valid`,
     scenario: "dev_live_report",
     liveConfig,
     tags: ["@technical-analysis", "@report", "@smoke"],

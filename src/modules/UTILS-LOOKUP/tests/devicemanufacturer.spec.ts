@@ -38,7 +38,7 @@ function validateDeviceManufacturer(
 }
 
 registerCatalogLookupTests({
-  describeTitle: "Device Manufacturer API",
+  describeTitle: "Device manufacturers",
   testCases: deviceManufacturerTestCases,
   fetch: (api) => new DeviceManufacturerApi(api).getDeviceManufacturers(),
   validate: validateDeviceManufacturer,

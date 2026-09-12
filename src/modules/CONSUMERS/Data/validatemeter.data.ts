@@ -1,17 +1,13 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { ValidateMeterScenario } from "../Mapper/validatemeter.mapper";
 import { getValidateConsumerMeterSerial } from "../utils/validate-consumer-meter-runtime.helper";
-
 export const validateMeterMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
-
 export const validateMeterNotInSystemSerial = "891901";
-
 export type ValidateConsumerMeterRuntimeEnvKey =
   | "VALIDATE_CONSUMER_METER_ASSIGNABLE_SERIAL"
   | "VALIDATE_CONSUMER_METER_ASSIGNED_SERIAL"
   | "VALIDATE_CONSUMER_METER_INACTIVE_SERIAL"
   | "VALIDATE_CONSUMER_METER_NOT_IN_SYSTEM_SERIAL";
-
 export interface ValidateMeterTestCase {
   testName: string;
   scenario: ValidateMeterScenario;
@@ -20,7 +16,6 @@ export interface ValidateMeterTestCase {
   includeOrganisationLookupId?: boolean;
   tags: string[];
 }
-
 export function resolveValidateConsumerMeterSerial(
   scenario: ValidateMeterScenario,
 ): string {
@@ -29,7 +24,6 @@ export function resolveValidateConsumerMeterSerial(
   }
   return getValidateConsumerMeterSerial(scenario, validateMeterNotInSystemSerial);
 }
-
 export const validateMeterTestCases: ValidateMeterTestCase[] = [
   {
     testName:

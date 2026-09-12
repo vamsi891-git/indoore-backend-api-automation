@@ -131,6 +131,7 @@ export const DtrLoadUnbalanceSuccessResponseSchema = z
     success: z.literal(true),
     data: z
       .object({
+        total: z.union([z.number(), z.string()]).optional(),
         items: z.array(unbalanceItemSchema),
       })
       .passthrough(),
@@ -140,6 +141,110 @@ export const DtrLoadUnbalanceSuccessResponseSchema = z
 
 export const DtrVoltageUnbalanceSuccessResponseSchema =
   DtrLoadUnbalanceSuccessResponseSchema;
+
+const unbalanceDetailsColumnSchema = z
+  .object({
+    key: requiredText,
+    header: requiredText,
+  })
+  .passthrough();
+
+const unbalanceDetailsPaginationSchema = z
+  .object({
+    page: z.union([z.number(), z.string()]),
+    limit: z.union([z.number(), z.string()]),
+    total: z.union([z.number(), z.string()]),
+    totalPages: z.union([z.number(), z.string()]),
+  })
+  .passthrough();
+
+export const DtrLoadUnbalanceDetailsSuccessResponseSchema = z
+  .object({
+    success: z.literal(true),
+    data: z
+      .object({
+        columns: z.array(unbalanceDetailsColumnSchema),
+        rows: z.array(z.record(z.string(), z.unknown())),
+        pagination: unbalanceDetailsPaginationSchema,
+      })
+      .passthrough(),
+    message: emptyable.optional(),
+  })
+  .strict();
+
+export const DtrVoltageUnbalanceDetailsSuccessResponseSchema =
+  DtrLoadUnbalanceDetailsSuccessResponseSchema;
+
+export const DtrPowerStatusDetailsSuccessResponseSchema =
+  DtrLoadUnbalanceDetailsSuccessResponseSchema;
+
+export const DtrCommunicationDetailsSuccessResponseSchema =
+  DtrLoadUnbalanceDetailsSuccessResponseSchema;
+
+export const DtrConsumptionDetailsSuccessResponseSchema =
+  DtrLoadUnbalanceDetailsSuccessResponseSchema;
+
+export const DtrPercentageLoadingDetailsSuccessResponseSchema =
+  DtrLoadUnbalanceDetailsSuccessResponseSchema;
+
+export const ConsumerConnectionStatusSuccessResponseSchema =
+  DtrLoadUnbalanceDetailsSuccessResponseSchema;
+
+export const ConsumerCategoryDistributionSuccessResponseSchema =
+  DtrLoadUnbalanceDetailsSuccessResponseSchema;
+
+export const ConsumerPhaseDistributionSuccessResponseSchema =
+  DtrLoadUnbalanceDetailsSuccessResponseSchema;
+
+export const ConsumerOemDistributionSuccessResponseSchema =
+  DtrLoadUnbalanceDetailsSuccessResponseSchema;
+
+const meterCountAmountSchema = z
+  .object({
+    meterCount: z.union([z.number(), z.string()]),
+    amount: z.union([z.number(), z.string()]),
+  })
+  .passthrough();
+
+export const RevenueSubsidyPfSuccessResponseSchema = z
+  .object({
+    success: z.literal(true),
+    data: z
+      .object({
+        id: requiredText,
+        periodYear: z.union([z.number(), z.string()]),
+        periodMonth: z.union([z.number(), z.string()]),
+        billingAvailability: meterCountAmountSchema,
+        billingEfficiency: z
+          .object({
+            energyLu: z.union([z.number(), z.string()]),
+            amount: z.union([z.number(), z.string()]),
+          })
+          .passthrough(),
+        revenueGainedRpu: z
+          .object({
+            inputLu: z.union([z.number(), z.string()]),
+            rpu: z.union([z.number(), z.string()]),
+            amount: z.union([z.number(), z.string()]),
+          })
+          .passthrough(),
+        subsidyAmount: z.union([z.number(), z.string()]),
+        incentivePf: meterCountAmountSchema,
+        penaltyPf: meterCountAmountSchema,
+        billCount: z.union([z.number(), z.string()]),
+        overallImprovement: z.union([z.number(), z.string()]),
+        overallImprovementCr: z.union([z.number(), z.string()]),
+        avgImprovement: z.union([z.number(), z.string()]).nullable(),
+        createdByUserId: requiredText,
+        updatedByUserId: requiredText,
+        createdAt: requiredText,
+        updatedAt: requiredText,
+      })
+      .passthrough()
+      .nullable(),
+    message: emptyable.optional(),
+  })
+  .strict();
 
 /** Re-export for DQ tests that expect a metric shape. */
 export const DashboardMetricItemSchema = metricItemSchema;

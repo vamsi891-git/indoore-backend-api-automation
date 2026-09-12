@@ -159,8 +159,13 @@ export class DtrCapacityGaugeValidator {
   }
 
   validateUniqueLabels(bands: CapacityBand[]): void {
+    if (bands.length === 0) {
+      return;
+    }
     const labels = bands.map((x) => x.label);
-    expect(new Set(labels).size).toBe(labels.length);
+    expect(new Set(labels).size, "each gauge band appears only once").toBe(
+      labels.length,
+    );
   }
 
   validateRatedCapacity(data: CapacityGaugeData): void {

@@ -15,7 +15,7 @@ import type {
 } from "../Mapper/dtrprofile.mapper";
 
 const IST_DATE_TIME =
-  /^\d{1,2}[\s/-](?:\w{3}|\d{2})[\s/-]\d{4}.+\d{1,2}:\d{2}|^\d{2}-\d{2}-\d{4}\s+\d{2}:\d{2}/i;
+  /^\d{1,2}[\s/-](?:\w{3,4}|\d{2})[\s/-]\d{4}.+\d{1,2}:\d{2}|^\d{2}-\d{2}-\d{4}\s+\d{2}:\d{2}/i;
 
 function findProfileItem(
   items: ProfileItem[],
@@ -158,8 +158,13 @@ export class DtrProfileValidator {
   }
 
   validateUniqueTitles(profileInformation: ProfileItem[]): void {
+    if (profileInformation.length === 0) {
+      return;
+    }
     const titles = profileInformation.map((x) => x.title);
-    expect(new Set(titles).size).toBe(titles.length);
+    expect(new Set(titles).size, "each profile field appears only once").toBe(
+      titles.length,
+    );
   }
 
   validateDtrNumber(
@@ -192,8 +197,13 @@ export class DtrProfileValidator {
   }
 
   validateUniqueHierarchy(hierarchy: ProfileItem[]): void {
+    if (hierarchy.length === 0) {
+      return;
+    }
     const titles = hierarchy.map((x) => x.title);
-    expect(new Set(titles).size).toBe(titles.length);
+    expect(new Set(titles).size, "each network level appears only once").toBe(
+      titles.length,
+    );
   }
 
   validateHierarchyProfileConsistency(

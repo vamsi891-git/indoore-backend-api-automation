@@ -60,7 +60,8 @@ function missingRuntimeMeterSerial(
   return !getValidateMeterSerial(envKey);
 }
 
-test.describe("Create DTR API", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Master data — add DTR", () => {
   // Parallel-safe: do not use mode "serial" — one failure must not skip remaining cases.
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);

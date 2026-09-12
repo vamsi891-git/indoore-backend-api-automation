@@ -1,0 +1,56 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/dashboard/dtr/communication-details",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "header",
+    "key"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "subStation",
+      "header": "Sub Station"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtr",
+      "header": "DTR"
+    },
+    {
+      "key": "msn",
+      "header": "MSN"
+    },
+    {
+      "key": "lastSeen",
+      "header": "Log Date"
+    },
+    {
+      "key": "status",
+      "header": "Status"
+    }
+  ]
+}

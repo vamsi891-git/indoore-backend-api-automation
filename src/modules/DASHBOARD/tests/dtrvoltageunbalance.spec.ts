@@ -25,7 +25,7 @@ import { DtrVoltageUnbalanceValidator } from "../Validator/dtrvoltageunbalance.v
 
 const VOLTAGE_UNBALANCE_PATH = "/indore/dashboard/dtr/voltage-unbalance";
 
-test.describe("DTR Voltage Unbalance API", () => {
+test.describe("Dashboard — DTR voltage unbalance", () => {
     test.describe.configure({ retries: 1 });
     test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
@@ -118,12 +118,12 @@ test.describe("DTR Voltage Unbalance API", () => {
     }
 });
 
-authTest.describe("DTR Voltage Unbalance API — Auth Negative", () => {
+authTest.describe("DTR voltage unbalance — cannot open without a valid login", () => {
     authTest.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
     for (const authCase of dtrUnbalanceAuthNegativeCases) {
         authTest(
-            `GET ${VOLTAGE_UNBALANCE_PATH} — ${authCase.testName}`,
+            `${authCase.testName}`,
             {
                 tag: [
                     ...authCase.tags,

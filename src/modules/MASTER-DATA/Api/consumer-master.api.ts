@@ -24,6 +24,9 @@ export class ConsumerMasterApi {
     };
 
     if (query.q?.trim()) params.q = query.q.trim();
+    if (query.includeArchiveCounts != null) {
+      params.includeArchiveCounts = query.includeArchiveCounts;
+    }
     if (query.connectionStatusTblRefId != null) {
       params.connectionStatusTblRefId = query.connectionStatusTblRefId;
     }

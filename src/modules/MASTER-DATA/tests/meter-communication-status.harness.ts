@@ -3,7 +3,7 @@ import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { MeterCommunicationStatusApi } from "../Api/meter-communication-status.api";
-import { masterDataMaxResponseTimeMs } from "../Data/master-data.common.data";
+import { meterCommunicationMaxResponseTimeMs } from "../Data/meter-communication-status.data";
 import { MeterCommunicationStatusMapper } from "../Mapper/meter-communication-status.mapper";
 import type { MeterCommunicationStatusQuery } from "../Mapper/meter-communication-status.mapper";
 import { MeterCommunicationStatusValidator } from "../Validator/meter-communication-status.validator";
@@ -18,6 +18,8 @@ export interface RunMeterCommunicationValidationOptions {
   communicationStatusFilter?: string;
   searchTerm?: string;
   skipCommunicatingTimestampCheck?: boolean;
+  /** When status filter is applied, summary buckets may stay global — skip sum/total equality. */
+  skipSummaryCountEquality?: boolean;
 }
 
 export async function runMeterCommunicationValidation(
@@ -31,10 +33,11 @@ export async function runMeterCommunicationValidation(
     api,
     query,
     testLabel,
-    maxResponseTimeMs = masterDataMaxResponseTimeMs,
+    maxResponseTimeMs = meterCommunicationMaxResponseTimeMs,
     communicationStatusFilter,
     searchTerm,
     skipCommunicatingTimestampCheck = false,
+    skipSummaryCountEquality = Boolean(communicationStatusFilter),
   } = options;
 
   const { rawResponse, responseBody, responseTime } =
@@ -85,7 +88,9 @@ export async function runMeterCommunicationValidation(
   );
   validation.execute("Response", () => validator.validateResponse(responseBody));
   validation.execute("Summary Counts", () =>
-    validator.validateSummaryCounts(data),
+    validator.validateSummaryCounts(data, {
+      requireBucketEquality: !skipSummaryCountEquality,
+    }),
   );
   validation.execute("Columns", () => validator.validateColumns(data));
   validation.execute("Items", () => validator.validateItemsExist(data));

@@ -33,7 +33,7 @@ import { ensureConsumerLookupContext } from "../utils/consumer-lookup.helper";
 import { resolveConsumerMeterCascadeContext } from "../utils/network-hierarchy-cascade.helper";
 
 const E2E_LABEL =
-  "E2E: create meter → validate meter → create consumer → profile";
+  "Add a meter, then create a consumer and open the consumer profile";
 const VALIDATE_SETTLE_MS = 1500;
 const VALIDATE_RETRIES = 6;
 
@@ -41,7 +41,8 @@ async function sleep(ms: number): Promise<void> {
   await new Promise<void>((resolve) => setTimeout(resolve, ms));
 }
 
-test.describe("Meter → Consumer E2E", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Master data — add meter then assign it to a consumer", () => {
   test.describe.configure({ mode: "serial", retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

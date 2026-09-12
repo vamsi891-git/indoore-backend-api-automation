@@ -1,13 +1,7 @@
-import {
-  attachDataQualityReport,
-  type DataQualityReport,
-  type DataQualityWarning,
-} from "../../../core/utils/data-quality-logger";
-
+import {attachDataQualityReport,type DataQualityReport,type DataQualityWarning,} from "../../../core/utils/data-quality-logger";
 function isBlank(value: unknown): boolean {
   return value == null || String(value).trim() === "";
 }
-
 /** Soft data-quality for Consumers responses — never throws. */
 export function collectConsumersDataQualityFindings(
   kind: string,
@@ -17,11 +11,9 @@ export function collectConsumersDataQualityFindings(
   let emptyMeterSerial = 0;
   let emptyAccountId = 0;
   let emptyName = 0;
-
   if (data == null) {
     return { warnings, counts: { emptyMeterSerial, emptyAccountId, emptyName } };
   }
-
   if (Array.isArray(data)) {
     for (const row of data) {
       const r = row as Record<string, unknown>;
@@ -66,13 +58,11 @@ export function collectConsumersDataQualityFindings(
       }
     }
   }
-
   return {
     warnings,
     counts: { emptyMeterSerial, emptyAccountId, emptyName },
   };
 }
-
 export async function logConsumersDataQualityFindings(
   kind: string,
   data: Record<string, unknown> | unknown[] | null | undefined,
@@ -81,7 +71,6 @@ export async function logConsumersDataQualityFindings(
   await attachDataQualityReport(report, `Consumers ${kind} data quality soft checks`);
   return report;
 }
-
 export class ConsumersDbValidator {
   static assertApiLteDb(label: string, apiValue: number, dbValue: number): void {
     if (apiValue > dbValue) {

@@ -18,7 +18,7 @@ import {
 } from "../Mapper/dtrpowertriangle.mapper";
 import { DtrPowerTriangleValidator } from "../Validator/dtrpowertriangle.validator";
 
-test.describe("DTR Power Triangle API", () => {
+test.describe("DTR power now", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

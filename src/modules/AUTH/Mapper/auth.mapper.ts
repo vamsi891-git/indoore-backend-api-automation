@@ -5,6 +5,7 @@ import {
   AuthMeData,
   isDeviceSelectionPayload,
   isLoginSessionPayload,
+  isTwoFactorChallengePayload,
 } from "../schemas/auth.schemas";
 import {
   Device,
@@ -85,6 +86,10 @@ export class AuthMapper {
 
   static hasDirectSession(data: AuthLoginData): data is AuthLoginSession {
     return isLoginSessionPayload(data);
+  }
+
+  static hasTwoFactorChallenge(data: AuthLoginData): boolean {
+    return isTwoFactorChallengePayload(data);
   }
 
   static mapMe(response: { data?: AuthMeData }): AuthMeData {

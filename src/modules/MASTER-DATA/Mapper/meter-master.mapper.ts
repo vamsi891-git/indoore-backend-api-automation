@@ -25,7 +25,26 @@ export interface MeterMasterItem {
   isActiveStatus: boolean;
   assetId: string | null;
   meterRapdrpCode: string | null;
+  connection?: string | null;
   mf: number;
+  /** Extended profile fields returned on live rows (not always in `columns`). */
+  mtr?: number | string | null;
+  mctr?: number | string | null;
+  lptr?: number | string | null;
+  lctr?: number | string | null;
+  accuracyClass?: string | null;
+  meterPoNumber?: string | null;
+  meterPoDate?: string | null;
+  meterTestingDate?: string | null;
+  displayDigitCount?: number | null;
+  deviceManufacturerTblRefId?: number | null;
+  meterManufacturer?: string | null;
+  meterModelTblRefId?: number | null;
+  meterModel?: string | null;
+  meterVersion?: number | string | null;
+  meterStatus?: boolean | string | null;
+  dlmsNonDlms?: string | null;
+  meterRating?: number | string | null;
 }
 
 export interface MeterMasterRawData extends MasterDataListRaw<MeterMasterItem> {}

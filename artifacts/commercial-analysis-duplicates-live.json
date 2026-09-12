@@ -1,0 +1,114 @@
+{
+  "updatedAt": "2026-09-12T11:23:19.196Z",
+  "reports": {
+    "Consumption Compare Last Month": {
+      "updatedAt": "2026-09-12T11:11:02.652Z",
+      "window": {
+        "month": 10,
+        "year": 2025
+      },
+      "reportName": "Consumption Compare Last Month",
+      "totalRows": 2703,
+      "uniqueMsn": 2701,
+      "repeatedMsnCount": 2,
+      "extraRows": 2,
+      "sameMeterSameDtrSameValue": [],
+      "sameMeterOnMoreThanOneDtr": [
+        {
+          "msn": "85084417",
+          "times": 2,
+          "dtrs": [
+            "rjm0000198",
+            "rj6612"
+          ],
+          "values": [
+            "11.66|50.71"
+          ]
+        },
+        {
+          "msn": "93041980",
+          "times": 2,
+          "dtrs": [
+            "rjm0000218",
+            "rj6612"
+          ],
+          "values": [
+            "0.00|0.11"
+          ]
+        }
+      ]
+    },
+    "LF < 5%": {
+      "updatedAt": "2026-09-12T11:23:19.196Z",
+      "window": {
+        "month": 10,
+        "year": 2025
+      },
+      "reportName": "LF < 5%",
+      "totalRows": 15266,
+      "uniqueMsn": 15261,
+      "repeatedMsnCount": 5,
+      "extraRows": 5,
+      "sameMeterSameDtrSameValue": [
+        {
+          "msn": "97790242",
+          "times": 2,
+          "dtrs": [
+            "rj6612"
+          ],
+          "sameValue": true,
+          "values": [
+            "4.00"
+          ]
+        }
+      ],
+      "sameMeterOnMoreThanOneDtr": [
+        {
+          "msn": "85081274",
+          "times": 2,
+          "dtrs": [
+            "rj6612",
+            "29cw1"
+          ],
+          "values": [
+            "0.44",
+            "0.67"
+          ]
+        },
+        {
+          "msn": "85084417",
+          "times": 2,
+          "dtrs": [
+            "rjm0000198",
+            "rj6612"
+          ],
+          "values": [
+            "2.73"
+          ]
+        },
+        {
+          "msn": "85104069",
+          "times": 2,
+          "dtrs": [
+            "ar147",
+            "ar149"
+          ],
+          "values": [
+            "2.43"
+          ]
+        },
+        {
+          "msn": "92577647",
+          "times": 2,
+          "dtrs": [
+            "wsn94",
+            "wi685"
+          ],
+          "values": [
+            "4.76"
+          ]
+        }
+      ]
+    }
+  }
+}

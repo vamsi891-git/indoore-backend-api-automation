@@ -1,0 +1,29 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/auth/devices",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "deviceGroups",
+    "unlinkedSessions"
+  ],
+  "itemKeys": [
+    "browser",
+    "createdAt",
+    "deviceType",
+    "id",
+    "isCurrentDevice",
+    "lastIpAddress",
+    "lastLocationText",
+    "lastSeenAt",
+    "name",
+    "os",
+    "revokedAt",
+    "sessions",
+    "trustedAt",
+    "userAgent"
+  ],
+  "hasColumnsGrid": false
+}

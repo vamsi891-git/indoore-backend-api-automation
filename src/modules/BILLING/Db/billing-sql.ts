@@ -48,9 +48,93 @@ export const BILLING_METER_HEADER_BY_SERIAL_SQL = `
   LIMIT 1
 `;
 
-/** countBillingClassD3RowsInMonth — archive DB Billing_Class_D3 (no consumer filter). */
-export const BILLING_CLASS_D3_COUNT_SQL = `
-  SELECT COUNT(*)::int AS total
-  FROM public."Billing_Class_D3" b
-  WHERE date_trunc('month', (b."BillingDate" AT TIME ZONE 'Asia/Kolkata'))::date = $1::date
+/**
+ * Matches backend `archiveBillingClassDistinctCountSql` for a single class
+ * (1st-of-month midnight, DISTINCT serial+day). $1 = month start `YYYY-MM-DD`.
+ */
+export const BILLING_CLASS_D1_DISTINCT_COUNT_SQL = `
+  SELECT COUNT(*)::bigint AS total
+  FROM (
+    SELECT DISTINCT
+      LOWER(TRIM(COALESCE(b."Meter_Serial_Number", ''))),
+      (b."Billing_Date" AT TIME ZONE 'Asia/Kolkata')::date
+    FROM public."Billing_Class_D1" b
+    WHERE b."Billing_Date" >= ($1::date::timestamp AT TIME ZONE 'Asia/Kolkata')
+      AND b."Billing_Date" < (($1::date + 1)::timestamp AT TIME ZONE 'Asia/Kolkata')
+      AND (b."Billing_Date" AT TIME ZONE 'Asia/Kolkata')::time = TIME '00:00:00'
+      AND TRIM(COALESCE(b."Meter_Serial_Number", '')) <> ''
+  ) t
+`;
+
+export const BILLING_CLASS_D2_DISTINCT_COUNT_SQL = `
+  SELECT COUNT(*)::bigint AS total
+  FROM (
+    SELECT DISTINCT
+      LOWER(TRIM(COALESCE(b."Meter_Serial_Number", ''))),
+      (b."Billing_Date" AT TIME ZONE 'Asia/Kolkata')::date
+    FROM public."Billing_Class_D2" b
+    WHERE b."Billing_Date" >= ($1::date::timestamp AT TIME ZONE 'Asia/Kolkata')
+      AND b."Billing_Date" < (($1::date + 1)::timestamp AT TIME ZONE 'Asia/Kolkata')
+      AND (b."Billing_Date" AT TIME ZONE 'Asia/Kolkata')::time = TIME '00:00:00'
+      AND TRIM(COALESCE(b."Meter_Serial_Number", '')) <> ''
+  ) t
+`;
+
+export const BILLING_CLASS_D3_DISTINCT_COUNT_SQL = `
+  SELECT COUNT(*)::bigint AS total
+  FROM (
+    SELECT DISTINCT
+      LOWER(TRIM(COALESCE(b."Meter_Serial_Number", ''))),
+      (b."BillingDate" AT TIME ZONE 'Asia/Kolkata')::date
+    FROM public."Billing_Class_D3" b
+    WHERE b."BillingDate" >= ($1::date::timestamp AT TIME ZONE 'Asia/Kolkata')
+      AND b."BillingDate" < (($1::date + 1)::timestamp AT TIME ZONE 'Asia/Kolkata')
+      AND (b."BillingDate" AT TIME ZONE 'Asia/Kolkata')::time = TIME '00:00:00'
+      AND TRIM(COALESCE(b."Meter_Serial_Number", '')) <> ''
+  ) t
+`;
+
+/**
+ * Live billing-data pagination total (unscoped): DISTINCT serial across D1∪D2∪D3
+ * on the 1st-of-month midnight window, optionally excluding DT meter serials ($2 text[]).
+ * Verified equal to API total for Sep 2025 (118297 with DT type=2 excluded).
+ */
+export const BILLING_ARCHIVE_UNIVERSE_DISTINCT_COUNT_SQL = `
+  SELECT COUNT(*)::bigint AS total
+  FROM (
+    SELECT DISTINCT sn
+    FROM (
+      SELECT LOWER(TRIM(COALESCE(b."Meter_Serial_Number", ''))) AS sn
+      FROM public."Billing_Class_D1" b
+      WHERE b."Billing_Date" >= ($1::date::timestamp AT TIME ZONE 'Asia/Kolkata')
+        AND b."Billing_Date" < (($1::date + 1)::timestamp AT TIME ZONE 'Asia/Kolkata')
+        AND (b."Billing_Date" AT TIME ZONE 'Asia/Kolkata')::time = TIME '00:00:00'
+        AND TRIM(COALESCE(b."Meter_Serial_Number", '')) <> ''
+      UNION
+      SELECT LOWER(TRIM(COALESCE(b."Meter_Serial_Number", ''))) AS sn
+      FROM public."Billing_Class_D2" b
+      WHERE b."Billing_Date" >= ($1::date::timestamp AT TIME ZONE 'Asia/Kolkata')
+        AND b."Billing_Date" < (($1::date + 1)::timestamp AT TIME ZONE 'Asia/Kolkata')
+        AND (b."Billing_Date" AT TIME ZONE 'Asia/Kolkata')::time = TIME '00:00:00'
+        AND TRIM(COALESCE(b."Meter_Serial_Number", '')) <> ''
+      UNION
+      SELECT LOWER(TRIM(COALESCE(b."Meter_Serial_Number", ''))) AS sn
+      FROM public."Billing_Class_D3" b
+      WHERE b."BillingDate" >= ($1::date::timestamp AT TIME ZONE 'Asia/Kolkata')
+        AND b."BillingDate" < (($1::date + 1)::timestamp AT TIME ZONE 'Asia/Kolkata')
+        AND (b."BillingDate" AT TIME ZONE 'Asia/Kolkata')::time = TIME '00:00:00'
+        AND TRIM(COALESCE(b."Meter_Serial_Number", '')) <> ''
+    ) u
+    WHERE CARDINALITY($2::text[]) = 0
+       OR NOT (u.sn = ANY($2::text[]))
+  ) t
+`;
+
+/** Backend listDtMeterSerialsLower — main DB. $1 = DTR_METER_TYPE_TBL_REF_ID. */
+export const BILLING_DT_METER_SERIALS_SQL = `
+  SELECT DISTINCT LOWER(TRIM(COALESCE(n."Meter_Serial_Number", ''))) AS sn
+  FROM public."L_Meter_Lookup" n
+  WHERE n."MeterType_TblRefID" = $1
+    AND n."IsActiveStatus" IS TRUE
+    AND TRIM(COALESCE(n."Meter_Serial_Number", '')) <> ''
 `;

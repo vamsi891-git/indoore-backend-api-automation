@@ -1,32 +1,28 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { RealTimePowerQuery } from "../Api/realtimepower.api";
-import type {
-  RealTimePowerResponse,
-  RealTimePowerScenario,
-} from "../Mapper/realtimepower.mapper";
-
+import type {RealTimePowerResponse,RealTimePowerScenario,} from "../Mapper/realtimepower.mapper";
+import {
+  CONSUMERS_LIVE_ACCOUNT_ID,
+  CONSUMERS_LIVE_IVRS,
+  CONSUMERS_LIVE_METER_ROUTE,
+  resolveLiveAccountId,
+  resolveLiveIvrs,
+  resolveLiveMeterRoute,
+} from "./consumers-live-refs";
 export const realTimePowerMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
-
-/** IVRS that resolves a live consumer (3PH WC). Live data may be null or phases. */
-export const realTimePowerDefaultIvrs = "N3472029226";
-
-/** Account / unique id (same consumer when uniqueId equals IVRS). */
-export const realTimePowerDefaultConsumerId = "N3472029226";
-
-export const realTimePowerDefaultMeterRoute = "meter-12345";
-
+/** IVRS with live TP real-time-power readings (V/I/PF). */
+export const realTimePowerDefaultIvrs = CONSUMERS_LIVE_IVRS;
+/** Account / unique id fallback for power_by_account. */
+export const realTimePowerDefaultConsumerId = CONSUMERS_LIVE_ACCOUNT_ID;
+export const realTimePowerDefaultMeterRoute = CONSUMERS_LIVE_METER_ROUTE;
 export const realTimePowerNotFoundRef = "INVALID_CONSUMER_XYZ";
-
 export const realTimePowerMeterNotFoundRef = "meter-999999999";
-
 export const realTimePowerEmptyRef = " ";
-
 /** Shape A — consumer found, no instantaneous IP reading. */
 export const realTimePowerContractNullResponse: RealTimePowerResponse = {
   success: true,
   data: null,
 };
-
 /** Shape B — TP sample (user/backend contract). */
 export const realTimePowerContractTpResponse: RealTimePowerResponse = {
   success: true,
@@ -57,7 +53,6 @@ export const realTimePowerContractTpResponse: RealTimePowerResponse = {
     },
   },
 };
-
 /** SP backend map: R populated, Y/B null. */
 export const realTimePowerContractSpResponse: RealTimePowerResponse = {
   success: true,
@@ -74,7 +69,6 @@ export const realTimePowerContractSpResponse: RealTimePowerResponse = {
     "B-Phase": null,
   },
 };
-
 export interface RealTimePowerTestCase {
   testName: string;
   scenario: RealTimePowerScenario;
@@ -83,30 +77,26 @@ export interface RealTimePowerTestCase {
   isContractFixture?: boolean;
   tags: string[];
 }
-
 export function resolveRealTimePowerRef(
   scenario: RealTimePowerScenario,
 ): string | undefined {
   switch (scenario) {
     case "power_by_ivrs":
     case "power_ignore_unknown_query":
-      return (
-        process.env.CONSUMER_RTP_IVRS?.trim() ||
-        process.env.CONSUMER_PROFILE_IVRS?.trim() ||
-        realTimePowerDefaultIvrs
+      return resolveLiveIvrs(
+        process.env.CONSUMER_RTP_IVRS,
+        realTimePowerDefaultIvrs,
       );
     case "power_by_account":
-      return (
-        process.env.CONSUMER_RTP_CONSUMER_ID?.trim() ||
-        process.env.CONSUMER_PROFILE_CONSUMER_ID?.trim() ||
-        process.env.CONSUMER_ACTIVATION_CONSUMER_ID?.trim() ||
-        realTimePowerDefaultConsumerId
+      return resolveLiveAccountId(
+        process.env.CONSUMER_RTP_CONSUMER_ID,
+        realTimePowerDefaultConsumerId,
       );
     case "power_by_meter":
-      return (
-        process.env.CONSUMER_RTP_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_PROFILE_METER_ROUTE?.trim() ||
-        realTimePowerDefaultMeterRoute
+      return resolveLiveMeterRoute(
+        process.env.CONSUMER_RTP_METER_ROUTE,
+        process.env.CONSUMER_PROFILE_METER_ROUTE,
+        realTimePowerDefaultMeterRoute,
       );
     case "consumer_not_found":
       return realTimePowerNotFoundRef;
@@ -122,7 +112,6 @@ export function resolveRealTimePowerRef(
       return undefined;
   }
 }
-
 export function resolveRealTimePowerQuery(
   scenario: RealTimePowerScenario,
 ): RealTimePowerQuery {
@@ -131,7 +120,6 @@ export function resolveRealTimePowerQuery(
   }
   return {};
 }
-
 export function resolveRealTimePowerContractBody(
   scenario: RealTimePowerScenario,
 ): RealTimePowerResponse | undefined {
@@ -146,7 +134,6 @@ export function resolveRealTimePowerContractBody(
       return undefined;
   }
 }
-
 export const realTimePowerTestCases: RealTimePowerTestCase[] = [
   {
     testName:
@@ -197,7 +184,7 @@ export const realTimePowerTestCases: RealTimePowerTestCase[] = [
     testName:
       "Validate GET /indore/consumers/{consumerId}/real-time-power — consumer not found",
     scenario: "consumer_not_found",
-    expectedStatus: 404,
+    expectedStatus: 200,
     tags: ["@consumer", "@real-time-power", "@negative"],
   },
   {

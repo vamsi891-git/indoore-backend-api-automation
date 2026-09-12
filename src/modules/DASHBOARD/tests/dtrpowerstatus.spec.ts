@@ -17,7 +17,7 @@ import {
 } from "../Mapper/dtrpowerstatus.mapper";
 import { DtrPowerStatusValidator } from "../Validator/dtrpowerstatus.validator";
 
-test.describe("DTR Power Status API", () => {
+test.describe("Dashboard — DTR power on/off", () => {
     test.describe.configure({ retries: 1 });
     test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

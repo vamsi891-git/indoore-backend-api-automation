@@ -10,6 +10,110 @@
     "pagination",
     "rows"
   ],
-  "itemKeys": [],
-  "hasColumnsGrid": false
+  "itemKeys": [
+    "billingDate",
+    "circle",
+    "division",
+    "dtr",
+    "dtrRating",
+    "feeder",
+    "id",
+    "kvaDateTime",
+    "kvaImp",
+    "kvahExp",
+    "kvahImp",
+    "kwDateTime",
+    "kwImp",
+    "kwhExp",
+    "kwhImp",
+    "meterSerialNumber",
+    "meterTime",
+    "mf",
+    "slNo",
+    "subStation",
+    "zone"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "slNo",
+      "header": "S No."
+    },
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "subStation",
+      "header": "Substation"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtr",
+      "header": "DTR"
+    },
+    {
+      "key": "dtrRating",
+      "header": "DTR Capacity"
+    },
+    {
+      "key": "meterSerialNumber",
+      "header": "Meter Serial Number"
+    },
+    {
+      "key": "meterTime",
+      "header": "Meter Time"
+    },
+    {
+      "key": "billingDate",
+      "header": "Billing Date"
+    },
+    {
+      "key": "kwhImp",
+      "header": "kWh Import"
+    },
+    {
+      "key": "kwhExp",
+      "header": "kWh Export"
+    },
+    {
+      "key": "kvahImp",
+      "header": "kVAh Import"
+    },
+    {
+      "key": "kvahExp",
+      "header": "kVAh Export"
+    },
+    {
+      "key": "kwImp",
+      "header": "kW Import"
+    },
+    {
+      "key": "kwDateTime",
+      "header": "kW Date Time"
+    },
+    {
+      "key": "kvaImp",
+      "header": "kVA Import"
+    },
+    {
+      "key": "kvaDateTime",
+      "header": "kVA Date Time"
+    },
+    {
+      "key": "mf",
+      "header": "MF"
+    }
+  ]
 }

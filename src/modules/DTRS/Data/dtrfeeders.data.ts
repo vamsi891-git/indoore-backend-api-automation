@@ -197,64 +197,59 @@ export const dtrFeedersData = {
 export const dtrFeedersTestCases: DtrFeedersTestCase[] = [
   {
     testName:
-      "Validate GET /indore/dtr/{code}/feeders — primary DTR (11IW3) LT feeders",
+      "DTR feeders — list under this transformer, each feeder only once",
     scenario: "dfe_by_code_primary",
     tags: ["@smoke", "@dtr", "@feeders"],
   },
   {
-    testName: "Validate GET /indore/dtr/{code}/feeders — alternate DTR code",
+    testName: "DTR feeders — a second transformer still shows its feeders",
     scenario: "dfe_by_code_alt",
     tags: ["@dtr", "@feeders", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/dtr/{code}/feeders — unknown query params ignored",
+      "DTR feeders — extra filters that nobody uses are ignored",
     scenario: "dfe_ignore_unknown_query",
     tags: ["@dtr", "@feeders", "@edge"],
   },
   {
-    testName:
-      "Contract — empty feeders array when no LT feeder descendants (11IW3)",
+    testName: "Sample feeders — none yet is allowed",
     scenario: "contract_empty_feeders",
     isContractFixture: true,
     tags: ["@dtr", "@feeders", "@edge"],
   },
   {
     testName:
-      "Contract — populated feeders with id, name, status, lastCommunication",
+      "Sample feeders — name, status, and last talk-to-system time",
     scenario: "contract_populated_feeders",
     isContractFixture: true,
     tags: ["@dtr", "@feeders", "@edge"],
   },
   {
-    testName:
-      "Contract — Active/Inactive status from IsActiveStatus",
+    testName: "Sample feeders — Active and Inactive both appear",
     scenario: "contract_mixed_statuses",
     isContractFixture: true,
     tags: ["@dtr", "@feeders", "@edge"],
   },
   {
-    testName:
-      "Contract — feeder id falls back to NetworkLookup_TblRefID string",
+    testName: "Sample feeders — feeder number can be a plain id",
     scenario: "contract_numeric_id_fallback",
     isContractFixture: true,
     tags: ["@dtr", "@feeders", "@edge"],
   },
   {
-    testName:
-      "Contract — lastCommunication IST formatted or null",
+    testName: "Sample feeders — last communication can be empty",
     scenario: "contract_with_communication",
     isContractFixture: true,
     tags: ["@dtr", "@feeders", "@edge"],
   },
   {
-    testName: "Validate GET /indore/dtr/{code}/feeders — DTR not found",
+    testName: "DTR feeders — unknown transformer is not shown",
     scenario: "dtr_not_found",
     tags: ["@dtr", "@feeders", "@negative"],
   },
   {
-    testName:
-      "Validate GET /indore/dtr/{code}/feeders — blank DTR code rejected",
+    testName: "DTR feeders — a blank transformer code is not allowed",
     scenario: "empty_dtr_code",
     expectedStatus: 400,
     tags: ["@dtr", "@feeders", "@negative"],

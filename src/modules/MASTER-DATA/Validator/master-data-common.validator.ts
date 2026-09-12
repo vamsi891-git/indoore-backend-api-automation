@@ -61,6 +61,23 @@ export class MasterDataCommonValidator {
     });
   }
 
+  /**
+   * Required columns must be present (key + header).
+   * Extra columns from the API are allowed (new fields are skipped).
+   */
+  static validateExpectedColumnsPresent(
+    columns: Array<{ key: string; header: string }>,
+    expected: ReadonlyArray<{ key: string; header: string }>,
+  ): void {
+    expect(columns.length).toBeGreaterThan(0);
+    const byKey = new Map(columns.map((c) => [c.key, c]));
+    for (const want of expected) {
+      const actual = byKey.get(want.key);
+      expect(actual, `missing column key: ${want.key}`).toBeDefined();
+      expect(actual!.header).toEqual(want.header);
+    }
+  }
+
   static validateRowKeysMatchColumns(
     columns: Array<{ key: string; header: string }>,
     items: Record<string, unknown>[],

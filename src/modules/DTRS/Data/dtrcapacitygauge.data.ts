@@ -25,7 +25,7 @@ export const dtrCapacityGaugeExpectedBands = [
 ] as const;
 
 export const dtrCapacityGaugeBandUnits = {
-  Instant: "KVA",
+  Instant: "MDkVA",
   Daily: "MDkVA",
   Monthly: "MDkVA",
   Yearly: "MDkVA",
@@ -55,7 +55,7 @@ export const dtrCapacityGaugeContractPopulatedResponse: DtrCapacityGaugeResponse
     data: {
       ratedCapacityKva: null,
       bands: [
-        { label: "Instant", value: 45.67, percent: null, unit: "KVA" },
+        { label: "Instant", value: 45.67, percent: null, unit: "MDkVA" },
         { label: "Daily", value: 52.3, percent: null, unit: "MDkVA" },
         { label: "Monthly", value: 80, percent: null, unit: "MDkVA" },
         { label: "Yearly", value: 95.5, percent: null, unit: "MDkVA" },
@@ -87,7 +87,7 @@ export const dtrCapacityGaugeContractPercentFormulaResponse: DtrCapacityGaugeRes
           value: dtrCapacityGaugeContractPercentFormulaMeta.instant.value,
           percent:
             dtrCapacityGaugeContractPercentFormulaMeta.instant.expectedPercent,
-          unit: "KVA",
+          unit: "MDkVA",
         },
         {
           label: "Daily",
@@ -116,7 +116,7 @@ export const dtrCapacityGaugeContractPrimaryFallbackResponse: DtrCapacityGaugeRe
     data: {
       ratedCapacityKva: null,
       bands: [
-        { label: "Instant", value: 12.5, percent: null, unit: "KVA" },
+        { label: "Instant", value: 12.5, percent: null, unit: "MDkVA" },
         { label: "Daily", value: 15, percent: null, unit: "MDkVA" },
         { label: "Monthly", value: null, percent: null, unit: "MDkVA" },
         { label: "Yearly", value: null, percent: null, unit: "MDkVA" },
@@ -201,59 +201,52 @@ export const dtrCapacityGaugeData = {
 export const dtrCapacityGaugeTestCases: DtrCapacityGaugeTestCase[] = [
   {
     testName:
-      "Validate GET /indore/dtr/{code}/capacity-gauge — primary DTR (11IW3) gauge bands",
+      "DTR loading gauge — daily, monthly, yearly, and lifetime bands, each once",
     scenario: "dcg_by_code_primary",
     tags: ["@smoke", "@dtr", "@capacity-gauge"],
   },
   {
-    testName:
-      "Validate GET /indore/dtr/{code}/capacity-gauge — alternate DTR code",
+    testName: "DTR loading gauge — a second transformer still shows bands",
     scenario: "dcg_by_code_alt",
     tags: ["@dtr", "@capacity-gauge", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/dtr/{code}/capacity-gauge — unknown query params ignored",
+      "DTR loading gauge — extra filters that nobody uses are ignored",
     scenario: "dcg_ignore_unknown_query",
     tags: ["@dtr", "@capacity-gauge", "@edge"],
   },
   {
-    testName:
-      "Contract — all-null bands when IP/billing reads unavailable",
+    testName: "Sample loading gauge — empty bands when readings are missing",
     scenario: "contract_all_null_bands",
     isContractFixture: true,
     tags: ["@dtr", "@capacity-gauge", "@edge"],
   },
   {
-    testName:
-      "Contract — populated kVA/MDkVA values with null rated capacity (percent null)",
+    testName: "Sample loading gauge — kVA values without a rated size percent",
     scenario: "contract_populated_bands",
     isContractFixture: true,
     tags: ["@dtr", "@capacity-gauge", "@edge"],
   },
   {
-    testName:
-      "Contract — percent matches gaugePercent(value, ratedCapacityKva)",
+    testName: "Sample loading gauge — percent of rated size",
     scenario: "contract_gauge_percent_formula",
     isContractFixture: true,
     tags: ["@dtr", "@capacity-gauge", "@edge"],
   },
   {
-    testName:
-      "Contract — primary timeout fallback (instant/daily only, billing null)",
+    testName: "Sample loading gauge — only instant and daily when billing is late",
     scenario: "contract_primary_fallback_zeros",
     isContractFixture: true,
     tags: ["@dtr", "@capacity-gauge", "@edge"],
   },
   {
-    testName:
-      "Validate GET /indore/dtr/{code}/capacity-gauge — DTR not found",
+    testName: "DTR loading gauge — unknown transformer is not shown",
     scenario: "dtr_not_found",
     tags: ["@dtr", "@capacity-gauge", "@negative"],
   },
   {
-    testName:
-      "Validate GET /indore/dtr/{code}/capacity-gauge — blank DTR code rejected",
+    testName: "DTR loading gauge — a blank transformer code is not allowed",
     scenario: "empty_dtr_code",
     expectedStatus: 400,
     tags: ["@dtr", "@capacity-gauge", "@negative"],

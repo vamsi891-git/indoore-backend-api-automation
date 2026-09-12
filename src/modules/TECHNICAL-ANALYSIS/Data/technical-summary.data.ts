@@ -1,14 +1,55 @@
 import { TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { TechnicalSummaryQuery } from "../Api/technical-summary.api";
 import type { TechnicalSummaryResponse } from "../Mapper/technical-summary.mapper";
-import { technicalAnalysisLiveConfigs } from "./technicalanalysis.data";
 export const technicalSummaryMaxResponseTimeMs = TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS;
-export const technicalSummaryDefaultMonth = 12;
+export const technicalSummaryDefaultMonth = 10;
 export const technicalSummaryDefaultYear = 2025;
-/** Alternate billing period referenced by live report smoke data. */
-export const technicalSummaryAltYear = 2024;
-export const technicalSummaryExpectedAnalysisTypes =
-  technicalAnalysisLiveConfigs.map((config) => config.analysisType);
+/** Alternate period — same covered month until another OLD8 window is confirmed. */
+export const technicalSummaryAltMonth = 10;
+export const technicalSummaryAltYear = 2025;
+
+/** All 26 summary cards for October 2025, including empty reports. */
+export const technicalSummaryExpectedAnalysisTypes = [
+  "power_failure",
+  "voltage_missing",
+  "voltage_unbalance",
+  "low_voltage",
+  "over_voltage",
+  "single_wire_operation",
+  "neutral_disturbance",
+  "current_without_voltage",
+  "ct_open",
+  "current_bypass",
+  "current_unbalance",
+  "earth_loading",
+  "low_power_factor",
+  "phase_neutral_mismatch",
+  "phase_zero_neutral_nonzero",
+  "phase_nonzero_neutral_zero",
+  "magnet_event",
+  "cover_open",
+  "ynr_over_voltage",
+  "ynr_neutral_disturbance",
+  "ynr_ct_open_unbalance",
+  "ynr_ct_bypass",
+  "ynr_earth_loading",
+  "ynr_low_power_factor",
+  "ynr_magnet_event",
+  "ynr_cover_open",
+] as const;
+
+export const technicalSummaryExpectedReportCount =
+  technicalSummaryExpectedAnalysisTypes.length;
+
+export { technicalAnalysisReportNames as technicalSummaryReportNames } from "./technicalanalysis.data";
+
+export const technicalSummaryTechnicalTypes = technicalSummaryExpectedAnalysisTypes.filter(
+  (type) => !type.startsWith("ynr_"),
+);
+export const technicalSummaryYnrTypes = technicalSummaryExpectedAnalysisTypes.filter(
+  (type) => type.startsWith("ynr_"),
+);
+
 export type TechnicalSummaryScenario =
   | "dev_live_primary"
   | "dev_live_alt_month"
@@ -33,7 +74,7 @@ export function resolveTechnicalSummaryQuery(
       };
     case "dev_live_alt_month":
       return {
-        month: technicalSummaryDefaultMonth,
+        month: technicalSummaryAltMonth,
         year: technicalSummaryAltYear,
       };
     case "invalid_month_zero":
@@ -69,42 +110,36 @@ export const technicalSummaryData = {
 
 export const technicalSummaryTestCases: TechnicalSummaryTestCase[] = [
   {
-    testName:
-      "Validate GET /indore/analysis/technical/summary — month zero rejected",
+    testName: "Technical summary — month zero is rejected",
     scenario: "invalid_month_zero",
     expectedStatus: 400,
     tags: ["@technical", "@technical-summary", "@negative"],
   },
   {
-    testName:
-      "Validate GET /indore/analysis/technical/summary — month 13 rejected",
+    testName: "Technical summary — month 13 is rejected",
     scenario: "invalid_month_13",
     expectedStatus: 400,
     tags: ["@technical", "@technical-summary", "@negative"],
   },
   {
-    testName:
-      "Validate GET /indore/analysis/technical/summary — missing month rejected",
+    testName: "Technical summary — missing month is rejected",
     scenario: "missing_month",
     expectedStatus: 400,
     tags: ["@technical", "@technical-summary", "@negative"],
   },
   {
-    testName:
-      "Validate GET /indore/analysis/technical/summary — missing year rejected",
+    testName: "Technical summary — missing year is rejected",
     scenario: "missing_year",
     expectedStatus: 400,
     tags: ["@technical", "@technical-summary", "@negative"],
   },
   {
-    testName:
-      "Validate GET /indore/analysis/technical/summary — live aggregate counts",
+    testName: "Technical summary — October 2025 cards show counts",
     scenario: "dev_live_primary",
     tags: ["@technical", "@technical-summary", "@smoke"],
   },
   {
-    testName:
-      "Validate GET /indore/analysis/technical/summary — alternate year",
+    testName: "Technical summary — alternate period still opens",
     scenario: "dev_live_alt_month",
     tags: ["@technical", "@technical-summary", "@edge"],
   },

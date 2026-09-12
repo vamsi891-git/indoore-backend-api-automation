@@ -13,12 +13,12 @@ function catalogCases(
 ): CatalogTestCase[] {
   return [
     {
-      testName: `Validate ${label} — live catalog`,
+      testName: `${label} — list shows ids and names`,
       scenario: "smoke",
       tags: ["@smoke", "@utils-lookup", domainTag],
     },
     {
-      testName: `Validate ${label} — structure and uniqueness`,
+      testName: `${label} — ids and names are unique`,
       scenario: "edge_structure",
       tags: ["@utils-lookup", domainTag, "@edge"],
     },
@@ -76,28 +76,28 @@ export interface MissingRouteTestCase extends LookupTestCase {
 /** Documented missing UTILS routes (HTML 404 until backend ships). */
 export const missingLookupRouteTestCases: MissingRouteTestCase[] = [
   {
-    testName: "Probe missing route — connection-types returns 404",
+    testName: "Connection types — missing route returns 404",
     path: "/indore/utils/connection-types",
     expectedStatus: 404,
     errorExpectation: "status-only",
     tags: ["@utils-lookup", "@negative", "@missing-route"],
   },
   {
-    testName: "Probe missing route — billing-cycles returns 404",
+    testName: "Billing cycles — missing route returns 404",
     path: "/indore/utils/billing-cycles",
     expectedStatus: 404,
     errorExpectation: "status-only",
     tags: ["@utils-lookup", "@negative", "@missing-route"],
   },
   {
-    testName: "Probe missing route — tods returns 404",
+    testName: "TODs — missing route returns 404",
     path: "/indore/utils/tods",
     expectedStatus: 404,
     errorExpectation: "status-only",
     tags: ["@utils-lookup", "@negative", "@missing-route"],
   },
   {
-    testName: "Probe missing route — main-sub-meters returns 404",
+    testName: "Main-sub meters — missing route returns 404",
     path: "/indore/utils/main-sub-meters",
     expectedStatus: 404,
     errorExpectation: "status-only",

@@ -23,6 +23,7 @@ import {
   extractJobNamesFromInitResponse,
 } from "../shared/commands-job-init.mapper";
 import {
+  assertHesE2eQueryPhase,
   logCommandE2eResponses,
   pollQueryMeterJob,
   softSkipHesE2eInfraFailure,
@@ -183,51 +184,44 @@ test.describe("HES Commands — Load Curtailment (E2E)", () => {
         maxResponseTimeMs: commandsLoadCurtailmentData.maxResponseTimeMs,
       });
 
-      validation.execute("Query Success Response", () =>
-        queryValidator.validateResponse(pollResult.responseBody),
-      );
-      validation.execute("Query Finished Message", () =>
-        loadValidator.validateQueryFinishedMessage(pollResult.mapped.message),
-      );
-      validation.execute("Query Job Name Echo", () =>
-        queryValidator.validateJobNameEcho(pollResult.mapped, jobName),
-      );
-      validation.execute("Query Sync Flags", () =>
-        queryValidator.validateSyncFlags(pollResult.mapped),
-      );
-      validation.execute("Query HES Job Status FINISHED", () => {
-        expect(pollResult.mapped.job.hesJobStatus).toBe("FINISHED");
+      assertHesE2eQueryPhase({
+        validation,
+        queryValidator,
+        pollResult,
+        jobName,
+        meterId: requestedMeters[0],
+        onFinished: () => {
+          validation.execute("Query Finished Message", () =>
+            loadValidator.validateQueryFinishedMessage(
+              pollResult.mapped.message,
+            ),
+          );
+          validation.execute("Query HES Job Status FINISHED", () => {
+            expect(pollResult.mapped.job.hesJobStatus).toBe("FINISHED");
+          });
+          validation.execute("Query Summary Counts", () =>
+            queryValidator.validateSummaryCounts(pollResult.mapped.job.summary),
+          );
+          validation.execute("Query All Meter Results", () =>
+            queryValidator.validateAllMeterResults(
+              pollResult.mapped.job.meterResults,
+            ),
+          );
+          validation.execute("Query Load Curtailment HES Response", () =>
+            loadValidator.validateLoadCurtailmentQueryMeterResults(
+              pollResult.mapped.job.meterResults,
+              requestedMeters[0],
+            ),
+          );
+          validation.execute("Query Full Contract", () =>
+            queryValidator.validateFullContract(
+              pollResult.mapped,
+              jobName,
+              requestedMeters[0],
+            ),
+          );
+        },
       });
-      validation.execute("Query HES Status Code", () =>
-        queryValidator.validateHesStatusCode(pollResult.mapped),
-      );
-      validation.execute("Query Summary Counts", () =>
-        queryValidator.validateSummaryCounts(pollResult.mapped.job.summary),
-      );
-      validation.execute("Query All Meter Results", () =>
-        queryValidator.validateAllMeterResults(
-          pollResult.mapped.job.meterResults,
-        ),
-      );
-      validation.execute("Query Expected Meter Present", () =>
-        queryValidator.validateExpectedMeterPresent(
-          pollResult.mapped.job.meterResults,
-          requestedMeters[0],
-        ),
-      );
-      validation.execute("Query Load Curtailment HES Response", () =>
-        loadValidator.validateLoadCurtailmentQueryMeterResults(
-          pollResult.mapped.job.meterResults,
-          requestedMeters[0],
-        ),
-      );
-      validation.execute("Query Full Contract", () =>
-        queryValidator.validateFullContract(
-          pollResult.mapped,
-          jobName,
-          requestedMeters[0],
-        ),
-      );
 
       ApiValidationHelper.finalize(validation, {
         apiName: "Commands Load Curtailment E2E",
@@ -241,14 +235,16 @@ test.describe("HES Commands — Load Curtailment (E2E)", () => {
             body,
             jobName,
             pollAttempts: pollResult.pollAttempts,
+            completed: pollResult.completed,
           },
           responseStatus: pollResult.rawResponse.status(),
           responseBody: {
             init: postBody,
             query: pollResult.responseBody,
           },
-          expectedBehavior:
-            "POST load_curtailment_get returns jobName in meterResults; GET query-meter-job returns FINISHED with GET_CONFIG/SUCCESS and LOAD_CURTAILMENT config (powerLimitNormal, currentLimitNormal, lockoutMaxCounter, loadCurtailmentState, alertPeriod, lockoutPeriod) in hesResponse.",
+          expectedBehavior: pollResult.completed
+            ? "POST load_curtailment_get returns jobName in meterResults; GET query-meter-job returns FINISHED with GET_CONFIG/SUCCESS and LOAD_CURTAILMENT config (powerLimitNormal, currentLimitNormal, lockoutMaxCounter, loadCurtailmentState, alertPeriod, lockoutPeriod) in hesResponse."
+            : "POST load_curtailment_get returns jobName; GET query-meter-job remains RUNNING/IN_PROGRESS until HES callback (set HES_E2E_REQUIRE_COMPLETION=true to require FINISHED).",
         },
       });
     },

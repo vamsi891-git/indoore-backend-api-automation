@@ -4,8 +4,10 @@ import {
   AuthLoginSession,
   AuthMeData,
   AuthMeUser,
+  AuthTwoFactorChallenge,
   isDeviceSelectionPayload,
   isLoginSessionPayload,
+  isTwoFactorChallengePayload,
 } from "../schemas/auth.schemas";
 import { AuthSessionModel, DeviceSelectionModel } from "../Mapper/auth.mapper";
 
@@ -35,6 +37,11 @@ export class AuthValidator {
     });
   }
 
+  validateTwoFactorChallenge(data: AuthTwoFactorChallenge) {
+    expect(data.requires2FA).toBe(true);
+    expect(data.challengeToken.length).toBeGreaterThan(10);
+  }
+
   validateInvalidCredentials(
     status: number,
     expectedStatus: number,
@@ -51,11 +58,15 @@ export class AuthValidator {
       this.validateDirectLoginData(data as AuthLoginSession, 60);
       return;
     }
+    if (isTwoFactorChallengePayload(data as AuthTwoFactorChallenge)) {
+      this.validateTwoFactorChallenge(data as AuthTwoFactorChallenge);
+      return;
+    }
     if (isDeviceSelectionPayload(data as AuthDeviceSelection)) {
       this.validateDeviceSelection(data as AuthDeviceSelection);
       return;
     }
-    throw new Error("Login data is neither session nor device selection");
+    throw new Error("Login data is neither session, 2FA challenge, nor device selection");
   }
 
   /** Auth endpoints may return `accessToken` / `challengeToken` in JSON; still block passwords and refresh tokens in body. */

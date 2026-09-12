@@ -17,16 +17,38 @@ export function collectOverallDashboardDataQualityFindings(
   let emptyLabel = 0;
   if (data == null) return { warnings, counts: { emptyLabel } };
 
-  if (kind === "metrics" && data.networkDetails && typeof data.networkDetails === "object") {
-    for (const [key, value] of Object.entries(data.networkDetails as Record<string, unknown>)) {
-      const item = value as Record<string, unknown>;
-      if (item && typeof item === "object" && isBlank(item.label)) {
-        emptyLabel += 1;
-        warnings.push({
-          code: "EMPTY_NETWORK_LABEL",
-          message: `networkDetails.${key}.label empty`,
-          field: `networkDetails.${key}.label`,
-        });
+  if (kind === "metrics") {
+    const summary = data.installationSummary;
+    if (Array.isArray(summary)) {
+      for (const [index, item] of summary.entries()) {
+        const row = item as Record<string, unknown>;
+        if (row && typeof row === "object" && isBlank(row.label)) {
+          emptyLabel += 1;
+          warnings.push({
+            code: "EMPTY_INSTALLATION_LABEL",
+            message: `installationSummary[${index}].label empty`,
+            field: `installationSummary[${index}].label`,
+          });
+        }
+      }
+    }
+
+    const donuts = [
+      ["billingEfficiencyDonut", data.billingEfficiencyDonut],
+      ["benefitsAtrCasesDonut", data.benefitsAtrCasesDonut],
+    ] as const;
+    for (const [section, payload] of donuts) {
+      if (!Array.isArray(payload)) continue;
+      for (const [index, item] of payload.entries()) {
+        const row = item as Record<string, unknown>;
+        if (row && typeof row === "object" && isBlank(row.label)) {
+          emptyLabel += 1;
+          warnings.push({
+            code: "EMPTY_DONUT_LABEL",
+            message: `${section}[${index}].label empty`,
+            field: `${section}[${index}].label`,
+          });
+        }
       }
     }
   }
@@ -35,7 +57,11 @@ export function collectOverallDashboardDataQualityFindings(
     for (const p of data.points) {
       if (isBlank((p as Record<string, unknown>).label)) {
         emptyLabel += 1;
-        warnings.push({ code: "EMPTY_POINT_LABEL", message: "point label empty", field: "label" });
+        warnings.push({
+          code: "EMPTY_POINT_LABEL",
+          message: "point label empty",
+          field: "label",
+        });
       }
     }
   }

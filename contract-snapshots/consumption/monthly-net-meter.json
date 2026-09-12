@@ -1,0 +1,38 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumption/monthly-net-meter",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "items",
+    "limit",
+    "page",
+    "total",
+    "totalPages"
+  ],
+  "itemKeys": [
+    "address",
+    "category",
+    "circle",
+    "division",
+    "dtr",
+    "feeder",
+    "ivrsNumber",
+    "kvah",
+    "kvahExport",
+    "kwh",
+    "kwhExport",
+    "msn",
+    "name",
+    "netKvah",
+    "netKwh",
+    "phase",
+    "slNo",
+    "subDivision",
+    "subStation",
+    "zone"
+  ],
+  "hasColumnsGrid": false
+}

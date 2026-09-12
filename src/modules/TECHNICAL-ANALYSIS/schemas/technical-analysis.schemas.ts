@@ -41,6 +41,7 @@ const technicalReportRowSchema = z
     msn: emptyable,
     phase: emptyable,
     durationInHours: z.number().optional(),
+    eventCount: z.number().optional(),
     eventName: emptyable,
     id: emptyable.optional(),
   })

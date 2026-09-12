@@ -6,11 +6,7 @@
  *   UPDATE_CONTRACT_SNAPSHOTS=true npm run test:consumers:contract
  */
 import { test, expect } from "../../../fixtures/observability.fixture";
-import {
-  assertContractSnapshot,
-  buildLookupItemsContractSnapshot,
-} from "../../../core/contract/contract-snapshot.helper";
-
+import {assertContractSnapshot,buildLookupItemsContractSnapshot,} from "../../../core/contract/contract-snapshot.helper";
 import { ConsumerProfileApi } from "../Api/consumerprofile.api";
 import { CommunicationStatusApi } from "../Api/communicationstatus.api";
 import { BillingHistoryApi } from "../Api/billinghistory.api";
@@ -25,58 +21,25 @@ import { RealTimePowerApi } from "../Api/realtimepower.api";
 import { ValidateMeterApi } from "../Api/validatemeter.api";
 import { NearestAccountIdsApi } from "../Api/nearestaccountids.api";
 import { ActivationApi } from "../Api/activation.api";
-
-import {
-  resolveConsumerProfileQuery,
-  resolveConsumerProfileRef,
-} from "../Data/consumerprofile.data";
-import {
-  resolveCommunicationStatusQuery,
-  resolveCommunicationStatusRef,
-} from "../Data/communicationstatus.data";
-import {
-  resolveBillingHistoryQuery,
-  resolveBillingHistoryRef,
-} from "../Data/billinghistory.data";
+import {resolveConsumerProfileQuery,resolveConsumerProfileRef,} from "../Data/consumerprofile.data";
+import {resolveCommunicationStatusQuery,resolveCommunicationStatusRef,} from "../Data/communicationstatus.data";
+import {resolveBillingHistoryQuery,resolveBillingHistoryRef,} from "../Data/billinghistory.data";
 import { billingPeriodData } from "../Data/billingperiod.data";
-import {
-  resolveEnergyConsumptionGraphQuery,
-  resolveEnergyConsumptionGraphRef,
-} from "../Data/energyconsumptiongraph.data";
-import {
-  resolveEnergyFlowQuery,
-  resolveEnergyFlowRef,
-} from "../Data/energyflow.data";
-import {
-  resolveEventLogCardsQuery,
-  resolveEventLogCardsRef,
-} from "../Data/eventlogcards.data";
-import {
-  resolveEventLogListQuery,
-  resolveEventLogListRef,
-} from "../Data/eventloglist.data";
-import {
-  resolveLiveLoadProfileQuery,
-  resolveLiveLoadProfileRef,
-} from "../Data/liveloadprofile.data";
-import {
-  resolvePowerQualityQuery,
-  resolvePowerQualityRef,
-} from "../Data/powerquality.data";
-import {
-  resolveRealTimePowerQuery,
-  resolveRealTimePowerRef,
-} from "../Data/realtimepower.data";
+import {resolveEnergyConsumptionGraphQuery,resolveEnergyConsumptionGraphRef,} from "../Data/energyconsumptiongraph.data";
+import {resolveEnergyFlowQuery,resolveEnergyFlowRef,} from "../Data/energyflow.data";
+import {resolveEventLogCardsQuery,resolveEventLogCardsRef,} from "../Data/eventlogcards.data";
+import {resolveEventLogListQuery,resolveEventLogListRef,} from "../Data/eventloglist.data";
+import {resolveLiveLoadProfileQuery,resolveLiveLoadProfileRef,} from "../Data/liveloadprofile.data";
+import {resolvePowerQualityQuery,resolvePowerQualityRef,} from "../Data/powerquality.data";
+import {resolveRealTimePowerQuery,resolveRealTimePowerRef,} from "../Data/realtimepower.data";
 import { resolveValidateConsumerMeterSerial } from "../Data/validatemeter.data";
 import { resolveNearestAccountIdsQuery } from "../Data/nearestaccountids.data";
 import { resolveActivationConsumerId } from "../Data/activation.data";
-
 function asRecord(value: unknown): Record<string, unknown> {
   return value !== null && typeof value === "object"
     ? (value as Record<string, unknown>)
     : {};
 }
-
 function buildConsumersStructuralSnapshot(
   pathPattern: string,
   responseBody: unknown,
@@ -84,7 +47,35 @@ function buildConsumersStructuralSnapshot(
   const body = asRecord(responseBody);
   const data = body.data;
   const dataRecord = asRecord(data);
-
+  // Live load profile: data is often null when no recent IP row; lock the
+  // populated envelope so snapshots do not flip between null and live readings.
+  if (pathPattern.includes("live-load-profile")) {
+    return buildLookupItemsContractSnapshot({
+      pathPattern,
+      dataKeys: [
+        "available",
+        "communicationState",
+        "lastCommunicationAt",
+        "lastReadingIso",
+        "meterPhase",
+        "meterSerialNumber",
+        "metrics",
+        "snapshotAt",
+        "total",
+      ],
+      itemKeys: [
+        "available",
+        "communicationState",
+        "lastCommunicationAt",
+        "lastReadingIso",
+        "meterPhase",
+        "meterSerialNumber",
+        "metrics",
+        "snapshotAt",
+        "total",
+      ],
+    });
+  }
   // Real-time power: data is often null offline; lock the populated phase shape
   // so snapshots do not flip between null and live readings.
   if (pathPattern.includes("real-time-power")) {
@@ -106,13 +97,11 @@ function buildConsumersStructuralSnapshot(
       ],
     });
   }
-
   const dataKeys = Array.isArray(data)
     ? ["(array)"]
     : data == null
       ? ["(null)"]
       : Object.keys(dataRecord);
-
   let itemKeys: string[] = [];
   if (Array.isArray(data) && data.length > 0) {
     itemKeys = Object.keys(asRecord(data[0]));
@@ -150,12 +139,9 @@ async function snapshotEndpoint(
     buildConsumersStructuralSnapshot(pathPattern, responseBody),
   );
 }
-
 test.describe("CONSUMERS — Contract Snapshots", () => {
   test.setTimeout(180_000);
-
-  test(
-    "Consumer Profile Contract Snapshot",
+  test("Consumer Profile Contract Snapshot",
     { tag: ["@contract-snapshot", "@consumers", "@profile"] },
     async ({ authenticatedApi }) => {
       const ref = resolveConsumerProfileRef("profile_found")!;
@@ -169,9 +155,7 @@ test.describe("CONSUMERS — Contract Snapshots", () => {
       );
     },
   );
-
-  test(
-    "Communication Status Contract Snapshot",
+  test("Communication Status Contract Snapshot",
     { tag: ["@contract-snapshot", "@consumers", "@communication-status"] },
     async ({ authenticatedApi }) => {
       const ref = resolveCommunicationStatusRef("status_with_date")!;
@@ -188,7 +172,6 @@ test.describe("CONSUMERS — Contract Snapshots", () => {
       );
     },
   );
-
   test(
     "Billing History Contract Snapshot",
     { tag: ["@contract-snapshot", "@consumers", "@billing-history"] },

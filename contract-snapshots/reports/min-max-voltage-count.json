@@ -1,0 +1,17 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/reports/min-max-voltage/count",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "total",
+    "totalIsExact"
+  ],
+  "itemKeys": [
+    "total",
+    "totalIsExact"
+  ],
+  "hasColumnsGrid": false
+}

@@ -34,15 +34,22 @@ export interface DtrRawItem {
   zone?: string | null;
   subStation?: string | null;
   feeder?: string | null;
+  feederName?: string | null;
+  feederCode?: string | null;
   code?: string;
   dtrCode?: string;
   dtrName?: string;
   dtr?: string;
+  newDtrCode?: string | null;
+  dtrCapacity?: string | number | null;
+  meterMake?: string | null;
+  meterLookupTblRefId?: number | null;
   meterSerialNumber?: string | null;
   mf?: string | null;
   latitude?: string | null;
   longitude?: string | null;
   serviceDate?: string | null;
+  id?: string;
 }
 
 export interface DtrItem {
@@ -72,19 +79,20 @@ export class DtrSearchMapper {
     const total = pagination?.total ?? data.total ?? rawItems.length;
 
     const item: DtrItem[] = rawItems.map((row, index) => {
-      const dtrCode = row.dtrCode ?? row.code ?? row.dtr ?? "";
-      const dtrName = row.dtrName ?? row.dtr ?? dtrCode;
+      const dtrCode = String(row.dtrCode ?? row.code ?? row.dtr ?? "").trim();
+      const dtrName = String(row.dtrName ?? row.dtr ?? dtrCode).trim();
+      const feeder = row.feederName ?? row.feeder ?? null;
       return {
         slNo: row.slNo ?? (page - 1) * limit + index + 1,
         circle: row.circle ?? null,
         division: row.division ?? null,
         zone: row.zone ?? null,
         subStation: row.subStation ?? null,
-        feeder: row.feeder ?? null,
-        code: row.code ?? dtrCode,
+        feeder,
+        code: String(row.code ?? dtrCode).trim(),
         dtrCode,
         dtrName,
-        dtr: row.dtr ?? dtrCode,
+        dtr: String(row.dtr ?? dtrName).trim(),
         meterSerialNumber: row.meterSerialNumber ?? null,
         mf: row.mf ?? null,
         latitude: row.latitude ?? null,

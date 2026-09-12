@@ -1,7 +1,21 @@
 import { expect } from "@playwright/test";
-import {dtrVoltageUnbalanceAccessTokenInvalidMessage,dtrVoltageUnbalanceSuccessMessage,dtrVoltageUnbalanceUnauthorizedMessage,} from "../Data/dtrvoltageunbalance.data";
-import {dtrUnbalanceAccessTokenInvalidCode,dtrUnbalanceUnauthorizedCode,} from "../Data/dtr-unbalance-auth.data";
-import {DTR_VOLTAGE_UNBALANCE_LABELS,type DtrVoltageUnbalanceErrorResponse,type DtrVoltageUnbalanceResponse,type DtrVoltageUnbalanceScenario,type MappedDtrVoltageUnbalance,} from "../Mapper/dtrvoltageunbalance.mapper";
+import {
+    dtrVoltageUnbalanceAccessTokenInvalidMessage,
+    dtrVoltageUnbalanceSuccessMessage,
+    dtrVoltageUnbalanceUnauthorizedMessage,
+} from "../Data/dtrvoltageunbalance.data";
+import {
+    dtrUnbalanceAccessTokenInvalidCode,
+    dtrUnbalanceUnauthorizedCode,
+} from "../Data/dtr-unbalance-auth.data";
+import {
+    DTR_VOLTAGE_UNBALANCE_LABELS,
+    type DtrVoltageUnbalanceErrorResponse,
+    type DtrVoltageUnbalanceResponse,
+    type DtrVoltageUnbalanceScenario,
+    type MappedDtrVoltageUnbalance,
+} from "../Mapper/dtrvoltageunbalance.mapper";
+
 export class DtrVoltageUnbalanceValidator {
     validateResponseEnvelope(response: DtrVoltageUnbalanceResponse): void {
         expect(response.success).toBe(true);
@@ -11,10 +25,15 @@ export class DtrVoltageUnbalanceValidator {
             expect(response.message).toBe(dtrVoltageUnbalanceSuccessMessage);
         }
     }
+
     validateSuccess(success: boolean): void {
         expect(success).toBeTruthy();
     }
+
     validateItemShape(mapped: MappedDtrVoltageUnbalance): void {
+        expect(typeof mapped.total).toBe("number");
+        expect(Number.isFinite(mapped.total)).toBeTruthy();
+        expect(mapped.total).toBeGreaterThanOrEqual(0);
         expect(mapped.items.length).toBe(DTR_VOLTAGE_UNBALANCE_LABELS.length);
         mapped.items.forEach((item) => {
             expect(item.label).toBeTruthy();
@@ -28,15 +47,32 @@ export class DtrVoltageUnbalanceValidator {
             expect(item.percentage).toBeLessThanOrEqual(100);
         });
     }
+
     validateExpectedLabels(mapped: MappedDtrVoltageUnbalance): void {
         const labels = mapped.items.map((item) => item.label);
         expect(labels).toEqual([...DTR_VOLTAGE_UNBALANCE_LABELS]);
     }
+
     validateUniqueLabels(mapped: MappedDtrVoltageUnbalance): void {
         const labels = mapped.items.map((item) => item.label);
         expect(new Set(labels).size).toBe(labels.length);
     }
-    validatePercentageTotal(mapped: MappedDtrVoltageUnbalance,tolerance = 1,): void {
+
+    /** `data.total` must equal the sum of severity bucket values when either is non-zero. */
+    validateTotalMatchesItemSum(mapped: MappedDtrVoltageUnbalance): void {
+        const itemSum = mapped.items.reduce((sum, item) => sum + item.value, 0);
+        if (mapped.total > 0 || itemSum > 0) {
+            expect(mapped.total).toBe(itemSum);
+        } else {
+            expect(mapped.total).toBe(0);
+            expect(itemSum).toBe(0);
+        }
+    }
+
+    validatePercentageTotal(
+        mapped: MappedDtrVoltageUnbalance,
+        tolerance = 1,
+    ): void {
         const totalValue = mapped.items.reduce(
             (sum, item) => sum + item.value,
             0,
@@ -51,7 +87,11 @@ export class DtrVoltageUnbalanceValidator {
         }
         expect(Math.abs(100 - totalPercentage)).toBeLessThanOrEqual(tolerance);
     }
-    validatePercentageConsistency(mapped: MappedDtrVoltageUnbalance,tolerance = 1,): void {
+
+    validatePercentageConsistency(
+        mapped: MappedDtrVoltageUnbalance,
+        tolerance = 1,
+    ): void {
         const totalValue = mapped.items.reduce(
             (sum, item) => sum + item.value,
             0,
@@ -69,14 +109,17 @@ export class DtrVoltageUnbalanceValidator {
             );
         });
     }
+
     validateLiveOk(mapped: MappedDtrVoltageUnbalance): void {
         this.validateSuccess(mapped.success);
         this.validateItemShape(mapped);
         this.validateExpectedLabels(mapped);
         this.validateUniqueLabels(mapped);
+        this.validateTotalMatchesItemSum(mapped);
         this.validatePercentageTotal(mapped);
         this.validatePercentageConsistency(mapped);
     }
+
     /** Live fleet: zeros are valid; non-zero fleets must keep bucket math consistent. */
     validateLiveFleetDistribution(mapped: MappedDtrVoltageUnbalance): void {
         this.validateLiveOk(mapped);
@@ -90,34 +133,59 @@ export class DtrVoltageUnbalanceValidator {
             this.validatePercentageConsistency(mapped, 0.5);
         }
     }
+
     validateAllZeroContract(mapped: MappedDtrVoltageUnbalance): void {
         this.validateLiveOk(mapped);
+        expect(mapped.total).toBe(0);
         mapped.items.forEach((item) => {
             expect(item.value).toBe(0);
             expect(item.percentage).toBe(0);
         });
     }
+
     validateMixedContract(mapped: MappedDtrVoltageUnbalance): void {
         this.validateLiveOk(mapped);
+        expect(mapped.total).toBe(100);
         expect(mapped.items[0]?.value).toBe(10);
         expect(mapped.items[1]?.value).toBe(30);
         expect(mapped.items[2]?.value).toBe(60);
     }
+
+    /** OpenAPI sample: total 341 with Severe/Moderate/Balanced distribution. */
+    validateOpenApiSampleContract(mapped: MappedDtrVoltageUnbalance): void {
+        this.validateLiveOk(mapped);
+        expect(mapped.total).toBe(341);
+        expect(mapped.items[0]?.value).toBe(8);
+        expect(mapped.items[0]?.percentage).toBe(2.4);
+        expect(mapped.items[1]?.value).toBe(38);
+        expect(mapped.items[1]?.percentage).toBe(11.2);
+        expect(mapped.items[2]?.value).toBe(295);
+        expect(mapped.items[2]?.percentage).toBe(86.4);
+    }
+
     validateAllBalancedContract(mapped: MappedDtrVoltageUnbalance): void {
         this.validateLiveOk(mapped);
+        expect(mapped.total).toBe(100);
         expect(mapped.items[0]?.value).toBe(0);
         expect(mapped.items[1]?.value).toBe(0);
         expect(mapped.items[2]?.value).toBe(100);
         expect(mapped.items[2]?.percentage).toBe(100);
     }
+
     validateAllSevereContract(mapped: MappedDtrVoltageUnbalance): void {
         this.validateLiveOk(mapped);
+        expect(mapped.total).toBe(50);
         expect(mapped.items[0]?.value).toBe(50);
         expect(mapped.items[0]?.percentage).toBe(100);
         expect(mapped.items[1]?.value).toBe(0);
         expect(mapped.items[2]?.value).toBe(0);
     }
-    validateAuthError(responseBody: DtrVoltageUnbalanceErrorResponse,expectedCode: string,expectedMessage: string,): void {
+
+    validateAuthError(
+        responseBody: DtrVoltageUnbalanceErrorResponse,
+        expectedCode: string,
+        expectedMessage: string,
+    ): void {
         expect(responseBody.success).toBeFalsy();
         expect(responseBody.error).toBeDefined();
         expect(responseBody.error.code).toBe(expectedCode);
@@ -125,27 +193,40 @@ export class DtrVoltageUnbalanceValidator {
             expectedMessage.toLowerCase(),
         );
     }
-    validateUnauthorizedError(responseBody: DtrVoltageUnbalanceErrorResponse,): void {
+
+    validateUnauthorizedError(
+        responseBody: DtrVoltageUnbalanceErrorResponse,
+    ): void {
         this.validateAuthError(
             responseBody,
             dtrUnbalanceUnauthorizedCode,
             dtrVoltageUnbalanceUnauthorizedMessage,
         );
     }
-    validateAccessTokenInvalidError(responseBody: DtrVoltageUnbalanceErrorResponse,): void {
+
+    validateAccessTokenInvalidError(
+        responseBody: DtrVoltageUnbalanceErrorResponse,
+    ): void {
         this.validateAuthError(
             responseBody,
             dtrUnbalanceAccessTokenInvalidCode,
             dtrVoltageUnbalanceAccessTokenInvalidMessage,
         );
     }
-    validateScenario(mapped: MappedDtrVoltageUnbalance,scenario: DtrVoltageUnbalanceScenario,): void {
+
+    validateScenario(
+        mapped: MappedDtrVoltageUnbalance,
+        scenario: DtrVoltageUnbalanceScenario,
+    ): void {
         switch (scenario) {
             case "contract_all_zero":
                 this.validateAllZeroContract(mapped);
                 break;
             case "contract_mixed_distribution":
                 this.validateMixedContract(mapped);
+                break;
+            case "contract_openapi_sample":
+                this.validateOpenApiSampleContract(mapped);
                 break;
             case "contract_all_balanced":
                 this.validateAllBalancedContract(mapped);

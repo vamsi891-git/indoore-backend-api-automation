@@ -1,0 +1,48 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/dashboard/consumer/category-distribution",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "header",
+    "key"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "slNo",
+      "header": "Sl.No."
+    },
+    {
+      "key": "consumerName",
+      "header": "Consumer Name"
+    },
+    {
+      "key": "consumerAddress",
+      "header": "Consumer Address"
+    },
+    {
+      "key": "ivrs",
+      "header": "IVRS"
+    },
+    {
+      "key": "meterSerialNumber",
+      "header": "Meter Sl No."
+    },
+    {
+      "key": "meterPhase",
+      "header": "Phase"
+    },
+    {
+      "key": "serviceDate",
+      "header": "Service Date"
+    }
+  ]
+}

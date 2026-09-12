@@ -4,6 +4,7 @@ import {
   buildLookupItemsContractSnapshot,
 } from "../../../core/contract/contract-snapshot.helper";
 import { CommercialSummaryApi } from "../Api/commercial-summary.api";
+import { commercialSummaryData } from "../Data/commercial-summary.data";
 
 function asRecord(value: unknown): Record<string, unknown> {
   return value !== null && typeof value === "object"
@@ -11,16 +12,20 @@ function asRecord(value: unknown): Record<string, unknown> {
     : {};
 }
 
-test.describe("COMMERICIAL-ANALYSIS — Contract Snapshots", () => {
+test.describe("Commercial Analysis — dashboard response shape", () => {
   test.setTimeout(180_000);
 
   test(
-    "Commercial Summary Contract Snapshot",
+    "Dashboard — the list of fields in the response stays the same",
     { tag: ["@contract-snapshot", "@commericial-analysis"] },
     async ({ authenticatedApi }) => {
       const { responseBody, rawResponse } = await new CommercialSummaryApi(
         authenticatedApi,
-      ).getCommercialSummary(12, 2025, 0.85);
+      ).getCommercialSummary(
+        commercialSummaryData.month,
+        commercialSummaryData.year,
+        commercialSummaryData.pfThreshold,
+      );
       expect(rawResponse.status()).toBe(200);
       const body = asRecord(responseBody);
       expect(body.success).toBe(true);

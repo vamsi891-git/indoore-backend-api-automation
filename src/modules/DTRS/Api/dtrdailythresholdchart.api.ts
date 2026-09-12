@@ -10,7 +10,7 @@ export type DtrDailyThresholdChartApiResult =
     ApiCallResult<DtrDailyThresholdChartResponse>;
 
 export interface DtrDailyThresholdChartQuery {
-    period: DtrDailyThresholdPeriod;
+    period?: DtrDailyThresholdPeriod | string;
     [key: string]: string | number | boolean | undefined;
 }
 

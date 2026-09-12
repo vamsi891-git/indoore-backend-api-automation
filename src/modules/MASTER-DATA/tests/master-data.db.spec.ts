@@ -4,7 +4,7 @@ import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeout
 import { isMasterDataDbSqlReady } from "../Db/master-data.db";
 import { runMasterDataDbCoverage } from "./master-data-db.harness";
 
-apiDbTest.describe("MASTER-DATA — DB Coverage", () => {
+apiDbTest.describe("Master data — lists vs database", () => {
   apiDbTest.describe.configure({ retries: 1 });
   apiDbTest.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
@@ -17,7 +17,7 @@ apiDbTest.describe("MASTER-DATA — DB Coverage", () => {
   });
 
   apiDbTest(
-    "IND-MD-DB-001 — Meter / DTR / consumer / feeder / substation / communication vs DB",
+    "Meter, DTR, consumer, feeder, and substation lists match the database",
     { tag: ["@master-data", "@db"] },
     async ({ authenticatedApi, db }) => {
       await runMasterDataDbCoverage(authenticatedApi, db);

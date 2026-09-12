@@ -6,6 +6,7 @@ import {
   FeederMasterStrictSuccessResponseSchema,
   SubstationMasterStrictSuccessResponseSchema,
   MeterCommunicationStrictSuccessResponseSchema,
+  MasterDataAuditLogsStrictSuccessResponseSchema,
 } from "../../schemas/master-data-hardening.schemas";
 import { collectMasterDataDataQualityFindings } from "../../Db/master-data-db.validator";
 import {
@@ -15,6 +16,7 @@ import {
   sampleFeederMasterSuccess,
   sampleSubstationMasterSuccess,
   sampleMeterCommunicationSuccess,
+  sampleMasterDataAuditLogsSuccess,
 } from "./fixtures/master-data-sample.fixture";
 
 function expectAccepts(
@@ -106,11 +108,11 @@ test.describe("Mutation proof — DTR Master", () => {
   );
 
   test(
-    "MUT-MASTER-DTR-004 — rejects missing dtr name",
+    "MUT-MASTER-DTR-004 — rejects missing meter serial",
     { tag: ["@mutation-proof", "@master-data", "@dtr-master"] },
     async () => {
       const mutated = structuredClone(sampleDtrMasterSuccess);
-      delete (mutated.data.rows[0] as Record<string, unknown>).dtr;
+      delete (mutated.data.rows[0] as Record<string, unknown>).meterSerialNumber;
       expect(DtrMasterStrictSuccessResponseSchema.safeParse(mutated).success).toBe(
         false,
       );
@@ -244,6 +246,18 @@ test.describe("Mutation proof — Substation Master", () => {
       );
     },
   );
+
+  test(
+    "MUT-MASTER-SS-004 — rejects negative dtrCount",
+    { tag: ["@mutation-proof", "@master-data", "@substation-master"] },
+    async () => {
+      const mutated = structuredClone(sampleSubstationMasterSuccess);
+      mutated.data.rows[0].dtrCount = -1;
+      expect(
+        SubstationMasterStrictSuccessResponseSchema.safeParse(mutated).success,
+      ).toBe(false);
+    },
+  );
 });
 
 test.describe("Mutation proof — Meter Communication", () => {
@@ -288,6 +302,54 @@ test.describe("Mutation proof — Meter Communication", () => {
       delete (mutated.data.rows[0] as Record<string, unknown>).communicationStatus;
       expect(
         MeterCommunicationStrictSuccessResponseSchema.safeParse(mutated).success,
+      ).toBe(false);
+    },
+  );
+});
+
+test.describe("Mutation proof — Master Data Audit Logs", () => {
+  test(
+    "MUT-MASTER-AL-001 — accepts fixture",
+    { tag: ["@mutation-proof", "@master-data", "@audit-logs"] },
+    async () => {
+      expectAccepts(
+        MasterDataAuditLogsStrictSuccessResponseSchema,
+        sampleMasterDataAuditLogsSuccess,
+      );
+    },
+  );
+
+  test(
+    "MUT-MASTER-AL-002 — rejects success false",
+    { tag: ["@mutation-proof", "@master-data", "@audit-logs"] },
+    async () => {
+      expectRejectsSuccessFalse(
+        MasterDataAuditLogsStrictSuccessResponseSchema,
+        sampleMasterDataAuditLogsSuccess,
+      );
+    },
+  );
+
+  test(
+    "MUT-MASTER-AL-003 — rejects unexpected root field",
+    { tag: ["@mutation-proof", "@master-data", "@audit-logs"] },
+    async () => {
+      expectRejectsExtraRoot(
+        MasterDataAuditLogsStrictSuccessResponseSchema,
+        sampleMasterDataAuditLogsSuccess,
+      );
+    },
+  );
+
+  test(
+    "MUT-MASTER-AL-004 — rejects missing logs array",
+    { tag: ["@mutation-proof", "@master-data", "@audit-logs"] },
+    async () => {
+      const mutated = structuredClone(sampleMasterDataAuditLogsSuccess);
+      delete (mutated.data as Record<string, unknown>).logs;
+      expect(
+        MasterDataAuditLogsStrictSuccessResponseSchema.safeParse(mutated)
+          .success,
       ).toBe(false);
     },
   );

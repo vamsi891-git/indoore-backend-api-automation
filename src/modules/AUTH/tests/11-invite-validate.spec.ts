@@ -31,7 +31,8 @@ async function createPublicApiContext() {
  *   preview invitation by accept token (INVITE_ACCEPT_TOKEN)
  *   list my invitations → find invitation by ID
  */
-test.describe("Auth Invite Validate Flow", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Auth Invite Validate Flow", () => {
   test.describe.configure({ mode: "serial" });
 
   test.beforeAll(async ({ authenticatedApi }) => {

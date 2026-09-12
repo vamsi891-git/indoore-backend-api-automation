@@ -59,6 +59,8 @@ const result = spawnSync(
     ...testPaths,
     "--grep",
     "@mutation-proof",
+    "--grep-invert",
+    "@mutation-proof-oneoff",
     "--workers=1",
   ],
   {

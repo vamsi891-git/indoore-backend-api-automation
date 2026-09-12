@@ -60,9 +60,17 @@ export interface MappedEventLogList {
 export class EventLogListMapper {
   static map(response: EventLogListResponse): MappedEventLogList {
     const data = response.data ?? ({} as EventLogListData);
+    const rows = (data.rows ?? []).map((row) => {
+      const raw = row as EventLogRow & { duration?: string | null };
+      return {
+        ...raw,
+        durationDisplay:
+          raw.durationDisplay ?? raw.duration ?? null,
+      };
+    });
     return {
       success: response.success,
-      rows: data.rows ?? [],
+      rows,
       page: data.page ?? 1,
       pageSize: data.pageSize ?? 10,
       totalCount: data.totalCount ?? 0,

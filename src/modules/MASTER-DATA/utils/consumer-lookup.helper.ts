@@ -74,7 +74,7 @@ import {
  *
  * Compare: POST /indore/consumers succeeds because payload sends
  *          subStationNetworkLookupId + feederNetworkLookupId explicitly.
- * Tag: @backend-defect on bulk_success, bulk_success_multi, bulk_success_blank_row
+ * Tag: @backend-defect on bulk_success (2 rows), bulk_success_multi (6 rows), bulk_success_blank_row
  *
  * -----------------------------------------------------------------------------
  * ISSUE 4 — Field rules blocked behind hierarchy error (bulk consumers)

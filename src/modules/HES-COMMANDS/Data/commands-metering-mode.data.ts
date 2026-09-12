@@ -14,7 +14,7 @@ export const commandsMeteringModeData = {
   ...commandsJobPollConfig,
   expectedInitAction: "GET_CONFIG",
   initMessagePattern: /get metering mode/i,
-  queryFinishedMessagePattern: /job finished|synced from meterStatusForJob/i,
+  queryFinishedMessagePattern: /job finished|synced from meterStatusForJob|job status fetched successfully/i,
   hesCallbackNotePattern: /final completion status will be delivered via hes callback/i,
 } as const;
 

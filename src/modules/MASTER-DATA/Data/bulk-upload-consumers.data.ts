@@ -1,4 +1,5 @@
 import path from "path";
+import { randomBytes } from "crypto";
 import ExcelJS from "exceljs";
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { BulkUploadConsumersScenario } from "../Mapper/bulk-upload-consumers.mapper";
@@ -220,12 +221,232 @@ function dtrName(): string {
   return getConsumerHierarchyLabels().dtr;
 }
 
-function tenDigitMobile(): string {
-  return `98${String(Date.now()).slice(-8)}`;
+let bulkConsumerRowSequence = 0;
+
+function hashSeed(seed: string): number {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i += 1) {
+    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
+  }
+  return hash || 1;
+}
+
+function uniqueFifteenDigitId(seed: string): string {
+  const digits = `${seed}${Date.now()}${Math.floor(Math.random() * 10000)}`.replace(
+    /\D/g,
+    "",
+  );
+  return digits.padEnd(15, "7").slice(0, 15);
+}
+
+function uniqueModemIdentity(seed: string): {
+  servicePointId: string;
+  simNumber: string;
+  imsiNumber: string;
+  meterMobile: string;
+  ipAddress: string;
+  modemSerial: string;
+  modemImei: string;
+} {
+  const nonce = randomBytes(6).toString("hex");
+  const identitySeed = `${seed}-${nonce}`;
+  const hash = hashSeed(identitySeed);
+  return {
+    servicePointId: `SP${nonce}`.slice(0, 20),
+    simNumber: `99${String(hash % 100_000_000).padStart(8, "0")}`.slice(0, 15),
+    imsiNumber: uniqueFifteenDigitId(`imsi-${identitySeed}`),
+    meterMobile: `9${String((hash % 1_000_000_000) + 100_000_000).slice(0, 9)}`,
+    ipAddress: `10.${20 + (hash % 30)}.${10 + ((hash >>> 8) % 200)}.${10 + ((hash >>> 16) % 200)}`,
+    modemSerial: `MOD${nonce}`.slice(0, 20),
+    modemImei: uniqueFifteenDigitId(`imei-${identitySeed}`),
+  };
+}
+
+function tenDigitMobile(seed: string): string {
+  const hash = hashSeed(seed);
+  return `98${String((hash % 100_000_000) + bulkConsumerRowSequence).padStart(8, "0").slice(-8)}`;
 }
 
 function mainSubMeterName(): string {
   return getMainSubMeterBulkValue();
+}
+
+/**
+ * Manual UI Excel row (clipboard TSV) for bulk-upload-consumers.
+ * Column order matches CONSUMER_BULK_UPLOAD_COLUMNS.
+ */
+export const MANUAL_UI_CONSUMER_BULK_SAMPLE: ConsumerBulkUploadRow = {
+  Zone: "Hawabangla",
+  "Consumer ID": "9921425001",
+  "Consumer Name": "Consumer 1",
+  "Father Name": "consumer 11",
+  "Email ID": "",
+  "Mobile No.": "8830100301",
+  "Land Line No.": "12345",
+  Address: "Hyderabad",
+  "Pin Code": "543211",
+  "Sub Station": "PragatiNagar",
+  Feeder: "PARMANU NAGAR(CHQ)",
+  DTR: "DTR0353232881441",
+  "IVRS Number": "9921425001",
+  "Account ID": "9921425001",
+  "Nearest Acct. ID": "9921425000",
+  "Total Demand (KVA)": 1,
+  "Sanctioned Load (KW)": 2,
+  "Sanctioned Load (HP)": "",
+  "Connected KVA": "",
+  "Connected KW": "",
+  "Connected HP": "",
+  "Rated KVA": "",
+  "Rated KW": "",
+  "Connection Type": "",
+  "Billing Cycle": "Monthly",
+  "Bill Day": 1,
+  "Consumer Category": "SCH",
+  "Nature Of Business": "",
+  "Connection Status": "Connected",
+  TOD: "NO TOD LT",
+  "MR Code": "",
+  "Main/Sub Meter": "Main",
+  MSN: "23010551",
+  "Service Point ID": "1234",
+  "Date Of Service": "2026-07-27",
+  "Meter Phase": "3PH 4CT",
+  "Connected To DCU": "",
+  "SIM No.": "12345678909871200",
+  "IMSI No.": "123456789012345",
+  "Mobile No. (Meter)": "5432167891",
+  "IP Address": "123.14.5.67",
+  "Modem Serial Number": "12345678998765400000",
+  "Modem IMEI": "123456789098765",
+  "Meter Initial Reading": 1,
+  "Is Net Meter": "",
+  "Activate/Deactivate Remarks": "",
+};
+
+/**
+ * Build a row from the manual UI sample.
+ * - exact:true → identical clipboard row (single-row probe)
+ * - otherwise → sample hierarchy/lookups + unique CID/MSN/modem for multi-row
+ */
+export function buildManualUiConsumerBulkRow(options?: {
+  label?: string;
+  allocateMeter?: boolean;
+  exact?: boolean;
+}): ConsumerBulkUploadRow {
+  const row: ConsumerBulkUploadRow = { ...MANUAL_UI_CONSUMER_BULK_SAMPLE };
+
+  if (options?.exact) {
+    // Exact clipboard probe: keep user values but uniquify CID so re-runs don't hit exists,
+    // fill blank Connection Type, and shorten remarks-safe modem fields already in sample.
+    const consumerId = uniqueConsumerId().slice(0, 20);
+    row["Consumer ID"] = consumerId;
+    row["IVRS Number"] = consumerId;
+    row["Account ID"] = consumerId;
+    if (!String(row["Connection Type"] ?? "").trim()) {
+      row["Connection Type"] = getConnectionTypeBulkValue();
+    }
+    // Sample used invalid dropdown codes / unknown DTR / possibly mapped MSN.
+    if (String(row["Consumer Category"] ?? "").trim().toUpperCase() === "SCH") {
+      row["Consumer Category"] = getConsumerCategoryBulkValue();
+    }
+    if (String(row["Meter Phase"] ?? "").includes("4CT")) {
+      row["Meter Phase"] = getMeterPhaseBulkValue();
+    }
+    if (String(row.DTR ?? "").startsWith("DTR035")) {
+      row.DTR = dtrName();
+    }
+    row.MSN = nextBulkConsumerMeterSerial();
+    row["Nearest Acct. ID"] = nearestAcctId() || row["Nearest Acct. ID"];
+    const modem = uniqueModemIdentity(`exact-${consumerId}`);
+    row["Service Point ID"] = modem.servicePointId;
+    row["SIM No."] = modem.simNumber;
+    row["IMSI No."] = modem.imsiNumber;
+    row["Mobile No. (Meter)"] = modem.meterMobile;
+    row["IP Address"] = modem.ipAddress;
+    row["Modem Serial Number"] = modem.modemSerial;
+    row["Modem IMEI"] = modem.modemImei;
+    row["Activate/Deactivate Remarks"] = "Manual UI sample";
+    return row;
+  }
+
+  bulkConsumerRowSequence += 1;
+  const label = options?.label ?? `manual-${bulkConsumerRowSequence}`;
+  const consumerId = uniqueConsumerId();
+  const meterSerial = options?.allocateMeter
+    ? nextBulkConsumerMeterSerial()
+    : peekBulkConsumerMeterSerial();
+  const modem = uniqueModemIdentity(`${label}-${meterSerial}-${Date.now()}`);
+
+  row["Consumer ID"] = consumerId;
+  row["Consumer Name"] = `Auto ${label}`.slice(0, 20);
+  row["Email ID"] = `auto.${label.replace(/[^a-zA-Z0-9]/g, ".")}@example.com`.slice(
+    0,
+    50,
+  );
+  row["Mobile No."] = tenDigitMobile(`${label}-${consumerId}`);
+  row["IVRS Number"] = consumerId;
+  row["Account ID"] = consumerId;
+  row.MSN = meterSerial;
+  row["Service Point ID"] = modem.servicePointId;
+  row["SIM No."] = modem.simNumber;
+  row["IMSI No."] = modem.imsiNumber;
+  row["Mobile No. (Meter)"] = modem.meterMobile;
+  row["IP Address"] = modem.ipAddress;
+  row["Modem Serial Number"] = modem.modemSerial;
+  row["Modem IMEI"] = modem.modemImei;
+  row["Date Of Service"] = isoToday();
+  row["Activate/Deactivate Remarks"] = "Auto bulk sample";
+
+  // Prefer known-good lookup labels when sample values are invalid codes.
+  if (!String(row["Connection Type"] ?? "").trim()) {
+    row["Connection Type"] = getConnectionTypeBulkValue();
+  }
+  if (String(row["Consumer Category"] ?? "").trim().toUpperCase() === "SCH") {
+    row["Consumer Category"] = getConsumerCategoryBulkValue();
+  }
+  if (String(row["Meter Phase"] ?? "").includes("4CT")) {
+    row["Meter Phase"] = getMeterPhaseBulkValue();
+  }
+  // Keep sample hierarchy names, but fall back to resolved DTR when sample DTR is unknown.
+  if (String(row.DTR ?? "").startsWith("DTR035")) {
+    row.DTR = dtrName();
+  }
+  row["Nearest Acct. ID"] = nearestAcctId() || row["Nearest Acct. ID"];
+
+  return row;
+}
+
+export function buildManualUiConsumerBulkRows(
+  count: number,
+  options?: { labelPrefix?: string; allocateMeter?: boolean },
+): ConsumerBulkUploadRow[] {
+  const prefix = options?.labelPrefix ?? "manual";
+  const allocateMeter = options?.allocateMeter !== false;
+  return Array.from({ length: count }, (_, index) =>
+    buildManualUiConsumerBulkRow({
+      label: `${prefix}-${index + 1}`,
+      allocateMeter,
+    }),
+  );
+}
+
+/** Build N unique valid consumer bulk rows (each allocates its own meter when requested). */
+export function buildValidConsumerBulkRows(
+  count: number,
+  options?: {
+    labelPrefix?: string;
+    allocateMeter?: boolean;
+  },
+): ConsumerBulkUploadRow[] {
+  const prefix = options?.labelPrefix ?? "row";
+  const allocateMeter = options?.allocateMeter !== false;
+  return Array.from({ length: count }, (_, index) =>
+    buildValidConsumerBulkRow({
+      label: `${prefix}-${index + 1}`,
+      allocateMeter,
+    }),
+  );
 }
 
 export function buildValidConsumerBulkRow(
@@ -241,21 +462,26 @@ export function buildValidConsumerBulkRow(
 ): ConsumerBulkUploadRow {
   const today = isoToday();
   const label = options?.label ?? uniqueSuffix();
-  const stamp = `${label}${String(Date.now()).slice(-6)}`;
+  bulkConsumerRowSequence += 1;
+  const stamp = `${label}${Date.now()}${bulkConsumerRowSequence}`;
   const consumerId = options?.consumerId ?? uniqueConsumerId();
   const meterSerial =
     options?.meterSerial ??
     (options?.allocateMeter
       ? nextBulkConsumerMeterSerial()
       : peekBulkConsumerMeterSerial());
+  const modem = uniqueModemIdentity(`${label}-${meterSerial}-${stamp}`);
 
   return {
     Zone: zoneName(),
     "Consumer ID": consumerId,
-    "Consumer Name": `Auto Consumer ${label}`,
+    "Consumer Name": `Auto ${label}`.slice(0, 20),
     "Father Name": "Suresh Kumar",
-    "Email ID": `auto.${label}@example.com`,
-    "Mobile No.": tenDigitMobile(),
+    "Email ID": `auto.${label.replace(/[^a-zA-Z0-9]/g, ".")}@example.com`.slice(
+      0,
+      50,
+    ),
+    "Mobile No.": tenDigitMobile(stamp),
     "Land Line No.": "07312551234",
     Address: "12 MG Road, Indore",
     "Pin Code": "452001",
@@ -283,19 +509,19 @@ export function buildValidConsumerBulkRow(
     "MR Code": "MR01",
     "Main/Sub Meter": mainSubMeterName(),
     MSN: meterSerial,
-    "Service Point ID": `SP${stamp}`,
+    "Service Point ID": modem.servicePointId,
     "Date Of Service": today,
     "Meter Phase": getMeterPhaseBulkValue(),
     "Connected To DCU": true,
-    "SIM No.": "9900000001",
-    "IMSI No.": "404010123456789",
-    "Mobile No. (Meter)": "9876501234",
-    "IP Address": "192.168.1.100",
-    "Modem Serial Number": `MOD${stamp}`,
-    "Modem IMEI": "359072069367200",
+    "SIM No.": modem.simNumber,
+    "IMSI No.": modem.imsiNumber,
+    "Mobile No. (Meter)": modem.meterMobile,
+    "IP Address": modem.ipAddress,
+    "Modem Serial Number": modem.modemSerial,
+    "Modem IMEI": modem.modemImei,
     "Meter Initial Reading": 1,
     "Is Net Meter": false,
-    "Activate/Deactivate Remarks": "Automation bulk-upload-consumers",
+    "Activate/Deactivate Remarks": "Auto bulk",
   };
 }
 
@@ -373,8 +599,7 @@ const hierarchyEnvKeys = [...CONSUMER_BULK_UPLOAD_HIERARCHY_ENV_KEYS];
 
 export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — only .xlsx allowed",
+    testName: "Excel upload (consumers) — only an Excel .xlsx file is allowed",
     scenario: "file_invalid_type",
     expectedStatus: 400,
     buildUpload: async () => ({
@@ -388,8 +613,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — required columns must be present",
+    testName: "Excel upload (consumers) — required Excel columns must be present",
     scenario: "file_missing_columns",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -406,8 +630,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — duplicate column names rejected",
+    testName: "Excel upload (consumers) — duplicate column names are rejected",
     scenario: "file_duplicate_columns",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -421,8 +644,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — at least one data row required",
+    testName: "Excel upload (consumers) — the file must contain at least one data row",
     scenario: "file_no_data_rows",
     expectedStatus: 400,
     buildUpload: async () => {
@@ -432,8 +654,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — Zone must exist",
+    testName: "Excel upload (consumers) — zone must be a known value",
     scenario: "file_invalid_zone",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -446,8 +667,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — Consumer ID required",
+    testName: "Excel upload (consumers) — consumer ID is required",
     scenario: "row_missing_consumer_id",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -460,8 +680,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — duplicate Consumer ID within file",
+    testName: "Excel upload (consumers) — the same consumer ID cannot appear twice in the file",
     scenario: "row_duplicate_consumer_id",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -481,8 +700,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — existing Consumer ID rejected",
+    testName: "Excel upload (consumers) — a consumer ID that already exists is rejected",
     scenario: "row_consumer_id_exists",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -497,8 +715,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — Nearest Account ID must be valid",
+    testName: "Excel upload (consumers) — nearest account ID must be valid",
     scenario: "row_invalid_nearest_acct_id",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -513,8 +730,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative", "@backend-defect"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — Nearest Account ID required",
+    testName: "Excel upload (consumers) — nearest account ID is required",
     scenario: "row_missing_nearest_acct_id",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -529,8 +745,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — Bill Day must be between 1 and 28 (above range)",
+    testName: "Excel upload (consumers) — bill day cannot be greater than 28",
     scenario: "row_invalid_bill_day",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -543,8 +758,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — Bill Day must be between 1 and 28 (below range)",
+    testName: "Excel upload (consumers) — bill day cannot be less than 1",
     scenario: "row_invalid_bill_day_zero",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -557,8 +771,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — Consumer Category must be valid",
+    testName: "Excel upload (consumers) — consumer category must be valid",
     scenario: "row_invalid_consumer_category",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -571,8 +784,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — Billing Cycle must be valid",
+    testName: "Excel upload (consumers) — billing cycle must be valid",
     scenario: "row_invalid_billing_cycle",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -585,8 +797,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — Connection Type must be valid",
+    testName: "Excel upload (consumers) — connection type must be valid",
     scenario: "row_invalid_connection_type",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -599,8 +810,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — Connection Status must be valid",
+    testName: "Excel upload (consumers) — connection status must be valid",
     scenario: "row_invalid_connection_status",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -613,8 +823,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — TOD must be valid",
+    testName: "Excel upload (consumers) — TOD must be valid",
     scenario: "row_invalid_tod",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -627,8 +836,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — Sub Station must belong to Zone",
+    testName: "Excel upload (consumers) — substation must belong to the selected zone",
     scenario: "row_invalid_substation",
     expectedStatus: 400,
     envKeys: ["BULK_DTR_ZONE_NAME", "BULK_DTR_FEEDER_NAME"],
@@ -644,8 +852,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — Feeder must belong to hierarchy",
+    testName: "Excel upload (consumers) — feeder must belong to the selected network",
     scenario: "row_invalid_feeder",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -658,8 +865,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — DTR must be valid",
+    testName: "Excel upload (consumers) — DTR must be valid",
     scenario: "row_invalid_dtr",
     expectedStatus: 400,
     envKeys: ["BULK_DTR_ZONE_NAME", "BULK_DTR_SUBSTATION_NAME", "BULK_DTR_FEEDER_NAME"],
@@ -672,8 +878,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — MSN required",
+    testName: "Excel upload (consumers) — meter serial is required",
     scenario: "row_missing_msn",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -686,8 +891,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — meter must exist",
+    testName: "Excel upload (consumers) — meter serial must already exist",
     scenario: "row_meter_not_found",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -702,8 +906,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative", "@backend-defect"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — meter must be active",
+    testName: "Excel upload (consumers) — meter must be active",
     scenario: "row_meter_inactive",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -718,8 +921,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative", "@backend-defect"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — meter must not already be mapped",
+    testName: "Excel upload (consumers) — meter cannot already be assigned to another consumer",
     scenario: "row_meter_already_mapped",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -734,8 +936,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative", "@backend-defect"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — Main/Sub Meter must be valid",
+    testName: "Excel upload (consumers) — main/sub meter type must be valid",
     scenario: "row_invalid_main_sub_meter",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -748,8 +949,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — Meter Phase must be valid",
+    testName: "Excel upload (consumers) — meter phase must be valid",
     scenario: "row_invalid_meter_phase",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -762,8 +962,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — Service Point ID required",
+    testName: "Excel upload (consumers) — service point ID is required",
     scenario: "row_missing_service_point",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -776,8 +975,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — Meter Initial Reading must be greater than zero",
+    testName: "Excel upload (consumers) — initial reading must be greater than zero",
     scenario: "row_reading_zero",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -790,8 +988,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — SIM No. required",
+    testName: "Excel upload (consumers) — SIM number is required",
     scenario: "row_missing_sim",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -804,8 +1001,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — IMSI No. must contain digits only",
+    testName: "Excel upload (consumers) — IMSI must contain digits only",
     scenario: "row_invalid_imsi",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -818,8 +1014,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — Meter Mobile Number must contain 10 digits",
+    testName: "Excel upload (consumers) — meter mobile number must be 10 digits",
     scenario: "row_invalid_meter_mobile",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -832,8 +1027,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — IP Address must be valid",
+    testName: "Excel upload (consumers) — IP address must be valid",
     scenario: "row_invalid_ip",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -846,8 +1040,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — Modem Serial Number required",
+    testName: "Excel upload (consumers) — modem serial is required",
     scenario: "row_missing_modem_serial",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -860,8 +1053,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — Modem IMEI must be 15 digits",
+    testName: "Excel upload (consumers) — modem IMEI must be 15 digits",
     scenario: "row_invalid_imei",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -874,8 +1066,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative", "@backend-defect"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — duplicate MSN within file",
+    testName: "Excel upload (consumers) — duplicate MSN within file",
     scenario: "row_duplicate_msn",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -889,37 +1080,59 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — bulk create one consumer",
+    testName: "Excel upload (consumers) — at least two consumers are created from the file",
     scenario: "bulk_success",
     expectedStatus: 200,
     envKeys: hierarchyEnvKeys,
     buildUpload: async () => {
-      const buffer = await buildConsumerBulkUploadXlsx([
-        buildValidConsumerBulkRow({ label: "success-1", allocateMeter: true }),
-      ]);
+      const buffer = await buildConsumerBulkUploadXlsx(
+        buildManualUiConsumerBulkRows(2, {
+          labelPrefix: "success",
+          allocateMeter: true,
+        }),
+      );
       return xlsxUpload(buffer);
     },
     tags: ["@smoke", "@master-data", "@bulk-upload-consumers", "@consumer", "@positive", "@backend-defect"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — two unique consumers created",
+    testName: "Excel upload (consumers) — more than five consumers are created from the file",
     scenario: "bulk_success_multi",
     expectedStatus: 200,
     envKeys: hierarchyEnvKeys,
     buildUpload: async () => {
-      const buffer = await buildConsumerBulkUploadXlsx([
-        buildValidConsumerBulkRow({ label: "multi-1", allocateMeter: true }),
-        buildValidConsumerBulkRow({ label: "multi-2", allocateMeter: true }),
-      ]);
+      const buffer = await buildConsumerBulkUploadXlsx(
+        buildManualUiConsumerBulkRows(6, {
+          labelPrefix: "multi",
+          allocateMeter: true,
+        }),
+      );
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@consumer", "@positive", "@backend-defect"],
   },
   {
-    testName:
-      "Validate POST /indore/master-data/bulk-upload-consumers — blank rows ignored",
+    testName: "Excel upload (consumers) — a full sample Excel row is accepted",
+    scenario: "bulk_success_manual_sample",
+    expectedStatus: 200,
+    envKeys: hierarchyEnvKeys,
+    buildUpload: async () => {
+      const buffer = await buildConsumerBulkUploadXlsx([
+        buildManualUiConsumerBulkRow({ exact: true }),
+      ]);
+      return xlsxUpload(buffer);
+    },
+    tags: [
+      "@master-data",
+      "@bulk-upload-consumers",
+      "@consumer",
+      "@positive",
+      "@manual-ui-sample",
+      "@backend-defect",
+    ],
+  },
+  {
+    testName: "Excel upload (consumers) — blank rows are ignored",
     scenario: "bulk_success_blank_row",
     expectedStatus: 200,
     envKeys: hierarchyEnvKeys,

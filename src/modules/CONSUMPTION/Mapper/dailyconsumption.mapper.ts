@@ -15,6 +15,8 @@ export interface DailyConsumptionItem {
     ir: number | null;
     fr: number | null;
     kwh: number | null;
+    /** Newer API field — optional so older responses still map */
+    mf?: number | null;
 }
 export interface DailyConsumptionData {
     items: DailyConsumptionItem[];

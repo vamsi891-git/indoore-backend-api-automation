@@ -7,6 +7,7 @@ import { AuthValidator } from "../Validator/auth.validator";
 import {
   AuthErrorResponseSchema,
   AuthLoginSuccessResponseSchema,
+  isTwoFactorChallengePayload,
 } from "../schemas/auth.schemas";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
@@ -162,6 +163,10 @@ test.describe("Auth Login API", () => {
             );
             validation.execute("Direct Login Session", () =>
               validator.validateLoginSession(session),
+            );
+          } else if (isTwoFactorChallengePayload(parsed.data)) {
+            validation.execute("Two-Factor Challenge Payload", () =>
+              validator.validateTwoFactorChallenge(parsed.data),
             );
           } else {
             const selection = AuthMapper.mapDeviceSelection(parsed.data);

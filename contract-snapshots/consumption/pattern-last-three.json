@@ -1,0 +1,134 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumption/pattern-consumption",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "table"
+  ],
+  "itemKeys": [
+    "address",
+    "circle",
+    "consumerConnectionTblRefId",
+    "division",
+    "dtr",
+    "feeder",
+    "ivrsNumber",
+    "m0Kvah",
+    "m0Kwh",
+    "m0Md",
+    "m1Kvah",
+    "m1Kwh",
+    "m1Md",
+    "m2Kvah",
+    "m2Kwh",
+    "m2Md",
+    "meterMake",
+    "msn",
+    "name",
+    "offName",
+    "phase",
+    "sanctionLoadKw",
+    "slNo",
+    "subStation",
+    "tariff",
+    "zone"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "subStation",
+      "header": "Substation"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtr",
+      "header": "DTR"
+    },
+    {
+      "key": "name",
+      "header": "Consumer Name"
+    },
+    {
+      "key": "address",
+      "header": "Address"
+    },
+    {
+      "key": "ivrsNumber",
+      "header": "IVRS Number"
+    },
+    {
+      "key": "tariff",
+      "header": "Tariff"
+    },
+    {
+      "key": "msn",
+      "header": "MSN"
+    },
+    {
+      "key": "meterMake",
+      "header": "Meter Make"
+    },
+    {
+      "key": "phase",
+      "header": "Phase"
+    },
+    {
+      "key": "sanctionLoadKw",
+      "header": "Sanction Load"
+    },
+    {
+      "key": "m0Kwh",
+      "header": "OCTkWh"
+    },
+    {
+      "key": "m0Kvah",
+      "header": "OCTkVAh"
+    },
+    {
+      "key": "m0Md",
+      "header": "OCTMD"
+    },
+    {
+      "key": "m1Kwh",
+      "header": "SEPkWh"
+    },
+    {
+      "key": "m1Kvah",
+      "header": "SEPkVAh"
+    },
+    {
+      "key": "m1Md",
+      "header": "SEPMD"
+    },
+    {
+      "key": "m2Kwh",
+      "header": "AUGkWh"
+    },
+    {
+      "key": "m2Kvah",
+      "header": "AUGkVAh"
+    },
+    {
+      "key": "m2Md",
+      "header": "AUGMD"
+    }
+  ]
+}

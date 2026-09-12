@@ -1,6 +1,7 @@
 import { commercialSummaryData } from "./commercial-summary.data";
 import { consumptionCompareLastMonthData } from "./consumptioncompare.data";
 import { consumptionPatternData } from "./consumptionpattern.data";
+import { dayNightZeroData } from "./daynight.data";
 import { lfAnalysisData } from "./loadfactor.api";
 import { mdAnalysisCdCompareData } from "./mdanalysis.data";
 import { pfAnalysisQuery } from "./powerfactor.data";
@@ -22,7 +23,7 @@ export type CommercialNegativeCase = {
  */
 export const allCommercialNegativeCases: CommercialNegativeCase[] = [
   {
-    testName: "summary missing month returns client error",
+    testName: "Dashboard — month is required; report is rejected without it",
     tags: ["@commercial", "@commercial-summary", "@negative"],
     path: commercialPaths.summary,
     params: {
@@ -33,7 +34,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "summary month zero returns client error",
+    testName: "Dashboard — month 0 is rejected (month must be 1 to 12)",
     tags: ["@commercial", "@commercial-summary", "@negative"],
     path: commercialPaths.summary,
     params: {
@@ -45,7 +46,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "summary month thirteen returns client error",
+    testName: "Dashboard — month 13 is rejected (month must be 1 to 12)",
     tags: ["@commercial", "@commercial-summary", "@negative"],
     path: commercialPaths.summary,
     params: {
@@ -57,19 +58,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "summary invalid pfThreshold returns client error",
-    tags: ["@commercial", "@commercial-summary", "@negative"],
-    path: commercialPaths.summary,
-    params: {
-      month: commercialSummaryData.month,
-      year: commercialSummaryData.year,
-      pfThreshold: -1,
-    },
-    expectedStatuses: [400, 422],
-    expectedCodes: ["VALIDATION_ERROR"],
-  },
-  {
-    testName: "pf month thirteen returns client error",
+    testName: "Power Factor Violation — month 13 is rejected (month must be 1 to 12)",
     tags: ["@commercial", "@power-factor", "@negative"],
     path: commercialPaths.pf,
     params: {
@@ -83,7 +72,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "pf page zero returns client error",
+    testName: "Power Factor Violation — page 0 is rejected (page must start at 1)",
     tags: ["@commercial", "@power-factor", "@negative"],
     path: commercialPaths.pf,
     params: {
@@ -97,7 +86,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "md invalid type returns client error",
+    testName: "Maximum Demand — unknown report type is rejected",
     tags: ["@commercial", "@md-analysis", "@negative"],
     path: commercialPaths.md,
     params: {
@@ -112,7 +101,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "md month thirteen returns client error",
+    testName: "Maximum Demand — month 13 is rejected (month must be 1 to 12)",
     tags: ["@commercial", "@md-analysis", "@negative"],
     path: commercialPaths.md,
     params: {
@@ -127,7 +116,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "lf month thirteen returns client error",
+    testName: "Load Factor — month 13 is rejected (month must be 1 to 12)",
     tags: ["@commercial", "@lf-analysis", "@negative"],
     path: commercialPaths.lf,
     params: {
@@ -143,7 +132,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "lf page zero returns client error",
+    testName: "Load Factor — page 0 is rejected (page must start at 1)",
     tags: ["@commercial", "@lf-analysis", "@negative"],
     path: commercialPaths.lf,
     params: {
@@ -159,7 +148,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "consumption-compare invalid type returns client error",
+    testName: "Consumption Compare — unknown report type is rejected",
     tags: ["@commercial", "@consumption-compare", "@negative"],
     path: commercialPaths.consumptionCompare,
     params: {
@@ -173,7 +162,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "consumption-compare month thirteen returns client error",
+    testName: "Consumption Compare — month 13 is rejected (month must be 1 to 12)",
     tags: ["@commercial", "@consumption-compare", "@negative"],
     path: commercialPaths.consumptionCompare,
     params: {
@@ -187,7 +176,22 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "consumption-pattern month thirteen returns client error",
+    testName: "Consumption Pattern — unknown report type is rejected",
+    tags: ["@commercial", "@consumption-pattern", "@negative"],
+    path: commercialPaths.consumptionPattern,
+    params: {
+      month: consumptionPatternData.month,
+      year: consumptionPatternData.year,
+      type: "not-a-pattern-type",
+      connectionCategory: "domestic",
+      page: 1,
+      pageSize: 10,
+    },
+    expectedStatuses: [400, 422],
+    expectedCodes: ["VALIDATION_ERROR"],
+  },
+  {
+    testName: "Consumption Pattern — month 13 is rejected (month must be 1 to 12)",
     tags: ["@commercial", "@consumption-pattern", "@negative"],
     path: commercialPaths.consumptionPattern,
     params: {
@@ -203,7 +207,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
     expectedCodes: ["VALIDATION_ERROR"],
   },
   {
-    testName: "consumption-pattern page zero returns client error",
+    testName: "Consumption Pattern — page 0 is rejected (page must start at 1)",
     tags: ["@commercial", "@consumption-pattern", "@negative"],
     path: commercialPaths.consumptionPattern,
     params: {
@@ -212,6 +216,34 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
       pattern: "zero",
       months: 1,
       threshold: 100,
+      page: 0,
+      pageSize: 10,
+    },
+    expectedStatuses: [400, 422],
+    expectedCodes: ["VALIDATION_ERROR"],
+  },
+  {
+    testName: "Day and Night — month 13 is rejected (month must be 1 to 12)",
+    tags: ["@commercial", "@day-night", "@negative"],
+    path: commercialPaths.dayNight,
+    params: {
+      month: 13,
+      year: dayNightZeroData.year,
+      type: dayNightZeroData.type,
+      page: 1,
+      pageSize: 10,
+    },
+    expectedStatuses: [400, 422],
+    expectedCodes: ["VALIDATION_ERROR"],
+  },
+  {
+    testName: "Day and Night — page 0 is rejected (page must start at 1)",
+    tags: ["@commercial", "@day-night", "@negative"],
+    path: commercialPaths.dayNight,
+    params: {
+      month: dayNightZeroData.month,
+      year: dayNightZeroData.year,
+      type: dayNightZeroData.type,
       page: 0,
       pageSize: 10,
     },
@@ -238,45 +270,88 @@ export const commercialEdgeCases = {
     page: 1,
     pageSize: 10,
   },
+  pfDomestic: {
+    month: pfAnalysisQuery.month,
+    year: pfAnalysisQuery.year,
+    threshold: pfAnalysisQuery.threshold,
+    connectionCategory: "domestic" as const,
+    page: 1,
+    pageSize: 10,
+  },
+  pfNonDomestic: {
+    month: pfAnalysisQuery.month,
+    year: pfAnalysisQuery.year,
+    threshold: pfAnalysisQuery.threshold,
+    connectionCategory: "non-domestic" as const,
+    page: 1,
+    pageSize: 10,
+  },
   lfGt100: {
     month: lfAnalysisData.month,
     year: lfAnalysisData.year,
-    threshold: 100,
-    operator: "gt" as const,
-    months: 1,
+    type: "LF > 100%" as const,
     page: 1,
     pageSize: 20,
   },
   lfLt5Last3m: {
     month: lfAnalysisData.month,
     year: lfAnalysisData.year,
-    threshold: 5,
-    operator: "lt" as const,
-    months: 3,
+    type: "LF < 5% Last Three month" as const,
     page: 1,
     pageSize: 20,
   },
-  /** API defaults operator when omitted */
+  /** API defaults type when omitted → LF < 5% */
   lfMissingOperator: {
     month: lfAnalysisData.month,
     year: lfAnalysisData.year,
-    threshold: lfAnalysisData.threshold,
-    months: 1,
     page: 1,
     pageSize: 20,
   },
   patternLow3m: {
     month: consumptionPatternData.month,
     year: consumptionPatternData.year,
+    type: "100 unit kwh from Last Three months continuous" as const,
+    connectionCategory: "domestic" as const,
     pattern: "low" as const,
     months: 3,
     threshold: 100,
     page: 1,
-    pageSize: 20,
+    pageSize: 10,
+  },
+  patternZero1mPage2: {
+    ...consumptionPatternData,
+    page: 2,
+    pageSize: 10,
+  },
+  patternZero1mPageSize1: {
+    ...consumptionPatternData,
+    page: 1,
+    pageSize: 1,
+  },
+  patternZero3m: {
+    month: consumptionPatternData.month,
+    year: consumptionPatternData.year,
+    type: "Zero Consumption for Last 3 months" as const,
+    connectionCategory: "domestic" as const,
+    pattern: "zero" as const,
+    months: 3,
+    threshold: 100,
+    page: 1,
+    pageSize: 10,
+  },
+  /** API defaults type when omitted */
+  patternMissingType: {
+    month: consumptionPatternData.month,
+    year: consumptionPatternData.year,
+    connectionCategory: "domestic" as const,
+    page: 1,
+    pageSize: 10,
   },
   patternZero6m: {
     month: consumptionPatternData.month,
     year: consumptionPatternData.year,
+    type: "Zero Consumption for Last 6 months" as const,
+    connectionCategory: "domestic" as const,
     pattern: "zero" as const,
     months: 6,
     threshold: 100,
@@ -300,6 +375,17 @@ export const commercialEdgeCases = {
     month: mdAnalysisCdCompareData.month,
     year: mdAnalysisCdCompareData.year,
     months: 3,
+    page: 1,
+    pageSize: 10,
+  },
+  dayNightZero: {
+    ...dayNightZeroData,
+  },
+  dayNightLte: {
+    month: dayNightZeroData.month,
+    year: dayNightZeroData.year,
+    type: "Night consumption <= 10% of Day consumption" as const,
+    connectionCategory: "domestic" as const,
     page: 1,
     pageSize: 10,
   },

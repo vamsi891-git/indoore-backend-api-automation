@@ -11,13 +11,14 @@ export class PatternConsumptionApi extends TimedApiClient {
     page: number,
     limit: number,
     month: number,
-    year: number
+    year: number,
+    extras: Record<string, string | number | boolean> = {},
   ): Promise<PatternConsumptionApiResult> {
     const { response, responseTime } = await getConsumptionWithRetry(
       this.authenticatedApi,
       "/indore/consumption/pattern-consumption",
       {
-        params: { patternType, page, limit, month, year },
+        params: { patternType, page, limit, month, year, ...extras },
       },
     );
     const text = await response.text();

@@ -77,7 +77,8 @@ function needsAssignableMeter(
   return !METER_SCENARIO_SCENARIOS.has(testCase.scenario);
 }
 
-test.describe("Bulk Upload DTR API", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Master data — Excel upload (DTRs)", () => {
   // Parallel-safe: do not use mode "serial" — one failure must not skip remaining cases.
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);

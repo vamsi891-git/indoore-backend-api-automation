@@ -32,7 +32,7 @@ import {
 } from "../utils/network-hierarchy-cascade.helper";
 
 const E2E_LABEL =
-  "E2E: create meter → validate dtr meter → create dtr (assign meter)";
+  "Add a meter, check it can go on a DTR, then create the DTR";
 const VALIDATE_SETTLE_MS = 1500;
 const VALIDATE_RETRIES = 6;
 
@@ -40,7 +40,8 @@ async function sleep(ms: number): Promise<void> {
   await new Promise<void>((resolve) => setTimeout(resolve, ms));
 }
 
-test.describe("Meter → DTR E2E", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Master data — add meter then put it on a DTR", () => {
   test.describe.configure({ mode: "serial", retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

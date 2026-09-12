@@ -13,14 +13,19 @@
   "itemKeys": [
     "circle",
     "division",
-    "dtr",
-    "feeder",
+    "dtrCapacity",
+    "dtrCode",
+    "dtrName",
+    "feederCode",
+    "feederName",
     "id",
     "latitude",
     "longitude",
     "meterLookupTblRefId",
+    "meterMake",
     "meterSerialNumber",
     "mf",
+    "newDtrCode",
     "serviceDate",
     "slNo",
     "subStation",
@@ -49,16 +54,32 @@
       "header": "Sub Station"
     },
     {
-      "key": "feeder",
-      "header": "Feeder"
+      "key": "feederName",
+      "header": "Feeder Name"
     },
     {
-      "key": "dtr",
-      "header": "DTR"
+      "key": "feederCode",
+      "header": "Feeder Code"
+    },
+    {
+      "key": "dtrCode",
+      "header": "DTR Code"
+    },
+    {
+      "key": "newDtrCode",
+      "header": "New DTR Code"
+    },
+    {
+      "key": "dtrCapacity",
+      "header": "DTR Capacity"
     },
     {
       "key": "meterSerialNumber",
-      "header": "Meter_Serial_Number"
+      "header": "Meter SL No"
+    },
+    {
+      "key": "meterMake",
+      "header": "Meter Make"
     },
     {
       "key": "mf",

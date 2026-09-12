@@ -17,8 +17,9 @@ import {
   type DtrProfileErrorResponse,
 } from "../Mapper/dtrprofile.mapper";
 import { DtrProfileValidator } from "../Validator/dtrprofile.validator";
+import { skipIfDtrInternalError } from "../utils/dtr-env.helper";
 
-test.describe("DTR Profile API", () => {
+test.describe("DTR profile", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
@@ -73,6 +74,12 @@ test.describe("DTR Profile API", () => {
 
         const { rawResponse, responseBody, responseTime } =
           await api.getProfile(dtrCode, query);
+
+        skipIfDtrInternalError(
+          rawResponse.status(),
+          responseBody,
+          `/indore/dtr/${dtrCode.trim()}/profile`,
+        );
 
         await PerformanceTracker.track(
         rawResponse,

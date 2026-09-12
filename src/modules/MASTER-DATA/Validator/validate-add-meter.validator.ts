@@ -1,4 +1,5 @@
 import { expect } from "@playwright/test";
+import { VALIDATE_ADD_METER_ALREADY_EXISTS_MESSAGE } from "../Data/validate-add-meter.data";
 import {
   ValidateAddMeterData,
   ValidateAddMeterResponse,
@@ -46,15 +47,17 @@ export class ValidateAddMeterValidator {
   validateMeterAlreadyExists(response: ValidateAddMeterResponse): void {
     expect(response.data.valid).toBe(false);
     expect(response.data.reason).toBe("METER_ALREADY_EXISTS");
-    expect(response.data.message?.trim().length).toBeGreaterThan(0);
+    expect(response.data.message).toBe(VALIDATE_ADD_METER_ALREADY_EXISTS_MESSAGE);
   }
 
   validateValidReasonConsistency(data: ValidateAddMeterData): void {
     if (data.valid) {
       expect(data.reason).toBeUndefined();
+      expect(data.message).toBeUndefined();
       return;
     }
     expect(data.reason).toBeTruthy();
+    expect(data.message?.trim().length).toBeGreaterThan(0);
   }
 
   validateScenario(
@@ -69,5 +72,18 @@ export class ValidateAddMeterValidator {
         this.validateMeterAlreadyExists(response);
         break;
     }
+  }
+
+  validateValidationError(
+    status: number,
+    body: {
+      success?: boolean;
+      error?: { code?: string; message?: string };
+    },
+  ): void {
+    expect(status).toBe(400);
+    expect(body.success).toBe(false);
+    expect(body.error?.code).toBe("VALIDATION_ERROR");
+    expect(body.error?.message?.toLowerCase()).toContain("meterserialnumber");
   }
 }

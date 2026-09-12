@@ -3,7 +3,7 @@
 export const sampleTechnicalSummarySuccess = {
   success: true as const,
   data: {
-    month: 12,
+    month: 10,
     year: 2025,
     reports: [
       {

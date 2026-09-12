@@ -26,11 +26,11 @@ function asRecord(value: unknown): Record<string, unknown> {
     : {};
 }
 
-test.describe("TECHNICAL-ANALYSIS — Contract Snapshots", () => {
+test.describe("Technical analysis — contract snapshots", () => {
   test.setTimeout(600_000);
 
   test(
-    "Technical Summary Contract Snapshot",
+    "Technical summary — column and field names stay the same",
     { tag: ["@contract-snapshot", "@technical-analysis", "@technical-summary"] },
     async ({ authenticatedApi }) => {
       const { responseBody } = await new TechnicalSummaryApi(
@@ -55,7 +55,7 @@ test.describe("TECHNICAL-ANALYSIS — Contract Snapshots", () => {
   );
 
   test(
-    "Technical Report Contract Snapshot",
+    "Technical report — column and field names stay the same",
     { tag: ["@contract-snapshot", "@technical-analysis", "@report"] },
     async ({ authenticatedApi }) => {
       const liveConfig =

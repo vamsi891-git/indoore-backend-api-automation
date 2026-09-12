@@ -1,6 +1,141 @@
 import { expect } from "@playwright/test";
-import type { TechnicalReportMapped } from "../Mapper/technicalanalysis.mapper";
+import type {
+  TechnicalReportMapped,
+  TechnicalReportRow,
+} from "../Mapper/technicalanalysis.mapper";
 import type { TechnicalReportScenario } from "../Data/technicalanalysis.data";
+import {
+  EXPECTED_TECHNICAL_DURATION_COLUMNS,
+  EXPECTED_TECHNICAL_EVENT_COLUMNS,
+  EXPECTED_TECHNICAL_YNR_DURATION_COLUMNS,
+} from "../Data/technicalanalysis.data";
+
+export function normalizeTechnicalMsn(value: unknown): string {
+  const raw = String(value ?? "").trim();
+  const stripped = raw.replace(/^0+/, "");
+  return stripped || raw.toLowerCase();
+}
+
+export function normalizeTechnicalDtr(value: unknown): string {
+  return String(value ?? "").trim().toLowerCase();
+}
+
+export function formatTechnicalMetricKey(value: unknown): string {
+  const n = Number(value);
+  return Number.isFinite(n) ? n.toFixed(2) : String(value ?? "").trim();
+}
+
+export function technicalRowMetricKey(row: TechnicalReportRow): string {
+  return [
+    formatTechnicalMetricKey(row.durationInHours),
+    formatTechnicalMetricKey((row as { eventCount?: number }).eventCount),
+    String(row.eventName ?? "").trim(),
+  ].join("|");
+}
+
+/**
+ * Same meter on two DTRs is allowed. Same meterLookupId + DTR (or MSN + DTR + value) is a duplicate.
+ */
+export function validateNoDuplicateTechnicalMeterRows(
+  rows: TechnicalReportRow[],
+  reportLabel = "Technical Report",
+): void {
+  const seen = new Map<string, TechnicalReportRow>();
+  const seenIds = new Map<string, TechnicalReportRow>();
+
+  for (const row of rows) {
+    const key = `${row.meterLookupId}-${normalizeTechnicalMsn(row.msn)}-${normalizeTechnicalDtr(row.dtr)}`;
+    const rowId = String(row.id ?? "").trim();
+    expect(seen.has(key), `Duplicate ${reportLabel} record: ${key}`).toBeFalsy();
+    seen.set(key, row);
+    if (rowId) {
+      const idKey = `${rowId}|${normalizeTechnicalDtr(row.dtr)}`;
+      expect(
+        seenIds.has(idKey),
+        `Duplicate ${reportLabel} id=${rowId} dtr=${normalizeTechnicalDtr(row.dtr) || "(blank)"}`,
+      ).toBeFalsy();
+      seenIds.set(idKey, row);
+    }
+  }
+}
+
+/**
+ * Phase grids use slNo / IVRS / meterSerialNumber (often no meterLookupId or msn).
+ * Same IVRS on two DTRs is allowed. Same IVRS + DTR is a duplicate.
+ */
+export function validateNoDuplicatePhaseRows(
+  rows: TechnicalReportRow[],
+  reportLabel = "Phase Report",
+): void {
+  const seenIvrsDtr = new Map<string, TechnicalReportRow>();
+  const seenSerialDtr = new Map<string, TechnicalReportRow>();
+  const seenSlNo = new Set<string>();
+
+  for (const row of rows) {
+    const slNo = String((row as { slNo?: unknown }).slNo ?? "").trim();
+    if (slNo) {
+      expect(
+        seenSlNo.has(slNo),
+        `Duplicate ${reportLabel} slNo=${slNo}`,
+      ).toBeFalsy();
+      seenSlNo.add(slNo);
+    }
+
+    const ivrs = String(row.ivrsNumber ?? "").trim();
+    const dtr = normalizeTechnicalDtr(row.dtr);
+    expect(ivrs, `${reportLabel}: ivrsNumber must be non-blank`).toBeTruthy();
+    const ivrsKey = `${ivrs}|${dtr}`;
+    expect(
+      seenIvrsDtr.has(ivrsKey),
+      `Duplicate ${reportLabel} ivrs=${ivrs} dtr=${dtr || "(blank)"}`,
+    ).toBeFalsy();
+    seenIvrsDtr.set(ivrsKey, row);
+
+    const serial = String(
+      (row as { meterSerialNumber?: unknown }).meterSerialNumber ??
+        row.msn ??
+        "",
+    ).trim();
+    if (!serial) {
+      continue;
+    }
+    const serialKey = `${normalizeTechnicalMsn(serial)}|${dtr}`;
+    expect(
+      seenSerialDtr.has(serialKey),
+      `Duplicate ${reportLabel} serial=${serial} dtr=${dtr || "(blank)"}`,
+    ).toBeFalsy();
+    seenSerialDtr.set(serialKey, row);
+  }
+}
+
+export function validateUniqueTechnicalMeterIdentity(
+  rows: TechnicalReportRow[],
+  reportLabel = "Technical Report",
+): void {
+  const byLookupDtr = new Map<string, TechnicalReportRow>();
+  const byMsnMetric = new Map<string, TechnicalReportRow>();
+
+  for (const row of rows) {
+    const lookupId = Number(row.meterLookupId);
+    const msn = normalizeTechnicalMsn(row.msn);
+    const dtr = normalizeTechnicalDtr(row.dtr);
+    const metricKey = technicalRowMetricKey(row);
+    expect(lookupId, `${reportLabel}: meterLookupId must be > 0`).toBeGreaterThan(0);
+    expect(msn, `${reportLabel}: msn must be non-blank`).toBeTruthy();
+    const lookupKey = `${lookupId}|${dtr}`;
+    expect(
+      byLookupDtr.has(lookupKey),
+      `Duplicate ${reportLabel} meterLookupId=${lookupId} dtr=${dtr || "(blank)"}`,
+    ).toBeFalsy();
+    byLookupDtr.set(lookupKey, row);
+    const msnKey = `${msn}|${dtr}|${metricKey}`;
+    expect(
+      byMsnMetric.has(msnKey),
+      `Duplicate ${reportLabel} msn=${msn} dtr=${dtr || "(blank)"} with same value=${metricKey}`,
+    ).toBeFalsy();
+    byMsnMetric.set(msnKey, row);
+  }
+}
 
 export interface TechnicalAnalysisErrorBody {
   success: boolean;
@@ -59,6 +194,13 @@ export class TechnicalReportValidator {
     }
     validatePaginationConsistency(data: any): void {
         expect(data.totalCount).toBeGreaterThanOrEqual(data.rows.length);
+    }
+    /** Cursor-based phase reports may omit total/totalPages. */
+    validatePhasePagination(data: any): void {
+        expect(data.page).toBeGreaterThan(0);
+        expect(data.pageSize).toBeGreaterThan(0);
+        expect(data.rows.length).toBeLessThanOrEqual(data.pageSize);
+        expect(data.rows.length).toBeGreaterThan(0);
     }
     // =====================================
     // NO DATA
@@ -145,25 +287,62 @@ export class TechnicalReportValidator {
     // =====================================
     // DUPLICATE CHECKS
     // =====================================
-    validateDuplicateMeterIds(rows: any[]): void {
-        const ids =rows.map(row => row.meterLookupId);
-        expect(new Set(ids).size).toBe(ids.length);
+    validateDuplicateMeterIds(rows: TechnicalReportRow[]): void {
+        validateNoDuplicateTechnicalMeterRows(rows);
     }
-    validateDuplicateMSN(rows: any[]): void {
-        const values =rows.map(row => row.msn);
+    validateDuplicateMSN(rows: TechnicalReportRow[]): void {
+        validateUniqueTechnicalMeterIdentity(rows);
+    }
+    validateDuplicateIVRS(rows: TechnicalReportRow[]): void {
+        validateUniqueTechnicalMeterIdentity(rows);
+    }
+    validateDuplicateMeterEvent(rows: TechnicalReportRow[]): void {
+        validateUniqueTechnicalMeterIdentity(rows);
+    }
+    validateDuplicateRows(rows: TechnicalReportRow[]): void {
+        const values = rows.map((row) => JSON.stringify(row));
         expect(new Set(values).size).toBe(values.length);
     }
-    validateDuplicateIVRS(rows: any[]): void {
-        const values =rows.map(row => row.ivrsNumber);
-        expect(new Set(values).size).toBe(values.length);
+    /** Same meter on two DTRs is allowed. Same meter + DTR + value is a duplicate. */
+    validateDuplicateContract(rows: TechnicalReportRow[]): void {
+        validateNoDuplicateTechnicalMeterRows(rows);
+        validateUniqueTechnicalMeterIdentity(rows);
+        this.validateDuplicateRows(rows);
     }
-    validateDuplicateMeterEvent( rows: any[] ): void {
-        const values =rows.map(row =>`${row.meterLookupId}_${row.eventName}`);
-        expect(new Set(values).size).toBe(values.length);
+    validateDurationColumns(
+        columns: Array<{ key: string; header: string }> | undefined,
+        includeDurationHours = true,
+        ynrDuration = false,
+    ): void {
+        if (!columns?.length) {
+            return;
+        }
+        if (ynrDuration) {
+            expect(columns).toEqual(EXPECTED_TECHNICAL_YNR_DURATION_COLUMNS);
+            return;
+        }
+        expect(columns).toEqual(
+          includeDurationHours
+            ? EXPECTED_TECHNICAL_DURATION_COLUMNS
+            : EXPECTED_TECHNICAL_EVENT_COLUMNS,
+        );
     }
-    validateDuplicateRows(rows: any[]): void {
-        const values =rows.map(row =>JSON.stringify(row));
-        expect(new Set(values).size).toBe(values.length);
+    validateZoneColumn(
+        columns: Array<{ key: string; header: string }> | undefined,
+    ): void {
+        if (!columns?.length) {
+            return;
+        }
+        expect(columns[0]?.key).toBe("subDivision");
+        expect(columns[0]?.header).toBe("Zone");
+    }
+    validatePhaseColumns(
+        columns: Array<{ key: string; header: string }> | undefined,
+    ): void {
+        if (!columns?.length) {
+            return;
+        }
+        expect(columns[0]?.key).toBe("slNo");
     }
     // =====================================
     // BUSINESS RULES
@@ -187,6 +366,14 @@ export class TechnicalReportValidator {
         rows.forEach(row => {
             expect(row.eventName).toBeTruthy();
         });
+    }
+    validatePhaseReport(rows: any[]): void {
+        expect(rows.length).toBeGreaterThan(0);
+        rows.forEach((row) => {
+            expect(String(row.ivrsNumber ?? "").trim().length).toBeGreaterThan(0);
+            expect(row.eventCount ?? row.durationHhMm ?? row.maxIR).toBeDefined();
+        });
+        validateNoDuplicatePhaseRows(rows);
     }
     // =====================================
     // CROSS FIELD

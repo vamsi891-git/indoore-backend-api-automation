@@ -74,7 +74,8 @@ function ensureInviteE2eState(): boolean {
   return hydrateInviteE2eStateFromEnv(e2eState);
 }
 
-test.describe("Auth Invite E2E Flow", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Auth Invite E2E Flow", () => {
   test.describe.configure({
     mode: "serial",
     timeout: INVITE_PROVISION_TEST_TIMEOUT_MS,

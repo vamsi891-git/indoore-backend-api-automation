@@ -1,0 +1,38 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/reports/bill-status",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows",
+    "summary"
+  ],
+  "itemKeys": [
+    "billGenerated",
+    "billNotGenerated",
+    "totalConsumers"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "slNo",
+      "header": "S No."
+    },
+    {
+      "key": "totalConsumer",
+      "header": "Total Consumer"
+    },
+    {
+      "key": "billGenerated",
+      "header": "Bill Generated"
+    },
+    {
+      "key": "billNotGenerated",
+      "header": "Bill Not Generated"
+    }
+  ]
+}

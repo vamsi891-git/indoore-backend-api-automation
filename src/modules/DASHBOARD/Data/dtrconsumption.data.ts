@@ -214,85 +214,73 @@ export const DtrConsumptionData = {
 
 export const dtrConsumptionTestCases: DtrConsumptionTestCase[] = [
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/consumption — period=daily (live)",
+        testName: "DTR consumption chart — daily view loads",
         scenario: "dev_period_daily",
         tags: ["@smoke", "@dashboard", "@dtr-consumption"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/consumption — period=hourly",
+        testName: "DTR consumption chart — hourly view loads",
         scenario: "dev_period_hourly",
         tags: ["@dashboard", "@dtr-consumption", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/consumption — period=weekly",
+        testName: "DTR consumption chart — weekly view loads",
         scenario: "dev_period_weekly",
         tags: ["@dashboard", "@dtr-consumption", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/consumption — period=monthly",
+        testName: "DTR consumption chart — monthly view loads",
         scenario: "dev_period_monthly",
         tags: ["@dashboard", "@dtr-consumption", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/consumption — period=yearly",
+        testName: "DTR consumption chart — yearly view loads",
         scenario: "dev_period_yearly",
         tags: ["@dashboard", "@dtr-consumption", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/consumption — unknown query params ignored",
+        testName: "DTR consumption chart — extra unused filters are ignored",
         scenario: "dev_ignore_unknown_query",
         tags: ["@dashboard", "@dtr-consumption", "@edge"],
     },
     {
-        testName:
-            "Contract — hourly null energy buckets (10 Jul 2026)",
+        testName: "Saved example — hourly null energy buckets (10 Jul 2026)",
         scenario: "contract_null_hourly",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-consumption", "@edge"],
     },
     {
-        testName:
-            "Contract — daily null energy buckets (10 Jul 2026)",
+        testName: "Saved example — daily null energy buckets (10 Jul 2026)",
         scenario: "contract_null_daily",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-consumption", "@edge"],
     },
     {
-        testName:
-            "Contract — weekly null energy buckets (10 Jul 2026)",
+        testName: "Saved example — weekly null energy buckets (10 Jul 2026)",
         scenario: "contract_null_weekly",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-consumption", "@edge"],
     },
     {
-        testName:
-            "Contract — monthly null energy buckets (10 Jul 2026)",
+        testName: "Saved example — monthly null energy buckets (10 Jul 2026)",
         scenario: "contract_null_monthly",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-consumption", "@edge"],
     },
     {
-        testName:
-            "Contract — yearly null energy buckets (10 Jul 2026)",
+        testName: "Saved example — yearly null energy buckets (10 Jul 2026)",
         scenario: "contract_null_yearly",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-consumption", "@edge"],
     },
     {
-        testName: "Contract — populated kWh/kVAh/kVArh points",
+        testName: "Saved example — populated kWh/kVAh/kVArh points",
         scenario: "contract_populated_points",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-consumption", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/consumption — invalid period rejected",
+        testName: "DTR consumption chart — an invalid time period is rejected",
         scenario: "invalid_period",
         expectedStatus: 400,
         tags: ["@dashboard", "@dtr-consumption", "@negative"],

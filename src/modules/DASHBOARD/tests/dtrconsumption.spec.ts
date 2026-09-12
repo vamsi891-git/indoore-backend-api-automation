@@ -17,7 +17,7 @@ import {
 } from "../Mapper/dtrconsumption.mapper";
 import { DtrConsumptionValidator } from "../Validator/dtrconsumption.validator";
 
-test.describe("DTR Consumption API", () => {
+test.describe("Dashboard — DTR consumption", () => {
     test.describe.configure({ retries: 1 });
     test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

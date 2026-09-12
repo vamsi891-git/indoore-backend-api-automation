@@ -45,7 +45,7 @@ function extractColumns(data: Record<string, unknown>): Column[] {
  * Accept intentional changes with:
  *   UPDATE_CONTRACT_SNAPSHOTS=true npm run test:utils-lookup:contract
  */
-test.describe("UTILS-LOOKUP — Contract Snapshots", () => {
+test.describe("Utils lookup — contract snapshots", () => {
   test.setTimeout(UTILS_LOOKUP_TEST_TIMEOUT_MS);
 
   for (const contractCase of utilsLookupContractCases) {

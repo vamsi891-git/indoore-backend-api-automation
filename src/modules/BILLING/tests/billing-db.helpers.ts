@@ -1,5 +1,6 @@
 import { compareApiToDb } from "../../../core/db/db-compare.engine";
 import { getBillingMeterHeaderBySerial } from "../Db/billing.db";
+import { coerceBillingNumeric } from "../utils/billing-item.helper";
 import type pg from "pg";
 
 export type BillingRowWithMeter = {
@@ -8,7 +9,8 @@ export type BillingRowWithMeter = {
   consumerName?: string | null;
   mf?: number | null;
   phase?: string | null;
-  sanctionedLoadKw?: number | null;
+  /** Live API may return decimal strings; compare after coerce. */
+  sanctionedLoadKw?: string | number | null;
 };
 
 export function firstBillingRowWithMeter<T extends BillingRowWithMeter>(
@@ -60,8 +62,8 @@ export async function assertBillingMeterHeaderMatchesDb(
       },
       {
         label: "sanctionedLoadKw",
-        apiValue: apiRow.sanctionedLoadKw ?? null,
-        dbValue: dbRow.sanctionedLoadKw ?? null,
+        apiValue: coerceBillingNumeric(apiRow.sanctionedLoadKw),
+        dbValue: coerceBillingNumeric(dbRow.sanctionedLoadKw),
         optional: true,
       },
     ],

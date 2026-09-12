@@ -1,12 +1,5 @@
 import { z } from "zod";
-import {
-  MeterMasterItemSchema,
-  DtrMasterItemSchema,
-  ConsumerMasterItemSchema,
-  FeederMasterItemSchema,
-  SubstationMasterItemSchema,
-  MeterCommunicationStatusItemSchema,
-} from "./master-data.schemas";
+import {MeterMasterItemSchema,DtrMasterItemSchema,ConsumerMasterItemSchema,FeederMasterItemSchema,SubstationMasterItemSchema,MeterCommunicationStatusItemSchema,} from "./master-data.schemas";
 import { ColumnSchema, PaginationSchema } from "../../../core/schemas/api-response.schemas";
 
 /**
@@ -52,6 +45,29 @@ export const SubstationMasterStrictSuccessResponseSchema =
 
 export const MeterCommunicationStrictSuccessResponseSchema =
   strictListSuccessSchema(MeterCommunicationStatusItemSchema);
+
+export const MasterDataAuditLogsStrictSuccessResponseSchema = z
+  .object({
+    success: z.literal(true),
+    data: z
+      .object({
+        logs: z.array(z.record(z.string(), z.unknown())),
+        actionFilterOptions: z.array(
+          z.object({
+            value: z.string(),
+            label: z.string(),
+          }),
+        ),
+        total: z.number().int().nonnegative(),
+        page: z.number().int().positive(),
+        limit: z.number().int().positive(),
+        totalPages: z.number().int().nonnegative(),
+        nextCursor: z.string().nullable().optional(),
+      })
+      .passthrough(),
+    message: z.string().optional(),
+  })
+  .strict();
 
 /** Generic fallback used by scaffold / DQ-only cases. */
 export const MasterDataSuccessResponseSchema = z

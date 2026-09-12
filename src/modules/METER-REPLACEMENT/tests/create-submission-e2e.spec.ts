@@ -34,7 +34,8 @@ const E2E_LABEL =
 const VALIDATE_SETTLE_MS = 1_500;
 const VALIDATE_RETRIES = 8;
 
-test.describe("Meter Replacement Create Submission E2E", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Meter Replacement Create Submission E2E", () => {
   test.describe.configure({ mode: "serial", retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

@@ -1,3 +1,4 @@
+import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
 import { ConsumptionReportApi } from "../Api/consumption-report.api";
 import { monthlyReportConsumptionData } from "../Data/monthlyconsumption.data";
@@ -7,10 +8,11 @@ import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { CONSUMPTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
-import { isConsumptionInternalError } from "../utils/consumption-env.helper";
-test.describe("Monthly Consumption Report API", () => {
+import { MonthlyConsumptionResponseSchema } from "../schemas/consumption.schemas";
+import { skipIfConsumptionInternalError } from "../utils/consumption-env.helper";
+test.describe("Monthly consumption list", () => {
   test.setTimeout(CONSUMPTION_TEST_TIMEOUT_MS);
-  test("Validate Monthly Consumption Report API",
+  test("Monthly consumption — first page lists each consumer (energy may be empty)",
     {
       tag: ["@consumption", "@monthly-consumption", "@smoke", "@positive"],
     },
@@ -30,18 +32,15 @@ test.describe("Monthly Consumption Report API", () => {
         );
       await PerformanceTracker.track(
         rawResponse,
-        "Monthly Consumption Report API",
+        "Monthly consumption — first page lists each consumer (energy may be empty)",
         rawResponse.url(),
         responseTime,
       );
-      if (rawResponse.status() === 500 && isConsumptionInternalError(responseBody)
-      ) {
-        test.skip(
-          true,
-          "Backend GET /indore/consumption/report?reportType=monthly returned 500 INTERNAL_ERROR",
-        );
-        return;
-      }
+      skipIfConsumptionInternalError(
+        rawResponse.status(),
+        responseBody,
+        "/indore/consumption/report?reportType=monthly",
+      );
       const assert = new AssertionEngine();
       const validation = new ValidationEngine();
       const validator = new MonthlyReportConsumptionValidator();
@@ -63,6 +62,15 @@ test.describe("Monthly Consumption Report API", () => {
         assert.validateRequiredFields(responseBody, ["success"]),
       );
       if (isOk) {
+        validation.execute("Zod Response Schema", () => {
+          const result = MonthlyConsumptionResponseSchema.safeParse(responseBody);
+          expect(
+            result.success,
+            result.success
+              ? "Zod validation passed"
+              : `Zod contract mismatch:\n${JSON.stringify(result.error.format(), null, 2)}`,
+          ).toBe(true);
+        });
         validation.execute("Success", () =>
           validator.validateSuccess(mapped.success),
         );
@@ -86,6 +94,12 @@ test.describe("Monthly Consumption Report API", () => {
         validation.execute("Serial Sequence", () =>
           validator.validateSerialSequence(mapped.items, mapped.page, mapped.limit),
         );
+        validation.execute("Unique consumers", () =>
+          validator.validateUniqueConsumers(mapped.items),
+        );
+        validation.execute("Shared feeder allowed", () =>
+          validator.validateSharedHierarchyAllowed(mapped.items),
+        );
         validation.execute("Energy Fields", () =>
           validator.validateEnergyFields(mapped.items),
         );
@@ -96,7 +110,10 @@ test.describe("Monthly Consumption Report API", () => {
           validator.validateNoNaN(mapped.items),
         );
       }
-      validation.printSummary("Monthly Consumption Report API", responseTime);
+      validation.printSummary(
+        "Monthly consumption — first page lists each consumer (energy may be empty)",
+        responseTime,
+      );
     },
   );
 });

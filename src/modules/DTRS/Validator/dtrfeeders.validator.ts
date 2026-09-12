@@ -10,22 +10,18 @@ import type {
   FeederItem,
   MappedDtrFeeders,
 } from "../Mapper/dtrfeeders.mapper";
-
 const IST_DATE_TIME =
-  /^\d{1,2}[\s/-](?:\w{3}|\d{2})[\s/-]\d{4}.+\d{1,2}:\d{2}|^\d{2}-\d{2}-\d{4}\s+\d{2}:\d{2}/i;
-
+  /^\d{1,2}[\s/-](?:\w{3,4}|\d{2})[\s/-]\d{4}.+\d{1,2}:\d{2}|^\d{2}-\d{2}-\d{4}\s+\d{2}:\d{2}/i;
 export class DtrFeedersValidator {
   validateSuccess(success: boolean): void {
     expect(success).toBeTruthy();
   }
-
   validateNotFoundError(responseBody: DtrFeedersErrorResponse): void {
     expect(responseBody.success).toBeFalsy();
     expect(responseBody.error).toBeDefined();
     expect(responseBody.error.code).toBe("DTR_NOT_FOUND");
     expect(responseBody.error.message.toLowerCase()).toContain("dtr not found");
   }
-
   validateBlankCodeError(responseBody: DtrFeedersErrorResponse): void {
     expect(responseBody.success).toBeFalsy();
     expect(responseBody.error).toBeDefined();
@@ -34,17 +30,14 @@ export class DtrFeedersValidator {
       /dtr|network|code/i,
     );
   }
-
   validateResponseEnvelope(response: DtrFeedersResponse): void {
     expect(response.success).toBe(true);
     expect(response.data).toBeDefined();
   }
-
   validateFields(data: MappedDtrFeeders): void {
     expect(data).toHaveProperty("feeders");
     expect(Array.isArray(data.feeders)).toBeTruthy();
   }
-
   validateFeederStructure(feeders: FeederItem[]): void {
     feeders.forEach((feeder) => {
       expect(Object.keys(feeder).sort()).toEqual([...dtrFeedersFields].sort());
@@ -57,19 +50,16 @@ export class DtrFeedersValidator {
       ).toBeTruthy();
     });
   }
-
   validateStatuses(feeders: FeederItem[]): void {
     feeders.forEach((feeder) => {
       expect([...dtrFeedersAllowedStatuses]).toContain(feeder.status);
     });
   }
-
   validateFeederIds(feeders: FeederItem[]): void {
     feeders.forEach((feeder) => {
       expect(feeder.id.trim().length).toBeGreaterThan(0);
     });
   }
-
   validateLastCommunicationFormat(feeders: FeederItem[]): void {
     feeders.forEach((feeder) => {
       if (feeder.lastCommunication !== null) {
@@ -77,12 +67,13 @@ export class DtrFeedersValidator {
       }
     });
   }
-
   validateUniqueIds(feeders: FeederItem[]): void {
+    if (feeders.length === 0) {
+      return;
+    }
     const ids = feeders.map((x) => x.id);
-    expect(new Set(ids).size).toBe(ids.length);
+    expect(new Set(ids).size, "each feeder is listed only once").toBe(ids.length);
   }
-
   validateFeederOrder(feeders: FeederItem[]): void {
     if (feeders.length <= 1) {
       return;
@@ -93,17 +84,14 @@ export class DtrFeedersValidator {
       );
     }
   }
-
   validateEmptyStatus(feeders: FeederItem[]): void {
     feeders.forEach((feeder) => {
       expect(feeder.status.trim().length).toBeGreaterThan(0);
     });
   }
-
   validateFeedersArray(feeders: FeederItem[]): void {
     expect(Array.isArray(feeders)).toBeTruthy();
   }
-
   validateLiveOk(mapped: MappedDtrFeeders): void {
     this.validateSuccess(mapped.success);
     this.validateFields(mapped);
@@ -118,12 +106,10 @@ export class DtrFeedersValidator {
       this.validateLastCommunicationFormat(mapped.feeders);
     }
   }
-
   validateEmptyFeedersContract(mapped: MappedDtrFeeders): void {
     this.validateLiveOk(mapped);
     expect(mapped.feeders).toEqual([]);
   }
-
   validatePopulatedFeedersContract(mapped: MappedDtrFeeders): void {
     this.validateLiveOk(mapped);
     expect(mapped.feeders.length).toBe(3);
@@ -133,7 +119,6 @@ export class DtrFeedersValidator {
     expect(mapped.feeders[1].lastCommunication).toBe("09-07-2026 14:30:15");
     expect(mapped.feeders[2].status).toBe("Inactive");
   }
-
   validateMixedStatusesContract(mapped: MappedDtrFeeders): void {
     this.validateLiveOk(mapped);
     const statuses = mapped.feeders.map((f) => f.status);
@@ -141,13 +126,11 @@ export class DtrFeedersValidator {
     expect(statuses).toContain("Inactive");
     expect(mapped.feeders.find((f) => f.id === "FDR-I")?.name).toBeNull();
   }
-
   validateNumericIdFallbackContract(mapped: MappedDtrFeeders): void {
     this.validateLiveOk(mapped);
     expect(mapped.feeders[0].id).toBe("987654");
     expect(/^\d+$/.test(mapped.feeders[0].id)).toBeTruthy();
   }
-
   validateWithCommunicationContract(mapped: MappedDtrFeeders): void {
     this.validateLiveOk(mapped);
     expect(mapped.feeders[0].lastCommunication).toBe("09-07-2026 08:45:00");
@@ -155,10 +138,7 @@ export class DtrFeedersValidator {
     this.validateLastCommunicationFormat(mapped.feeders);
   }
 
-  validateScenario(
-    mapped: MappedDtrFeeders,
-    scenario: DtrFeedersScenario,
-  ): void {
+  validateScenario(mapped: MappedDtrFeeders,scenario: DtrFeedersScenario,): void {
     switch (scenario) {
       case "contract_empty_feeders":
         this.validateEmptyFeedersContract(mapped);

@@ -4,21 +4,22 @@ import { isConsumptionDbSqlReady } from "../Db/consumption.db";
 import { runConsumptionDbCoverage } from "./consumption-db.harness";
 
 apiDbTest.describe("CONSUMPTION — DB Coverage", () => {
-  apiDbTest.setTimeout(120_000);
+  apiDbTest.describe.configure({ retries: 1 });
+  apiDbTest.setTimeout(180_000);
 
   apiDbTest.beforeEach(() => {
     apiDbTest.skip(!isDbConfigured(), "DB credentials not configured");
     apiDbTest.skip(
       !isConsumptionDbSqlReady(),
-      "Set CONSUMPTION_DB_SQL_READY=true after confirming Db/consumption-sql.ts",
+      "Skipped until live SQL is confirmed — set CONSUMPTION_DB_SQL_READY=true after verifying Db/consumption-sql.ts against the real schema",
     );
   });
 
   apiDbTest(
-    "IND-CON-DB-001 — scaffold DB coverage",
+    "IND-CON-DB-001 — daily + net-meter + pattern totalCount vs DB",
     { tag: ["@consumption", "@db"] },
-    async ({ authenticatedApi, db }) => {
-      await runConsumptionDbCoverage(authenticatedApi, db);
+    async ({ authenticatedApi, db, archiveDb }) => {
+      await runConsumptionDbCoverage(authenticatedApi, db, archiveDb);
     },
   );
 });

@@ -3,6 +3,7 @@ export type DtrVoltageUnbalanceScenario =
     | "dev_ignore_unknown_query"
     | "contract_all_zero"
     | "contract_mixed_distribution"
+    | "contract_openapi_sample"
     | "contract_all_balanced"
     | "contract_all_severe"
     | "contract_percentage_consistency";
@@ -30,6 +31,8 @@ export interface DtrVoltageUnbalanceItemInput {
 }
 
 export interface DtrVoltageUnbalanceDataModel {
+    /** Fleet meters scored into severity buckets (sum of item values). */
+    total?: number | string;
     items: DtrVoltageUnbalanceItemInput[];
 }
 
@@ -50,6 +53,7 @@ export interface DtrVoltageUnbalanceErrorResponse {
 export interface MappedDtrVoltageUnbalance {
     success: boolean;
     message?: string;
+    total: number;
     items: DtrVoltageUnbalanceItem[];
 }
 
@@ -68,10 +72,16 @@ export class DtrVoltageUnbalanceMapper {
         const items = Array.isArray(response.data?.items)
             ? response.data!.items.map(mapItem)
             : [];
+        const rawTotal = response.data?.total;
+        const total =
+            rawTotal != null && Number.isFinite(Number(rawTotal))
+                ? Number(rawTotal)
+                : items.reduce((sum, item) => sum + item.value, 0);
 
         return {
             success: Boolean(response.success),
             message: response.message,
+            total,
             items,
         };
     }

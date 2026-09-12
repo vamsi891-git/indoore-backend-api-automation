@@ -19,7 +19,8 @@ import {
   isInviteTransientStatus,
 } from "../utils/invite-provision.helper";
 
-test.describe("Auth Invite Delete API", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Auth Invite Delete API", () => {
   test.describe.configure({
     mode: "serial",
     timeout: INVITE_PROVISION_TEST_TIMEOUT_MS,

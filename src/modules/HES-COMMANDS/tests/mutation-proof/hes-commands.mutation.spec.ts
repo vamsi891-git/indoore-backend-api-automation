@@ -7,8 +7,7 @@ import { collectHesCommandsDataQualityFindings } from "../../Db/hes-commands-db.
 import { sampleHesCommandsSuccess } from "./fixtures/hes-commands-sample.fixture";
 
 test.describe("Mutation proof — HES-COMMANDS", () => {
-  test(
-    "MUT-HES-CO-001 — schema rejects success false",
+  test("MUT-HES-CO-001 — schema rejects success false",
     { tag: ["@mutation-proof", "@hes-commands"] },
     async () => {
       const mutated = structuredClone(sampleHesCommandsSuccess);
@@ -17,8 +16,7 @@ test.describe("Mutation proof — HES-COMMANDS", () => {
     },
   );
 
-  test(
-    "MUT-HES-CO-002 — schema rejects unexpected root field",
+  test("MUT-HES-CO-002 — schema rejects unexpected root field",
     { tag: ["@mutation-proof", "@hes-commands"] },
     async () => {
       const mutated = structuredClone(sampleHesCommandsSuccess);
@@ -27,8 +25,7 @@ test.describe("Mutation proof — HES-COMMANDS", () => {
     },
   );
 
-  test(
-    "MUT-HES-CO-003 — list schema accepts fixture",
+  test("MUT-HES-CO-003 — list schema accepts fixture",
     { tag: ["@mutation-proof", "@hes-commands"] },
     async () => {
       expect(HesCommandsListSuccessResponseSchema.safeParse(sampleHesCommandsSuccess).success).toBe(
@@ -37,8 +34,7 @@ test.describe("Mutation proof — HES-COMMANDS", () => {
     },
   );
 
-  test(
-    "MUT-HES-CO-004 — DQ flags blank name",
+  test("MUT-HES-CO-004 — DQ flags blank name",
     { tag: ["@mutation-proof", "@hes-commands"] },
     async () => {
       const mutated = structuredClone(sampleHesCommandsSuccess.data);

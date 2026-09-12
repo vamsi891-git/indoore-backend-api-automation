@@ -49,6 +49,7 @@
     "feeder",
     "id",
     "ivrsNumber",
+    "meterLookupId",
     "meterNumber",
     "mf",
     "phase",

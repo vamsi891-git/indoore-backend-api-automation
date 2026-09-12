@@ -40,7 +40,27 @@ const CONNECTION_METER_FIELDS = [
   "meterPhase",
 ] as const;
 
-const KNOWN_METER_PHASES = ["1 PH", "3PH WC", "3PH 4CT", "HT"];
+/** Canonical meter-phase labels for consumer profile (spacing variants allowed). */
+export const ALLOWED_CONSUMER_PROFILE_METER_PHASES = [
+  "1 PH",
+  "3 PH WC",
+  "3 PH 4CT",
+  "HT",
+] as const;
+
+function normalizeMeterPhaseKey(phase: string): string {
+  return phase.trim().toUpperCase().replace(/[\s_-]+/g, "");
+}
+
+const ALLOWED_METER_PHASE_KEYS = new Set(
+  ALLOWED_CONSUMER_PROFILE_METER_PHASES.map(normalizeMeterPhaseKey),
+);
+
+function requireNonBlank(value: unknown, label: string): string {
+  const trimmed = String(value ?? "").trim();
+  expect(trimmed.length, `${label} must be present`).toBeGreaterThan(0);
+  return trimmed;
+}
 
 export class ConsumerProfileValidator {
   validateSuccess(success: boolean) {
@@ -141,11 +161,57 @@ export class ConsumerProfileValidator {
   }
 
   validateMeterPhase(meter: ConsumerConnectionMeterDetails) {
-    const phase = String(meter.meterPhase).trim();
-    expect(phase.length).toBeGreaterThan(0);
-    const known = KNOWN_METER_PHASES.includes(phase);
-    const looksLikePhase = /\d\s*PH|PHASE|HT/i.test(phase);
-    expect(known || looksLikePhase).toBeTruthy();
+    const phase = requireNonBlank(meter.meterPhase, "meterPhase");
+    const key = normalizeMeterPhaseKey(phase);
+    expect(
+      ALLOWED_METER_PHASE_KEYS.has(key),
+      `meterPhase "${phase}" must be one of: ${ALLOWED_CONSUMER_PROFILE_METER_PHASES.join(", ")}`,
+    ).toBeTruthy();
+  }
+
+  /**
+   * Identity fields must each be present and mutually unique in the profile payload.
+   * IVRS aliases consumerNumber (same value) — counted once for uniqueness.
+   */
+  validateIdentityFieldsUnique(data: ConsumerProfileData) {
+    const consumerName = requireNonBlank(data.consumerName, "consumerName");
+    const consumerNumber = requireNonBlank(
+      data.consumerNumber,
+      "consumerNumber",
+    );
+    const uniqueId = requireNonBlank(data.uniqueId, "uniqueId");
+    const meterSerialNumber = requireNonBlank(
+      data.meterSerialNumber,
+      "meterSerialNumber",
+    );
+    const ivrsNo = requireNonBlank(
+      data.connectionDetails?.ivrsNo,
+      "connectionDetails.ivrsNo",
+    );
+
+    expect(ivrsNo, "ivrsNo must equal consumerNumber").toBe(consumerNumber);
+
+    const identityEntries: Array<{ label: string; value: string }> = [
+      { label: "consumerName", value: consumerName },
+      { label: "consumerNumber", value: consumerNumber },
+      { label: "meterSerialNumber", value: meterSerialNumber },
+    ];
+    // uniqueId is often Account_ID, but some live consumers alias it to IVRS
+    // (same value as consumerNumber). Only enforce uniqueness vs name/serial.
+    if (uniqueId !== consumerNumber) {
+      identityEntries.push({ label: "uniqueId", value: uniqueId });
+    }
+
+    for (let i = 0; i < identityEntries.length; i++) {
+      for (let j = i + 1; j < identityEntries.length; j++) {
+        const left = identityEntries[i];
+        const right = identityEntries[j];
+        expect(
+          left.value,
+          `${left.label} must be unique vs ${right.label} in profile response`,
+        ).not.toBe(right.value);
+      }
+    }
   }
 
   validateLatestActivities(activities: ConsumerLatestActivity[]) {
@@ -218,6 +284,7 @@ export class ConsumerProfileValidator {
     this.validateSanctionedLoad(mapped.connectionDetails);
     this.validateConnectionMeterDetails(mapped);
     this.validateMeterPhase(mapped.connectionMeterDetails);
+    this.validateIdentityFieldsUnique(mapped);
     this.validateLatestActivities(mapped.latestActivities);
     this.validateBusinessRules(mapped);
     this.validateIdentityEcho(mapped, options);

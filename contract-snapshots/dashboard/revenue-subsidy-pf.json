@@ -1,0 +1,47 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/dashboard/revenue-subsidy-pf",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "avgImprovement",
+    "billCount",
+    "billingAvailability",
+    "billingEfficiency",
+    "createdAt",
+    "createdByUserId",
+    "id",
+    "incentivePf",
+    "overallImprovement",
+    "overallImprovementCr",
+    "penaltyPf",
+    "periodMonth",
+    "periodYear",
+    "revenueGainedRpu",
+    "subsidyAmount",
+    "updatedAt",
+    "updatedByUserId"
+  ],
+  "itemKeys": [
+    "avgImprovement",
+    "billCount",
+    "billingAvailability",
+    "billingEfficiency",
+    "createdAt",
+    "createdByUserId",
+    "id",
+    "incentivePf",
+    "overallImprovement",
+    "overallImprovementCr",
+    "penaltyPf",
+    "periodMonth",
+    "periodYear",
+    "revenueGainedRpu",
+    "subsidyAmount",
+    "updatedAt",
+    "updatedByUserId"
+  ],
+  "hasColumnsGrid": false
+}

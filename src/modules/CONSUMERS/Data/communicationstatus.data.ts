@@ -1,33 +1,25 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { CommunicationStatusQuery } from "../Api/communicationstatus.api";
-import type {
-  CommunicationStatusResponse,
-  CommunicationStatusScenario,
-} from "../Mapper/communicationstatus.mapper";
-
+import type {CommunicationStatusResponse,CommunicationStatusScenario,} from "../Mapper/communicationstatus.mapper";
+import {
+  CONSUMERS_LIVE_IVRS,
+  CONSUMERS_LIVE_METER_ROUTE,
+  resolveLiveIvrs,
+  resolveLiveMeterRoute,
+} from "./consumers-live-refs";
 export const communicationStatusMaxResponseTimeMs =
   MASTER_DATA_MAX_RESPONSE_TIME_MS;
-
-/** Same IVRS as power-quality (1 PH / SP). */
-export const communicationStatusDefaultIvrs = "N3471011444";
-
-export const communicationStatusDefaultConsumerId = "N3471011444";
-
-export const communicationStatusDefaultMeterRoute = "meter-12345";
-
+/** Same IVRS as power-quality / RTP live sample. */
+export const communicationStatusDefaultIvrs = CONSUMERS_LIVE_IVRS;
+export const communicationStatusDefaultConsumerId = CONSUMERS_LIVE_IVRS;
+export const communicationStatusDefaultMeterRoute = CONSUMERS_LIVE_METER_ROUTE;
 export const communicationStatusNotFoundRef = "INVALID_CONSUMER_XYZ";
-
 export const communicationStatusMeterNotFoundRef = "meter-999999999";
-
 export const communicationStatusEmptyRef = " ";
-
 /** User-provided historical date with zero interval readings. */
 export const communicationStatusSampleDate = "2026-06-22";
-
 export const communicationStatusSampleDateDdMmYyyy = "22-06-2026";
-
 export const EXPECTED_INTERVALS_PER_DAY = 96;
-
 /** Shape A — zero readings (user sample + empty metrics). */
 export const communicationStatusContractZeroResponse: CommunicationStatusResponse =
   {
@@ -47,7 +39,6 @@ export const communicationStatusContractZeroResponse: CommunicationStatusRespons
       },
     },
   };
-
 /**
  * Shape B — readings present (backend buildConsumerCommunicationStatus).
  * percent / lastReadingToday / lastSeen appear only when metrics exist.
@@ -75,7 +66,6 @@ export const communicationStatusContractWithReadingsResponse: CommunicationStatu
       },
     },
   };
-
 export interface CommunicationStatusTestCase {
   testName: string;
   scenario: CommunicationStatusScenario;
@@ -83,7 +73,6 @@ export interface CommunicationStatusTestCase {
   isContractFixture?: boolean;
   tags: string[];
 }
-
 export function resolveCommunicationStatusRef(
   scenario: CommunicationStatusScenario,
 ): string | undefined {
@@ -92,17 +81,15 @@ export function resolveCommunicationStatusRef(
     case "status_default_today":
     case "status_dd_mm_yyyy":
     case "invalid_date":
-      return (
-        process.env.CONSUMER_COMM_STATUS_IVRS?.trim() ||
-        process.env.CONSUMER_PQ_IVRS?.trim() ||
-        communicationStatusDefaultIvrs
+      return resolveLiveIvrs(
+        process.env.CONSUMER_COMM_STATUS_IVRS,
+        communicationStatusDefaultIvrs,
       );
     case "status_by_meter":
-      return (
-        process.env.CONSUMER_COMM_STATUS_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_PQ_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_PROFILE_METER_ROUTE?.trim() ||
-        communicationStatusDefaultMeterRoute
+      return resolveLiveMeterRoute(
+        process.env.CONSUMER_COMM_STATUS_METER_ROUTE,
+        process.env.CONSUMER_PROFILE_METER_ROUTE,
+        communicationStatusDefaultMeterRoute,
       );
     case "consumer_not_found":
       return communicationStatusNotFoundRef;
@@ -117,7 +104,6 @@ export function resolveCommunicationStatusRef(
       return undefined;
   }
 }
-
 export function resolveCommunicationStatusQuery(
   scenario: CommunicationStatusScenario,
 ): CommunicationStatusQuery {
@@ -142,7 +128,6 @@ export function resolveCommunicationStatusQuery(
       return {};
   }
 }
-
 export function resolveCommunicationStatusContractBody(
   scenario: CommunicationStatusScenario,
 ): CommunicationStatusResponse | undefined {
@@ -155,7 +140,6 @@ export function resolveCommunicationStatusContractBody(
       return undefined;
   }
 }
-
 export const communicationStatusTestCases: CommunicationStatusTestCase[] = [
   {
     testName:
@@ -171,9 +155,10 @@ export const communicationStatusTestCases: CommunicationStatusTestCase[] = [
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/communication-status — accept DD-MM-YYYY date",
+      "Validate GET /indore/consumers/{ivrs}/communication-status — DD-MM-YYYY date rejected (YYYY-MM-DD only)",
     scenario: "status_dd_mm_yyyy",
-    tags: ["@consumer", "@communication-status", "@edge"],
+    expectedStatus: 400,
+    tags: ["@consumer", "@communication-status", "@negative"],
   },
   {
     testName:

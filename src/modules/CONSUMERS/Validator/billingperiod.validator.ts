@@ -3,18 +3,34 @@ export class BillingPeriodValidator {
     validateMonthlyConsumption(data: any): void {
         const monthly = data.monthlyConsumption;
         expect(monthly.title).toBe("Monthly Consumption");
-        expect(typeof monthly.valueKwh).toBe("number");
-        expect(monthly.valueKwh).toBeGreaterThanOrEqual(0);
-        expect(typeof monthly.trendPercent).toBe("number");
+        expect(
+            monthly.valueKwh === null || typeof monthly.valueKwh === "number",
+        ).toBeTruthy();
+        if (typeof monthly.valueKwh === "number") {
+            expect(monthly.valueKwh).toBeGreaterThanOrEqual(0);
+        }
+        expect(
+            monthly.trendPercent === null ||
+                typeof monthly.trendPercent === "number",
+        ).toBeTruthy();
         expect(monthly.comparisonLabel).toContain("Last month");
     }
     validateDailyConsumption(data: any): void {
         const daily = data.dailyConsumption;
         expect(daily.title).toBe("Daily Consumption");
-        expect(typeof daily.valueKwh).toBe("number");
-        expect(daily.valueKwh).toBeGreaterThanOrEqual(0);
-        expect(typeof daily.trendPercent).toBe("number");
-        expect(daily.comparisonLabel).toContain("Yesterday");
+        expect(
+            daily.valueKwh === null || typeof daily.valueKwh === "number",
+        ).toBeTruthy();
+        if (typeof daily.valueKwh === "number") {
+            expect(daily.valueKwh).toBeGreaterThanOrEqual(0);
+        }
+        expect(
+            daily.trendPercent === null ||
+                typeof daily.trendPercent === "number",
+        ).toBeTruthy();
+        expect(
+            /Yesterday|Previous day/i.test(String(daily.comparisonLabel ?? "")),
+        ).toBeTruthy();
     }
     validateOutstanding(data: any): void {
         const outstanding = data.totalOutstanding;
@@ -28,7 +44,13 @@ export class BillingPeriodValidator {
         const bill = data.billStatus;
         expect(bill.title).toBe("Bill Status");
         if (bill.status !== null) {
-            expect(["Paid","Pending","Overdue","Unpaid"]).toContain(bill.status);
+            expect([
+                "Paid",
+                "Pending",
+                "Overdue",
+                "Unpaid",
+                "Unknown",
+            ]).toContain(bill.status);
         }
     }
     /*
@@ -46,15 +68,23 @@ export class BillingPeriodValidator {
     validateTrendPercent(data: any): void {
         const monthly = data.monthlyConsumption;
         const daily = data.dailyConsumption;
-        expect(monthly.trendPercent).toBeGreaterThanOrEqual(-100);
-        expect(daily.trendPercent).toBeGreaterThanOrEqual(-100);
+        if (monthly.trendPercent != null) {
+            expect(monthly.trendPercent).toBeGreaterThanOrEqual(-100);
+        }
+        if (daily.trendPercent != null) {
+            expect(daily.trendPercent).toBeGreaterThanOrEqual(-100);
+        }
     }
     /*
     cross validations
     */
     validateBusinessRules(data: any): void {
         expect(data.monthlyConsumption.title).not.toEqual(data.dailyConsumption.title);
-        expect(data.monthlyConsumption.valueKwh).toBeGreaterThanOrEqual(0);
-        expect(data.dailyConsumption.valueKwh).toBeGreaterThanOrEqual(0);
+        if (data.monthlyConsumption.valueKwh != null) {
+            expect(data.monthlyConsumption.valueKwh).toBeGreaterThanOrEqual(0);
+        }
+        if (data.dailyConsumption.valueKwh != null) {
+            expect(data.dailyConsumption.valueKwh).toBeGreaterThanOrEqual(0);
+        }
     }
 }

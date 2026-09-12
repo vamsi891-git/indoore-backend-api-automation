@@ -1,7 +1,7 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
 import { TechnicalSummaryApi } from "../Api/technical-summary.api";
-import { resolveTechnicalSummaryQuery,technicalSummaryExpectedAnalysisTypes,technicalSummaryMaxResponseTimeMs,technicalSummaryTestCases,} from "../Data/technical-summary.data";
+import { resolveTechnicalSummaryQuery,technicalSummaryExpectedAnalysisTypes,technicalSummaryExpectedReportCount,technicalSummaryMaxResponseTimeMs,technicalSummaryReportNames,technicalSummaryTestCases,} from "../Data/technical-summary.data";
 import { TechnicalSummaryMapper } from "../Mapper/technical-summary.mapper";
 import { TechnicalSummaryValidator } from "../Validator/technical-summary.validator";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
@@ -9,6 +9,9 @@ import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { TECHNICAL_ANALYSIS_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
+import { technicalAnalysisLiveConfigs } from "../Data/technicalanalysis.data";
+import { TechnicalReportApi } from "../Api/technicalanalysis.api";
+import { isTechnicalGridData } from "../Mapper/technicalanalysis.mapper";
 function isTechnicalSummaryInternalError(body: unknown): boolean {
   if (!body || typeof body !== "object") {
     return false;
@@ -17,7 +20,7 @@ function isTechnicalSummaryInternalError(body: unknown): boolean {
     (body as { error?: { code?: string } }).error?.code === "INTERNAL_ERROR"
   );
 }
-test.describe("Technical Summary API", () => {
+test.describe("Technical summary", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(TECHNICAL_ANALYSIS_TEST_TIMEOUT_MS);
   for (const testCase of technicalSummaryTestCases) {
@@ -124,15 +127,18 @@ test.describe("Technical Summary API", () => {
             validator.validateYnrReports(mapped.reports),
           );
           if (testCase.scenario === "dev_live_primary") {
+            validation.execute("Report card count", () =>
+              validator.validateReportCount(
+                mapped.reports,
+                technicalSummaryExpectedReportCount,
+              ),
+            );
             validation.execute("Expected Analysis Types", () =>
               validator.validateExpectedAnalysisTypes(
                 mapped.reports,
                 technicalSummaryExpectedAnalysisTypes,
               ),
             );
-          }
-
-          if (testCase.scenario === "dev_live_primary") {
             mapped.reports.forEach((report) => {
             validation.execute(
               `${report.analysisType} Field Validation`,
@@ -146,6 +152,23 @@ test.describe("Technical Summary API", () => {
               `${report.analysisType} Count Validation`,
               () => validator.validateCounts(report),
             );
+            validation.execute(
+              `${report.analysisType} household + non-household split`,
+              () => validator.validateDomesticNonDomesticSplit(report),
+            );
+            validation.execute(
+              `${report.analysisType} report name`,
+              () => validator.validateReportName(report, technicalSummaryReportNames),
+            );
+            const liveConfig = technicalAnalysisLiveConfigs.find(
+              (config) => config.analysisType === report.analysisType,
+            );
+            if (liveConfig) {
+              validation.execute(
+                `${report.analysisType} empty vs live card`,
+                () => validator.validateLiveDataPresence(report, liveConfig.hasData),
+              );
+            }
             validation.execute(
               `${report.analysisType} NaN Validation`,
               () => validator.validateNaN(report),
@@ -186,4 +209,144 @@ test.describe("Technical Summary API", () => {
       },
     );
   }
+
+  test(
+    "Technical summary — card totals match the report list",
+    { tag: ["@technical", "@technical-summary", "@smoke"] },
+    async ({ authenticatedApi }, testInfo) => {
+      const summaryApi = new TechnicalSummaryApi(authenticatedApi);
+      const reportApi = new TechnicalReportApi(authenticatedApi);
+      const query = resolveTechnicalSummaryQuery("dev_live_primary");
+      const { rawResponse, responseBody, responseTime } =
+        await summaryApi.getTechnicalSummary(query);
+      if (
+        rawResponse.status() === 500 &&
+        isTechnicalSummaryInternalError(responseBody)
+      ) {
+        test.skip(true, "Technical summary returned 500 INTERNAL_ERROR");
+        return;
+      }
+      expect(rawResponse.status()).toBe(200);
+      const mapped = TechnicalSummaryMapper.map(responseBody);
+      const validator = new TechnicalSummaryValidator();
+      const validation = new ValidationEngine();
+      validation.execute("26 unique cards", () => {
+        validator.validateReportCount(
+          mapped.reports,
+          technicalSummaryExpectedReportCount,
+        );
+        validator.validateDuplicateAnalysisTypes(mapped.reports);
+      });
+      const powerFailure = mapped.reports.find(
+        (report) => report.analysisType === "power_failure",
+      );
+      expect(powerFailure).toBeDefined();
+      const [domestic, nonDomestic] = await Promise.all([
+        reportApi.getTechnicalReport({
+          analysisType: "power_failure",
+          month: query.month,
+          year: query.year,
+          category: "domestic",
+          page: 1,
+          pageSize: 1,
+        }),
+        reportApi.getTechnicalReport({
+          analysisType: "power_failure",
+          month: query.month,
+          year: query.year,
+          category: "non-domestic",
+          page: 1,
+          pageSize: 1,
+        }),
+      ]);
+      expect(domestic.rawResponse.status()).toBe(200);
+      expect(nonDomestic.rawResponse.status()).toBe(200);
+      const domesticTotal = isTechnicalGridData(domestic.responseBody.data)
+        ? domestic.responseBody.data.pagination.total
+        : 0;
+      const nonDomesticTotal = isTechnicalGridData(nonDomestic.responseBody.data)
+        ? nonDomestic.responseBody.data.pagination.total
+        : 0;
+      validation.execute("Power Failure household list matches the card", () => {
+        expect(domesticTotal).toBe(powerFailure!.domesticCount);
+      });
+      validation.execute(
+        "Power Failure non-household list matches the card",
+        () => {
+          expect(nonDomesticTotal).toBe(powerFailure!.nonDomesticCount);
+        },
+      );
+
+      for (const liveConfig of technicalAnalysisLiveConfigs) {
+        const card = mapped.reports.find(
+          (report) => report.analysisType === liveConfig.analysisType,
+        );
+        expect(card, `Missing summary card ${liveConfig.analysisType}`).toBeDefined();
+        const { rawResponse: reportResponse, responseBody: reportBody } =
+          await reportApi.getTechnicalReport({
+            analysisType: liveConfig.analysisType,
+            month: liveConfig.month,
+            year: liveConfig.year,
+            category: "total",
+            page: 1,
+            pageSize: 1,
+          });
+        expect(reportResponse.status()).toBe(200);
+        const reportTotal = isTechnicalGridData(reportBody.data)
+          ? reportBody.data.pagination.total
+          : undefined;
+        if (liveConfig.validationType === "phase") {
+          validation.execute(
+            `${liveConfig.analysisType} phase list opened`,
+            () => {
+              expect(reportBody.success).toBeTruthy();
+            },
+          );
+          continue;
+        }
+        if (
+          liveConfig.analysisType === "current_unbalance" &&
+          reportTotal !== card!.totalCount
+        ) {
+          BackendResponse.logFinding(
+            `${liveConfig.analysisType} summary ${card!.totalCount} vs list ${reportTotal}`,
+            reportResponse.status(),
+            reportBody,
+          );
+          validation.execute(
+            `${liveConfig.analysisType} list has meters (summary vs list totals differ)`,
+            () => {
+              expect(Number(reportTotal)).toBeGreaterThan(0);
+              expect(card!.totalCount).toBeGreaterThan(0);
+            },
+          );
+          continue;
+        }
+        validation.execute(
+          `${liveConfig.analysisType} list total matches summary card`,
+          () => {
+            expect(reportTotal).toBe(card!.totalCount);
+          },
+        );
+      }
+
+      validation.finalize(
+        "Technical summary card totals match report lists",
+        responseTime,
+        {
+          testInfo,
+          defectContext: {
+            module: "TECHNICAL-ANALYSIS",
+            endpoint: "/indore/analysis/technical/summary",
+            method: "GET",
+            requestParams: query,
+            responseStatus: rawResponse.status(),
+            responseBody,
+            expectedBehavior:
+              "Each summary card totalCount matches the report pagination total. Household and non-household Power Failure lists match the card.",
+          },
+        },
+      );
+    },
+  );
 });

@@ -3,6 +3,16 @@ import type { ConsumerSearchQuery } from "../Api/consumersearch.api";
 
 export type { ConsumerSearchQuery };
 
+/** Live GET /indore/utils/search/consumers column contract. */
+export const EXPECTED_CONSUMER_SEARCH_COLUMNS = [
+  { key: "consumerName", header: "Consumer" },
+  { key: "consumerCid", header: "Consumer CID" },
+  { key: "consumerAddress", header: "Address" },
+  { key: "ivrsNo", header: "IVRS" },
+  { key: "meterSerialNumber", header: "Meter" },
+  { key: "consumerMobileNumber", header: "Mobile" },
+] as const;
+
 export type ConsumerSearchScenario =
   | "smoke_default"
   | "edge_page_two"
@@ -41,39 +51,39 @@ export interface ConsumerSearchTestCase extends LookupTestCase {
 
 export const consumerSearchTestCases: ConsumerSearchTestCase[] = [
   {
-    testName: "Validate consumer search — default page and limit",
+    testName: "Consumer search — first page shows columns and records",
     scenario: "smoke_default",
     tags: ["@smoke", "@utils-lookup", "@consumer-search"],
   },
   {
-    testName: "Validate consumer search — page 2 pagination",
+    testName: "Consumer search — page 2 shows the next set of records",
     scenario: "edge_page_two",
     tags: ["@utils-lookup", "@consumer-search", "@edge"],
   },
   {
-    testName: "Validate consumer search — limit 1 caps rows",
+    testName: "Consumer search — showing 1 per page returns at most 1 record",
     scenario: "edge_limit_one",
     tags: ["@utils-lookup", "@consumer-search", "@edge"],
   },
   {
-    testName: "Validate consumer search — page beyond totalPages returns empty",
+    testName: "Consumer search — a page past the last page shows no records",
     scenario: "edge_page_beyond",
     tags: ["@utils-lookup", "@consumer-search", "@edge"],
   },
   {
-    testName: "Validate consumer search — page=0 rejected",
+    testName: "Consumer search — page 0 is rejected",
     scenario: "negative_page_zero",
     expectedStatus: 400,
     tags: ["@utils-lookup", "@consumer-search", "@negative"],
   },
   {
-    testName: "Validate consumer search — limit=0 rejected",
+    testName: "Consumer search — limit 0 is rejected",
     scenario: "negative_limit_zero",
     expectedStatus: 400,
     tags: ["@utils-lookup", "@consumer-search", "@negative"],
   },
   {
-    testName: "Validate consumer search — non-numeric page rejected",
+    testName: "Consumer search — a non-numeric page is rejected",
     scenario: "negative_page_nan",
     expectedStatus: 400,
     tags: ["@utils-lookup", "@consumer-search", "@negative"],

@@ -5,24 +5,12 @@ import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { CommunicationStatusApi } from "../Api/communicationstatus.api";
-import {
-  communicationStatusMaxResponseTimeMs,
-  communicationStatusSampleDate,
-  communicationStatusTestCases,
-  resolveCommunicationStatusContractBody,
-  resolveCommunicationStatusQuery,
-  resolveCommunicationStatusRef,
-} from "../Data/communicationstatus.data";
-import {
-  CommunicationStatusMapper,
-  type CommunicationStatusErrorResponse,
-} from "../Mapper/communicationstatus.mapper";
+import {communicationStatusMaxResponseTimeMs,communicationStatusSampleDate,communicationStatusTestCases,resolveCommunicationStatusContractBody,resolveCommunicationStatusQuery,resolveCommunicationStatusRef,} from "../Data/communicationstatus.data";
+import {CommunicationStatusMapper,type CommunicationStatusErrorResponse,} from "../Mapper/communicationstatus.mapper";
 import { CommunicationStatusValidator } from "../Validator/communicationstatus.validator";
-
 test.describe("Communication Status API", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
-
   for (const testCase of communicationStatusTestCases) {
     test(
       testCase.testName,
@@ -52,26 +40,21 @@ test.describe("Communication Status API", () => {
           validation.printSummary(testCase.testName, 0);
           return;
         }
-
         const api = new CommunicationStatusApi(authenticatedApi);
         const consumerRef = resolveCommunicationStatusRef(testCase.scenario);
-
         if (!consumerRef) {
           test.skip(true, "Could not resolve communication-status route ref");
           return;
         }
-
         const query = resolveCommunicationStatusQuery(testCase.scenario);
         const { rawResponse, responseBody, responseTime } =
-          await api.getCommunicationStatus(consumerRef, query);
-
+        await api.getCommunicationStatus(consumerRef, query);
         await PerformanceTracker.track(
         rawResponse,
         testCase.testName,
         rawResponse.url(),
         responseTime
       );
-
         validation.execute("Status Validation", () => {
           if (testCase.scenario === "meter_not_found") {
             expect([200, 404]).toContain(rawResponse.status());
@@ -91,7 +74,6 @@ test.describe("Communication Status API", () => {
         validation.execute("Sensitive Data", () =>
           assert.validateSensitiveData(responseBody),
         );
-
         if (expectedStatus === 404) {
           validation.execute("Not Found Error", () =>
             validator.validateNotFoundError(
@@ -101,7 +83,6 @@ test.describe("Communication Status API", () => {
           validation.printSummary(testCase.testName, responseTime);
           return;
         }
-
         if (testCase.scenario === "meter_not_found" && rawResponse.status() === 404) {
           validation.execute("Not Found Error", () =>
             validator.validateNotFoundError(
@@ -111,9 +92,11 @@ test.describe("Communication Status API", () => {
           validation.printSummary(testCase.testName, responseTime);
           return;
         }
-
         if (expectedStatus === 400) {
-          if (testCase.scenario === "invalid_date") {
+          if (
+            testCase.scenario === "invalid_date" ||
+            testCase.scenario === "status_dd_mm_yyyy"
+          ) {
             validation.execute("Invalid Date Validation Error", () =>
               validator.validateInvalidDateError(
                 responseBody as CommunicationStatusErrorResponse,
@@ -129,11 +112,9 @@ test.describe("Communication Status API", () => {
           validation.printSummary(testCase.testName, responseTime);
           return;
         }
-
         validation.execute("Required Fields", () =>
           assert.validateRequiredFields(responseBody, ["success", "data"]),
         );
-
         const mapped = CommunicationStatusMapper.map(responseBody);
         const expectedDate =
           testCase.scenario === "status_default_today"
@@ -145,7 +126,6 @@ test.describe("Communication Status API", () => {
         validation.execute("Communication Status Scenario", () =>
           validator.validateScenario(mapped, testCase.scenario, expectedDate),
         );
-
         validation.printSummary(testCase.testName, responseTime);
       },
     );

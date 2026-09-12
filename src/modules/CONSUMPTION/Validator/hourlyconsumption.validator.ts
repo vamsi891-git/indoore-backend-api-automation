@@ -1,5 +1,9 @@
 import { expect } from "@playwright/test";
 import {HourlyConsumptionData,HourlyConsumptionItem,} from "../Mapper/hourlyconsumption.mapper";
+import {
+  validateSharedHierarchyAllowed as assertSharedHierarchyAllowed,
+  validateUniqueConsumerKeys,
+} from "../utils/consumption-identity.helper";
 const HOUR_FIELDS = Array.from({ length: 24 }, (_, index) => `h${index + 1}`);
 const ITEM_REQUIRED_FIELDS = [
   "slNo",
@@ -59,8 +63,18 @@ export class HourlyConsumptionValidator {
       expect(item.slNo).toBe(base + index + 1);
     });
   }
+  validateUniqueConsumers(items: HourlyConsumptionItem[]): void {
+    validateUniqueConsumerKeys(items);
+  }
+  validateSharedHierarchyAllowed(items: HourlyConsumptionItem[]): void {
+    assertSharedHierarchyAllowed(items);
+  }
   validateHourBuckets(items: HourlyConsumptionItem[]): void {
     items.forEach((item) => {
+      if (item.mf !== undefined) {
+        expect(item.mf === null || typeof item.mf === "number").toBeTruthy();
+        if (item.mf != null) expect(item.mf).toBeGreaterThanOrEqual(0);
+      }
       HOUR_FIELDS.forEach((field) => {
         const value = item[field as keyof HourlyConsumptionItem];
         if (value !== null) {

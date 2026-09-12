@@ -18,7 +18,7 @@ export const commandsPaymentData = {
   expectedHesResponseType: "PAYMENT",
   paymentModes: ["PREPAID", "POSTPAID"] as const,
   initMessagePattern: /get payment details/i,
-  queryFinishedMessagePattern: /job finished|synced from meterStatusForJob/i,
+  queryFinishedMessagePattern: /job finished|synced from meterStatusForJob|job status fetched successfully/i,
   hesCallbackNotePattern: /final completion status will be delivered via hes callback/i,
 } as const;
 

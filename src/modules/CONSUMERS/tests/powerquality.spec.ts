@@ -72,7 +72,10 @@ test.describe("Power Quality API", () => {
       );
 
         validation.execute("Status Validation", () => {
-          if (testCase.scenario === "meter_not_found") {
+          if (
+            testCase.scenario === "meter_not_found" ||
+            testCase.scenario === "consumer_not_found"
+          ) {
             expect([200, 404]).toContain(rawResponse.status());
             return;
           }
@@ -102,6 +105,16 @@ test.describe("Power Quality API", () => {
         }
 
         if (testCase.scenario === "meter_not_found" && rawResponse.status() === 404) {
+          validation.execute("Not Found Error", () =>
+            validator.validateNotFoundError(
+              responseBody as PowerQualityErrorResponse,
+            ),
+          );
+          validation.printSummary(testCase.testName, responseTime);
+          return;
+        }
+
+        if (testCase.scenario === "consumer_not_found" && rawResponse.status() === 404) {
           validation.execute("Not Found Error", () =>
             validator.validateNotFoundError(
               responseBody as PowerQualityErrorResponse,

@@ -1,34 +1,31 @@
-import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
+﻿import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
 import type {
   DbAuthDeviceRow,
   DbAuthInvitationSummary,
   DbAuthUserRow,
 } from "./auth.db";
 
+/**
+ * Same-user auth surfaces (/devices for current JWT) should match DB exactly.
+ * Name retained for call-site compatibility with other module *LteDb helpers.
+ */
 export function compareAuthCountLteDb(options: {
   label: string;
   apiCount: number;
   dbCount: number;
   obs?: DbCompareObs;
 }): void {
-  if (options.apiCount > options.dbCount) {
-    throw new Error(
-      `${options.label}: API ${options.apiCount} exceeds DB ${options.dbCount}`,
-    );
-  }
-  if (options.apiCount === options.dbCount) {
-    compareApiToDb(
-      [
-        {
-          label: options.label,
-          apiValue: options.apiCount,
-          dbValue: options.dbCount,
-        },
-      ],
-      `DB vs API — ${options.label}`,
-      options.obs,
-    );
-  }
+  compareApiToDb(
+    [
+      {
+        label: options.label,
+        apiValue: options.apiCount,
+        dbValue: options.dbCount,
+      },
+    ],
+    `DB vs API - ${options.label}`,
+    options.obs,
+  );
 }
 
 export function compareAuthMeToDb(options: {

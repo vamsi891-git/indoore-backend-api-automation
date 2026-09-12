@@ -6,6 +6,7 @@ import { mdAnalysisCdCompareData } from "../Data/mdanalysis.data";
 import { lfAnalysisData } from "../Data/loadfactor.api";
 import { consumptionCompareLastMonthData } from "../Data/consumptioncompare.data";
 import { consumptionPatternData } from "../Data/consumptionpattern.data";
+import { dayNightZeroData } from "../Data/daynight.data";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import {
   CommercialCommonValidator,
@@ -21,7 +22,7 @@ const authEndpoints: Array<{
   tags: string[];
 }> = [
   {
-    name: "Summary",
+    name: "Dashboard",
     path: commercialPaths.summary,
     params: {
       month: commercialSummaryData.month,
@@ -31,19 +32,19 @@ const authEndpoints: Array<{
     tags: ["@commercial", "@commercial-summary", "@negative", "@auth"],
   },
   {
-    name: "Power Factor",
+    name: "Power Factor Violation",
     path: commercialPaths.pf,
     params: { ...pfAnalysisQuery },
     tags: ["@commercial", "@power-factor", "@negative", "@auth"],
   },
   {
-    name: "MD Analysis",
+    name: "Maximum Demand",
     path: commercialPaths.md,
     params: { ...mdAnalysisCdCompareData },
     tags: ["@commercial", "@md-analysis", "@negative", "@auth"],
   },
   {
-    name: "LF Analysis",
+    name: "Load Factor",
     path: commercialPaths.lf,
     params: { ...lfAnalysisData },
     tags: ["@commercial", "@lf-analysis", "@negative", "@auth"],
@@ -60,14 +61,19 @@ const authEndpoints: Array<{
     params: { ...consumptionPatternData },
     tags: ["@commercial", "@consumption-pattern", "@negative", "@auth"],
   },
+  {
+    name: "Day and Night",
+    path: commercialPaths.dayNight,
+    params: { ...dayNightZeroData },
+    tags: ["@commercial", "@day-night", "@negative", "@auth"],
+  },
 ];
 
-authTest.describe("Commercial Analysis API — Auth Negative", () => {
+authTest.describe("Commercial Analysis — cannot open reports without a valid login", () => {
   authTest.setTimeout(120_000);
-
   for (const endpoint of authEndpoints) {
     authTest(
-      `${endpoint.name} rejects missing auth`,
+      `${endpoint.name} — cannot open the report without logging in`,
       { tag: endpoint.tags },
       async ({ unauthenticatedApi }) => {
         const validation = new ValidationEngine();
@@ -90,7 +96,7 @@ authTest.describe("Commercial Analysis API — Auth Negative", () => {
     );
 
     authTest(
-      `${endpoint.name} rejects invalid bearer token`,
+      `${endpoint.name} — cannot open the report with an invalid login token`,
       { tag: endpoint.tags },
       async ({ unauthenticatedApi }) => {
         const validation = new ValidationEngine();
@@ -117,7 +123,7 @@ authTest.describe("Commercial Analysis API — Auth Negative", () => {
   }
 
   authTest(
-    "Summary rejects disallowed HTTP methods",
+    "Dashboard — only GET is allowed; other request types are rejected",
     {
       tag: ["@commercial", "@commercial-summary", "@negative", "@auth"],
     },

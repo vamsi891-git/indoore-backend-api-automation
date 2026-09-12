@@ -99,3 +99,27 @@ export function isCommercialTransientError(body: unknown): boolean {
   const err = (body as { error?: { code?: string } }).error;
   return err?.code === "INTERNAL_ERROR";
 }
+
+/** After client retries, treat gateway/unavailable as skip — not an assertion failure. */
+export function shouldSkipCommercialResponse(
+  status: number,
+  body?: unknown,
+): boolean {
+  if (status === 502 || status === 503 || status === 504) {
+    return true;
+  }
+  return status === 500 && isCommercialTransientError(body);
+}
+
+/** Live API often ignores connectionCategory so both filters return the unfiltered total. */
+export function isConnectionCategoryFilterIgnored(
+  allTotal: number,
+  domesticTotal: number,
+  nonDomesticTotal: number,
+): boolean {
+  return (
+    allTotal > 0 &&
+    domesticTotal === allTotal &&
+    nonDomesticTotal === allTotal
+  );
+}

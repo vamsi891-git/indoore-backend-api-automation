@@ -10,6 +10,35 @@
     "pagination",
     "rows"
   ],
-  "itemKeys": [],
-  "hasColumnsGrid": false
+  "itemKeys": [
+    "circle",
+    "division",
+    "dt",
+    "dtrMeterNo",
+    "dtrNetworkLookupId",
+    "dtrRatingKva",
+    "durationHhMmSs",
+    "eventCount",
+    "eventId",
+    "feeder",
+    "id",
+    "meterLookupId",
+    "slNo",
+    "subStation",
+    "zone"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    { "key": "slNo", "header": "S No." },
+    { "key": "circle", "header": "Circle" },
+    { "key": "division", "header": "Division" },
+    { "key": "zone", "header": "Zone" },
+    { "key": "subStation", "header": "Substation" },
+    { "key": "feeder", "header": "Feeder" },
+    { "key": "dt", "header": "DTR" },
+    { "key": "dtrMeterNo", "header": "DTR Meter No" },
+    { "key": "dtrRatingKva", "header": "DTR Rating (kVA)" },
+    { "key": "eventCount", "header": "Event Count" },
+    { "key": "durationHhMmSs", "header": "Duration (HH:MM:SS)" }
+  ]
 }

@@ -35,6 +35,7 @@ export const BULK_UPLOAD_CONSUMER_BACKEND_DEFECT_SCENARIOS = new Set([
   "bulk_success",
   "bulk_success_multi",
   "bulk_success_blank_row",
+  "bulk_success_manual_sample",
   "row_invalid_nearest_acct_id",
   "row_meter_not_found",
   "row_meter_inactive",

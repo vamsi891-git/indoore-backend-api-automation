@@ -13,14 +13,14 @@ import { resolveDtrBillingQuery } from "../Data/dtrbilling.data";
  * lookup table (public."L_Meter_Lookup"). This also exercises the DB-pool
  * retry path (postgres.client) that observability tags as a RetryEvent.
  */
-test.describe("DTR Billing — DB cross-validation", () => {
+test.describe("DTR billing — DB cross-validation", () => {
   test.describe.configure({ retries: 1, mode: "serial" });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
-  test("DTR Billing — first row meter serial matches DB meter header",
+  test("DTR billing — first row meter serial matches DB meter header",
     { tag: ["@reports", "@dtr-billing", "@db"] },
     async ({ authenticatedApi, db, obs }) => {
       const api = new DtrBillingApi(authenticatedApi);
-      const query = resolveDtrBillingQuery("dev_live_primary");
+      const query = resolveDtrBillingQuery("dev_live_without_total");
       const { responseBody } = await api.getDtrBilling(query);
       const mapped = DtrBillingMapper.map(responseBody);
       const row = mapped.data.rows.find((r) => r.meterSerialNumber?.trim());

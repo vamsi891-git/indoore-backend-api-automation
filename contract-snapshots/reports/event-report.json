@@ -20,5 +20,27 @@
     "meterCount",
     "slNo"
   ],
-  "hasColumnsGrid": false
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "eventName",
+      "header": "Event Name"
+    },
+    {
+      "key": "meterCount",
+      "header": "Meter Count"
+    },
+    {
+      "key": "eventCount",
+      "header": "Event Count"
+    },
+    {
+      "key": "durationHhMm",
+      "header": "Duration (HH:MM)"
+    }
+  ]
 }

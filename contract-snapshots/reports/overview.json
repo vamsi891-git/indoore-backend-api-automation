@@ -1,0 +1,25 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/reports/overview",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "comparisonPeriod",
+    "currentPeriod",
+    "downloads",
+    "failed",
+    "scheduled",
+    "successful"
+  ],
+  "itemKeys": [
+    "available",
+    "comparisonAvailable",
+    "currentValue",
+    "percentageChange",
+    "previousValue",
+    "trendDirection"
+  ],
+  "hasColumnsGrid": false
+}

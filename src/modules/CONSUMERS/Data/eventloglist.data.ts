@@ -1,30 +1,23 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { EventLogListQuery } from "../Api/eventloglist.api";
-import type {
-  EventLogListResponse,
-  EventLogListScenario,
-  EventLogRow,
-} from "../Mapper/eventloglist.mapper";
-
+import type {EventLogListResponse,EventLogListScenario,EventLogRow,} from "../Mapper/eventloglist.mapper";
+import {
+  CONSUMERS_LIVE_IVRS,
+  CONSUMERS_LIVE_METER_ROUTE,
+  resolveLiveAccountId,
+  resolveLiveIvrs,
+  resolveLiveMeterRoute,
+} from "./consumers-live-refs";
 export const eventLogListMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
-
-/** IVRS from user request; live archive may return empty list. */
-export const eventLogListDefaultIvrs = "N3374018980";
-
-export const eventLogListDefaultConsumerId = "N3374018980";
-
-export const eventLogListDefaultMeterRoute = "meter-12345";
-
+/** IVRS from live RTP/PQ sample; archive may return empty list. */
+export const eventLogListDefaultIvrs = CONSUMERS_LIVE_IVRS;
+export const eventLogListDefaultConsumerId = CONSUMERS_LIVE_IVRS;
+export const eventLogListDefaultMeterRoute = CONSUMERS_LIVE_METER_ROUTE;
 export const eventLogListNotFoundRef = "INVALID_CONSUMER_XYZ";
-
 export const eventLogListMeterNotFoundRef = "meter-999999999";
-
 export const eventLogListEmptyRef = " ";
-
 export const eventLogListDefaultPage = 1;
-
 export const eventLogListDefaultPageSize = 10;
-
 /** Mirrors backend getEmptyEventLogPage(page, pageSize). */
 export const eventLogListContractEmptyResponse: EventLogListResponse = {
   success: true,
@@ -36,7 +29,6 @@ export const eventLogListContractEmptyResponse: EventLogListResponse = {
     totalPages: 0,
   },
 };
-
 export const eventLogListContractPaginationMeta = {
   page: 2,
   pageSize: 10,
@@ -44,7 +36,6 @@ export const eventLogListContractPaginationMeta = {
   expectedTotalPages: 3,
   expectedSerialStart: 11,
 };
-
 const contractPaginationRows: EventLogRow[] = Array.from(
   { length: 5 },
   (_, index) => ({
@@ -68,7 +59,6 @@ export const eventLogListContractPaginationResponse: EventLogListResponse = {
     totalPages: eventLogListContractPaginationMeta.expectedTotalPages,
   },
 };
-
 export const eventLogListContractResolvedPendingRows: EventLogRow[] = [
   {
     serialNo: 1,
@@ -89,7 +79,6 @@ export const eventLogListContractResolvedPendingRows: EventLogRow[] = [
     status: "Pending",
   },
 ];
-
 export const eventLogListContractResolvedPendingResponse: EventLogListResponse = {
   success: true,
   data: {
@@ -100,7 +89,6 @@ export const eventLogListContractResolvedPendingResponse: EventLogListResponse =
     totalPages: 1,
   },
 };
-
 export interface EventLogListTestCase {
   testName: string;
   scenario: EventLogListScenario;
@@ -108,7 +96,6 @@ export interface EventLogListTestCase {
   isContractFixture?: boolean;
   tags: string[];
 }
-
 export function resolveEventLogListRef(
   scenario: EventLogListScenario,
 ): string | undefined {
@@ -117,26 +104,26 @@ export function resolveEventLogListRef(
     case "ell_page_2":
     case "ell_with_search":
     case "ell_ignore_unknown_query":
-      return (
-        process.env.CONSUMER_ELL_IVRS?.trim() ||
-        process.env.CONSUMER_ELC_IVRS?.trim() ||
-        process.env.CONSUMER_BH_IVRS?.trim() ||
-        eventLogListDefaultIvrs
+      return resolveLiveIvrs(
+        process.env.CONSUMER_ELL_IVRS,
+        process.env.CONSUMER_ELC_IVRS,
+        process.env.CONSUMER_BH_IVRS,
+        eventLogListDefaultIvrs,
       );
     case "ell_by_account":
-      return (
-        process.env.CONSUMER_ELL_CONSUMER_ID?.trim() ||
-        process.env.CONSUMER_ELC_CONSUMER_ID?.trim() ||
-        process.env.CONSUMER_BH_CONSUMER_ID?.trim() ||
-        eventLogListDefaultConsumerId
+      return resolveLiveAccountId(
+        process.env.CONSUMER_ELL_CONSUMER_ID,
+        process.env.CONSUMER_ELC_CONSUMER_ID,
+        process.env.CONSUMER_BH_CONSUMER_ID,
+        eventLogListDefaultConsumerId,
       );
     case "ell_by_meter":
-      return (
-        process.env.CONSUMER_ELL_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_ELC_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_BH_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_PROFILE_METER_ROUTE?.trim() ||
-        eventLogListDefaultMeterRoute
+      return resolveLiveMeterRoute(
+        process.env.CONSUMER_ELL_METER_ROUTE,
+        process.env.CONSUMER_ELC_METER_ROUTE,
+        process.env.CONSUMER_BH_METER_ROUTE,
+        process.env.CONSUMER_PROFILE_METER_ROUTE,
+        eventLogListDefaultMeterRoute,
       );
     case "consumer_not_found":
       return eventLogListNotFoundRef;
@@ -152,10 +139,7 @@ export function resolveEventLogListRef(
       return undefined;
   }
 }
-
-export function resolveEventLogListQuery(
-  scenario: EventLogListScenario,
-): EventLogListQuery {
+export function resolveEventLogListQuery(scenario: EventLogListScenario,): EventLogListQuery {
   switch (scenario) {
     case "ell_page_2":
       return { eventPage: 2, eventPageSize: 5 };

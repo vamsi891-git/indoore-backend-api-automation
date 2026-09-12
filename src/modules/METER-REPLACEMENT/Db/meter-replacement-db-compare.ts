@@ -1,4 +1,4 @@
-import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
+﻿import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
 import type {
   DbMrConsumerRow,
   DbMrDashboardOverall,
@@ -6,7 +6,6 @@ import type {
   DbMrMyWorkRow,
   DbMrSubmissionRow,
 } from "./meter-replacement.db";
-import { MeterReplacementDbValidator } from "./meter-replacement-db.validator";
 
 export function compareMrConsumerDetailToDb(options: {
   api: {
@@ -68,7 +67,7 @@ export function compareMrConsumerDetailToDb(options: {
         optional: true,
       },
     ],
-    `DB vs API — MR consumer detail (${lookupKey})`,
+    `DB vs API â€” MR consumer detail (${lookupKey})`,
     obs,
   );
 
@@ -82,7 +81,7 @@ export function compareMrConsumerDetailToDb(options: {
           dbValue: dbRow.oldMeterSerial.trim(),
         },
       ],
-      `DB vs API — MR consumer old meter (${lookupKey})`,
+      `DB vs API â€” MR consumer old meter (${lookupKey})`,
       obs,
     );
   }
@@ -100,7 +99,7 @@ export function compareMrConsumerDetailToDb(options: {
           dbValue: dbRow.oldMeterLookupId,
         },
       ],
-      `DB vs API — MR old meter lookup (${lookupKey})`,
+      `DB vs API â€” MR old meter lookup (${lookupKey})`,
       obs,
     );
   }
@@ -143,7 +142,7 @@ export function compareMrMeterValidationToDb(options: {
         optional: true,
       },
     ],
-    `DB vs API — MR meter validate (${serial})`,
+    `DB vs API â€” MR meter validate (${serial})`,
     options.obs,
   );
 }
@@ -181,7 +180,7 @@ export function compareMrDashboardOverallToDb(options: {
         dbValue: options.dbRow.totalUnmappedMeters,
       },
     ],
-    "DB vs API — MR dashboard overall (general.meter_replacement)",
+    "DB vs API â€” MR dashboard overall (general.meter_replacement)",
     options.obs,
   );
 }
@@ -238,7 +237,7 @@ export function compareMrSubmissionDetailToDb(options: {
         optional: true,
       },
     ],
-    `DB vs API — MR submission detail (${lookupKey})`,
+    `DB vs API â€” MR submission detail (${lookupKey})`,
     obs,
   );
 }
@@ -270,7 +269,7 @@ export function compareMrMyWorkToDb(options: {
         dbValue: options.dbRow.totalCompleted,
       },
     ],
-    "DB vs API — MR dashboard myWork",
+    "DB vs API â€” MR dashboard myWork",
     options.obs,
   );
 }
@@ -281,24 +280,18 @@ export function compareMrCountLteDb(options: {
   dbCount: number;
   obs?: DbCompareObs;
 }): void {
-  MeterReplacementDbValidator.assertApiLteDb(
-    options.label,
-    options.apiCount,
-    options.dbCount,
+  // Exact match: API pagination total must equal DB count when records are compared.
+  compareApiToDb(
+    [
+      {
+        label: options.label,
+        apiValue: options.apiCount,
+        dbValue: options.dbCount,
+      },
+    ],
+    `DB vs API - ${options.label}`,
+    options.obs,
   );
-  if (options.apiCount === options.dbCount) {
-    compareApiToDb(
-      [
-        {
-          label: options.label,
-          apiValue: options.apiCount,
-          dbValue: options.dbCount,
-        },
-      ],
-      `DB vs API — ${options.label}`,
-      options.obs,
-    );
-  }
 }
 
 export function compareMrConsumerMissingRow(): never {

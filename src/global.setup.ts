@@ -5,6 +5,7 @@ import { AuthApi } from "./core/utils/auth.util";
 import { LoggerEngine } from "./core/engine/logger.engine";
 import { TokenManager } from "./core/utils/token-manager";
 import { initRunId } from "./observability/logger";
+import { resolveApiPath } from "./core/utils/api-path.util";
 
 function ensureDirectory(dirName: string): void {
   const dirPath = path.join(process.cwd(), dirName);
@@ -26,6 +27,21 @@ function validateEnv(): void {
   }
 }
 
+async function assertApiReachable(): Promise<void> {
+  const baseURL = (process.env.BASE_URL ?? "").replace(/\/$/, "");
+  const probeUrl = `${baseURL}${resolveApiPath("/indore/auth/login")}`;
+  try {
+    await fetch(probeUrl, { method: "GET", signal: AbortSignal.timeout(8_000) });
+  } catch (error) {
+    const cause = error instanceof Error ? error.message : String(error);
+    throw new Error(
+      `API is not reachable at ${baseURL} (${cause}). ` +
+        "Start the local backend on port 3000, or set BASE_URL to a running API. " +
+        "Cached auth tokens are not used until the API responds.",
+    );
+  }
+}
+
 async function globalSetup(): Promise<void> {
   dotenv.config();
   LoggerEngine.info("Global setup started");
@@ -34,11 +50,17 @@ async function globalSetup(): Promise<void> {
   LoggerEngine.info(`Observability runId for this run: ${runId}`);
 
   validateEnv();
+  if (process.env.STRIP_INDORE_PREFIX?.trim()) {
+    LoggerEngine.info(
+      "STRIP_INDORE_PREFIX enabled — /indore/... paths rewrite to /... for local API",
+    );
+  }
   ensureDirectory("logs");
   ensureDirectory("reports");
   ensureDirectory("test-results");
   ensureDirectory(path.join("playwright", ".auth"));
   TokenManager.clearStaleLock();
+  await assertApiReachable();
 
   const cachedSession = TokenManager.loadValidSession();
   if (cachedSession) {
