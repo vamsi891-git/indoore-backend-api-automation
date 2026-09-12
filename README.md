@@ -335,7 +335,7 @@ CI does **not** use your local `.env` file. You must add secrets on GitHub:
 
 | Secret name | Required | Example value |
 |-------------|----------|----------------|
-| `BASE_URL` | **Yes** | `https://api.bestinfra.app` (no trailing slash) |
+| `BASE_URL` | **Yes** | `https://api.mdm.mppkvvcl.bestinfra.app` (API origin — not the dashboard URL, no `/auth/login`) |
 | `PASSWORD` | **Yes** | Same as local `.env` |
 | `EMAIL` | Yes* | Same as local `.env` |
 | `USERNAME` | Yes* | Use instead of `EMAIL` if that is what you use locally |

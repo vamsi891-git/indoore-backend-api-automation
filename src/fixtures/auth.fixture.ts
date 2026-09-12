@@ -1,6 +1,6 @@
 import { test as base, request, expect, APIRequestContext } from "./base.fixture";
 import { LoggerEngine } from "../core/engine/logger.engine";
-import { resolveApiPath } from "../core/utils/api-path.util";
+import { resolveApiPath, normalizeApiBaseUrl } from "../core/utils/api-path.util";
 
 type AuthFixtures = {
   /** Raw API context without Bearer token — for login / refresh contract tests */
@@ -39,7 +39,7 @@ export const test = base.extend<AuthFixtures>({
     }
 
     const apiContext = await request.newContext({
-      baseURL: process.env.BASE_URL,
+      baseURL: normalizeApiBaseUrl(process.env.BASE_URL),
       extraHTTPHeaders: {
         Accept: "application/json",
       },

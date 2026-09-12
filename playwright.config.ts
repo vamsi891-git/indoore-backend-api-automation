@@ -1,8 +1,17 @@
 import { defineConfig } from "@playwright/test";
 import dotenv from "dotenv";
 import { DEFAULT_TEST_TIMEOUT_MS } from "./src/core/constants/api-timeouts";
+import {
+  enableStripIndorePrefix,
+  isStripIndorePrefixEnabled,
+  normalizeApiBaseUrl,
+} from "./src/core/utils/api-path.util";
 
 dotenv.config();
+
+if (isStripIndorePrefixEnabled()) {
+  enableStripIndorePrefix();
+}
 
 /**
  * Write tests (POST/PUT/PATCH/delete) are off for now.
@@ -63,6 +72,6 @@ export default defineConfig({
     ],
   ],
   use: {
-    baseURL: process.env.BASE_URL,
+    baseURL: normalizeApiBaseUrl(process.env.BASE_URL),
   },
 });
