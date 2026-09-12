@@ -431,13 +431,18 @@ export class AuthApi {
       lastError = `2FA verification failed with status ${verifyResponse.status()} - ${JSON.stringify(verifyBody)}`;
       const code = (verifyBody as { error?: { code?: string } }).error?.code ?? "";
       if (code === "TWO_FACTOR_SECRET_UNAVAILABLE") {
+        const host = (() => {
+          try {
+            return new URL(normalizeApiBaseUrl(process.env.BASE_URL)).hostname;
+          } catch {
+            return "this API";
+          }
+        })();
         throw new Error(
-          "TWO_FACTOR_SECRET_UNAVAILABLE: the API cannot read this user's stored authenticator secret. " +
-            "TOTP_SECRET in .env is only used to generate the 6-digit code; the server must already have " +
-            "the same secret from 2FA enrollment. On this local API the user has 2FA enabled but the " +
-            "encrypted secret is missing or the backend 2FA encryption key does not match. " +
-            "Fix: disable 2FA for this account in local DB, or re-enroll 2FA on localhost and put the new " +
-            "base32 secret in TOTP_SECRET, or point BASE_URL at the environment where this authenticator was enrolled.",
+          `TWO_FACTOR_SECRET_UNAVAILABLE on ${host}: password login worked, but the API cannot decrypt this user's stored 2FA secret. ` +
+            "TOTP_SECRET only generates the 6-digit code; it cannot fix a missing secret on the server. " +
+            "On https://mdm.mppkvvcl.bestinfra.app turn 2FA off for the CI user, or re-enroll 2FA there and put the new base32 secret in GitHub secret TOTP_SECRET. " +
+            "A local/.env TOTP_SECRET from another environment will not work if live never stored that enrollment.",
         );
       }
     }
@@ -503,6 +508,14 @@ export class AuthApi {
 
       const data = releaseBody.data;
       if (data?.accessToken) {
+        return data;
+      }
+
+      if (data?.requires2FA) {
+        LoggerEngine.info(
+          "Device slot freed; API now requires 2FA before issuing a token",
+        );
+        console.log("Device slot freed. Completing 2FA next.");
         return data;
       }
 
@@ -606,33 +619,39 @@ export class AuthApi {
       }
 
       let nextBody = loginBody.data as TwoFactorBody;
+      const headers = loginResponse.headers();
+      let hitDeviceLimit = false;
 
-      if (nextBody?.requires2FA) {
-        nextBody = await this.completeTwoFactor(
-          apiContext,
-          nextBody,
-          loginResponse.headers(),
-        );
-        if (nextBody.accessToken) {
-          return this.toLoginResponse(apiContext, { data: nextBody });
+      for (let step = 0; step < 8; step += 1) {
+        if (nextBody?.accessToken) {
+          const login = await this.toLoginResponse(apiContext, { data: nextBody });
+          if (hitDeviceLimit) {
+            await this.revokeOtherSessions(apiContext, login);
+          }
+          return login;
         }
-      }
 
-      if (nextBody?.requiresDeviceSelection) {
-        const session = await this.completeDeviceSelection(
-          apiContext,
-          nextBody as DeviceSelectionBody,
-          loginResponse.headers(),
+        if (nextBody?.requires2FA) {
+          nextBody = await this.completeTwoFactor(apiContext, nextBody, headers);
+          continue;
+        }
+
+        if (nextBody?.requiresDeviceSelection) {
+          hitDeviceLimit = true;
+          nextBody = await this.completeDeviceSelection(
+            apiContext,
+            nextBody as DeviceSelectionBody,
+            headers,
+          );
+          continue;
+        }
+
+        throw new Error(
+          `Login succeeded but no access token was returned - ${JSON.stringify({ data: nextBody })}`,
         );
-
-        const login = await this.toLoginResponse(apiContext, { data: session });
-        await this.revokeOtherSessions(apiContext, login);
-        return login;
       }
 
-      throw new Error(
-        `Login succeeded but no access token was returned - ${JSON.stringify(loginBody)}`,
-      );
+      throw new Error("Login did not return an access token after 2FA/device steps");
     } finally {
       await apiContext.dispose();
     }
