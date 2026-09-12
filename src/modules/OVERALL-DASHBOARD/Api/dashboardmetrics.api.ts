@@ -1,28 +1,16 @@
-import {
-    APIRequestContext,
-    APIResponse
-} from "@playwright/test";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
-import {
-    DashboardMetricsResponse
-}
-    from "../Mapper/dashboardmetrics.mapper";
-export interface DashboardMetricsApiResult {
-    rawResponse:APIResponse;
-    responseBody:DashboardMetricsResponse;
-    responseTime:number;
-}
-export class DashboardMetricsApi {
-    constructor(private readonly authenticatedApi:APIRequestContext) { }
-    async getDashboardMetrics():Promise<DashboardMetricsApiResult> {
-        const start =Date.now();
-        const response =await getWithAutoRefresh(this.authenticatedApi,"/indore/dashboard/metrics");
-        const responseTime = Date.now() - start;
-        const responseBody =await response.json() as DashboardMetricsResponse;
-        return {
-            rawResponse:response,
-            responseBody,
-            responseTime
-        };
-    }
+import { TimedApiClient } from "../../../core/base/timed-api.client";
+import { ApiCallResult } from "../../../core/models/api-result.model";
+import { MASTER_DATA_REQUEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
+import { DashboardMetricsResponse } from "../Mapper/dashboardmetrics.mapper";
+
+export type DashboardMetricsApiResult = ApiCallResult<DashboardMetricsResponse>;
+
+export const OVERALL_METRICS_PATH = "/indore/dashboard/overall-metrics";
+
+export class DashboardMetricsApi extends TimedApiClient {
+  getDashboardMetrics(): Promise<DashboardMetricsApiResult> {
+    return this.getJson<DashboardMetricsResponse>(OVERALL_METRICS_PATH, {
+      timeout: MASTER_DATA_REQUEST_TIMEOUT_MS,
+    });
+  }
 }

@@ -1,4 +1,8 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
+import {
+  TECHNICAL_ANALYSIS_PHASE_REQUEST_TIMEOUT_MS,
+  TECHNICAL_ANALYSIS_REQUEST_TIMEOUT_MS,
+} from "../../../core/constants/api-timeouts";
 import { TechnicalReportResponse } from "../Mapper/technicalanalysis.mapper";
 import { getTechnicalReportWithRetry } from "../utils/technical-request.helper";
 export interface TechnicalReportApiResult {
@@ -26,10 +30,16 @@ export class TechnicalReportApi {
         params[key] = value;
       }
     }
+    const isPhaseReport = String(query.analysisType ?? "").startsWith("phase_");
     const { response, responseTime } = await getTechnicalReportWithRetry(
       this.authenticatedApi,
       "/indore/analysis/technical/report",
-      { params },
+      {
+        params,
+        requestTimeoutMs: isPhaseReport
+          ? TECHNICAL_ANALYSIS_PHASE_REQUEST_TIMEOUT_MS
+          : TECHNICAL_ANALYSIS_REQUEST_TIMEOUT_MS,
+      },
     );
     let responseBody: TechnicalReportResponse;
     try {

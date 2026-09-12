@@ -6,6 +6,7 @@ import {
   CommandJobInitResponse,
   MappedCommandJobInitData,
 } from "../shared/commands-job-init.mapper";
+import { QUERY_FINISHED_MESSAGE } from "../utils/commands-job-e2e.helper";
 
 const ISO_DATETIME_PATTERN =
   /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
@@ -68,9 +69,7 @@ export class CommandsPaymentValidator {
   }
 
   validateQueryFinishedMessage(message: string): void {
-    expect(commandsPaymentData.queryFinishedMessagePattern.test(message)).toBe(
-      true,
-    );
+    expect(QUERY_FINISHED_MESSAGE.test(message)).toBe(true);
   }
 
   validateQueryResponseEnvelope(body: MappedQueryMeterJobData): void {

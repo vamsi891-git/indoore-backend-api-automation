@@ -18,7 +18,7 @@ import {
 } from "../Mapper/dtrcapacitygauge.mapper";
 import { DtrCapacityGaugeValidator } from "../Validator/dtrcapacitygauge.validator";
 
-test.describe("DTR Capacity Gauge API", () => {
+test.describe("DTR loading gauge", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

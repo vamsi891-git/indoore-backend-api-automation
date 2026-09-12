@@ -1,54 +1,54 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { ConsumerProfileScenario } from "../Mapper/consumerprofile.mapper";
 import type { ConsumerProfileQuery } from "../Api/consumerprofile.api";
-
+import {
+  CONSUMERS_LIVE_ACCOUNT_ID,
+  CONSUMERS_LIVE_IVRS,
+  CONSUMERS_LIVE_METER_ROUTE,
+  resolveLiveAccountId,
+  resolveLiveIvrs,
+  resolveLiveMeterRoute,
+} from "./consumers-live-refs";
 export const consumerProfileMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
-
 /** Account / unique id used in user-provided profile sample. */
-export const consumerProfileDefaultConsumerId = "5633025000";
-
+export const consumerProfileDefaultConsumerId = CONSUMERS_LIVE_ACCOUNT_ID;
 /** IVRS (`RRNumber`) for the same consumer as the default account id. */
-export const consumerProfileDefaultIvrs = "N3472031547";
-
+export const consumerProfileDefaultIvrs = CONSUMERS_LIVE_IVRS;
 /** Live meter lookup route that resolves a profile. */
-export const consumerProfileDefaultMeterRoute = "meter-12345";
-
+export const consumerProfileDefaultMeterRoute = CONSUMERS_LIVE_METER_ROUTE;
 export const consumerProfileNotFoundRef = "INVALID_CONSUMER_XYZ";
-
 export const consumerProfileMeterNotFoundRef = "meter-999999999";
-
 export const consumerProfileDefaultQuery: ConsumerProfileQuery = {
   billingLimit: 12,
   eventPage: 1,
   eventPageSize: 20,
 };
-
 export interface ConsumerProfileTestCase {
   testName: string;
   scenario: ConsumerProfileScenario;
   expectedStatus?: number;
   tags: string[];
 }
-
 export function resolveConsumerProfileRef(
   scenario: ConsumerProfileScenario,
 ): string | undefined {
   switch (scenario) {
     case "profile_found":
     case "profile_no_query":
-      return (
-        process.env.CONSUMER_PROFILE_CONSUMER_ID?.trim() ||
-        process.env.CONSUMER_ACTIVATION_CONSUMER_ID?.trim() ||
-        consumerProfileDefaultConsumerId
+      return resolveLiveAccountId(
+        process.env.CONSUMER_PROFILE_CONSUMER_ID,
+        process.env.CONSUMER_ACTIVATION_CONSUMER_ID,
+        consumerProfileDefaultConsumerId,
       );
     case "profile_by_ivrs":
-      return (
-        process.env.CONSUMER_PROFILE_IVRS?.trim() || consumerProfileDefaultIvrs
+      return resolveLiveIvrs(
+        process.env.CONSUMER_PROFILE_IVRS,
+        consumerProfileDefaultIvrs,
       );
     case "profile_by_meter":
-      return (
-        process.env.CONSUMER_PROFILE_METER_ROUTE?.trim() ||
-        consumerProfileDefaultMeterRoute
+      return resolveLiveMeterRoute(
+        process.env.CONSUMER_PROFILE_METER_ROUTE,
+        consumerProfileDefaultMeterRoute,
       );
     case "consumer_not_found":
       return consumerProfileNotFoundRef;
@@ -58,7 +58,6 @@ export function resolveConsumerProfileRef(
       return undefined;
   }
 }
-
 export function resolveConsumerProfileQuery(
   scenario: ConsumerProfileScenario,
 ): ConsumerProfileQuery {
@@ -67,7 +66,6 @@ export function resolveConsumerProfileQuery(
   }
   return { ...consumerProfileDefaultQuery };
 }
-
 export const consumerProfileTestCases: ConsumerProfileTestCase[] = [
   {
     testName:

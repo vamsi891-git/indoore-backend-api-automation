@@ -46,6 +46,17 @@ UTILS_LOOKUP_DB_SQL_READY=true
 
 Same gate pattern as Revenue Protection (`isDbConfigured()` + module `*_DB_SQL_READY`).
 
+### Harness health
+
+| ID | Proof |
+|---|---|
+| MUT-UL-DB-001 | `compareApiToDb` throws when catalog id API ≠ DB (fixture) |
+
+```bash
+npm run test:utils-lookup:mutation-proof
+UTILS_LOOKUP_DB_SQL_READY=true npm run test:utils-lookup:db
+```
+
 ---
 
 ## Mutation-proof — pattern coverage (not 14/14 file-per-endpoint)

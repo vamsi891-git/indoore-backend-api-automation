@@ -18,7 +18,7 @@ import {
 } from "../Mapper/dtrevents.mapper";
 import { DtrEventsValidator } from "../Validator/dtrevents.validator";
 
-test.describe("DTR Events API", () => {
+test.describe("DTR events", () => {
     test.describe.configure({ retries: 1 });
     test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

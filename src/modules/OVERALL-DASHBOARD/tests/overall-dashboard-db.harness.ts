@@ -1,27 +1,35 @@
 import type pg from "pg";
 import type { APIRequestContext } from "@playwright/test";
+import { expect } from "@playwright/test";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { DashboardMetricsApi } from "../Api/dashboardmetrics.api";
+import { InstallationSummaryApi } from "../Api/installationsummary.api";
+import { DisconnectionDetailsApi } from "../Api/disconnectiondetails.api";
 import { DashboardMetricsMapper } from "../Mapper/dashboardmetrics.mapper";
-import {
-  countOdActiveDtrs,
-  countOdActiveFeeders,
-  countOdActiveMeters,
-  countOdActiveSubstations,
-} from "../Db/overall-dashboard.db";
-import { compareOdCountLteDb } from "../Db/overall-dashboard-db-compare";
+import { InstallationSummaryMapper } from "../Mapper/installationsummary.mapper";
+import { DisconnectionDetailsMapper } from "../Mapper/disconnectiondetails.mapper";
+import { InstallationSummaryValidator } from "../Validator/installationsummary.validator";
+import { DisconnectionDetailsValidator } from "../Validator/disconnectiondetails.validator";
 import { logOverallDashboardDataQualityFindings } from "../Db/overall-dashboard-db.validator";
+import { skipIfOverallDashboardInternalError } from "../utils/overall-dashboard-env.helper";
+import { INSTALLATION_SUMMARY_PATH } from "../Data/installationsummary.data";
+import { DISCONNECTION_DETAILS_PATH } from "../Data/disconnectiondetails.data";
 
-function metricCount(section: Record<string, { count?: number }>, key: string): number {
-  return Number(section?.[key]?.count ?? 0);
-}
-
+/**
+ * Tier 3 — API soft coverage only (no SQL).
+ * Overall-metrics KPI SQL was never pasted; do not treat `@db` green here as
+ * DB cross-validation. Keep gate off for CI until real SQL lands, or run this
+ * as intentional API-only soft checks.
+ */
 export async function runOverallDashboardDbCoverage(
   authenticatedApi: APIRequestContext,
-  db: pg.Pool,
+  _db: pg.Pool,
 ): Promise<void> {
+  void _db;
   const validation = new ValidationEngine();
-  const { responseBody } = await new DashboardMetricsApi(authenticatedApi).getDashboardMetrics();
+  const { responseBody } = await new DashboardMetricsApi(
+    authenticatedApi,
+  ).getDashboardMetrics();
   const metrics = DashboardMetricsMapper.mapData(
     responseBody.data as unknown as Record<string, unknown>,
   );
@@ -30,42 +38,62 @@ export async function runOverallDashboardDbCoverage(
     responseBody.data as unknown as Record<string, unknown>,
   );
 
-  const [dbDtrs, dbFeeders, dbSubs, dbMeters] = await Promise.all([
-    countOdActiveDtrs(db),
-    countOdActiveFeeders(db),
-    countOdActiveSubstations(db),
-    countOdActiveMeters(db),
-  ]);
+  validation.execute("installationSummary present", () => {
+    expect(metrics.installationSummary.length).toBeGreaterThan(0);
+  });
+  validation.execute("installationSummary values ≥ 0", () => {
+    for (const row of metrics.installationSummary) {
+      expect(row.value).toBeGreaterThanOrEqual(0);
+      expect(row.percent).toBeGreaterThanOrEqual(0);
+    }
+  });
+  validation.execute("installationSummary percent ≈ 100", () => {
+    const sum = metrics.installationSummary.reduce(
+      (acc, row) => acc + row.percent,
+      0,
+    );
+    expect(Math.abs(100 - sum)).toBeLessThanOrEqual(1);
+  });
 
-  validation.execute("networkDetails.dtrs ≤ DB", () => {
-    compareOdCountLteDb({
-      label: "networkDetails.dtrs",
-      apiCount: metricCount(metrics.networkDetails, "dtrs"),
-      dbCount: dbDtrs,
-    });
-  });
-  validation.execute("networkDetails.feeders ≤ DB", () => {
-    compareOdCountLteDb({
-      label: "networkDetails.feeders",
-      apiCount: metricCount(metrics.networkDetails, "feeders"),
-      dbCount: dbFeeders,
-    });
-  });
-  validation.execute("networkDetails.substations ≤ DB", () => {
-    compareOdCountLteDb({
-      label: "networkDetails.substations",
-      apiCount: metricCount(metrics.networkDetails, "substations"),
-      dbCount: dbSubs,
-    });
-  });
-  if (Number(metrics.totalMeterCount ?? 0) > 0) {
-    validation.execute("totalMeterCount ≤ DB", () => {
-      compareOdCountLteDb({
-        label: "totalMeterCount",
-        apiCount: Number(metrics.totalMeterCount ?? 0),
-        dbCount: dbMeters,
-      });
-    });
+  const installApi = new InstallationSummaryApi(authenticatedApi);
+  const installResult = await installApi.getInstallationSummary();
+  skipIfOverallDashboardInternalError(
+    installResult.rawResponse.status(),
+    installResult.responseBody,
+    INSTALLATION_SUMMARY_PATH,
+  );
+  if (installResult.rawResponse.status() === 200) {
+    const installMapped = InstallationSummaryMapper.map(
+      installResult.responseBody,
+    );
+    const installValidator = new InstallationSummaryValidator();
+    validation.execute("installation-summary mapped + unmapped = total", () =>
+      installValidator.validateCounts(installMapped),
+    );
+    validation.execute("installation-summary share percents", () =>
+      installValidator.validateSharePercents(installMapped),
+    );
   }
-  validation.printSummary("Overall Dashboard DB Coverage", 0);
+
+  const disconnectResult = await new DisconnectionDetailsApi(
+    authenticatedApi,
+  ).getDisconnectionDetails();
+  skipIfOverallDashboardInternalError(
+    disconnectResult.rawResponse.status(),
+    disconnectResult.responseBody,
+    DISCONNECTION_DETAILS_PATH,
+  );
+  if (disconnectResult.rawResponse.status() === 200) {
+    const disconnectMapped = DisconnectionDetailsMapper.map(
+      disconnectResult.responseBody,
+    );
+    validation.execute("disconnection-details six unique months", () =>
+      new DisconnectionDetailsValidator().validateMonthSeries(disconnectMapped),
+    );
+  }
+
+  validation.printSummary(
+    "Overall Dashboard API soft coverage (no SQL — Tier 3)",
+    0,
+  );
 }

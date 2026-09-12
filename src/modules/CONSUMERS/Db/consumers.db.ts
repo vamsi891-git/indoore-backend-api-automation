@@ -1,10 +1,16 @@
 import type pg from "pg";
 import { queryReadOnly, queryScalar } from "../../../core/db/postgres.client";
 import {
+  BILLING_HISTORY_ARCHIVE_COUNT_SQL,
   CONSUMER_ACTIVATION_BY_REF_SQL,
   CONSUMER_CONNECTION_COUNT_SQL,
   CONSUMER_PROFILE_BY_REF_SQL,
   METER_BY_SERIAL_SQL,
+  METER_LAST_SEEN_BY_LOOKUP_SQL,
+  POWER_QUALITY_SP_LATEST_SQL,
+  POWER_QUALITY_TP_LATEST_SQL,
+  REALTIME_POWER_SP_LATEST_SQL,
+  REALTIME_POWER_TP_LATEST_SQL,
 } from "./consumers-sql";
 
 export function isConsumersDbSqlReady(): boolean {
@@ -39,6 +45,10 @@ export type DbMeterRow = {
   meterLookupTblRefId: number;
   isActive: boolean;
   isAssigned: boolean;
+};
+
+export type DbMeterLastSeenRow = {
+  lastSeen: Date | string | null;
 };
 
 export async function getConsumerProfileByRef(
@@ -84,5 +94,103 @@ export async function getMeterBySerial(
   const rows = await queryReadOnly<DbMeterRow>(pool, METER_BY_SERIAL_SQL, [
     serial,
   ]);
+  return rows[0] ?? null;
+}
+
+export async function getMeterLastSeen(
+  pool: pg.Pool,
+  meterLookupId: number,
+): Promise<DbMeterLastSeenRow | null> {
+  const rows = await queryReadOnly<DbMeterLastSeenRow>(
+    pool,
+    METER_LAST_SEEN_BY_LOOKUP_SQL,
+    [meterLookupId],
+  );
+  return rows[0] ?? null;
+}
+
+/** Archive DB — billing history universe for one meter serial. */
+export async function countBillingHistoryArchiveRows(
+  archivePool: pg.Pool,
+  meterSerial: string,
+): Promise<number> {
+  return (
+    (await queryScalar<number>(
+      archivePool,
+      BILLING_HISTORY_ARCHIVE_COUNT_SQL,
+      [meterSerial],
+    )) ?? 0
+  );
+}
+
+export type DbRealTimePowerRow = {
+  rVoltage: number | string | null;
+  rCurrent: number | string | null;
+  rPowerFactor: number | string | null;
+  yVoltage: number | string | null;
+  yCurrent: number | string | null;
+  yPowerFactor: number | string | null;
+  bVoltage: number | string | null;
+  bCurrent: number | string | null;
+  bPowerFactor: number | string | null;
+};
+
+/** Primary DB — SP today IP cache for real-time-power. */
+export async function getLatestSpRealTimePower(
+  pool: pg.Pool,
+  meterLookupId: number,
+): Promise<DbRealTimePowerRow | null> {
+  const rows = await queryReadOnly<DbRealTimePowerRow>(
+    pool,
+    REALTIME_POWER_SP_LATEST_SQL,
+    [meterLookupId],
+  );
+  return rows[0] ?? null;
+}
+
+/** Archive DB — TP instantaneous IP for real-time-power. */
+export async function getLatestTpRealTimePower(
+  archivePool: pg.Pool,
+  meterLookupId: number,
+): Promise<DbRealTimePowerRow | null> {
+  const rows = await queryReadOnly<DbRealTimePowerRow>(
+    archivePool,
+    REALTIME_POWER_TP_LATEST_SQL,
+    [meterLookupId],
+  );
+  return rows[0] ?? null;
+}
+
+export type DbPowerQualityRow = {
+  overallPf: number | string | null;
+  frequency: number | string | null;
+  neutralCurrent: number | string | null;
+  mdKw: number | string | null;
+  mdKva: number | string | null;
+};
+
+/** Archive DB — SP power-quality from T_IPData_CateSP. */
+export async function getLatestSpPowerQuality(
+  archivePool: pg.Pool,
+  meterLookupId: number,
+): Promise<DbPowerQualityRow | null> {
+  const rows = await queryReadOnly<DbPowerQualityRow>(
+    archivePool,
+    POWER_QUALITY_SP_LATEST_SQL,
+    [meterLookupId],
+  );
+  return rows[0] ?? null;
+}
+
+/** Archive DB — TP power-quality from T_IPData_CateTP. */
+export async function getLatestTpPowerQuality(
+  archivePool: pg.Pool,
+  meterLookupId: number,
+): Promise<DbPowerQualityRow | null> {
+  const rows = await queryReadOnly<DbPowerQualityRow>(
+    archivePool,
+    POWER_QUALITY_TP_LATEST_SQL,
+    [meterLookupId],
+  );
   return rows[0] ?? null;
 }

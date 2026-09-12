@@ -60,6 +60,10 @@ function shouldRetryRequest(
   if (attempt >= MAX_REQUEST_ATTEMPTS) {
     return false;
   }
+  // Application INTERNAL_ERROR is not transient — retrying 4x just burns minutes.
+  if (status === 500 && bodyText.includes("INTERNAL_ERROR")) {
+    return false;
+  }
   if (TRANSIENT_HTTP_STATUSES.has(status)) {
     return true;
   }

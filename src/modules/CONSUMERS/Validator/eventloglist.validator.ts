@@ -99,8 +99,11 @@ export class EventLogListValidator {
 
     validateRowsPresentWhenTotalPositive(data: EventLogListData) {
         if (data.totalCount > 0) {
-            expect(data.rows.length).toBeGreaterThan(0);
             expect(data.totalPages).toBeGreaterThan(0);
+            // Beyond-last-page requests may echo page while returning zero rows.
+            if (data.page <= data.totalPages) {
+                expect(data.rows.length).toBeGreaterThan(0);
+            }
         }
     }
 

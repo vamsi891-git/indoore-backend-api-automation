@@ -21,16 +21,14 @@ export interface DeactivateMeterTestCase {
 
 export const deactivateMeterTestCases: DeactivateMeterTestCase[] = [
   {
-    testName:
-      "Validate DELETE /indore/master-data/meters/:id — deactivate meter successfully",
+    testName: "Deactivate meter — meter is deactivated",
     scenario: "success",
     expectedStatus: 200,
     provisionMeter: true,
     tags: ["@smoke", "@master-data", "@deactivate-meter", "@meter-master"],
   },
   {
-    testName:
-      "Validate DELETE /indore/master-data/meters/:id — already inactive is idempotent",
+    testName: "Deactivate meter — deactivating an already inactive meter is allowed",
     scenario: "already_inactive",
     expectedStatus: 200,
     provisionMeter: true,
@@ -38,8 +36,7 @@ export const deactivateMeterTestCases: DeactivateMeterTestCase[] = [
     tags: ["@master-data", "@deactivate-meter", "@meter-master"],
   },
   {
-    testName:
-      "Validate DELETE /indore/master-data/meters/:id — meter not found / out of scope",
+    testName: "Deactivate meter — unknown meter is rejected",
     scenario: "not_found",
     expectedStatus: 404,
     provisionMeter: false,

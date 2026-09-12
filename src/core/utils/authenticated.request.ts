@@ -3,6 +3,7 @@ import { RetryEngine } from "../engine/retry.engine";
 import { LoggerEngine } from "../engine/logger.engine";
 import { TokenManager } from "./token-manager";
 import { DEFAULT_REQUEST_TIMEOUT_MS } from "../constants/api-timeouts";
+import { resolveApiPath } from "./api-path.util";
 
 type RequestOptions = Omit<
   NonNullable<Parameters<APIRequestContext["fetch"]>[1]>,
@@ -126,6 +127,7 @@ async function requestWithAutoRefresh(
   url: string,
   options: RequestOptions = {}
 ): Promise<APIResponse> {
+  const resolvedUrl = resolveApiPath(url);
   const normalizedOptions = normalizeOptions(options);
 
   const runRequest = async (token: string): Promise<APIResponse> =>
@@ -134,12 +136,12 @@ async function requestWithAutoRefresh(
         const response = await executeWithToken(
           request,
           method,
-          url,
+          resolvedUrl,
           normalizedOptions,
           token
         );
         if (RETRYABLE_STATUSES.has(response.status())) {
-          LoggerEngine.info(`${method} ${url} retry attempt ${attempt + 1} due to ${response.status()}`);
+          LoggerEngine.info(`${method} ${resolvedUrl} retry attempt ${attempt + 1} due to ${response.status()}`);
         }
         return response;
       },
@@ -152,23 +154,23 @@ async function requestWithAutoRefresh(
         }
         return Boolean(response) && RETRYABLE_STATUSES.has((response as APIResponse).status());
       },
-      { retries: RETRIES, delayMs: RETRY_DELAY_MS, label: `${method} ${url}` }
+      { retries: RETRIES, delayMs: RETRY_DELAY_MS, label: `${method} ${resolvedUrl}` }
     );
 
   let token = await TokenManager.getToken();
   let response = await runRequest(token);
 
   if (response.status() === 401) {
-    LoggerEngine.info(`${method} ${url} received 401; reloading shared token`);
+    LoggerEngine.info(`${method} ${resolvedUrl} received 401; reloading shared token`);
     token = await TokenManager.handleUnauthorized(token);
-    response = await executeWithToken(request, method, url, normalizedOptions, token);
+    response = await executeWithToken(request, method, resolvedUrl, normalizedOptions, token);
   }
 
   if (await isCsrfMismatchResponse(response)) {
-    LoggerEngine.info(`${method} ${url} received CSRF_MISMATCH; refreshing session`);
+    LoggerEngine.info(`${method} ${resolvedUrl} received CSRF_MISMATCH; refreshing session`);
     await TokenManager.forceSessionRefresh();
     token = await TokenManager.getToken();
-    response = await executeWithToken(request, method, url, normalizedOptions, token);
+    response = await executeWithToken(request, method, resolvedUrl, normalizedOptions, token);
   }
 
   return response;

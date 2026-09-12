@@ -1,4 +1,11 @@
-/** Map MDM PDF slide titles → API endpoints (framework comparison). */
+/**
+ * Data module: map MDM presentation PDF slide titles → API endpoints/params.
+ *
+ * When to run / use: imported by `scripts/compare-mdm-screenshots-with-apis.mjs`
+ * (not run standalone). Edit RULES when slide titles or API params change.
+ *
+ * Output: exported `DEFAULT_QUERY`, `parsePdfSlides`, `resolveSlideApi` — no files written.
+ */
 
 const MONTH = Number(process.env.MDM_COMPARE_MONTH ?? 12);
 const YEAR = Number(process.env.MDM_COMPARE_YEAR ?? 2025);

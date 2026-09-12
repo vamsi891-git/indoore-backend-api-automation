@@ -22,6 +22,7 @@ export class DailyConsumptionApi {
     toDate: string,
     month: number,
     year: number,
+    filters: { msn?: string; ivrsNumber?: string } = {},
   ): Promise<DailyConsumptionApiResult> {
     return this.reportApi.getReport<DailyConsumptionResponse>(
       "daily",
@@ -31,6 +32,7 @@ export class DailyConsumptionApi {
       toDate,
       month,
       year,
+      filters,
     );
   }
 }

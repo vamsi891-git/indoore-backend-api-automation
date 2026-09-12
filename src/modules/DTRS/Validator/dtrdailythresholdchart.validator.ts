@@ -22,9 +22,9 @@ import {
 
 const LABEL_PATTERNS: Record<DtrDailyThresholdPeriod, RegExp> = {
     hourly: /^\d{2}:\d{2}$/,
-    daily: /^\d{1,2}\s+\w{3}$/,
+    daily: /^\d{1,2}\s+[A-Za-z]{3,9}$/,
     weekly: /^W\d+$/,
-    monthly: /^\w+\s+\d{4}$/,
+    monthly: /^[A-Za-z]{3,9}\s+\d{4}$/,
     yearly: /^\d{4}$/,
 };
 
@@ -215,8 +215,13 @@ export class DtrDailyThresholdChartValidator {
     }
 
     validateUniqueLabels(points: ThresholdChartPoint[]): void {
-        const labels = points.map((p) => p.label);
-        expect(new Set(labels).size).toBe(labels.length);
+        if (points.length === 0) {
+            return;
+        }
+        const labels = points.map((p) => p.label.trim());
+        expect(new Set(labels).size, "each chart label appears only once").toBe(
+            labels.length,
+        );
     }
 
     validateAllNullPoints(points: ThresholdChartPoint[]): void {
@@ -230,12 +235,11 @@ export class DtrDailyThresholdChartValidator {
 
     validateLiveOk(
         mapped: MappedDtrDailyThresholdChart,
-        expectedPeriod: DtrDailyThresholdPeriod,
+        expectedPeriod?: DtrDailyThresholdPeriod,
     ): void {
         this.validateSuccess(mapped.success);
         this.validateFields(mapped);
         this.validatePeriod(mapped.period, expectedPeriod);
-        this.validatePointsLength(mapped.period, mapped.points);
         this.validateContractPoints(mapped.period, mapped.points);
         this.validateUniqueLabels(mapped.points);
     }
@@ -258,6 +262,7 @@ export class DtrDailyThresholdChartValidator {
 
     validateNullHourlyContract(mapped: MappedDtrDailyThresholdChart): void {
         this.validateLiveOk(mapped, "hourly");
+        this.validatePointsLength(mapped.period, mapped.points);
         this.validateAllNullPoints(mapped.points);
         expect(mapped.points[0].label).toBe("06:00");
         expect(mapped.points[mapped.points.length - 1].label).toBe("17:00");
@@ -265,11 +270,13 @@ export class DtrDailyThresholdChartValidator {
 
     validateNullDailyContract(mapped: MappedDtrDailyThresholdChart): void {
         this.validateLiveOk(mapped, "daily");
+        this.validatePointsLength(mapped.period, mapped.points);
         this.validateAllNullPoints(mapped.points);
     }
 
     validateNullWeeklyContract(mapped: MappedDtrDailyThresholdChart): void {
         this.validateLiveOk(mapped, "weekly");
+        this.validatePointsLength(mapped.period, mapped.points);
         this.validateAllNullPoints(mapped.points);
         expect(mapped.points.map((p) => p.label)).toEqual([
             "W1",
@@ -285,12 +292,14 @@ export class DtrDailyThresholdChartValidator {
 
     validateNullMonthlyContract(mapped: MappedDtrDailyThresholdChart): void {
         this.validateLiveOk(mapped, "monthly");
+        this.validatePointsLength(mapped.period, mapped.points);
         this.validateAllNullPoints(mapped.points);
         expect(mapped.points[0].label).toBe("Aug 2025");
     }
 
     validateNullYearlyContract(mapped: MappedDtrDailyThresholdChart): void {
         this.validateLiveOk(mapped, "yearly");
+        this.validatePointsLength(mapped.period, mapped.points);
         this.validateAllNullPoints(mapped.points);
         expect(mapped.points[0].label).toBe("2015");
         expect(mapped.points[mapped.points.length - 1].label).toBe("2026");
@@ -317,6 +326,21 @@ export class DtrDailyThresholdChartValidator {
         expect(mapped.points[0].reactiveEnergyKvarh).toBe(deriveReactiveEnergyKvarh(meta.activeEnergyKwh,meta.apparentEnergyKvah,),
         );
     }
+    validateEmptyPointsContract(mapped: MappedDtrDailyThresholdChart): void {
+        this.validateSuccess(mapped.success);
+        this.validateFields(mapped);
+        expect(mapped.points).toEqual([]);
+    }
+
+    validateUniqueLabelsContract(mapped: MappedDtrDailyThresholdChart): void {
+        this.validateSuccess(mapped.success);
+        this.validateFields(mapped);
+        this.validatePeriod(mapped.period, "daily");
+        this.validateContractPoints(mapped.period, mapped.points);
+        this.validateUniqueLabels(mapped.points);
+        expect(mapped.points.map((p) => p.label)).toEqual(["1 Sept", "2 Sept"]);
+    }
+
     validatePfContract(mapped: MappedDtrDailyThresholdChart): void {
         this.validateSuccess(mapped.success);
         this.validateFields(mapped);
@@ -365,7 +389,15 @@ export class DtrDailyThresholdChartValidator {
             case "ddt_by_code_primary_yearly":
             case "ddt_by_code_alt":
             case "ddt_ignore_unknown_query":
-                this.validateLiveOk(mapped, expectedPeriod!);
+            case "ddt_missing_period":
+            case "ddt_uppercase_period":
+                this.validateLiveOk(mapped, expectedPeriod);
+                break;
+            case "contract_empty_points":
+                this.validateEmptyPointsContract(mapped);
+                break;
+            case "contract_unique_labels":
+                this.validateUniqueLabelsContract(mapped);
                 break;
             default:
                 break;

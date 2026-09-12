@@ -6,7 +6,8 @@ import { RolePermissionApi } from "../Api/rolepermission.api";
 import { RolePermissionData } from "../Data/rolepermission.data";
 import { RolePermissionMapper } from "../Mapper/rolepermission.mapper";
 import { RolePermissionValidator } from "../Validator/rolepermission.validator";
-test.describe("Role Permission — Negative", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Role Permission — Negative", () => {
   test.describe.configure({ mode: "serial" });
   test("POST /permissions/roles — invalid role name (uppercase) returns 400",
     { tag: ["@negative", "@permissions", "@role-permissions"] },

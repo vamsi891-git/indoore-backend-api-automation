@@ -16,7 +16,7 @@ apiDbTest.describe("FEEDER — DB Coverage", () => {
   });
 
   apiDbTest(
-    "IND-FD-DB-001 — Feeder profile + electrical meter spot-checks vs DB",
+    "IND-FD-DB-001 — Feeder profile and meter readings match the database",
     { tag: ["@feeder", "@db"] },
     async ({ authenticatedApi, db }) => {
       await runFeederDbCoverage(authenticatedApi, db);

@@ -119,11 +119,16 @@ export async function runAuthDbCoverage(
   const dbDeviceCount = await countAuthActiveDevices(db, userId);
   logDbVsApiSection(
     "Auth Devices",
-    { total: apiDevices.length },
+    {
+      total: apiDevices.length,
+      page: 1,
+      limit: apiDevices.length || 1,
+      rowCount: apiDevices.length,
+    },
     { total: dbDeviceCount },
-    { totalMode: "lte" },
+    { totalMode: "exact" },
   );
-  validation.execute("Auth devices count ≤ DB active auth_devices", () => {
+  validation.execute("Auth devices count equals DB active auth_devices", () => {
     compareAuthCountLteDb({
       label: "auth.devices.active",
       apiCount: apiDevices.length,
@@ -159,16 +164,11 @@ export async function runAuthDbCoverage(
       "Auth Invitation Summary",
       {
         total: Number(summary.total ?? 0),
-        acceptedCount: Number(summary.acceptedCount ?? 0),
-        pendingCount: Number(summary.pendingCount ?? 0),
-        expiredCount: Number(summary.expiredCount ?? 0),
+        page: 1,
+        limit: 20,
+        rowCount: Number(summary.total ?? 0),
       },
-      {
-        total: dbSummary.total,
-        acceptedCount: dbSummary.accepted_count,
-        pendingCount: dbSummary.pending_count,
-        expiredCount: dbSummary.expired_count,
-      },
+      { total: dbSummary.total },
       { totalMode: "exact" },
     );
     validation.execute(

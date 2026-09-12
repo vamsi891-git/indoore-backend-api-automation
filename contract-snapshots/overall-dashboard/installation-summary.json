@@ -1,0 +1,19 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/overall-dashboard/installation-summary",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "installedMeters",
+    "nonInstalledMeters",
+    "totalMeterCount"
+  ],
+  "itemKeys": [
+    "meterCount",
+    "sharePercent",
+    "title"
+  ],
+  "hasColumnsGrid": false
+}

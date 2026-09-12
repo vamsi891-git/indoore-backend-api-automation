@@ -54,7 +54,7 @@ export class DtrStatisticsValidator {
   }
 
   validateCardCount(cards: StatisticCard[]): void {
-    expect(cards.length).toBe(10);
+    expect(cards.length).toBe(8);
   }
 
   validateCardStructure(cards: StatisticCard[]): void {
@@ -138,23 +138,14 @@ export class DtrStatisticsValidator {
   }
 
   validateIntegerCountCards(cards: StatisticCard[]): void {
-    const feeders = findCard(cards, "Total LT Feeders");
-    const fuseBlown = findCard(cards, "LT Feeders Fuse Blown");
+    const consumers = findCard(cards, "Total Consumer");
 
-    expect(feeders.value).toMatch(/^\d+$/);
-    expect(Number(feeders.value)).toBeGreaterThanOrEqual(0);
-    expect(fuseBlown.value).toMatch(/^\d+$/);
-    expect(Number(fuseBlown.value)).toBeGreaterThanOrEqual(0);
+    expect(consumers.value).toMatch(/^\d+$/);
+    expect(Number(consumers.value)).toBeGreaterThanOrEqual(0);
   }
 
-  validateUnbalancedFeeders(cards: StatisticCard[]): void {
-    const unbalanced = findCard(cards, "Unbalanced LT Feeders");
-    expect(
-      unbalanced.value === "0" ||
-        unbalanced.value === "0%" ||
-        /^\d+(\.\d)?%$/.test(unbalanced.value),
-    ).toBeTruthy();
-    expect(unbalanced.trendPercent).toBeNull();
+  validateUnbalancedFeeders(_cards: StatisticCard[]): void {
+    // Unbalanced LT Feeders card removed from live statistics widget.
   }
 
   validateSubtitles(cards: StatisticCard[]): void {
@@ -214,13 +205,11 @@ export class DtrStatisticsValidator {
     this.validateResponseEnvelope(raw);
     const cards = raw.data!.statisticCards;
     this.validateCardTitles(cards);
-    expect(findCard(cards, "Total LT Feeders").value).toBe("0");
-    expect(findCard(cards, "LT Feeders Fuse Blown").value).toBe("0");
+    expect(findCard(cards, "Total Consumer").value).toBe("0");
     expect(findCard(cards, "Total KW").value).toBe(EM_DASH);
     expect(findCard(cards, "Total KVA").value).toBe(EM_DASH);
     expect(findCard(cards, "Total KWh").value).toBe(EM_DASH);
     expect(findCard(cards, "Total KVAh").value).toBe(EM_DASH);
-    expect(findCard(cards, "Unbalanced LT Feeders").value).toBe(EM_DASH);
     expect(findCard(cards, "Power On").value).toBe(EM_DASH);
     expect(findCard(cards, "Power Off").value).toBe(EM_DASH);
     expect(findCard(cards, "Status").value).toBe("Under Load");
@@ -234,7 +223,6 @@ export class DtrStatisticsValidator {
     expect(findCard(cards, "Total KVA").value).toBe("0");
     expect(findCard(cards, "Total KWh").value).toBe("0.00");
     expect(findCard(cards, "Total KVAh").value).toBe("0.00");
-    expect(findCard(cards, "Unbalanced LT Feeders").value).toBe("0");
     expect(findCard(cards, "Power On").value).toBe("00:00:00");
     expect(findCard(cards, "Power Off").value).toBe("00:00:00");
     expect(findCard(cards, "Status").subtitle).toBe("0");
@@ -244,13 +232,11 @@ export class DtrStatisticsValidator {
   validatePopulatedContract(mapped: MappedDtrStatistics): void {
     this.validateLiveOk(mapped);
     const cards = mapped.statisticCards;
-    expect(findCard(cards, "Total LT Feeders").value).toBe("12");
+    expect(findCard(cards, "Total Consumer").value).toBe("12");
     expect(findCard(cards, "Total KW").value).toBe("45.67");
     expect(findCard(cards, "Total KVA").value).toBe("50");
     expect(findCard(cards, "Total KWh").value).toBe("12345.78");
     expect(findCard(cards, "Total KVAh").value).toBe("13000.12");
-    expect(findCard(cards, "LT Feeders Fuse Blown").value).toBe("2");
-    expect(findCard(cards, "Unbalanced LT Feeders").value).toBe("8.5%");
     expect(findCard(cards, "Power On").value).toBe("02:30:00");
     expect(findCard(cards, "Status").subtitle).toBe("75.50");
   }
@@ -303,9 +289,7 @@ export class DtrStatisticsValidator {
 
   validateUnbalancedContract(mapped: MappedDtrStatistics): void {
     this.validateLiveOk(mapped);
-    expect(findCard(mapped.statisticCards, "Unbalanced LT Feeders").value).toBe(
-      "12.5%",
-    );
+    expect(findCard(mapped.statisticCards, "Total Consumer").value).toBe("42");
   }
 
   validatePowerOnContract(mapped: MappedDtrStatistics): void {
@@ -315,12 +299,7 @@ export class DtrStatisticsValidator {
 
   validateIntegerFeedersContract(mapped: MappedDtrStatistics): void {
     this.validateLiveOk(mapped);
-    expect(findCard(mapped.statisticCards, "Total LT Feeders").value).toBe(
-      "25",
-    );
-    expect(findCard(mapped.statisticCards, "LT Feeders Fuse Blown").value).toBe(
-      "3",
-    );
+    expect(findCard(mapped.statisticCards, "Total Consumer").value).toBe("25");
   }
 
   /**

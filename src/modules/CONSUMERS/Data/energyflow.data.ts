@@ -1,27 +1,21 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { EnergyFlowQuery } from "../Api/energyflow.api";
-import type {
-  EnergyFlowPoint,
-  EnergyFlowResponse,
-  EnergyFlowScenario,
-  EnergyFlowPeriod,
-} from "../Mapper/energyflow.mapper";
-
+import type {EnergyFlowPoint,EnergyFlowResponse,EnergyFlowScenario,EnergyFlowPeriod,} from "../Mapper/energyflow.mapper";
+import {
+  CONSUMERS_LIVE_IVRS,
+  CONSUMERS_LIVE_METER_ROUTE,
+  resolveLiveAccountId,
+  resolveLiveIvrs,
+  resolveLiveMeterRoute,
+} from "./consumers-live-refs";
 export const energyFlowMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
-
-/** IVRS from user request; live archive may return all-zero cumulative registers. */
-export const energyFlowDefaultIvrs = "N3374018980";
-
-export const energyFlowDefaultConsumerId = "N3374018980";
-
-export const energyFlowDefaultMeterRoute = "meter-12345";
-
+/** IVRS from live RTP/PQ sample; archive may return all-zero cumulative registers. */
+export const energyFlowDefaultIvrs = CONSUMERS_LIVE_IVRS;
+export const energyFlowDefaultConsumerId = CONSUMERS_LIVE_IVRS;
+export const energyFlowDefaultMeterRoute = CONSUMERS_LIVE_METER_ROUTE;
 export const energyFlowNotFoundRef = "INVALID_CONSUMER_XYZ";
-
 export const energyFlowMeterNotFoundRef = "meter-999999999";
-
 export const energyFlowEmptyRef = " ";
-
 /**
  * Backend CONSUMER_ENERGY_FLOW_BUCKET_COUNT (energyFlow view).
  * Differs from consumption graph (12/12/8/12/12).
@@ -33,7 +27,6 @@ export const ENERGY_FLOW_POINT_COUNT: Record<EnergyFlowPeriod, number> = {
   monthly: 6,
   yearly: 6,
 };
-
 function zeroFlowPoints(labels: readonly string[]): EnergyFlowPoint[] {
   return labels.map((label) => ({
     label,
@@ -43,7 +36,6 @@ function zeroFlowPoints(labels: readonly string[]): EnergyFlowPoint[] {
     kvahExport: 0,
   }));
 }
-
 const ZERO_HOURLY_LABELS = [
   "05:00",
   "06:00",
@@ -52,7 +44,6 @@ const ZERO_HOURLY_LABELS = [
   "09:00",
   "10:00",
 ] as const;
-
 /** User-provided daily sample (6 points, all zeros). */
 const ZERO_DAILY_LABELS = [
   "4 Jul",
@@ -62,9 +53,7 @@ const ZERO_DAILY_LABELS = [
   "8 Jul",
   "9 Jul",
 ] as const;
-
 const ZERO_WEEKLY_LABELS = ["W1", "W2", "W3", "W4"] as const;
-
 const ZERO_MONTHLY_LABELS = [
   "Feb 2026",
   "Mar 2026",
@@ -73,7 +62,6 @@ const ZERO_MONTHLY_LABELS = [
   "Jun 2026",
   "Jul 2026",
 ] as const;
-
 const ZERO_YEARLY_LABELS = [
   "2021",
   "2022",
@@ -82,7 +70,6 @@ const ZERO_YEARLY_LABELS = [
   "2025",
   "2026",
 ] as const;
-
 /** User-provided hourly sample (6 rolling IST hours, all zeros). */
 export const energyFlowContractHourlyResponse: EnergyFlowResponse = {
   success: true,
@@ -91,7 +78,6 @@ export const energyFlowContractHourlyResponse: EnergyFlowResponse = {
     points: zeroFlowPoints(ZERO_HOURLY_LABELS),
   },
 };
-
 /** User-provided daily sample (6 points). */
 export const energyFlowContractDailyResponse: EnergyFlowResponse = {
   success: true,
@@ -100,7 +86,6 @@ export const energyFlowContractDailyResponse: EnergyFlowResponse = {
     points: zeroFlowPoints(ZERO_DAILY_LABELS),
   },
 };
-
 export const energyFlowContractWeeklyResponse: EnergyFlowResponse = {
   success: true,
   data: {
@@ -108,7 +93,6 @@ export const energyFlowContractWeeklyResponse: EnergyFlowResponse = {
     points: zeroFlowPoints(ZERO_WEEKLY_LABELS),
   },
 };
-
 export const energyFlowContractMonthlyResponse: EnergyFlowResponse = {
   success: true,
   data: {
@@ -116,7 +100,6 @@ export const energyFlowContractMonthlyResponse: EnergyFlowResponse = {
     points: zeroFlowPoints(ZERO_MONTHLY_LABELS),
   },
 };
-
 export const energyFlowContractYearlyResponse: EnergyFlowResponse = {
   success: true,
   data: {
@@ -217,26 +200,26 @@ export function resolveEnergyFlowRef(
     case "ef_period_yearly":
     case "ef_ignore_unknown_query":
     case "invalid_period":
-      return (
-        process.env.CONSUMER_EF_IVRS?.trim() ||
-        process.env.CONSUMER_ECG_IVRS?.trim() ||
-        process.env.CONSUMER_LLP_IVRS?.trim() ||
-        energyFlowDefaultIvrs
+      return resolveLiveIvrs(
+        process.env.CONSUMER_EF_IVRS,
+        process.env.CONSUMER_ECG_IVRS,
+        process.env.CONSUMER_LLP_IVRS,
+        energyFlowDefaultIvrs,
       );
     case "ef_by_account":
-      return (
-        process.env.CONSUMER_EF_CONSUMER_ID?.trim() ||
-        process.env.CONSUMER_ECG_CONSUMER_ID?.trim() ||
-        process.env.CONSUMER_LLP_CONSUMER_ID?.trim() ||
-        energyFlowDefaultConsumerId
+      return resolveLiveAccountId(
+        process.env.CONSUMER_EF_CONSUMER_ID,
+        process.env.CONSUMER_ECG_CONSUMER_ID,
+        process.env.CONSUMER_LLP_CONSUMER_ID,
+        energyFlowDefaultConsumerId,
       );
     case "ef_by_meter":
-      return (
-        process.env.CONSUMER_EF_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_ECG_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_LLP_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_PROFILE_METER_ROUTE?.trim() ||
-        energyFlowDefaultMeterRoute
+      return resolveLiveMeterRoute(
+        process.env.CONSUMER_EF_METER_ROUTE,
+        process.env.CONSUMER_ECG_METER_ROUTE,
+        process.env.CONSUMER_LLP_METER_ROUTE,
+        process.env.CONSUMER_PROFILE_METER_ROUTE,
+        energyFlowDefaultMeterRoute,
       );
     case "consumer_not_found":
       return energyFlowNotFoundRef;

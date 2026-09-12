@@ -17,9 +17,10 @@ const ALLOWED_STATUSES = dtrEventsAllowedStatuses;
 
 // Backend formatDurationHuman: e.g. "0m 10s", "1m 47s", "2h 5m 30s"
 const HUMAN_DURATION =
-    /^\d+h(?:\s+\d+m)?(?:\s+\d+s)?$|^\d+m(?:\s+\d+s)?$/;
+    /^\d+h(?:\s+\d+m)?(?:\s+\d+s)?$|^\d+m(?:\s+\d+s)?$|^\d+s$/;
+// Month abbrev may be 3 (Nov) or 4 (Sept) letters from backend date-fns style.
 const IST_DATE_TIME =
-    /^\d{1,2}[\s/-](?:\w{3}|\d{2})[\s/-]\d{4}.+\d{1,2}:\d{2}|^\d{2}-\d{2}-\d{4}\s+\d{2}:\d{2}/i;
+    /^\d{1,2}[\s/-](?:\w{3,4}|\d{2})[\s/-]\d{4}.+\d{1,2}:\d{2}|^\d{2}-\d{2}-\d{4}\s+\d{2}:\d{2}/i;
 
 function parseEventDateTime(value: string): number | null {
     const parsed = Date.parse(value);
@@ -201,8 +202,13 @@ export class DtrEventsValidator {
     }
 
     validateUniqueSerialNumbers(rows: DtrEventRow[]): void {
+        if (rows.length === 0) {
+            return;
+        }
         const serials = rows.map((row) => row.serialNo);
-        expect(new Set(serials).size).toBe(serials.length);
+        expect(new Set(serials).size, "each event row number appears only once").toBe(
+            serials.length,
+        );
     }
 
     // durationSeconds != null → Resolved; else Pending

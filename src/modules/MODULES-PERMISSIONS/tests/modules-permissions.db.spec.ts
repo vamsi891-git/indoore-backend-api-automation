@@ -4,6 +4,7 @@ import { isModulesPermissionsDbSqlReady } from "../Db/modules-permissions.db";
 import { runModulesPermissionsDbCoverage } from "./modules-permissions-db.harness";
 
 apiDbTest.describe("MODULES-PERMISSIONS — DB Coverage", () => {
+  apiDbTest.describe.configure({ retries: 1 });
   apiDbTest.setTimeout(120_000);
 
   apiDbTest.beforeEach(() => {
@@ -15,7 +16,7 @@ apiDbTest.describe("MODULES-PERMISSIONS — DB Coverage", () => {
   });
 
   apiDbTest(
-    "IND-MOD-DB-001 — scaffold DB coverage",
+    "IND-MOD-DB-001 — modules/permissions catalog exact + module spot vs DB",
     { tag: ["@modules-permissions", "@db"] },
     async ({ authenticatedApi, db }) => {
       await runModulesPermissionsDbCoverage(authenticatedApi, db);

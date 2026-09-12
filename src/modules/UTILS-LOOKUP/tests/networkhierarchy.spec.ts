@@ -37,7 +37,7 @@ function runNetworkHierarchyValidations(
 }
 
 registerCatalogLookupTests({
-  describeTitle: "Network Hierarchy API",
+  describeTitle: "Network hierarchy",
   testCases: networkHierarchyTestCases,
   fetch: (authenticatedApi) =>
     new NetworkApi(authenticatedApi).getNetworkHierarchy(),

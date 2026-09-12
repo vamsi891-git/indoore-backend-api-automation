@@ -16,7 +16,8 @@ import { UpdateMeterValidator } from "../Validator/update-meter.validator";
 import { DeactivateMeterValidator } from "../Validator/deactivate-meter.validator";
 import { ensureMeterManufacturerContext } from "../utils/meter-manufacturer.helper";
 
-test.describe("Meter CRUD Lifecycle", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Master data — add, update, then deactivate a meter", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
@@ -25,7 +26,7 @@ test.describe("Meter CRUD Lifecycle", () => {
   });
 
   test(
-    "Create meter, update and validate, then deactivate",
+    "Add a meter, change it, then deactivate it",
     {
       tag: [
         "@smoke",

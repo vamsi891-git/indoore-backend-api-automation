@@ -289,85 +289,73 @@ export const DtrPowerStatusData = {
 
 export const dtrPowerStatusTestCases: DtrPowerStatusTestCase[] = [
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/power-status — period=daily (live)",
+        testName: "DTR power on/off chart — daily view loads",
         scenario: "dev_period_daily",
         tags: ["@smoke", "@dashboard", "@dtr-power-status"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/power-status — period=hourly",
+        testName: "DTR power on/off chart — hourly view loads",
         scenario: "dev_period_hourly",
         tags: ["@dashboard", "@dtr-power-status", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/power-status — period=weekly",
+        testName: "DTR power on/off chart — weekly view loads",
         scenario: "dev_period_weekly",
         tags: ["@dashboard", "@dtr-power-status", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/power-status — period=monthly",
+        testName: "DTR power on/off chart — monthly view loads",
         scenario: "dev_period_monthly",
         tags: ["@dashboard", "@dtr-power-status", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/power-status — period=yearly",
+        testName: "DTR power on/off chart — yearly view loads",
         scenario: "dev_period_yearly",
         tags: ["@dashboard", "@dtr-power-status", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/power-status — unknown query params ignored",
+        testName: "DTR power on/off chart — extra unused filters are ignored",
         scenario: "dev_ignore_unknown_query",
         tags: ["@dashboard", "@dtr-power-status", "@edge"],
     },
     {
-        testName:
-            "Contract — hourly null on/off buckets (10 Jul 2026)",
+        testName: "Saved example — hourly null on/off buckets (10 Jul 2026)",
         scenario: "contract_null_hourly",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-power-status", "@edge"],
     },
     {
-        testName:
-            "Contract — daily null on/off buckets (10 Jul 2026)",
+        testName: "Saved example — daily null on/off buckets (10 Jul 2026)",
         scenario: "contract_null_daily",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-power-status", "@edge"],
     },
     {
-        testName:
-            "Contract — weekly null on/off buckets (10 Jul 2026)",
+        testName: "Saved example — weekly null on/off buckets (10 Jul 2026)",
         scenario: "contract_null_weekly",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-power-status", "@edge"],
     },
     {
-        testName:
-            "Contract — monthly populated on/off buckets (10 Jul 2026)",
+        testName: "Saved example — monthly populated on/off buckets (10 Jul 2026)",
         scenario: "contract_live_monthly",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-power-status", "@edge"],
     },
     {
-        testName:
-            "Contract — yearly populated on/off buckets (10 Jul 2026)",
+        testName: "Saved example — yearly populated on/off buckets (10 Jul 2026)",
         scenario: "contract_live_yearly",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-power-status", "@edge"],
     },
     {
-        testName: "Contract — mixed on/off percentages",
+        testName: "Saved example — mixed on/off percentages",
         scenario: "contract_on_off_mixed",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-power-status", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/power-status — invalid period rejected",
+        testName: "DTR power on/off chart — an invalid time period is rejected",
         scenario: "invalid_period",
         expectedStatus: 400,
         tags: ["@dashboard", "@dtr-power-status", "@negative"],

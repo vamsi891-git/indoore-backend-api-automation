@@ -53,7 +53,26 @@ export const MeterMasterItemSchema = z
     isActiveStatus: z.boolean(),
     assetId: nullableString,
     meterRapdrpCode: nullableString,
+    connection: nullableString.optional(),
     mf: z.number(),
+    // Newer optional fields — ignore unknowns via passthrough
+    mtr: z.union([z.string(), z.number()]).nullable().optional(),
+    mctr: z.union([z.string(), z.number()]).nullable().optional(),
+    lptr: z.union([z.string(), z.number()]).nullable().optional(),
+    lctr: z.union([z.string(), z.number()]).nullable().optional(),
+    accuracyClass: nullableString.optional(),
+    meterPoNumber: nullableString.optional(),
+    meterPoDate: nullableString.optional(),
+    meterTestingDate: nullableString.optional(),
+    displayDigitCount: z.number().nullable().optional(),
+    deviceManufacturerTblRefId: z.number().int().nullable().optional(),
+    meterManufacturer: nullableString.optional(),
+    meterModelTblRefId: z.number().int().nullable().optional(),
+    meterModel: nullableString.optional(),
+    meterVersion: z.union([z.string(), z.number()]).nullable().optional(),
+    meterStatus: z.union([z.string(), z.boolean()]).nullable().optional(),
+    dlmsNonDlms: nullableString.optional(),
+    meterRating: z.union([z.string(), z.number()]).nullable().optional(),
   })
   .passthrough();
 
@@ -70,9 +89,18 @@ export const DtrMasterItemSchema = z
     division: nullableString,
     zone: nullableString,
     subStation: nullableString,
-    feeder: nullableString,
-    dtr: z.string(),
+    /** Legacy combined feeder label — optional after feederCode/feederName split */
+    feeder: nullableString.optional(),
+    feederCode: nullableString.optional(),
+    feederName: nullableString.optional(),
+    /** Legacy combined DTR label — optional after dtrCode/dtrName split */
+    dtr: nullableString.optional(),
+    dtrCode: nullableString.optional(),
+    dtrName: nullableString.optional(),
+    newDtrCode: nullableString.optional(),
+    dtrCapacity: nullableString.optional(),
     meterSerialNumber: nullableString,
+    meterMake: nullableString.optional(),
     mf: nullableString,
     latitude: nullableString,
     longitude: nullableString,
@@ -86,31 +114,46 @@ export const DtrMasterSuccessResponseSchema = masterDataSuccessResponseSchema(
 
 export const ConsumerMasterItemSchema = z
   .object({
+    id: z.string().optional(),
     slNo: z.number().int().positive(),
+    circle: nullableString.optional(),
     division: nullableString,
     zone: nullableString,
-    feeder: nullableString,
-    dtr: nullableString,
-    feederNameNew: nullableString,
-    dtrNameNew: nullableString,
+    /** Legacy — optional after feederCode/feederName split */
+    feeder: nullableString.optional(),
+    dtr: nullableString.optional(),
+    feederNameNew: nullableString.optional(),
+    dtrNameNew: nullableString.optional(),
+    feederCode: nullableString.optional(),
+    feederName: nullableString.optional(),
+    dtrCode: nullableString.optional(),
+    dtrName: nullableString.optional(),
+    newDtrCode: nullableString.optional(),
+    dtrCapacity: nullableString.optional(),
     consumerCid: z.string(),
+    consumerTblRefId: z.number().int().positive().nullable().optional(),
     consumerName: z.string(),
     consumerAddress: z.string(),
     consumerMobileNumber: z.string(),
-    category: z.string().optional(),
-    sanctionedLoadKw: z.number().optional(),
+    category: z.string().nullable().optional(),
+    sanctionedLoadKw: z.number().nullable().optional(),
     ivrsNo: z.string(),
     existingIvrsNo: z.string().optional(),
-    meterSerialNumber: z.string(),
-    meterLookupTblRefId: z.number().int().positive(),
-    meterPhase: z.string(),
-    mf: z.number().optional(),
-    installationDate: z.string().optional(),
+    meterSerialNumber: z.string().nullable(),
+    meterMake: nullableString.optional(),
+    meterLookupTblRefId: z.number().int().positive().nullable(),
+    meterPhase: z.string().nullable(),
+    mf: z.number().nullable().optional(),
+    installationDate: z.string().nullable().optional(),
     latitude: nullableString,
     longitude: nullableString,
     connectedToDcu: z.boolean().optional(),
     lsCount: nullableNumber,
+    ipCount: nullableNumber.optional(),
     dpCount: nullableNumber,
+    /** Legacy — omitted on current live API. */
+    billingCount: nullableNumber.optional(),
+    eventCount: nullableNumber.optional(),
   })
   .passthrough();
 
@@ -119,6 +162,7 @@ export const ConsumerMasterSuccessResponseSchema =
 
 export const FeederMasterItemSchema = z
   .object({
+    id: z.string().optional(),
     slNo: z.number().int().positive(),
     discomName: nullableString,
     regionName: nullableString,
@@ -138,6 +182,7 @@ export const FeederMasterSuccessResponseSchema = masterDataSuccessResponseSchema
 
 export const SubstationMasterItemSchema = z
   .object({
+    id: z.string().optional(),
     slNo: z.number().int().positive(),
     discomName: nullableString,
     regionName: nullableString,
@@ -235,6 +280,48 @@ export const ValidateDtrMeterSuccessResponseSchema = z.object({
 
 export type ParsedValidateDtrMeterSuccessResponse = z.infer<
   typeof ValidateDtrMeterSuccessResponseSchema
+>;
+
+export const ValidateAddMeterDataSchema = z
+  .object({
+    valid: z.boolean(),
+    reason: z.enum(["METER_ALREADY_EXISTS"]).optional(),
+    message: z.string().min(1).optional(),
+  })
+  .passthrough()
+  .superRefine((data, ctx) => {
+    if (data.valid) {
+      if (data.reason != null || data.message != null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "valid=true must omit reason and message",
+        });
+      }
+      return;
+    }
+    if (data.reason == null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "valid=false requires reason",
+        path: ["reason"],
+      });
+    }
+    if (data.message == null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "valid=false requires message",
+        path: ["message"],
+      });
+    }
+  });
+
+export const ValidateAddMeterSuccessResponseSchema = z.object({
+  success: z.literal(true),
+  data: ValidateAddMeterDataSchema,
+});
+
+export type ParsedValidateAddMeterSuccessResponse = z.infer<
+  typeof ValidateAddMeterSuccessResponseSchema
 >;
 
 export const CreateMeterDataSchema = z
@@ -441,5 +528,52 @@ export const CreateDtrSuccessResponseSchema = z.object({
 export type ParsedCreateDtrSuccessResponse = z.infer<
   typeof CreateDtrSuccessResponseSchema
 >;
+
+const nullableUuid = z.string().uuid().nullable();
+
+export const MasterDataAuditLogSchema = z
+  .object({
+    id: z.string().uuid(),
+    userId: z.string().nullable(),
+    actorId: z.string().uuid(),
+    targetId: nullableUuid,
+    actorFullName: z.string().nullable(),
+    actorEmail: z.string().nullable(),
+    actorRoleName: z.string().nullable(),
+    targetFullName: z.string().nullable(),
+    targetEmail: z.string().nullable(),
+    targetRoleName: z.string().nullable(),
+    action: z.string().min(1),
+    details: z.record(z.string(), z.unknown()).nullable(),
+    ipAddress: z.string().nullable(),
+    createdAt: z.string().min(1),
+    actionLabel: z.string().min(1),
+    actorLabel: z.string().min(1),
+    roleLabel: z.string().min(1),
+    ipAddressLabel: z.string().min(1),
+    detailsLines: z.array(z.string()),
+    detailsLabel: z.string(),
+  })
+  .passthrough();
+
+export const MasterDataAuditLogsSuccessResponseSchema = z.object({
+  success: z.literal(true),
+  data: z
+    .object({
+      logs: z.array(MasterDataAuditLogSchema),
+      actionFilterOptions: z.array(
+        z.object({
+          value: z.string().min(1),
+          label: z.string().min(1),
+        }),
+      ),
+      total: z.number().int().nonnegative(),
+      page: z.number().int().positive(),
+      limit: z.number().int().positive(),
+      totalPages: z.number().int().nonnegative(),
+      nextCursor: z.string().nullable().optional(),
+    })
+    .passthrough(),
+});
 
 export { ApiErrorResponseSchema as MasterDataErrorResponseSchema };

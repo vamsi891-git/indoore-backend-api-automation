@@ -19,21 +19,21 @@ function asRecord(value: unknown): Record<string, unknown> {
     : {};
 }
 
-test.describe("BILLING — Contract Snapshots", () => {
+test.describe("Billing — column names stay stable", () => {
   test.setTimeout(180_000);
 
   test(
-    "Billing Data Contract Snapshot",
+    "Monthly billing — column headings and field names stay the same",
     { tag: ["@contract-snapshot", "@billing", "@billing-data"] },
     async ({ authenticatedApi }) => {
       const { responseBody } = await new BillingDataApi(
         authenticatedApi,
-      ).getBillingData(
-        BillingDataTestData.month,
-        BillingDataTestData.year,
-        BillingDataTestData.page,
-        BillingDataTestData.limit,
-      );
+      ).getBillingData({
+        month: BillingDataTestData.month,
+        year: BillingDataTestData.year,
+        page: BillingDataTestData.page,
+        limit: BillingDataTestData.limit,
+      });
       expect(responseBody.success).toBe(true);
       const data = asRecord(responseBody.data);
       const rows = Array.isArray(data.rows)
@@ -53,18 +53,18 @@ test.describe("BILLING — Contract Snapshots", () => {
   );
 
   test(
-    "Daywise Billing Contract Snapshot",
+    "Day-by-day billing — column headings and field names stay the same",
     { tag: ["@contract-snapshot", "@billing", "@daywise-billing"] },
     async ({ authenticatedApi }) => {
       const { responseBody } = await new DaywiseBillingApi(
         authenticatedApi,
-      ).getDaywiseBillingData(
-        DaywiseBillingTestData.month,
-        DaywiseBillingTestData.year,
-        true,
-        DaywiseBillingTestData.page,
-        DaywiseBillingTestData.limit,
-      );
+      ).getDaywiseBillingData({
+        month: DaywiseBillingTestData.month,
+        year: DaywiseBillingTestData.year,
+        includeTotal: DaywiseBillingTestData.includeTotal,
+        page: DaywiseBillingTestData.page,
+        limit: DaywiseBillingTestData.limit,
+      });
       expect(responseBody.success).toBe(true);
       const data = asRecord(responseBody.data);
       const rows = Array.isArray(data.rows)

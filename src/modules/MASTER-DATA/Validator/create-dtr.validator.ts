@@ -23,15 +23,28 @@ const KNOWN_ERROR_CODES = [
 
 const ISO_DATE_FORMAT = /^\d{4}-\d{2}-\d{2}$/;
 
+/** Collapse display / camel / snake keys so "Installation Date" ≡ installationDate. */
+function compactFieldKey(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
 /** API fieldErrors keys / message fragments that satisfy a manual validation field hint. */
 const VALIDATION_FIELD_HINT_ALIASES: Record<string, RegExp[]> = {
   "Installation Date": [
     /installation\s*date/i,
     /entry\s*date/i,
-    /invalid date/i,
+    /invalid\s*date/i,
+    /date\s*format/i,
+    /yyyy[-\s]?mm[-\s]?dd/i,
     /future/i,
   ],
-  "Service Date": [/service\s*date/i, /invalid date/i, /future/i],
+  "Service Date": [
+    /service\s*date/i,
+    /invalid\s*date/i,
+    /date\s*format/i,
+    /yyyy[-\s]?mm[-\s]?dd/i,
+    /future/i,
+  ],
 };
 
 export class CreateDtrValidator {
@@ -151,18 +164,27 @@ export class CreateDtrValidator {
     const fieldErrors = mapped.error?.details?.fieldErrors ?? {};
     const formErrors = mapped.error?.details?.formErrors ?? [];
     const normalizedField = validationField.toLowerCase();
-    const hasFieldErrors = Object.entries(fieldErrors).some(
-      ([key, errors]) =>
-        key.toLowerCase() === normalizedField &&
-        Array.isArray(errors) &&
-        errors.length > 0,
+    const compactExpected = compactFieldKey(validationField);
+    const fieldErrorEntries = Object.entries(fieldErrors).filter(
+      ([, errors]) => Array.isArray(errors) && errors.length > 0,
     );
-    const formErrorMatch = formErrors.some((entry) =>
-      entry.toLowerCase().includes(normalizedField),
+    const hasFieldErrors = fieldErrorEntries.some(
+      ([key]) =>
+        key.toLowerCase() === normalizedField ||
+        compactFieldKey(key) === compactExpected,
     );
-    const aliasMatch = (VALIDATION_FIELD_HINT_ALIASES[validationField] ?? []).some(
-      (pattern) => pattern.test(message),
+    const fieldErrorText = fieldErrorEntries
+      .flatMap(([key, errors]) => [key, ...(errors as string[])])
+      .join(" ");
+    const searchable = `${message}\n${formErrors.join("\n")}\n${fieldErrorText}`;
+    const formErrorMatch = formErrors.some(
+      (entry) =>
+        entry.toLowerCase().includes(normalizedField) ||
+        compactFieldKey(entry).includes(compactExpected),
     );
+    const aliasMatch = (
+      VALIDATION_FIELD_HINT_ALIASES[validationField] ?? []
+    ).some((pattern) => pattern.test(searchable));
     expect(
       message.toLowerCase().includes(normalizedField) ||
         hasFieldErrors ||

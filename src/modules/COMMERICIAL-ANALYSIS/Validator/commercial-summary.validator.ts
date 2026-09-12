@@ -1,9 +1,5 @@
 import { expect } from "@playwright/test";
-import {
-    CommercialSummaryData,
-    CommercialSummaryReport,
-} from "../Mapper/commercial-summary.mapper";
-
+import {CommercialSummaryData,CommercialSummaryReport,} from "../Mapper/commercial-summary.mapper";
 const REPORT_REQUIRED_FIELDS = [
     "analysisType",
     "reportName",
@@ -12,7 +8,6 @@ const REPORT_REQUIRED_FIELDS = [
     "domesticCount",
     "nonDomesticCount",
 ] as const;
-
 const REPORT_ALLOWED_FIELDS = new Set([
     "analysisType",
     "reportName",
@@ -20,15 +15,15 @@ const REPORT_ALLOWED_FIELDS = new Set([
     "totalCount",
     "domesticCount",
     "nonDomesticCount",
+    "available",
+    "unavailableReason",
+    "missingMonths",
 ]);
-
 const ANALYSIS_TYPE_PATTERN = /^[a-z][a-z0-9_]*$/;
-
 export class CommercialSummaryValidator {
     validateSuccess(success: boolean) {
         expect(success).toBeTruthy();
     }
-
     validateRootStructure(data: CommercialSummaryData) {
         expect(typeof data.month).toBe("number");
         expect(typeof data.year).toBe("number");
@@ -36,87 +31,64 @@ export class CommercialSummaryValidator {
         expect(Number.isInteger(data.month)).toBeTruthy();
         expect(Number.isInteger(data.year)).toBeTruthy();
     }
-
     validateMonth(month: number) {
         expect(month).toBeGreaterThanOrEqual(1);
         expect(month).toBeLessThanOrEqual(12);
     }
-
     validateYear(year: number) {
         expect(year).toBeGreaterThan(2000);
         expect(year).toBeLessThan(2100);
     }
-
     validateQueryEcho(data: CommercialSummaryData, month: number, year: number) {
         expect(data.month).toBe(month);
         expect(data.year).toBe(year);
     }
-
     validateReportsExist(reports: CommercialSummaryReport[]) {
         expect(reports.length).toBeGreaterThan(0);
     }
-
     validateReportCount(reports: CommercialSummaryReport[], expectedCount: number) {
         expect(reports.length).toBe(expectedCount);
     }
-
     validateDuplicateAnalysisTypes(reports: CommercialSummaryReport[]) {
         const types = reports.map((r) => r.analysisType);
         expect(new Set(types).size).toBe(types.length);
     }
-
-    validateExpectedAnalysisTypes(
-        reports: CommercialSummaryReport[],
-        expectedTypes: readonly string[],
-    ) {
+    validateExpectedAnalysisTypes(reports: CommercialSummaryReport[],expectedTypes: readonly string[],) {
         const actualTypes = reports.map((r) => r.analysisType).sort();
         const sortedExpected = [...expectedTypes].sort();
         expect(actualTypes).toEqual(sortedExpected);
     }
 
-    validateReportsOrder(
-        reports: CommercialSummaryReport[],
-        expectedOrder: readonly string[],
-    ) {
+    validateReportsOrder(reports: CommercialSummaryReport[],expectedOrder: readonly string[],) {
         const actualOrder = reports.map((r) => r.analysisType);
         expect(actualOrder).toEqual([...expectedOrder]);
     }
-
-    validateReportGroupsPresent(
-        reports: CommercialSummaryReport[],
-        groups: Record<string, readonly string[]>,
-    ) {
+    validateReportGroupsPresent(reports: CommercialSummaryReport[],groups: Record<string, readonly string[]>,) {
         const types = new Set(reports.map((r) => r.analysisType));
         Object.entries(groups).forEach(([groupName, members]) => {
             members.forEach((type) => {
-                expect(types.has(type), `Missing ${type} in group ${groupName}`).toBe(
-                    true,
-                );
+                expect(types.has(type), `Missing ${type} in group ${groupName}`).toBe(true,);
             });
         });
     }
-
-    validateCommercialCategory(
-        reports: CommercialSummaryReport[],
-        expectedCategory: string,
-    ) {
+    validateCommercialCategory(reports: CommercialSummaryReport[],expectedCategory: string,) {
         reports.forEach((report) => {
             expect(report.category).toBe(expectedCategory);
         });
     }
-
     validateReportRequiredFields(report: CommercialSummaryReport) {
         REPORT_REQUIRED_FIELDS.forEach((field) => {
             expect(report).toHaveProperty(field);
         });
     }
-
     validateReportFieldWhitelist(report: CommercialSummaryReport) {
         Object.keys(report).forEach((key) => {
-            expect(REPORT_ALLOWED_FIELDS.has(key)).toBeTruthy();
+            expect(
+                REPORT_ALLOWED_FIELDS.has(key),
+                `unexpected summary field: ${key}`,
+            ).toBeTruthy();
         });
     }
-
     validateReportStructure(report: CommercialSummaryReport) {
         expect(typeof report.analysisType).toBe("string");
         expect(report.analysisType.trim().length).toBeGreaterThan(0);
@@ -129,13 +101,11 @@ export class CommercialSummaryValidator {
         expect(typeof report.domesticCount).toBe("number");
         expect(typeof report.nonDomesticCount).toBe("number");
     }
-
     validateIntegerCounts(report: CommercialSummaryReport) {
         expect(Number.isInteger(report.totalCount)).toBeTruthy();
         expect(Number.isInteger(report.domesticCount)).toBeTruthy();
         expect(Number.isInteger(report.nonDomesticCount)).toBeTruthy();
     }
-
     validateReportCounts(report: CommercialSummaryReport) {
         expect(report.totalCount).toBeGreaterThanOrEqual(0);
         expect(report.domesticCount).toBeGreaterThanOrEqual(0);
@@ -143,7 +113,6 @@ export class CommercialSummaryValidator {
         expect(report.totalCount).toBeGreaterThanOrEqual(report.domesticCount);
         expect(report.totalCount).toBeGreaterThanOrEqual(report.nonDomesticCount);
     }
-
     validateZeroCountLogic(report: CommercialSummaryReport) {
         if (report.totalCount !== 0) {
             return;
@@ -151,32 +120,38 @@ export class CommercialSummaryValidator {
         expect(report.domesticCount).toBe(0);
         expect(report.nonDomesticCount).toBe(0);
     }
-
-    /** Backend: night reports return hardcoded zeros until day/night LP integration */
-    validateNightReportsPlaceholder(
-        reports: CommercialSummaryReport[],
-        expectedZeroTypes: readonly string[],
-    ) {
+    /** Coverage-gated reports: available=false, counts 0, reason + missingMonths. */
+    validateAvailability(report: CommercialSummaryReport) {
+        if (report.available === false) {
+            expect(report.totalCount).toBe(0);
+            expect(report.domesticCount).toBe(0);
+            expect(report.nonDomesticCount).toBe(0);
+            expect(["BILLING_PERIOD_NOT_READY", "LS_DAY_PERIOD_NOT_READY"]).toContain(
+                report.unavailableReason,
+            );
+            expect(Array.isArray(report.missingMonths ?? [])).toBeTruthy();
+            return;
+        }
+        expect(report.available === undefined || report.available === true).toBeTruthy();
+    }
+    /** Coverage-gated reports: available=false, counts 0, reason + missingMonths. */
+    validateNightReportsPlaceholder(reports: CommercialSummaryReport[],expectedZeroTypes: readonly string[],) {
         expectedZeroTypes.forEach((type) => {
             const report = reports.find((r) => r.analysisType === type);
-            expect(report, `Missing night report: ${type}`).toBeDefined();
+            expect(report, `Missing unavailable report: ${type}`).toBeDefined();
+            expect(report!.available).toBe(false);
             expect(report!.totalCount).toBe(0);
             expect(report!.domesticCount).toBe(0);
             expect(report!.nonDomesticCount).toBe(0);
         });
     }
-
-    validateReportNameMapping(
-        report: CommercialSummaryReport,
-        expectedNames: Record<string, string>,
-    ) {
+    validateReportNameMapping(report: CommercialSummaryReport,expectedNames: Record<string, string>,) {
         const expected = expectedNames[report.analysisType];
         if (!expected) {
             return;
         }
         expect(report.reportName).toBe(expected);
     }
-
     validateNoNaN(report: CommercialSummaryReport) {
         expect(Number.isNaN(report.totalCount)).toBeFalsy();
         expect(Number.isNaN(report.domesticCount)).toBeFalsy();
@@ -190,11 +165,8 @@ export class CommercialSummaryValidator {
     }
 
     validateDomesticNonDomesticSplit(report: CommercialSummaryReport) {
-        expect(
-            report.domesticCount + report.nonDomesticCount,
-        ).toBeLessThanOrEqual(report.totalCount);
+        expect(report.domesticCount + report.nonDomesticCount,).toBeLessThanOrEqual(report.totalCount);
     }
-
     validateBusinessRules(data: CommercialSummaryData) {
         expect(data).toHaveProperty("month");
         expect(data).toHaveProperty("year");

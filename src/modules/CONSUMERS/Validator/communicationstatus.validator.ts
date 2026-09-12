@@ -10,7 +10,7 @@ import type {
 } from "../Mapper/communicationstatus.mapper";
 
 const IST_TODAY_YMD = /^\d{4}-\d{2}-\d{2}$/;
-const HH_MM = /^\d{2}:\d{2}$/;
+const HH_MM = /^\d{2,}:\d{2}$/;
 const INTERVAL_DISPLAY = /^\d{2}:\d{2} \(\d{1,3}%\)$/;
 
 export class CommunicationStatusValidator {
@@ -204,7 +204,12 @@ export class CommunicationStatusValidator {
         this.validateLiveOk(mapped);
         break;
       case "meter_not_found":
-        this.validateGracefulEmptyFallback(mapped, expectedDate);
+        // Live unknown-meter routes return HTTP 200 with zero intervals for the
+        // selected day; delaySeconds may still be non-zero.
+        this.validateLiveOk(mapped, expectedDate);
+        expect(
+          (mapped.data as CommunicationStatusData).intervals.receivedToday,
+        ).toBe(0);
         break;
       default:
         break;

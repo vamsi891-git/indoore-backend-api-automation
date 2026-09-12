@@ -1,0 +1,68 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/dashboard/dtr/percentage-loading-details",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "header",
+    "key"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "subStation",
+      "header": "Sub Station"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtr",
+      "header": "DTR"
+    },
+    {
+      "key": "msn",
+      "header": "MSN"
+    },
+    {
+      "key": "loadingCondition",
+      "header": "Loading Condition"
+    },
+    {
+      "key": "loadingKva",
+      "header": "DTR Loading (kVA)"
+    },
+    {
+      "key": "dtrRating",
+      "header": "DTR Capacity (kVA)"
+    },
+    {
+      "key": "loadPercent",
+      "header": "Load %"
+    },
+    {
+      "key": "logDate",
+      "header": "Log Date"
+    }
+  ]
+}

@@ -12,7 +12,8 @@ import { AuthenticationApi } from "../Api/auth.api";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 
-test.describe("Auth Invite Accept API", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Auth Invite Accept API", () => {
   test(
     "Reject invalid invitation token on accept",
     { tag: ["@auth", "@invite"] },

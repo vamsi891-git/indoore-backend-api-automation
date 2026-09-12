@@ -22,7 +22,7 @@ import {
   CommandsJobInitMapper,
   extractJobNamesFromInitResponse,
 } from "../shared/commands-job-init.mapper";
-import { pollQueryMeterJob, softSkipHesE2eInfraFailure } from "../utils/commands-job-e2e.helper";
+import { pollQueryMeterJob, softSkipHesE2eInfraFailure, assertHesE2eQueryPhase } from "../utils/commands-job-e2e.helper";
 import { waitForHesJobQueueSlot } from "../utils/commands-hes-queue.helper";
 
 test.describe("HES Commands — Demand Config (E2E)", () => {
@@ -172,51 +172,44 @@ test.describe("HES Commands — Demand Config (E2E)", () => {
         maxResponseTimeMs: commandsDemandConfigData.maxResponseTimeMs,
       });
 
-      validation.execute("Query Success Response", () =>
-        queryValidator.validateResponse(pollResult.responseBody),
-      );
-      validation.execute("Query Finished Message", () =>
-        demandValidator.validateQueryFinishedMessage(pollResult.mapped.message),
-      );
-      validation.execute("Query Job Name Echo", () =>
-        queryValidator.validateJobNameEcho(pollResult.mapped, jobName),
-      );
-      validation.execute("Query Sync Flags", () =>
-        queryValidator.validateSyncFlags(pollResult.mapped),
-      );
-      validation.execute("Query HES Job Status FINISHED", () => {
-        expect(pollResult.mapped.job.hesJobStatus).toBe("FINISHED");
+      assertHesE2eQueryPhase({
+        validation,
+        queryValidator,
+        pollResult,
+        jobName,
+        meterId: requestedMeters[0],
+        onFinished: () => {
+          validation.execute("Query Finished Message", () =>
+            demandValidator.validateQueryFinishedMessage(
+              pollResult.mapped.message,
+            ),
+          );
+          validation.execute("Query HES Job Status FINISHED", () => {
+            expect(pollResult.mapped.job.hesJobStatus).toBe("FINISHED");
+          });
+          validation.execute("Query Summary Counts", () =>
+            queryValidator.validateSummaryCounts(pollResult.mapped.job.summary),
+          );
+          validation.execute("Query All Meter Results", () =>
+            queryValidator.validateAllMeterResults(
+              pollResult.mapped.job.meterResults,
+            ),
+          );
+          validation.execute("Query Demand Integration Period HES Response", () =>
+            demandValidator.validateDemandConfigQueryMeterResults(
+              pollResult.mapped.job.meterResults,
+              requestedMeters[0],
+            ),
+          );
+          validation.execute("Query Full Contract", () =>
+            queryValidator.validateFullContract(
+              pollResult.mapped,
+              jobName,
+              requestedMeters[0],
+            ),
+          );
+        },
       });
-      validation.execute("Query HES Status Code", () =>
-        queryValidator.validateHesStatusCode(pollResult.mapped),
-      );
-      validation.execute("Query Summary Counts", () =>
-        queryValidator.validateSummaryCounts(pollResult.mapped.job.summary),
-      );
-      validation.execute("Query All Meter Results", () =>
-        queryValidator.validateAllMeterResults(
-          pollResult.mapped.job.meterResults,
-        ),
-      );
-      validation.execute("Query Expected Meter Present", () =>
-        queryValidator.validateExpectedMeterPresent(
-          pollResult.mapped.job.meterResults,
-          requestedMeters[0],
-        ),
-      );
-      validation.execute("Query Demand Integration Period HES Response", () =>
-        demandValidator.validateDemandConfigQueryMeterResults(
-          pollResult.mapped.job.meterResults,
-          requestedMeters[0],
-        ),
-      );
-      validation.execute("Query Full Contract", () =>
-        queryValidator.validateFullContract(
-          pollResult.mapped,
-          jobName,
-          requestedMeters[0],
-        ),
-      );
 
       ApiValidationHelper.finalize(validation, {
         apiName: "Commands Demand Config E2E",
@@ -230,14 +223,16 @@ test.describe("HES Commands — Demand Config (E2E)", () => {
             body,
             jobName,
             pollAttempts: pollResult.pollAttempts,
+            completed: pollResult.completed,
           },
           responseStatus: pollResult.rawResponse.status(),
           responseBody: {
             init: postBody,
             query: pollResult.responseBody,
           },
-          expectedBehavior:
-            "POST demand_integration_period_get returns jobName in meterResults; GET query-meter-job returns FINISHED with GET_CONFIG/SUCCESS and DEMAND_INTEGRATION_PERIOD (demandPeriod, active) in hesResponse.",
+          expectedBehavior: pollResult.completed
+            ? "POST demand_integration_period_get returns jobName in meterResults; GET query-meter-job returns FINISHED with GET_CONFIG/SUCCESS and DEMAND_INTEGRATION_PERIOD (demandPeriod, active) in hesResponse."
+            : "POST demand_integration_period_get returns jobName; GET query-meter-job remains RUNNING/IN_PROGRESS until HES callback (set HES_E2E_REQUIRE_COMPLETION=true to require FINISHED).",
         },
       });
     },

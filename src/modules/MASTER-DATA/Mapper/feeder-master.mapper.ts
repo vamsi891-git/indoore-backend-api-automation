@@ -21,6 +21,7 @@ export interface FeederMasterData extends MasterDataList<FeederMasterItem> {
 }
 
 export interface FeederMasterItem {
+  id?: string;
   slNo: number;
   discomName: string | null;
   regionName: string | null;

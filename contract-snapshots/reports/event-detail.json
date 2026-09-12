@@ -22,12 +22,28 @@
     "feeder",
     "id",
     "ivrsNumber",
+    "meterLookupId",
     "msn",
     "name",
     "phase",
-    "slNo",
     "tariff",
     "zone"
   ],
-  "hasColumnsGrid": false
+  "hasColumnsGrid": true,
+  "columns": [
+    { "key": "division", "header": "Division" },
+    { "key": "zone", "header": "Zone" },
+    { "key": "feeder", "header": "Feeder" },
+    { "key": "dtr", "header": "DTR" },
+    { "key": "name", "header": "Consumer Name" },
+    { "key": "address", "header": "Address" },
+    { "key": "ivrsNumber", "header": "IVRS Number" },
+    { "key": "tariff", "header": "Tariff" },
+    { "key": "msn", "header": "MSN" },
+    { "key": "phase", "header": "Phase" },
+    { "key": "eventClassificationName", "header": "EventClassification_Name" },
+    { "key": "eventName", "header": "Event_Name" },
+    { "key": "eventCount", "header": "EventCount" },
+    { "key": "durationHhMm", "header": "Duration" }
+  ]
 }

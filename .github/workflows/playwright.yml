@@ -1,9 +1,7 @@
 name: Playwright API Tests
 
 on:
-  # Full regression runs after QA → main is merged (push), or on manual dispatch.
-  # Module-level gating happens on push to QA after merge (qa-module-gate.yml),
-  # not on the open PR into QA.
+  # Full regression on push to main, or on manual dispatch.
   # PRs into main are policy-checked only (main-promotion-policy.yml).
   push:
     branches: [main, master]

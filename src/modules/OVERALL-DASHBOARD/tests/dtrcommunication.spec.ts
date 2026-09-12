@@ -6,9 +6,9 @@ import { dtrCommunicationQuery } from "../Data/dtrcommunication.data";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 
-test.describe("DTR Communication Status API", () => {
+test.describe("DTR talking to the system", () => {
   test(
-    "Validate DTR Communication Status",
+    "DTR talking to the system — communicating vs not, by day",
     {
       tag: ["@smoke", "@dtr-communication"],
     },
@@ -62,7 +62,7 @@ test.describe("DTR Communication Status API", () => {
           );
         }
       } finally {
-        validation.finalize("DTR Communication API", responseTime);
+        validation.finalize("DTR talking to the system", responseTime);
       }
     },
   );

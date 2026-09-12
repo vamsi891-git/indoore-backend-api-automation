@@ -860,30 +860,20 @@ Documentation drift already identified:
 
 Intended branch flow:
 
-1. Developer creates a module-named branch (example: `dashboard`).
-2. Open PR into `QA` (review/approval only — module suites do **not** run on the open PR).
-3. Merge into `QA`.
-4. `qa-module-gate.yml` runs on the **push to `QA`** (post-merge). It diffs the new tip against the previous QA tip, detects changed modules, and runs each affected suite via the reusable module workflow.
-5. If the post-merge gate fails, changes remain on `QA` until fixed; do not promote.
-6. When the gate is green, open PR from `QA` into `main`.
-7. `main-promotion-policy.yml` fails unless the source branch is exactly `QA` **and** a successful QA Module Gate workflow run exists for that QA tip SHA.
-8. On green policy + approval, merge into `main`.
-9. Push to `main` triggers `playwright.yml` full regression.
+1. Open PR into `QA`.
+2. Merge into `QA`.
+3. Open PR from `QA` into `main`.
+4. `main-promotion-policy.yml` fails unless the source branch is exactly `QA`.
+5. On green policy + approval, merge into `main`.
+6. Push to `main` triggers `playwright.yml` full regression.
 
-Detection script: `scripts/detect-changed-modules.mjs` / `scripts/lib/detect-changed-modules.mjs`.
-
-- Module path changes → those module slugs.
-- Shared runtime/config (`src/core`, `src/fixtures`, global setup, Playwright/package/tsconfig, module runner scripts, workflow files) → all modules.
-- Docs-only (`docs/`, `README.md`, …) → empty matrix; gate still passes.
-- Local check: `npm run test:detect-modules`.
-
-Risk note: module suites run **after** merge to `QA`, and full regression runs **after** merge to `main`. Failed module results stay on `QA` and block promotion to `main` via the promotion policy check.
+Module-wise GitHub Actions (QA module gate, manual module workflow, reusable module workflow) are removed until the framework is reorganized. Run modules locally with `npm run test:<slug>`.
 
 ### Required branch protection
 
 Protect `QA` and `main` with rulesets:
 
-- `QA`: require PR, require approval, block force-push/delete/direct push. Do **not** require **QA Module Gate** on PRs (it runs on push after merge).
+- `QA`: require PR, require approval, block force-push/delete/direct push.
 - `main`: require PR, require approval, require check **Main Promotion Policy**, require up-to-date branch, block force-push/delete/direct push.
 
 ### Main workflow
@@ -903,17 +893,7 @@ Protect `QA` and `main` with rulesets:
 - Uses concurrency cancellation for obsolete runs.
 - Main workflow workers: 2.
 
-Typecheck is blocking in both `playwright.yml` (push to main/master) and the QA gate `detect` job (push to QA), so type regressions fail CI before tests run.
-
-### QA module gate
-
-`.github/workflows/qa-module-gate.yml`:
-
-- Triggers on **push** to `QA` (after merge) and optional manual dispatch — **not** on pull requests into `QA`.
-- Diffs the new QA tip against the previous tip (`github.event.before`).
-- Runs a fail-fast-disabled matrix of affected modules.
-- Exposes a stable check job named **QA Module Gate** on the QA commit.
-- Does not deploy Allure to `gh-pages` from matrix jobs (avoids publish races).
+Typecheck is blocking in `playwright.yml` (push to main/master).
 
 ### Main promotion policy
 
@@ -921,20 +901,8 @@ Typecheck is blocking in both `playwright.yml` (push to main/master) and the QA 
 
 - Triggers on pull requests targeting `main` or `master`.
 - Passes only when the source branch is `QA`.
-- Also requires a successful completed **QA Module Gate** workflow run for the QA tip SHA (blocks promotion while the post-merge module run is missing, in progress, or failed).
 - Exposes a stable required check job named **Main Promotion Policy**.
 
-### Module workflow
-
-`.github/workflows/playwright-module.yml` + `.github/workflows/reusable-module-tests.yml`:
-
-- Manual module slug and all/smoke scope (dispatch entry point).
-- Reusable workflow shared with the QA gate.
-- Runs **one** worker (`PLAYWRIGHT_WORKERS=1`).
-- Lists modules before execution.
-- Uploads module-specific reports and defects.
-- Manual runs may deploy Allure and email; QA matrix runs keep artifacts only.
-- Note: deploying a module run to the same `gh-pages` branch overwrites the previously published Allure site.
 
 ## 24. Environment-variable groups
 

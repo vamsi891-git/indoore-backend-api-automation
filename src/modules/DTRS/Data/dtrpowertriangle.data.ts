@@ -205,81 +205,70 @@ export const dtrPowerTriangleData = {
 
 export const dtrPowerTriangleTestCases: DtrPowerTriangleTestCase[] = [
   {
-    testName:
-      "Validate GET /indore/dtr/{code}/power-triangle — primary DTR (11IW3) instantaneous power",
+    testName: "DTR power now — kW, kVA, kVAr, and power factor",
     scenario: "dpt_by_code_primary",
     tags: ["@smoke", "@dtr", "@power-triangle"],
   },
   {
-    testName:
-      "Validate GET /indore/dtr/{code}/power-triangle — alternate DTR code",
+    testName: "DTR power now — a second transformer still shows power",
     scenario: "dpt_by_code_alt",
     tags: ["@dtr", "@power-triangle", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/dtr/{code}/power-triangle — unknown query params ignored",
+      "DTR power now — extra filters that nobody uses are ignored",
     scenario: "dpt_ignore_unknown_query",
     tags: ["@dtr", "@power-triangle", "@edge"],
   },
   {
-    testName:
-      "Contract — all-zero degraded payload when no IP reading (11IW3 live shape)",
+    testName: "Sample power now — zeros when there is no live reading",
     scenario: "contract_all_zero_degraded",
     isContractFixture: true,
     tags: ["@dtr", "@power-triangle", "@edge"],
   },
   {
-    testName:
-      "Contract — all-null backend shape when SP/TP IP unavailable",
+    testName: "Sample power now — empty numbers when the meter has no reading",
     scenario: "contract_all_null_backend",
     isContractFixture: true,
     tags: ["@dtr", "@power-triangle", "@edge"],
   },
   {
-    testName:
-      "Contract — SP instantaneous IP (kW, kVA, PF, derived kVAr)",
+    testName: "Sample power now — single-phase live reading",
     scenario: "contract_sp_instantaneous",
     isContractFixture: true,
     tags: ["@dtr", "@power-triangle", "@edge"],
   },
   {
-    testName:
-      "Contract — TP instantaneous IP with meter kvar column",
+    testName: "Sample power now — three-phase live reading",
     scenario: "contract_tp_instantaneous",
     isContractFixture: true,
     tags: ["@dtr", "@power-triangle", "@edge"],
   },
   {
-    testName:
-      "Contract — reactive kVAr derived from PF (Q = |kVA| × √(1 − PF²))",
+    testName: "Sample power now — reactive power from power factor",
     scenario: "contract_reactive_from_pf",
     isContractFixture: true,
     tags: ["@dtr", "@power-triangle", "@edge"],
   },
   {
-    testName:
-      "Contract — reactive kVAr derived from triangle (Q = √(kVA² − kW²))",
+    testName: "Sample power now — reactive power from kW and kVA",
     scenario: "contract_reactive_from_triangle",
     isContractFixture: true,
     tags: ["@dtr", "@power-triangle", "@edge"],
   },
   {
-    testName:
-      "Contract — DTR_METER_DATA_UNAVAILABLE when no meter reading",
+    testName: "Sample power now — meter data unavailable message",
     scenario: "contract_meter_data_unavailable",
     isContractFixture: true,
     tags: ["@dtr", "@power-triangle", "@edge"],
   },
   {
-    testName:
-      "Validate GET /indore/dtr/{code}/power-triangle — DTR not found",
+    testName: "DTR power now — unknown transformer is not shown",
     scenario: "dtr_not_found",
     tags: ["@dtr", "@power-triangle", "@negative"],
   },
   {
-    testName:
-      "Validate GET /indore/dtr/{code}/power-triangle — blank DTR code rejected",
+    testName: "DTR power now — a blank transformer code is not allowed",
     scenario: "empty_dtr_code",
     expectedStatus: 400,
     tags: ["@dtr", "@power-triangle", "@negative"],

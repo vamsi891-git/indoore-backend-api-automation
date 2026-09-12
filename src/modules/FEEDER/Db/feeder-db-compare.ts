@@ -1,4 +1,4 @@
-import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
+﻿import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
 import type { DbFeederMeterRow, DbFeederRow } from "./feeder.db";
 
 export function compareFeederProfileToDb(options: {
@@ -46,7 +46,7 @@ export function compareFeederProfileToDb(options: {
         optional: true,
       },
     ],
-    `DB vs API — feeder profile (${lookupKey})`,
+    `DB vs API â€” feeder profile (${lookupKey})`,
     obs,
   );
 }
@@ -77,7 +77,7 @@ export function compareFeederMeterExists(options: {
         dbValue: options.dbRow.meterSerialNumber.trim(),
       },
     ],
-    `DB vs API — feeder meter (${serial})`,
+    `DB vs API â€” feeder meter (${serial})`,
     options.obs,
   );
 }

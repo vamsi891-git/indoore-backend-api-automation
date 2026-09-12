@@ -22,6 +22,7 @@ import {
   extractJobNamesFromInitResponse,
 } from "../shared/commands-job-init.mapper";
 import {
+  assertHesE2eQueryPhase,
   pollQueryMeterJob,
   softSkipHesE2eInfraFailure,
 } from "../utils/commands-job-e2e.helper";
@@ -161,51 +162,44 @@ test.describe("HES Commands — Billing (E2E)", () => {
         maxResponseTimeMs: commandsBillingData.maxResponseTimeMs,
       });
 
-      validation.execute("Query Success Response", () =>
-        queryValidator.validateResponse(pollResult.responseBody),
-      );
-      validation.execute("Query Finished Message", () =>
-        billingValidator.validateQueryFinishedMessage(pollResult.mapped.message),
-      );
-      validation.execute("Query Job Name Echo", () =>
-        queryValidator.validateJobNameEcho(pollResult.mapped, jobName),
-      );
-      validation.execute("Query Sync Flags", () =>
-        queryValidator.validateSyncFlags(pollResult.mapped),
-      );
-      validation.execute("Query HES Job Status FINISHED", () => {
-        expect(pollResult.mapped.job.hesJobStatus).toBe("FINISHED");
+      assertHesE2eQueryPhase({
+        validation,
+        queryValidator,
+        pollResult,
+        jobName,
+        meterId: body.meters[0],
+        onFinished: () => {
+          validation.execute("Query Finished Message", () =>
+            billingValidator.validateQueryFinishedMessage(
+              pollResult.mapped.message,
+            ),
+          );
+          validation.execute("Query HES Job Status FINISHED", () => {
+            expect(pollResult.mapped.job.hesJobStatus).toBe("FINISHED");
+          });
+          validation.execute("Query Summary Counts", () =>
+            queryValidator.validateSummaryCounts(pollResult.mapped.job.summary),
+          );
+          validation.execute("Query All Meter Results", () =>
+            queryValidator.validateAllMeterResults(
+              pollResult.mapped.job.meterResults,
+            ),
+          );
+          validation.execute("Query Billing Period HES Response", () =>
+            billingValidator.validateBillingQueryMeterResults(
+              pollResult.mapped.job.meterResults,
+              body.meters[0],
+            ),
+          );
+          validation.execute("Query Full Contract", () =>
+            queryValidator.validateFullContract(
+              pollResult.mapped,
+              jobName,
+              body.meters[0],
+            ),
+          );
+        },
       });
-      validation.execute("Query HES Status Code", () =>
-        queryValidator.validateHesStatusCode(pollResult.mapped),
-      );
-      validation.execute("Query Summary Counts", () =>
-        queryValidator.validateSummaryCounts(pollResult.mapped.job.summary),
-      );
-      validation.execute("Query All Meter Results", () =>
-        queryValidator.validateAllMeterResults(
-          pollResult.mapped.job.meterResults,
-        ),
-      );
-      validation.execute("Query Expected Meter Present", () =>
-        queryValidator.validateExpectedMeterPresent(
-          pollResult.mapped.job.meterResults,
-          body.meters[0],
-        ),
-      );
-      validation.execute("Query Billing Period HES Response", () =>
-        billingValidator.validateBillingQueryMeterResults(
-          pollResult.mapped.job.meterResults,
-          body.meters[0],
-        ),
-      );
-      validation.execute("Query Full Contract", () =>
-        queryValidator.validateFullContract(
-          pollResult.mapped,
-          jobName,
-          body.meters[0],
-        ),
-      );
 
       ApiValidationHelper.finalize(validation, {
         apiName: "Commands Billing E2E",
@@ -215,14 +209,20 @@ test.describe("HES Commands — Billing (E2E)", () => {
           module: "HES-COMMANDS",
           endpoint: postRaw.url(),
           method: "POST → GET",
-          requestParams: { body, jobName, pollAttempts: pollResult.pollAttempts },
+          requestParams: {
+            body,
+            jobName,
+            pollAttempts: pollResult.pollAttempts,
+            completed: pollResult.completed,
+          },
           responseStatus: pollResult.rawResponse.status(),
           responseBody: {
             init: postBody,
             query: pollResult.responseBody,
           },
-          expectedBehavior:
-            "POST billing_period_get returns jobName in meterResults; GET query-meter-job returns FINISHED with GET_CONFIG/SUCCESS and BILLING_PERIOD config in hesResponse.",
+          expectedBehavior: pollResult.completed
+            ? "POST billing_period_get returns jobName in meterResults; GET query-meter-job returns FINISHED with GET_CONFIG/SUCCESS and BILLING_PERIOD config in hesResponse."
+            : "POST billing_period_get returns jobName; GET query-meter-job remains RUNNING/IN_PROGRESS until HES callback (set HES_E2E_REQUIRE_COMPLETION=true to require FINISHED).",
         },
       });
     },

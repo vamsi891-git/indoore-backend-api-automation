@@ -34,7 +34,7 @@ function validateEvents(
 }
 
 registerCatalogLookupTests({
-  describeTitle: "Events API",
+  describeTitle: "Events",
   testCases: eventTestCases,
   fetch: (api) => new EventApi(api).getEvents(),
   validate: validateEvents,

@@ -35,7 +35,6 @@ export interface ConsumerItem {
   consumerCid: string;
   consumerAddress: string;
   ivrsNo: string;
-  existingIvrsNo: string;
   meterSerialNumber: string;
   consumerMobileNumber: string;
 }

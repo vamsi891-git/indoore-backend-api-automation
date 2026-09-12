@@ -41,7 +41,7 @@ function validatePaymentContract(
 }
 
 registerCatalogLookupTests({
-  describeTitle: "Payment Contract API",
+  describeTitle: "Payment contracts",
   testCases: paymentContractTestCases,
   fetch: (api) => new PaymentContractApi(api).getPaymentContracts(),
   validate: validatePaymentContract,

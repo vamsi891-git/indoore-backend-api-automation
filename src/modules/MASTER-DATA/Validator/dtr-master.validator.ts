@@ -1,10 +1,14 @@
 import { expect } from "@playwright/test";
+import { EXPECTED_DTR_MASTER_COLUMNS } from "../Data/dtr-master.data";
 import {
   DtrMasterData,
   DtrMasterQuery,
   DtrMasterResponse,
 } from "../Mapper/dtr-master.mapper";
+import { compareMasterLabelsAsc } from "../utils/master-data-field.helper";
 import { MasterDataCommonValidator } from "./master-data-common.validator";
+
+const SERVICE_DATE_RE = /^\d{4}-\d{2}-\d{2}/;
 
 export class DtrMasterValidator {
   validateResponse(response: DtrMasterResponse): void {
@@ -13,11 +17,14 @@ export class DtrMasterValidator {
   }
 
   validateColumns(data: DtrMasterData): void {
-    MasterDataCommonValidator.validateColumns(data.columns);
+    MasterDataCommonValidator.validateExpectedColumnsPresent(
+      data.columns,
+      EXPECTED_DTR_MASTER_COLUMNS,
+    );
   }
 
   validateItemsExist(data: DtrMasterData): void {
-    if (data.total > 0) {
+    if (data.total > 0 && data.page <= data.totalPages) {
       expect(data.items.length).toBeGreaterThan(0);
     } else {
       expect(data.items.length).toBe(0);
@@ -30,6 +37,9 @@ export class DtrMasterValidator {
       expect(item.slNo).toBeGreaterThan(0);
       expect(item.id?.trim()).toBeTruthy();
       expect(item.dtr?.trim()).toBeTruthy();
+      expect(
+        firstNonEmpty(item.dtrCode, item.dtrName, item.newDtrCode),
+      ).toBeTruthy();
 
       if (item.meterLookupTblRefId != null) {
         expect(item.id).toEqual(String(item.meterLookupTblRefId));
@@ -41,17 +51,28 @@ export class DtrMasterValidator {
         item.zone,
         item.subStation,
         item.feeder,
+        item.feederCode,
+        item.feederName,
+        item.dtrCode,
+        item.dtrName,
+        item.newDtrCode,
+        item.dtrCapacity,
         item.meterSerialNumber,
+        item.meterMake,
         item.serviceDate,
       ]) {
-        if (field !== null) {
-          expect(field.trim()).not.toEqual("");
+        if (field != null) {
+          expect(String(field).trim()).not.toEqual("");
         }
       }
 
-      if (item.mf !== null) {
-        expect(item.mf.trim()).not.toEqual("");
+      if (item.mf != null) {
+        expect(String(item.mf).trim()).not.toEqual("");
         expect(Number.isNaN(Number(item.mf))).toBeFalsy();
+      }
+
+      if (item.serviceDate != null && item.serviceDate.trim() !== "") {
+        expect(SERVICE_DATE_RE.test(item.serviceDate.trim())).toBeTruthy();
       }
     });
   }
@@ -83,12 +104,44 @@ export class DtrMasterValidator {
   }
 
   validateAscendingDtrOrder(data: DtrMasterData): void {
+    // Matches API: coded DTRs first, then DTR Name, CODE, meter serial, id.
+    const sortKey = (item: (typeof data.items)[number]) => {
+      const code = (item.dtrCode ?? "").trim();
+      const name = (item.dtrName ?? item.dtr ?? "").trim();
+      const serial = (item.meterSerialNumber ?? "").trim();
+      return {
+        codedRank: code ? 0 : 1,
+        name,
+        code,
+        serial,
+        id: item.id ?? "",
+      };
+    };
+
     data.items.forEach((item, index) => {
-      if (index > 0) {
-        expect(
-          item.dtr.localeCompare(data.items[index - 1].dtr),
-        ).toBeGreaterThanOrEqual(0);
+      if (index === 0) return;
+      const prev = sortKey(data.items[index - 1]);
+      const curr = sortKey(item);
+      if (curr.codedRank !== prev.codedRank) {
+        expect(curr.codedRank).toBeGreaterThanOrEqual(prev.codedRank);
+        return;
       }
+      const byName = compareMasterLabelsAsc(curr.name, prev.name);
+      if (byName !== 0) {
+        expect(byName).toBeGreaterThanOrEqual(0);
+        return;
+      }
+      const byCode = compareMasterLabelsAsc(curr.code, prev.code);
+      if (byCode !== 0) {
+        expect(byCode).toBeGreaterThanOrEqual(0);
+        return;
+      }
+      const bySerial = compareMasterLabelsAsc(curr.serial, prev.serial);
+      if (bySerial !== 0) {
+        expect(bySerial).toBeGreaterThanOrEqual(0);
+        return;
+      }
+      expect(compareMasterLabelsAsc(curr.id, prev.id)).toBeGreaterThanOrEqual(0);
     });
   }
 
@@ -107,10 +160,32 @@ export class DtrMasterValidator {
     const q = searchTerm.trim().toLowerCase();
     expect(q.length).toBeGreaterThan(0);
     data.items.forEach((item) => {
-      const haystack = [item.dtr, item.meterSerialNumber ?? "", item.id]
+      const haystack = [
+        item.dtr,
+        item.dtrCode,
+        item.dtrName,
+        item.newDtrCode,
+        item.feeder,
+        item.feederCode,
+        item.feederName,
+        item.meterSerialNumber,
+        item.meterMake,
+        item.id,
+      ]
+        .filter(Boolean)
         .join(" ")
         .toLowerCase();
       expect(haystack.includes(q)).toBeTruthy();
     });
   }
+}
+
+function firstNonEmpty(
+  ...values: Array<string | null | undefined>
+): string | undefined {
+  for (const value of values) {
+    const trimmed = value?.trim();
+    if (trimmed) return trimmed;
+  }
+  return undefined;
 }

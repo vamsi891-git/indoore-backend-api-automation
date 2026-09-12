@@ -1,4 +1,5 @@
 import type { APIRequestContext } from "@playwright/test";
+import { test } from "@playwright/test";
 import ExcelJS from "exceljs";
 import { METER_REPLACEMENT_MAX_RESPONSE_TIME_MS } from "../utils/Meter replacement request.helper";
 import { resolveMeterReplacementEnv } from "../utils/meter-replacement-env.helper";
@@ -407,15 +408,16 @@ export const bulkValidateMeterReplacementTestCases: BulkValidateMeterReplacement
           authenticatedApi,
         );
         if (!pendingOld) {
-          throw new Error(
-            "No PENDING consumer old-meter serial available. Set METER_REPLACEMENT_PENDING_CONSUMER_OLD_SERIAL or ensure ineligibleConsumerId has a pending replacement.",
+          test.skip(
+            true,
+            "No PENDING consumer old-meter serial available. Set METER_REPLACEMENT_PENDING_CONSUMER_OLD_SERIAL or seed a PENDING replacement.",
           );
         }
         const runtime = await ensureMeterReplacementBulkRuntimeContext(
           authenticatedApi,
         );
         const row = buildValidMeterReplacementBulkRow({
-          "Old Meter Serial": pendingOld,
+          "Old Meter Serial": pendingOld!,
           "New Meter Serial": runtime.newMeterSerial,
         });
         return xlsxUpload(await buildMeterReplacementBulkXlsx([row]));

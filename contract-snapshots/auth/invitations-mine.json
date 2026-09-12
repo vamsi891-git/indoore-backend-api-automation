@@ -1,0 +1,35 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/auth/invitations/mine",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "filterOptions",
+    "invitations",
+    "limit",
+    "page",
+    "summary",
+    "total",
+    "totalPages"
+  ],
+  "itemKeys": [
+    "acceptedAt",
+    "createdAt",
+    "email",
+    "expiresAt",
+    "expiresInSec",
+    "id",
+    "isExpired",
+    "networkScopeId",
+    "networkScopeLevelName",
+    "networkScopeName",
+    "organisationScopeId",
+    "organisationScopeLevelName",
+    "organisationScopeName",
+    "role",
+    "status"
+  ],
+  "hasColumnsGrid": false
+}

@@ -1,0 +1,17 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/overall-dashboard/disconnection-details",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "months"
+  ],
+  "itemKeys": [
+    "connected",
+    "disconnected",
+    "month"
+  ],
+  "hasColumnsGrid": false
+}

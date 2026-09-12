@@ -4,7 +4,7 @@ import { isEnergyAuditsDbSqlReady } from "../Db/energy-audits.db";
 import { runEnergyAuditsDbCoverage } from "./energy-audits-db.harness";
 
 apiDbTest.describe("ENERGY-AUDITS — DB Coverage", () => {
-  apiDbTest.setTimeout(120_000);
+  apiDbTest.setTimeout(180_000);
 
   apiDbTest.beforeEach(() => {
     apiDbTest.skip(!isDbConfigured(), "DB credentials not configured");
@@ -15,8 +15,8 @@ apiDbTest.describe("ENERGY-AUDITS — DB Coverage", () => {
   });
 
   apiDbTest(
-    "IND-ENE-DB-001 — scaffold DB coverage",
-    { tag: ["@energy-audits", "@db"] },
+    "IND-EA-DB-001 — feeder loss-analysis DTR count + identity spot",
+    { tag: ["@energy-audit", "@db"] },
     async ({ authenticatedApi, db }) => {
       await runEnergyAuditsDbCoverage(authenticatedApi, db);
     },

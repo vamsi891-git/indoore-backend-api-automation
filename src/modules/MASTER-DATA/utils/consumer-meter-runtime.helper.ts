@@ -54,13 +54,29 @@ export async function ensureConsumerMeterRuntimeContext(
   authenticatedApi: APIRequestContext,
   options?: EnsureConsumerMeterRuntimeOptions,
 ): Promise<ConsumerMeterRuntime | null> {
-  if (cachedRuntime) {
+  const targetPoolCount = options?.targetPoolCount ?? 4;
+
+  if (cachedRuntime && cachedRuntime.pool.length >= targetPoolCount) {
     return cachedRuntime;
+  }
+
+  // Allow a later caller (e.g. bulk multi-row) to expand a smaller cached pool.
+  if (cachedRuntime && cachedRuntime.pool.length < targetPoolCount) {
+    cachedRuntime = null;
+    ensurePromise = null;
   }
 
   if (ensurePromise) {
     await ensurePromise;
-    return cachedRuntime;
+    if (cachedRuntime && cachedRuntime.pool.length >= targetPoolCount) {
+      return cachedRuntime;
+    }
+    if (cachedRuntime && cachedRuntime.pool.length < targetPoolCount) {
+      cachedRuntime = null;
+      ensurePromise = null;
+    } else if (cachedRuntime) {
+      return cachedRuntime;
+    }
   }
 
   ensurePromise = (async () => {
@@ -68,7 +84,7 @@ export async function ensureConsumerMeterRuntimeContext(
       options?.organisationLookupId ?? createConsumerData.organisationLookupId;
 
     const pool = await ensureConsumerAssignableMeterPool(authenticatedApi, {
-      targetCount: options?.targetPoolCount ?? 4,
+      targetCount: targetPoolCount,
       maxCreateAttempts: options?.maxCreateAttempts ?? 15,
       organisationLookupId,
     });

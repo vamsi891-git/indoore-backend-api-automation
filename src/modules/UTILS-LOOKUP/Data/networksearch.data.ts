@@ -32,23 +32,23 @@ export interface NetworkSearchTestCase extends LookupTestCase {
 
 export const networkSearchTestCases: NetworkSearchTestCase[] = [
   {
-    testName: "Validate network search — default limit",
+    testName: "Network search — default limit returns records",
     scenario: "smoke_default",
     tags: ["@smoke", "@utils-lookup", "@network-search"],
   },
   {
-    testName: "Validate network search — limit 1",
+    testName: "Network search — limit 1 returns at most 1 record",
     scenario: "edge_limit_one",
     tags: ["@utils-lookup", "@network-search", "@edge"],
   },
   {
-    testName: "Validate network search — limit=0 rejected",
+    testName: "Network search — limit 0 is rejected",
     scenario: "negative_limit_zero",
     expectedStatus: 400,
     tags: ["@utils-lookup", "@network-search", "@negative"],
   },
   {
-    testName: "Validate network search — negative limit rejected",
+    testName: "Network search — a negative limit is rejected",
     scenario: "negative_limit_negative",
     expectedStatus: 400,
     tags: ["@utils-lookup", "@network-search", "@negative"],

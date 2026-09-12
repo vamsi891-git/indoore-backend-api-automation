@@ -121,6 +121,9 @@ export class FeederAlertsValidator {
     }
 
     validateUniqueSerialNumbers(rows: FeederAlertRow[]) {
+        if (rows.length === 0) {
+            return;
+        }
         const serials = rows.map((row) => row.serialNo);
         expect(new Set(serials).size).toBe(serials.length);
     }

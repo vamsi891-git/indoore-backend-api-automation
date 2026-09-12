@@ -25,7 +25,7 @@ import { DtrLoadUnbalanceValidator } from "../Validator/dtrloadunbalance.validat
 
 const LOAD_UNBALANCE_PATH = "/indore/dashboard/dtr/load-unbalance";
 
-test.describe("DTR Load Unbalance API", () => {
+test.describe("Dashboard — DTR load unbalance", () => {
     test.describe.configure({ retries: 1 });
     test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
@@ -115,12 +115,12 @@ test.describe("DTR Load Unbalance API", () => {
     }
 });
 
-authTest.describe("DTR Load Unbalance API — Auth Negative", () => {
+authTest.describe("DTR load unbalance — cannot open without a valid login", () => {
     authTest.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
     for (const authCase of dtrUnbalanceAuthNegativeCases) {
         authTest(
-            `GET ${LOAD_UNBALANCE_PATH} — ${authCase.testName}`,
+            `${authCase.testName}`,
             {
                 tag: [
                     ...authCase.tags,

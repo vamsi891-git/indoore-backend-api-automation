@@ -19,9 +19,11 @@ export interface BillingData {
     year: number;
     page: number;
     limit: number;
-    total: number;
-    totalPages: number;
+    total: number | null;
+    totalPages: number | null;
     items: BillingItem[];
+    billingClass?: string;
+    mappingProfile?: string;
 }
 
 export interface BillingDataQuery {
@@ -49,6 +51,8 @@ export class BillingDataMapper {
                 total: pagination.total,
                 totalPages: pagination.totalPages,
                 items: rows.map(normalizeBillingItem),
+                billingClass: data.billingClass,
+                mappingProfile: data.mappingProfile,
             };
         }
 

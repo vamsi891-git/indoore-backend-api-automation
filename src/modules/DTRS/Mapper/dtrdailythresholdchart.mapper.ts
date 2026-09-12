@@ -18,6 +18,9 @@ export type DtrDailyThresholdChartScenario =
     | "ddt_by_code_primary_yearly"
     | "ddt_by_code_alt"
     | "ddt_ignore_unknown_query"
+    | "ddt_missing_period"
+    | "ddt_blank_period"
+    | "ddt_uppercase_period"
     | "contract_null_hourly"
     | "contract_null_daily"
     | "contract_null_weekly"
@@ -26,6 +29,8 @@ export type DtrDailyThresholdChartScenario =
     | "contract_populated_energy"
     | "contract_reactive_derivation"
     | "contract_pf_from_energy"
+    | "contract_empty_points"
+    | "contract_unique_labels"
     | "dtr_not_found"
     | "empty_dtr_code"
     | "invalid_period";

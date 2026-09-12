@@ -1,0 +1,80 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/reports/dtr-communication",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "circle",
+    "division",
+    "dpCount",
+    "dtr",
+    "feeder",
+    "id",
+    "ipCount",
+    "logDate",
+    "lsCount",
+    "meterLookupId",
+    "meterSerialNumber",
+    "slNo",
+    "subStation",
+    "zone"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "slNo",
+      "header": "S No."
+    },
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "subStation",
+      "header": "Substation"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtr",
+      "header": "DTR"
+    },
+    {
+      "key": "meterSerialNumber",
+      "header": "Meter Serial Number"
+    },
+    {
+      "key": "logDate",
+      "header": "Log Date"
+    },
+    {
+      "key": "ipCount",
+      "header": "IP Count"
+    },
+    {
+      "key": "lsCount",
+      "header": "LS Count"
+    },
+    {
+      "key": "dpCount",
+      "header": "DP Count"
+    }
+  ]
+}

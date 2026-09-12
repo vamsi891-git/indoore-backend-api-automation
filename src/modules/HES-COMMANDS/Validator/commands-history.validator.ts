@@ -9,6 +9,7 @@ export const COMMAND_HISTORY_STATUSES = [
   "SUCCESS",
   "FAILED",
   "IN_PROGRESS",
+  "PARTIAL",
   "REJECTED",
 ] as const;
 
@@ -78,7 +79,7 @@ export class CommandsHistoryValidator {
       ).toBeGreaterThan(0);
       for (const token of meterTokens) {
         expect(
-          /^\d+$/.test(token),
+          /^[A-Za-z0-9._-]+$/.test(token),
           `Invalid meter token "${token}" in selectedMeter: ${row.selectedMeter}`,
         ).toBe(true);
       }
@@ -159,6 +160,11 @@ export class CommandsHistoryValidator {
       if (row.status === "FAILED" || row.status === "REJECTED") {
         expect(row.reason).toBeTruthy();
         expect(row.reason!.trim().length).toBeGreaterThan(0);
+      } else if (row.status === "PARTIAL") {
+        // PARTIAL may include a reason from HES; blank is also allowed.
+        if (row.reason != null) {
+          expect(row.reason.trim().length).toBeGreaterThan(0);
+        }
       } else {
         expect(row.reason).toBeNull();
       }

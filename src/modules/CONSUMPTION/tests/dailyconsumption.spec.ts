@@ -1,3 +1,4 @@
+import { expect } from "@playwright/test";
 import { test } from "../../../../src/fixtures/api.fixture";
 import { DailyConsumptionApi } from "../Api/dailyconsumption.api";
 import { dailyConsumptionData } from "../Data/dailyconsumption.data";
@@ -7,9 +8,11 @@ import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { CONSUMPTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
-test.describe("Daily Consumption Report API", () => {
+import { DailyConsumptionResponseSchema } from "../schemas/consumption.schemas";
+import { skipIfConsumptionInternalError } from "../utils/consumption-env.helper";
+test.describe("Daily consumption list", () => {
     test.setTimeout(CONSUMPTION_TEST_TIMEOUT_MS);
-    test("Validate Daily Consumption Report API",
+    test("Daily consumption — first page lists each consumer (readings may be empty)",
         {
             tag: ["@consumption", "@daily-consumption", "@smoke"],
         },
@@ -35,10 +38,15 @@ test.describe("Daily Consumption Report API", () => {
                 );
             await PerformanceTracker.track(
         rawResponse,
-        "Daily Consumption Report API",
+        "Daily consumption — first page lists each consumer (readings may be empty)",
         rawResponse.url(),
         responseTime
       );
+            skipIfConsumptionInternalError(
+                rawResponse.status(),
+                responseBody,
+                "/indore/consumption/report?reportType=daily",
+            );
             const assert = new AssertionEngine();
             const validation = new ValidationEngine();
             const validator = new DailyConsumptionValidator();
@@ -66,6 +74,15 @@ test.describe("Daily Consumption Report API", () => {
             const { items } = mapped;
             const isOk = rawResponse.status() === 200;
             if (isOk) {
+                validation.execute("Zod Response Schema", () => {
+                    const result = DailyConsumptionResponseSchema.safeParse(responseBody);
+                    expect(
+                        result.success,
+                        result.success
+                            ? "Zod validation passed"
+                            : `Zod contract mismatch:\n${JSON.stringify(result.error.format(), null, 2)}`,
+                    ).toBe(true);
+                });
                 validation.execute("Mapped Required Fields", () =>
                     assert.validateRequiredFields(mapped, [
                         "items",
@@ -107,8 +124,11 @@ test.describe("Daily Consumption Report API", () => {
                 validation.execute("Serial Sequence", () =>
                     validator.validateSerialSequence(items, mapped.page, mapped.limit),
                 );
-                validation.execute("Unique Serial Numbers", () =>
+                validation.execute("Unique consumers", () =>
                     validator.validateUniqueSerialNumbers(items),
+                );
+                validation.execute("Shared feeder allowed", () =>
+                    validator.validateSharedHierarchyAllowed(items),
                 );
                 validation.execute("Reading Date Format", () =>
                     validator.validateReadingDateFormat(items),
@@ -135,7 +155,10 @@ test.describe("Daily Consumption Report API", () => {
                     validator.validateNoNaN(items),
                 );
             }
-            validation.printSummary("Daily Consumption Report API", responseTime);
+            validation.printSummary(
+                "Daily consumption — first page lists each consumer (readings may be empty)",
+                responseTime,
+            );
         },
     );
 });

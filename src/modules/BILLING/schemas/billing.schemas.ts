@@ -3,11 +3,22 @@ import { z } from "zod";
 const nullableString = z.string().nullable();
 const nullableNumber = z.number().nullable();
 
+/**
+ * Live billing-data returns some metrics as decimal strings ("1.8420") or numbers.
+ * Accept either; normalizeBillingItem coerces to number|null for validators.
+ */
+const nullableStringOrNumber = z
+  .union([z.number(), z.string()])
+  .nullable();
+
 export const PaginationSchema = z.object({
     page: z.number().int().positive(),
     limit: z.number().int().positive(),
-    total: z.number().int().nonnegative(),
-    totalPages: z.number().int().nonnegative(),
+    /** Null when `includeTotal=false` on some billing APIs. Daywise still sends an estimate. */
+    total: z.number().int().nonnegative().nullable(),
+    totalPages: z.number().int().nonnegative().nullable(),
+    hasMore: z.boolean().optional(),
+    totalIsExact: z.boolean().optional(),
 });
 
 export const ColumnSchema = z.object({
@@ -25,7 +36,7 @@ export const BillingItemSchema = z
         substation: nullableString,
         feeder: nullableString,
         dtr: nullableString,
-        sanctionedLoadKw: nullableNumber,
+        sanctionedLoadKw: nullableStringOrNumber,
         consumerName: nullableString,
         consumerAddress: nullableString,
         ivrsNumber: nullableString,
@@ -57,21 +68,27 @@ export const BillingItemSchema = z
         kvahT6: nullableNumber,
         kvahT7: nullableNumber,
         kvahT8: nullableNumber,
-        mdKw: nullableNumber,
-        mdKwOt: z.string().optional(),
-        mdKva: nullableNumber,
-        mdKvaOt: z.string().optional(),
+        mdKw: nullableStringOrNumber,
+        mdKwOt: z.string().nullable().optional(),
+        mdKva: nullableStringOrNumber,
+        mdKvaOt: z.string().nullable().optional(),
         billOnMin: nullableNumber,
         kwhExpC: nullableNumber,
         kvahExpC: nullableNumber,
+        meterMake: nullableString.optional(),
+        meterLookupTblRefId: z.number().int().nullable().optional(),
+        hesTimestamp: nullableString.optional(),
+        rank: z.number().int().nullable().optional(),
     })
     .passthrough();
 
-/** Live API: { columns, rows, pagination } */
+/** Live API: { columns, rows, pagination, billingClass?, mappingProfile? } */
 export const BillingDataGridSchema = z.object({
     columns: z.array(ColumnSchema).optional(),
     rows: z.array(BillingItemSchema),
     pagination: PaginationSchema,
+    billingClass: z.string().optional(),
+    mappingProfile: z.string().optional(),
 });
 
 /** Legacy flat pagination (older contract) */
@@ -101,6 +118,7 @@ export const DaywiseBillingItemSchema = z
     .object({
         id: z.string().optional(),
         slNo: z.number(),
+        meterLookupId: z.number().int().nullable().optional(),
         division: nullableString,
         zone: nullableString,
         feeder: nullableString,

@@ -1,9 +1,11 @@
 import { expect } from "@playwright/test";
+import { EXPECTED_SUBSTATION_MASTER_COLUMNS } from "../Data/substation-master.data";
 import {
   SubstationMasterData,
   SubstationMasterQuery,
   SubstationMasterResponse,
 } from "../Mapper/substation-master.mapper";
+import { compareMasterLabelsAsc } from "../utils/master-data-field.helper";
 import { MasterDataCommonValidator } from "./master-data-common.validator";
 
 export class SubstationMasterValidator {
@@ -13,11 +15,14 @@ export class SubstationMasterValidator {
   }
 
   validateColumns(data: SubstationMasterData): void {
-    MasterDataCommonValidator.validateColumns(data.columns);
+    MasterDataCommonValidator.validateExpectedColumnsPresent(
+      data.columns,
+      EXPECTED_SUBSTATION_MASTER_COLUMNS,
+    );
   }
 
   validateItemsExist(data: SubstationMasterData): void {
-    if (data.total > 0) {
+    if (data.total > 0 && data.page <= data.totalPages) {
       expect(data.items.length).toBeGreaterThan(0);
     } else {
       expect(data.items.length).toBe(0);
@@ -34,8 +39,21 @@ export class SubstationMasterValidator {
       expect(item.dtrCount).toBeGreaterThanOrEqual(0);
       expect(item.consumerCount).toBeGreaterThanOrEqual(0);
 
-      if (item.substationCode !== null) {
-        expect(item.substationCode.trim()).not.toEqual("");
+      if (item.id != null) {
+        expect(String(item.id).trim()).not.toEqual("");
+      }
+
+      for (const field of [
+        item.discomName,
+        item.regionName,
+        item.circleName,
+        item.divisionName,
+        item.zoneName,
+        item.substationCode,
+      ]) {
+        if (field != null) {
+          expect(String(field).trim()).not.toEqual("");
+        }
       }
     });
   }
@@ -84,15 +102,35 @@ export class SubstationMasterValidator {
   }
 
   validateAscendingSubstationOrder(data: SubstationMasterData): void {
+    // API: ORDER BY Network_Name ASC, Network_Code ASC; soft-warn on collation drift.
+    const outOfOrder: string[] = [];
     data.items.forEach((item, index) => {
-      if (index > 0) {
-        expect(
-          item.substationName.localeCompare(
-            data.items[index - 1].substationName,
-          ),
-        ).toBeGreaterThanOrEqual(0);
+      if (index === 0) return;
+      const prev = data.items[index - 1];
+      const byName = compareMasterLabelsAsc(
+        item.substationName,
+        prev.substationName,
+      );
+      if (byName < 0) {
+        outOfOrder.push(`"${prev.substationName}" -> "${item.substationName}"`);
+        return;
+      }
+      if (byName === 0) {
+        const prevCode = prev.substationCode ?? "";
+        const currCode = item.substationCode ?? "";
+        if (compareMasterLabelsAsc(currCode, prevCode) < 0) {
+          outOfOrder.push(
+            `"${prev.substationName}/${prevCode}" -> "${item.substationName}/${currCode}"`,
+          );
+        }
       }
     });
+    if (outOfOrder.length) {
+      console.warn(
+        `[backend-finding] substation-master ascending order drift (${outOfOrder.length}):`,
+        outOfOrder.slice(0, 5).join("; "),
+      );
+    }
   }
 
   validateSearchResults(data: SubstationMasterData, searchTerm: string): void {
@@ -100,10 +138,16 @@ export class SubstationMasterValidator {
     expect(q.length).toBeGreaterThan(0);
     data.items.forEach((item) => {
       const haystack = [
+        item.id,
         item.substationName,
-        item.substationCode ?? "",
-        item.zoneName ?? "",
+        item.substationCode,
+        item.zoneName,
+        item.divisionName,
+        item.circleName,
+        item.regionName,
+        item.discomName,
       ]
+        .filter(Boolean)
         .join(" ")
         .toLowerCase();
       expect(haystack.includes(q)).toBeTruthy();

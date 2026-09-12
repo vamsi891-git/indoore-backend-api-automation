@@ -2,6 +2,7 @@ import { expect } from "@playwright/test";
 import { QueryMeterJobMeterResult } from "../Mapper/commands-query-meter-job.mapper";
 import { commandsDemandConfigData } from "../Data/commands-demand-config.data";
 import { MappedCommandJobInitData } from "../shared/commands-job-init.mapper";
+import { QUERY_FINISHED_MESSAGE } from "../utils/commands-job-e2e.helper";
 
 export interface DemandIntegrationPeriodEntry {
   type: string;
@@ -23,9 +24,7 @@ export class CommandsDemandConfigValidator {
   }
 
   validateQueryFinishedMessage(message: string): void {
-    expect(/job finished|synced from meterStatusForJob/i.test(message)).toBe(
-      true,
-    );
+    expect(QUERY_FINISHED_MESSAGE.test(message)).toBe(true);
   }
 
   validateDemandIntegrationPeriodEntry(

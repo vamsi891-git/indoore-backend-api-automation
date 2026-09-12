@@ -1,83 +1,132 @@
-import { test } from "../../../../src/fixtures/api.fixture";
+import { expect } from "@playwright/test";
+import { test } from "../../../fixtures/api.fixture";
 import { PatternConsumptionApi } from "../Api/patternconsumption.api";
-import { patternConsumptionData } from "../Data/patternconsumption.data";
+import {
+  patternConsumptionData,
+  patternLastThreeColumnKeys,
+} from "../Data/patternconsumption.data";
 import { PatternConsumptionMapper } from "../Mapper/patternconsumption.mapper";
 import { PatternConsumptionValidator } from "../Validator/patternconsumption.validator";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { CONSUMPTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
-import { isConsumptionInternalError } from "../utils/consumption-env.helper";
-test.describe("Pattern Consumption Last Three Months API", () => {
+import { PatternLastThreeResponseSchema } from "../schemas/consumption.schemas";
+import { skipIfConsumptionInternalError } from "../utils/consumption-env.helper";
+
+test.describe("Pattern last three months list", () => {
   test.setTimeout(CONSUMPTION_TEST_TIMEOUT_MS);
-  test("Validate Pattern Consumption Last Three Months API",
+  test(
+    "Last three months — first page lists each consumer (month energy may be empty)",
     {
-      tag: ["@consumption", "@last-three-months", "@smoke"],
+      tag: ["@consumption", "@last-three-months", "@smoke", "@positive"],
     },
     async ({ authenticatedApi }) => {
       const api = new PatternConsumptionApi(authenticatedApi);
+      const { page, limit, month, year, maxResponseTime, lastThreeMonthsType } =
+        patternConsumptionData;
+      const title =
+        "Last three months — first page lists each consumer (month energy may be empty)";
       const { rawResponse, responseBody, responseTime } =
         await api.getPatternConsumption(
-          patternConsumptionData.lastThreeMonthsType,
-          patternConsumptionData.page,
-          patternConsumptionData.limit,
-          patternConsumptionData.month,
-          patternConsumptionData.year,
+          lastThreeMonthsType,
+          page,
+          limit,
+          month,
+          year,
         );
       await PerformanceTracker.track(
         rawResponse,
-        "Pattern Consumption Last Three Months API",
+        title,
         rawResponse.url(),
         responseTime,
       );
-      if (
-        rawResponse.status() === 500 &&
-        isConsumptionInternalError(responseBody)
-      ) {
-        test.skip(
-          true,
-          "Backend GET /indore/consumption/pattern-consumption?patternType=lastThree returned 500 INTERNAL_ERROR after retries",
-        );
-        return;
-      }
+      skipIfConsumptionInternalError(
+        rawResponse.status(),
+        responseBody,
+        "/indore/consumption/pattern-consumption?patternType=lastThree",
+      );
       const assert = new AssertionEngine();
       const validation = new ValidationEngine();
       const mapped = PatternConsumptionMapper.map(responseBody);
       const validator = new PatternConsumptionValidator();
       const isOk = rawResponse.status() === 200;
-      validation.execute("Status Code", () =>
+      validation.execute("Status", () =>
         assert.validateStatusCode(rawResponse, 200, responseBody),
       );
       validation.execute("Content Type", () =>
         assert.validateContentType(rawResponse),
       );
       validation.execute("Response Time", () =>
-        assert.validateResponseTime(
-          responseTime,
-          patternConsumptionData.maxResponseTime,
-        ),
+        assert.validateResponseTime(responseTime, maxResponseTime),
       );
       validation.execute("Sensitive Data", () =>
         assert.validateSensitiveData(responseBody),
       );
+      validation.execute("Required Fields", () =>
+        assert.validateRequiredFields(responseBody, ["success"]),
+      );
       if (isOk) {
+        validation.execute("Data Present When 200", () =>
+          assert.validateRequiredFields(responseBody, ["data"]),
+        );
+        validation.execute("Zod Response Schema", () => {
+          const result = PatternLastThreeResponseSchema.safeParse(responseBody);
+          expect(
+            result.success,
+            result.success
+              ? "Zod validation passed"
+              : `Zod contract mismatch:\n${JSON.stringify(result.error.format(), null, 2)}`,
+          ).toBe(true);
+        });
+        validation.execute("Success", () =>
+          validator.validateSuccess(mapped.success),
+        );
         validation.execute("Table Validation", () =>
           validator.validateTable(mapped),
         );
-        validation.execute("Rows Validation", () =>
-          validator.validateRows(mapped.rows),
+        validation.execute("Last Three Title", () =>
+          validator.validateLastThreeTitle(mapped.title, month, year),
         );
+        validation.execute("Last Three Columns", () =>
+          validator.validateColumnKeys(mapped.columns, [
+            ...patternLastThreeColumnKeys,
+          ]),
+        );
+        validation.execute("Pagination Validation", () =>
+          validator.validatePagination(
+            mapped.pagination,
+            page,
+            limit,
+            mapped.rows.length,
+          ),
+        );
+        validation.execute("Rows Within Limit", () =>
+          validator.validateRowsWithinLimit(mapped.rows, limit),
+        );
+      }
+      if (isOk && mapped.rows.length > 0) {
         validation.execute("SLNO Validation", () =>
-          validator.validateSlNo(mapped.rows),
+          validator.validateSlNo(
+            mapped.rows,
+            mapped.pagination.page,
+            mapped.pagination.pageSize,
+          ),
         );
         validation.execute("Required Fields", () =>
           validator.validateRequiredFields(mapped.rows),
         );
+        validation.execute("Unique consumers", () =>
+          validator.validateUniqueConsumers(mapped.rows),
+        );
+        validation.execute("Shared feeder allowed", () =>
+          validator.validateSharedHierarchyAllowed(mapped.rows),
+        );
         validation.execute("Phase Validation", () =>
-          validator.validatePhase(
-            mapped.rows,
-            patternConsumptionData.allowedPhases,
-          ),
+          validator.validatePhase(mapped.rows),
+        );
+        validation.execute("Sanction Load Validation", () =>
+          validator.validateSanctionLoad(mapped.rows),
         );
         validation.execute("Last Three Months Validation", () =>
           validator.validateLastThreeMonths(mapped.rows),
@@ -86,10 +135,7 @@ test.describe("Pattern Consumption Last Three Months API", () => {
           validator.validateNoNaN(mapped.rows),
         );
       }
-      validation.printSummary(
-        "Pattern Consumption Last Three Months API",
-        responseTime,
-      );
+      validation.printSummary(title, responseTime);
     },
   );
 });

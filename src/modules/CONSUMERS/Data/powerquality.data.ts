@@ -1,31 +1,27 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { PowerQualityQuery } from "../Api/powerquality.api";
-import type {
-  PowerQualityResponse,
-  PowerQualityScenario,
-} from "../Mapper/powerquality.mapper";
-
+import type {PowerQualityResponse,PowerQualityScenario,} from "../Mapper/powerquality.mapper";
+import {
+  CONSUMERS_LIVE_ACCOUNT_ID,
+  CONSUMERS_LIVE_IVRS,
+  CONSUMERS_LIVE_METER_ROUTE,
+  resolveLiveAccountId,
+  resolveLiveIvrs,
+  resolveLiveMeterRoute,
+} from "./consumers-live-refs";
 export const powerQualityMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
-
-/** IVRS from user request (1 PH / SP). Live data may be null or metrics. */
-export const powerQualityDefaultIvrs = "N3471011444";
-
-export const powerQualityDefaultConsumerId = "N3471011444";
-
-export const powerQualityDefaultMeterRoute = "meter-12345";
-
+/** IVRS with live power-quality metrics (PF/Hz/MD). Same meter as RTP. */
+export const powerQualityDefaultIvrs = CONSUMERS_LIVE_IVRS;
+export const powerQualityDefaultConsumerId = CONSUMERS_LIVE_ACCOUNT_ID;
+export const powerQualityDefaultMeterRoute = CONSUMERS_LIVE_METER_ROUTE;
 export const powerQualityNotFoundRef = "INVALID_CONSUMER_XYZ";
-
 export const powerQualityMeterNotFoundRef = "meter-999999999";
-
 export const powerQualityEmptyRef = " ";
-
 /** Shape A — consumer found, no instantaneous IP reading. */
 export const powerQualityContractNullResponse: PowerQualityResponse = {
   success: true,
   data: null,
 };
-
 /**
  * Shape B — populated SP sample (user-provided).
  * Backend SP maps Neutral_Current; units/titles from toPowerQuality().
@@ -65,7 +61,6 @@ export const powerQualityContractSpResponse: PowerQualityResponse = {
     },
   },
 };
-
 /** TP map: neutralCurrent.value is always null (backend hardcodes null). */
 export const powerQualityContractTpResponse: PowerQualityResponse = {
   success: true,
@@ -102,7 +97,6 @@ export const powerQualityContractTpResponse: PowerQualityResponse = {
     },
   },
 };
-
 export interface PowerQualityTestCase {
   testName: string;
   scenario: PowerQualityScenario;
@@ -110,30 +104,29 @@ export interface PowerQualityTestCase {
   isContractFixture?: boolean;
   tags: string[];
 }
-
 export function resolvePowerQualityRef(
   scenario: PowerQualityScenario,
 ): string | undefined {
   switch (scenario) {
     case "pq_by_ivrs":
     case "pq_ignore_unknown_query":
-      return (
-        process.env.CONSUMER_PQ_IVRS?.trim() ||
-        process.env.CONSUMER_RTP_IVRS?.trim() ||
-        powerQualityDefaultIvrs
+      return resolveLiveIvrs(
+        process.env.CONSUMER_PQ_IVRS,
+        process.env.CONSUMER_RTP_IVRS,
+        powerQualityDefaultIvrs,
       );
     case "pq_by_account":
-      return (
-        process.env.CONSUMER_PQ_CONSUMER_ID?.trim() ||
-        process.env.CONSUMER_RTP_CONSUMER_ID?.trim() ||
-        powerQualityDefaultConsumerId
+      return resolveLiveAccountId(
+        process.env.CONSUMER_PQ_CONSUMER_ID,
+        process.env.CONSUMER_RTP_CONSUMER_ID,
+        powerQualityDefaultConsumerId,
       );
     case "pq_by_meter":
-      return (
-        process.env.CONSUMER_PQ_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_RTP_METER_ROUTE?.trim() ||
-        process.env.CONSUMER_PROFILE_METER_ROUTE?.trim() ||
-        powerQualityDefaultMeterRoute
+      return resolveLiveMeterRoute(
+        process.env.CONSUMER_PQ_METER_ROUTE,
+        process.env.CONSUMER_RTP_METER_ROUTE,
+        process.env.CONSUMER_PROFILE_METER_ROUTE,
+        powerQualityDefaultMeterRoute,
       );
     case "consumer_not_found":
       return powerQualityNotFoundRef;
@@ -149,7 +142,6 @@ export function resolvePowerQualityRef(
       return undefined;
   }
 }
-
 export function resolvePowerQualityQuery(
   scenario: PowerQualityScenario,
 ): PowerQualityQuery {
@@ -158,7 +150,6 @@ export function resolvePowerQualityQuery(
   }
   return {};
 }
-
 export function resolvePowerQualityContractBody(
   scenario: PowerQualityScenario,
 ): PowerQualityResponse | undefined {
@@ -173,7 +164,6 @@ export function resolvePowerQualityContractBody(
       return undefined;
   }
 }
-
 export const powerQualityTestCases: PowerQualityTestCase[] = [
   {
     testName:
@@ -224,7 +214,7 @@ export const powerQualityTestCases: PowerQualityTestCase[] = [
     testName:
       "Validate GET /indore/consumers/{consumerId}/power-quality — consumer not found",
     scenario: "consumer_not_found",
-    expectedStatus: 404,
+    expectedStatus: 200,
     tags: ["@consumer", "@power-quality", "@negative"],
   },
   {

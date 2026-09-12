@@ -4,7 +4,8 @@ import { isMisDashboardDbSqlReady } from "../Db/mis-dashboard.db";
 import { runMisDashboardDbCoverage } from "./mis-dashboard-db.harness";
 
 apiDbTest.describe("MIS-DASHBOARD — DB Coverage", () => {
-  apiDbTest.setTimeout(120_000);
+  apiDbTest.describe.configure({ retries: 1 });
+  apiDbTest.setTimeout(180_000);
 
   apiDbTest.beforeEach(() => {
     apiDbTest.skip(!isDbConfigured(), "DB credentials not configured");
@@ -15,7 +16,7 @@ apiDbTest.describe("MIS-DASHBOARD — DB Coverage", () => {
   });
 
   apiDbTest(
-    "IND-MIS-DB-001 — scaffold DB coverage",
+    "IND-MIS-DB-001 — comm-stats live cards ≤ unscoped meter universe",
     { tag: ["@mis-dashboard", "@db"] },
     async ({ authenticatedApi, db }) => {
       await runMisDashboardDbCoverage(authenticatedApi, db);

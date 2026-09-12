@@ -1,0 +1,222 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumption/pattern-consumption",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "table"
+  ],
+  "itemKeys": [
+    "address",
+    "aprKwh",
+    "aprMdKw",
+    "augKwh",
+    "augMdKw",
+    "circle",
+    "consumerConnectionTblRefId",
+    "decKwh",
+    "decMdKw",
+    "division",
+    "dtr",
+    "febKwh",
+    "febMdKw",
+    "feeder",
+    "initialKwh",
+    "ivrsNumber",
+    "janKwh",
+    "janMdKw",
+    "julKwh",
+    "julMdKw",
+    "junKwh",
+    "junMdKw",
+    "marKwh",
+    "marMdKw",
+    "mayKwh",
+    "mayMdKw",
+    "meterMake",
+    "msn",
+    "name",
+    "novKwh",
+    "novMdKw",
+    "octKwh",
+    "octMdKw",
+    "phase",
+    "sanctionLoadKw",
+    "sepKwh",
+    "sepMdKw",
+    "serviceDate",
+    "slNo",
+    "subStation",
+    "tariff",
+    "zone"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "slNo",
+      "header": "S No."
+    },
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "subStation",
+      "header": "SubStation"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtr",
+      "header": "DTR"
+    },
+    {
+      "key": "name",
+      "header": "Consumer Name"
+    },
+    {
+      "key": "address",
+      "header": "Address"
+    },
+    {
+      "key": "ivrsNumber",
+      "header": "IVRS NO"
+    },
+    {
+      "key": "tariff",
+      "header": "Tariff"
+    },
+    {
+      "key": "msn",
+      "header": "Meter_Serial_Number"
+    },
+    {
+      "key": "meterMake",
+      "header": "Meter Make"
+    },
+    {
+      "key": "phase",
+      "header": "MeterPhase_Name"
+    },
+    {
+      "key": "serviceDate",
+      "header": "ServiceDate"
+    },
+    {
+      "key": "sanctionLoadKw",
+      "header": "SL KW"
+    },
+    {
+      "key": "janKwh",
+      "header": "kWh_JAN"
+    },
+    {
+      "key": "janMdKw",
+      "header": "MD_JAN"
+    },
+    {
+      "key": "febKwh",
+      "header": "kWh_FEB"
+    },
+    {
+      "key": "febMdKw",
+      "header": "MD_FEB"
+    },
+    {
+      "key": "marKwh",
+      "header": "kWh_MAR"
+    },
+    {
+      "key": "marMdKw",
+      "header": "MD_MAR"
+    },
+    {
+      "key": "aprKwh",
+      "header": "kWh_APR"
+    },
+    {
+      "key": "aprMdKw",
+      "header": "MD_APR"
+    },
+    {
+      "key": "mayKwh",
+      "header": "kWh_MAY"
+    },
+    {
+      "key": "mayMdKw",
+      "header": "MD_MAY"
+    },
+    {
+      "key": "junKwh",
+      "header": "kWh_JUN"
+    },
+    {
+      "key": "junMdKw",
+      "header": "MD_JUN"
+    },
+    {
+      "key": "julKwh",
+      "header": "kWh_JUL"
+    },
+    {
+      "key": "julMdKw",
+      "header": "MD_JUL"
+    },
+    {
+      "key": "augKwh",
+      "header": "kWh_AUG"
+    },
+    {
+      "key": "augMdKw",
+      "header": "MD_AUG"
+    },
+    {
+      "key": "sepKwh",
+      "header": "kWh_SEP"
+    },
+    {
+      "key": "sepMdKw",
+      "header": "MD_SEP"
+    },
+    {
+      "key": "octKwh",
+      "header": "kWh_OCT"
+    },
+    {
+      "key": "octMdKw",
+      "header": "MD_OCT"
+    },
+    {
+      "key": "novKwh",
+      "header": "kWh_NOV"
+    },
+    {
+      "key": "novMdKw",
+      "header": "MD_NOV"
+    },
+    {
+      "key": "decKwh",
+      "header": "kWh_DEC"
+    },
+    {
+      "key": "decMdKw",
+      "header": "MD_DEC"
+    },
+    {
+      "key": "initialKwh",
+      "header": "Intial kWh"
+    }
+  ]
+}

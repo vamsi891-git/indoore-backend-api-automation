@@ -40,6 +40,7 @@ export type BulkUploadConsumersScenario =
   | "bulk_success"
   | "bulk_success_multi"
   | "bulk_success_blank_row"
+  | "bulk_success_manual_sample"
   | "file_invalid_type"
   | "file_missing_columns"
   | "file_no_data_rows"

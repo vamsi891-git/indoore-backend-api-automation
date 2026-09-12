@@ -1,33 +1,33 @@
-import { APIRequestContext, APIResponse} from "@playwright/test";
+import { APIRequestContext, APIResponse } from "@playwright/test";
 import { getBillingWithRetry } from "../utils/billing-request.helper";
-import { DaywiseBillingResponse} from "../Mapper/daywisebilling.mapper";
+import { DaywiseBillingResponse } from "../Mapper/daywisebilling.mapper";
+import type { DaywiseBillingQueryParams } from "../Data/daywisebilling.data";
+
 export interface DaywiseBillingApiResponse {
-    rawResponse: APIResponse;
-    responseBody: DaywiseBillingResponse;
-    responseTime: number;
+  rawResponse: APIResponse;
+  responseBody: DaywiseBillingResponse;
+  responseTime: number;
 }
+
 export class DaywiseBillingApi {
-    constructor(private authenticatedApi: APIRequestContext) {}
-    async getDaywiseBillingData(
-        month: number,
-        year: number,
-        includeTotal: boolean,
-        page: number,
-        limit: number
-    ): Promise<DaywiseBillingApiResponse> {
-        const { response: rawResponse, responseTime } = await getBillingWithRetry(
-            this.authenticatedApi,
-            `/indore/billing/daywise-billing-data?month=${month}&year=${year}&includeTotal=${includeTotal}&page=${page}&limit=${limit}`,
-        );
-        const responseBody = await rawResponse.json();
+  constructor(private authenticatedApi: APIRequestContext) {}
 
-        return {
-            rawResponse,
-            responseBody,
-            responseTime
-
-        };
-
+  async getDaywiseBillingData(
+    query: DaywiseBillingQueryParams = {},
+  ): Promise<DaywiseBillingApiResponse> {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined) {
+        params.set(key, String(value));
+      }
     }
-
+    const suffix = params.toString();
+    const path = `/indore/billing/daywise-billing-data${suffix ? `?${suffix}` : ""}`;
+    const { response: rawResponse, responseTime } = await getBillingWithRetry(
+      this.authenticatedApi,
+      path,
+    );
+    const responseBody = await rawResponse.json();
+    return { rawResponse, responseBody, responseTime };
+  }
 }

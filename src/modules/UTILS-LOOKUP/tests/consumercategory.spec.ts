@@ -41,7 +41,7 @@ function validateConsumerCategory(
 }
 
 registerCatalogLookupTests({
-  describeTitle: "Consumer Category API",
+  describeTitle: "Consumer categories",
   testCases: consumerCategoryTestCases,
   fetch: (api) => new ConsumerCategoryApi(api).getConsumerCategories(),
   validate: validateConsumerCategory,

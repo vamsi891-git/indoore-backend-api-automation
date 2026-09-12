@@ -7,8 +7,9 @@ import { EventReportApi } from "../Api/eventreport.api";
 import {eventReportMaxResponseTimeMs,eventReportTestCases,resolveEventReportContractBody,resolveEventReportQuery,} from "../Data/eventreport.data";
 import {EventReportMapper,type EventReportErrorBody,} from "../Mapper/eventreport.mapper";
 import { EventReportValidator } from "../Validator/eventreport.validator";
-test.describe("Event Report API", () => {
-    test.describe.configure({ retries: 1 });
+import { skipIfReportsInternalError } from "../utils/reports-env.helper";
+test.describe("Event report", () => {
+    test.describe.configure({ retries: 0 });
     test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
     for (const testCase of eventReportTestCases) {
         test(
@@ -59,6 +60,13 @@ test.describe("Event Report API", () => {
         rawResponse.url(),
         responseTime
       );
+                if (expectedStatus === 200) {
+                    skipIfReportsInternalError(
+                        rawResponse.status(),
+                        responseBody,
+                        "/indore/reports/event-report",
+                    );
+                }
                 validation.execute("Status Validation", () =>
                     assert.validateStatusCode(rawResponse,expectedStatus,responseBody,),
                 );
@@ -84,6 +92,25 @@ test.describe("Event Report API", () => {
                     assert.validateRequiredFields(responseBody, ["success","data",]),
                 );
                 const mapped = EventReportMapper.map(responseBody);
+                if (
+                    testCase.scenario === "dev_live_primary" ||
+                    testCase.scenario === "dev_live_page2"
+                ) {
+                    console.info(
+                        JSON.stringify(
+                            {
+                                msg: "event_report_live_response",
+                                query,
+                                pagination: mapped.pagination,
+                                columnKeys: mapped.columns.map((c) => c.key),
+                                rowCount: mapped.rows.length,
+                                sampleRow: mapped.rows[0] ?? null,
+                            },
+                            null,
+                            2,
+                        ),
+                    );
+                }
                 validation.execute("Response Envelope", () =>
                     validator.validateResponseEnvelope(responseBody),
                 );

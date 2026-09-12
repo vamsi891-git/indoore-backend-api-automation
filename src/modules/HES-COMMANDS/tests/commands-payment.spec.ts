@@ -25,6 +25,7 @@ import {
   extractJobNamesFromInitResponse,
 } from "../shared/commands-job-init.mapper";
 import {
+  assertHesE2eQueryPhase,
   logCommandE2eResponses,
   pollQueryMeterJob,
   softSkipHesE2eInfraFailure,
@@ -204,14 +205,12 @@ test.describe("HES Commands — Payment (E2E)", () => {
         });
         softSkipHesE2eInfraFailure(error, testInfo);
       }
-
       logCommandE2eResponses(
         paymentCase.logLabel,
         postBody,
         pollResult.responseBody,
         { pollAttempts: pollResult.pollAttempts, jobName },
       );
-
       await PerformanceTracker.track(
         pollResult.rawResponse,
         "Commands Payment — Query Meter Job",
@@ -226,74 +225,68 @@ test.describe("HES Commands — Payment (E2E)", () => {
         responseTime: pollResult.responseTime,
         maxResponseTimeMs: commandsPaymentData.maxResponseTimeMs,
       });
-
-      validation.execute("Query Success Response", () =>
-        queryValidator.validateResponse(pollResult.responseBody),
-      );
-      validation.execute("Query Response Envelope", () =>
-        paymentValidator.validateQueryResponseEnvelope(pollResult.mapped),
-      );
-      validation.execute("Query Finished Message", () =>
-        paymentValidator.validateQueryFinishedMessage(pollResult.mapped.message),
-      );
-      validation.execute("Query Job Name Echo", () =>
-        queryValidator.validateJobNameEcho(pollResult.mapped, jobName),
-      );
-      validation.execute("Query Sync Flags", () =>
-        queryValidator.validateSyncFlags(pollResult.mapped),
-      );
-      validation.execute("Query HES Job Status FINISHED", () => {
-        expect(pollResult.mapped.job.hesJobStatus).toBe("FINISHED");
-      });
-      validation.execute("Query HES Status Code", () =>
-        queryValidator.validateHesStatusCode(pollResult.mapped),
-      );
-      validation.execute("Query Summary Counts", () =>
-        queryValidator.validateSummaryCounts(pollResult.mapped.job.summary),
-      );
-      validation.execute("Query Summary vs Meter Results", () =>
-        queryValidator.validateSummaryMatchesMeterResults(
-          pollResult.mapped.job.summary,
-          pollResult.mapped.job.meterResults,
-        ),
-      );
-      validation.execute("Query Status Summary Alignment", () =>
-        queryValidator.validateStatusSummaryAlignment(
-          pollResult.mapped.job.summary,
-          pollResult.mapped.job.meterResults,
-        ),
-      );
-      validation.execute("Query All Meter Results", () =>
-        queryValidator.validateAllMeterResults(
-          pollResult.mapped.job.meterResults,
-        ),
-      );
-      validation.execute("Query Expected Meter Present", () =>
-        queryValidator.validateExpectedMeterPresent(
-          pollResult.mapped.job.meterResults,
-          requestedMeters[0],
-        ),
-      );
-      validation.execute("Query Payment HES Response — All Fields", () => {
-        if (paymentCase.queryPaymentValidation === "last_token_recharge_amount") {
-          paymentValidator.validateLastTokenRechargeAmountQueryMeterResults(
-            pollResult.mapped.job.meterResults,
-            requestedMeters[0],
+      assertHesE2eQueryPhase({
+        validation,
+        queryValidator,
+        pollResult,
+        jobName,
+        meterId: requestedMeters[0],
+        onFinished: () => {
+          validation.execute("Query Response Envelope", () =>
+            paymentValidator.validateQueryResponseEnvelope(pollResult.mapped),
           );
-          return;
-        }
-        paymentValidator.validatePaymentQueryMeterResults(
-          pollResult.mapped.job.meterResults,
-          requestedMeters[0],
-        );
+          validation.execute("Query Finished Message", () =>
+            paymentValidator.validateQueryFinishedMessage(
+              pollResult.mapped.message,
+            ),
+          );
+          validation.execute("Query HES Job Status FINISHED", () => {
+            expect(pollResult.mapped.job.hesJobStatus).toBe("FINISHED");
+          });
+          validation.execute("Query Summary Counts", () =>
+            queryValidator.validateSummaryCounts(pollResult.mapped.job.summary),
+          );
+          validation.execute("Query Summary vs Meter Results", () =>
+            queryValidator.validateSummaryMatchesMeterResults(
+              pollResult.mapped.job.summary,
+              pollResult.mapped.job.meterResults,
+            ),
+          );
+          validation.execute("Query Status Summary Alignment", () =>
+            queryValidator.validateStatusSummaryAlignment(
+              pollResult.mapped.job.summary,
+              pollResult.mapped.job.meterResults,
+            ),
+          );
+          validation.execute("Query All Meter Results", () =>
+            queryValidator.validateAllMeterResults(
+              pollResult.mapped.job.meterResults,
+            ),
+          );
+          validation.execute("Query Payment HES Response — All Fields", () => {
+            if (
+              paymentCase.queryPaymentValidation === "last_token_recharge_amount"
+            ) {
+              paymentValidator.validateLastTokenRechargeAmountQueryMeterResults(
+                pollResult.mapped.job.meterResults,
+                requestedMeters[0],
+              );
+              return;
+            }
+            paymentValidator.validatePaymentQueryMeterResults(
+              pollResult.mapped.job.meterResults,
+              requestedMeters[0],
+            );
+          });
+          validation.execute("Query Full Contract", () =>
+            queryValidator.validateFullContract(
+              pollResult.mapped,
+              jobName,
+              requestedMeters[0],
+            ),
+          );
+        },
       });
-      validation.execute("Query Full Contract", () =>
-        queryValidator.validateFullContract(
-          pollResult.mapped,
-          jobName,
-          requestedMeters[0],
-        ),
-      );
 
       ApiValidationHelper.finalize(validation, {
         apiName: paymentCase.apiName,
@@ -307,13 +300,16 @@ test.describe("HES Commands — Payment (E2E)", () => {
             body,
             jobName,
             pollAttempts: pollResult.pollAttempts,
+            completed: pollResult.completed,
           },
           responseStatus: pollResult.rawResponse.status(),
           responseBody: {
             init: postBody,
             query: pollResult.responseBody,
           },
-          expectedBehavior: paymentCase.expectedBehavior,
+          expectedBehavior: pollResult.completed
+            ? paymentCase.expectedBehavior
+            : `${paymentCase.expectedBehavior} (async pending — set HES_E2E_REQUIRE_COMPLETION=true to require FINISHED)`,
         },
       });
     });

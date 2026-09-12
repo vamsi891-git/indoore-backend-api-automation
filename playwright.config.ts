@@ -4,24 +4,51 @@ import { DEFAULT_TEST_TIMEOUT_MS } from "./src/core/constants/api-timeouts";
 
 dotenv.config();
 
-const playwrightWorkers = Number(process.env.PLAYWRIGHT_WORKERS ?? "1");
-const resolvedWorkers =
-  Number.isFinite(playwrightWorkers) && playwrightWorkers > 0
-    ? playwrightWorkers
-    : 1;
+/**
+ * Write tests (POST/PUT/PATCH/delete) are off for now.
+ * To turn one back on: delete its line here AND change `test.describe.skip`
+ * to `test.describe` in that spec file.
+ */
+const skippedWriteSpecs = [
+  "**/create-consumer.spec.ts",
+  "**/create-dtr.spec.ts",
+  "**/create-meter.spec.ts",
+  "**/update-meter.spec.ts",
+  "**/deactivate-meter.spec.ts",
+  "**/bulk-upload-consumers.spec.ts",
+  "**/bulk-upload-dtr.spec.ts",
+  "**/bulk-upload-meters.spec.ts",
+  "**/meter-consumer-e2e.spec.ts",
+  "**/meter-dtr-e2e.spec.ts",
+  "**/meter-dtr-consumer-e2e.spec.ts",
+  "**/meter-crud-lifecycle.spec.ts",
+  "**/create-submission-e2e.spec.ts",
+  "**/create-submission-negative.spec.ts",
+  "**/rolepermission.spec.ts",
+  "**/rolepermission-advanced.spec.ts",
+  "**/rolepermission-negative.spec.ts",
+  "**/00-invite-setup.spec.ts",
+  "**/10-invite-preview.spec.ts",
+  "**/11-invite-validate.spec.ts",
+  "**/15-invite-user.spec.ts",
+  "**/90-invite-accept-validate.spec.ts",
+  "**/91-invite-e2e.spec.ts",
+  "**/92-invite-delete.spec.ts",
+  "**/invite-accept.spec.ts",
+];
 
-/** Mutation-proof specs intentionally break fixtures; exclude unless opted in. */
-const includeMutationProof =
+const runMutationProof =
   process.env.INCLUDE_MUTATION_PROOF?.trim().toLowerCase() === "true";
 
 export default defineConfig({
   globalSetup: require.resolve("./src/global.setup.ts"),
   testDir: "./src",
-  fullyParallel: true,
-  workers: resolvedWorkers,
+  testIgnore: skippedWriteSpecs,
+  fullyParallel: false,
+  workers: 1,
   timeout: DEFAULT_TEST_TIMEOUT_MS,
   retries: 1,
-  grepInvert: includeMutationProof ? undefined : /@mutation-proof/,
+  grepInvert: runMutationProof ? /@mutation-proof-oneoff/ : /@mutation-proof/,
   reporter: [
     ["list"],
     ["html", { outputFolder: "playwright-report", open: "never" }],

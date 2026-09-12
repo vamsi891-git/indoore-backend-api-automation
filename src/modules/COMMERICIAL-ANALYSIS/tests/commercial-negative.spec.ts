@@ -8,7 +8,7 @@ import {
 } from "../Validator/commercial-common.validator";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 
-test.describe("Commercial Analysis API — Negative", () => {
+test.describe("Commercial Analysis — invalid filters are rejected", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(180_000);
 

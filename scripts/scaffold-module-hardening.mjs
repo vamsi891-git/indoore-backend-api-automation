@@ -1,6 +1,14 @@
 /**
- * Scaffold contract / mutation / DB hardening stubs for a module.
+ * Scaffold contract / mutation / DB hardening *stubs* for a module.
+ *
  * Usage: node scripts/scaffold-module-hardening.mjs <MODULE_DIR_NAME> <slug> <TAG>
+ *
+ * IMPORTANT — scaffold ≠ real validation:
+ * - DB harness/SQL output is intentionally empty / gated (`*_DB_SQL_READY` default off).
+ * - Do NOT treat generated harnesses as API↔DB coverage. They will pass without checking data.
+ * - After scaffolding: paste real backend repository SQL by hand, then implement count +
+ *   field spot-checks (Billing / Cases / Auth pattern) before flipping `*_DB_SQL_READY=true`.
+ * - Prefer this tool only for initial empty structure on a new module — if at all.
  */
 import fs from "fs";
 import path from "path";

@@ -17,7 +17,7 @@ import {
 } from "../Mapper/dtrsummary.mapper";
 import { DtrSummaryValidator } from "../Validator/dtrsummary.validator";
 
-test.describe("DTR Summary API", () => {
+test.describe("Dashboard — DTR summary cards", () => {
     test.describe.configure({ retries: 1 });
     test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

@@ -1,13 +1,22 @@
 {
-  "success": true,
-  "data": {
-    "dtrCode": "",
-    "dtrName": "LASUDIYA NAKA",
-    "dtrMeter": null,
-    "consumers": [],
-    "total": 0,
-    "page": 1,
-    "limit": 20,
-    "totalPages": 0
-  }
+  "httpMethod": "GET",
+  "pathPattern": "/indore/asset-management/dtr/2339",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "consumers",
+    "dtrCode",
+    "dtrMeter",
+    "dtrName",
+    "limit",
+    "page",
+    "total",
+    "totalPages"
+  ],
+  "itemKeys": [
+    "consumers"
+  ],
+  "hasColumnsGrid": false
 }

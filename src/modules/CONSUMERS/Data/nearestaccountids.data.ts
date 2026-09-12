@@ -1,15 +1,11 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { NearestAccountIdsScenario } from "../Mapper/nearestaccountids.mapper";
 import type { NearestAccountIdsQuery } from "../Api/nearestaccountids.api";
-
 export const nearestAccountIdsMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
-
-export const nearestAccountIdsDefaultAccountId = "8787878787";
-
+/** Live account with geo neighbors (override via NEAREST_ACCOUNT_IDS_ACCOUNT_ID). */
+export const nearestAccountIdsDefaultAccountId = "N3374018980";
 export const nearestAccountIdsNoNumericAccountId = "ABC_NO_DIGITS";
-
 export const nearestAccountIdsPrefixedAccountId = "N8787878787";
-
 export interface NearestAccountIdsTestCase {
   testName: string;
   scenario: NearestAccountIdsScenario;
@@ -17,7 +13,6 @@ export interface NearestAccountIdsTestCase {
   query?: NearestAccountIdsQuery;
   tags: string[];
 }
-
 export function resolveNearestAccountIdsQuery(
   scenario: NearestAccountIdsScenario,
 ): NearestAccountIdsQuery | undefined {
@@ -69,7 +64,6 @@ export function resolveNearestAccountIdsQuery(
       return undefined;
   }
 }
-
 export const nearestAccountIdsTestCases: NearestAccountIdsTestCase[] = [
   {
     testName:

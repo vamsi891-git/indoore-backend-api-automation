@@ -230,80 +230,73 @@ export const dtrEventsData = {
 export const dtrEventsTestCases: DtrEventsTestCase[] = [
     {
         testName:
-            "Validate GET /indore/dtr/{code}/events — primary DTR (10IW27) page 1",
+            "DTR events — first page of alarms, each row number only once",
         scenario: "dev_by_code_primary",
         tags: ["@smoke", "@dtr", "@dtr-events"],
     },
     {
-        testName: "Validate GET /indore/dtr/{code}/events — alternate DTR code",
+        testName: "DTR events — a second transformer still shows events",
         scenario: "dev_by_code_alt",
         tags: ["@dtr", "@dtr-events", "@edge"],
     },
     {
-        testName: "Validate GET /indore/dtr/{code}/events — page 2 pagination",
+        testName: "DTR events — page two of the list",
         scenario: "dev_page_two",
         tags: ["@dtr", "@dtr-events", "@edge"],
     },
     {
-        testName: "Validate GET /indore/dtr/{code}/events — custom limit=5",
+        testName: "DTR events — show five events at a time",
         scenario: "dev_custom_limit",
         tags: ["@dtr", "@dtr-events", "@edge"],
     },
     {
         testName:
-            "Validate GET /indore/dtr/{code}/events — unknown query params ignored",
+            "DTR events — extra filters that nobody uses are ignored",
         scenario: "dev_ignore_unknown_query",
         tags: ["@dtr", "@dtr-events", "@edge"],
     },
     {
-        testName:
-            "Validate GET /indore/dtr/{code}/events — optional search query (q)",
+        testName: "DTR events — search box text is accepted",
         scenario: "dev_with_search_query",
         tags: ["@dtr", "@dtr-events", "@edge"],
     },
     {
-        testName:
-            "Contract — empty rows when no archive events (10IW27 live shape)",
+        testName: "Sample events — none yet is allowed",
         scenario: "contract_empty_page",
         isContractFixture: true,
         tags: ["@dtr", "@dtr-events", "@edge"],
     },
     {
-        testName:
-            "Contract — Resolved row with duration and restoredDateTime",
+        testName: "Sample events — resolved alarm with restore time",
         scenario: "contract_resolved_row",
         isContractFixture: true,
         tags: ["@dtr", "@dtr-events", "@edge"],
     },
     {
-        testName:
-            "Contract — Pending row when durationSeconds is null",
+        testName: "Sample events — pending alarm without restore time",
         scenario: "contract_pending_row",
         isContractFixture: true,
         tags: ["@dtr", "@dtr-events", "@edge"],
     },
     {
-        testName:
-            "Contract — page 2 serialNo offset (offset + idx + 1)",
+        testName: "Sample events — page two numbering continues from page one",
         scenario: "contract_pagination_page_two",
         isContractFixture: true,
         tags: ["@dtr", "@dtr-events", "@edge"],
     },
     {
-        testName: "Validate GET /indore/dtr/{code}/events — DTR not found",
+        testName: "DTR events — unknown transformer is not shown",
         scenario: "dtr_not_found",
         tags: ["@dtr", "@dtr-events", "@negative"],
     },
     {
-        testName:
-            "Validate GET /indore/dtr/{code}/events — blank DTR code rejected",
+        testName: "DTR events — a blank transformer code is not allowed",
         scenario: "empty_dtr_code",
         expectedStatus: 400,
         tags: ["@dtr", "@dtr-events", "@negative"],
     },
     {
-        testName:
-            "Validate GET /indore/dtr/{code}/events — invalid page rejected",
+        testName: "DTR events — page zero is not allowed",
         scenario: "invalid_page",
         expectedStatus: 400,
         tags: ["@dtr", "@dtr-events", "@negative"],

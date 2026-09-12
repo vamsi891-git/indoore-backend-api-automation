@@ -31,11 +31,45 @@ export class TechnicalSummaryValidator {
         expectedTypes: readonly string[],
     ): void {
         const actualTypes = reports.map((report) => report.analysisType);
-        for (const expectedType of expectedTypes) {
-            expect(actualTypes, `Missing analysis type: ${expectedType}`).toContain(
-                expectedType,
-            );
+        expect(actualTypes).toEqual([...expectedTypes]);
+    }
+    validateReportCount(reports: unknown[], expectedCount: number): void {
+        expect(reports.length).toBe(expectedCount);
+    }
+    validateReportName(
+        report: { analysisType: string; reportName: string },
+        expectedNames: Record<string, string>,
+    ): void {
+        const expected = expectedNames[report.analysisType];
+        if (!expected) {
+            return;
         }
+        expect(report.reportName).toBe(expected);
+    }
+    validateDomesticNonDomesticSplit(report: {
+        totalCount: number;
+        domesticCount: number;
+        nonDomesticCount: number;
+    }): void {
+        expect(report.domesticCount + report.nonDomesticCount).toBeLessThanOrEqual(
+            report.totalCount,
+        );
+    }
+    validateLiveDataPresence(
+        report: { analysisType: string; totalCount: number },
+        hasData: boolean,
+    ): void {
+        if (hasData) {
+            expect(
+                report.totalCount,
+                `${report.analysisType} should have meters`,
+            ).toBeGreaterThan(0);
+            return;
+        }
+        expect(
+            report.totalCount,
+            `${report.analysisType} should be empty`,
+        ).toBe(0);
     }
     validateMonth(month: number): void {
         expect(month).toBeGreaterThanOrEqual(1);

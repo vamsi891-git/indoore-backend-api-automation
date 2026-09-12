@@ -16,11 +16,12 @@ export {
     dtrUnbalanceAccessTokenInvalidMessage as dtrVoltageUnbalanceAccessTokenInvalidMessage,
 } from "./dtr-unbalance-auth.data";
 
-/** Live sample from GET /indore/dashboard/dtr/voltage-unbalance (13 Jul 2026). */
+/** Live sample from GET /dashboard/dtr/voltage-unbalance (all-zero fleet). */
 export const dtrVoltageUnbalanceContractAllZeroResponse: DtrVoltageUnbalanceResponse =
     {
         success: true,
         data: {
+            total: 0,
             items: [
                 { label: "Severe", value: 0, percentage: 0 },
                 { label: "Moderate", value: 0, percentage: 0 },
@@ -35,10 +36,26 @@ export const dtrVoltageUnbalanceContractMixedResponse: DtrVoltageUnbalanceRespon
     {
         success: true,
         data: {
+            total: 100,
             items: [
                 { label: "Severe", value: 10, percentage: 10 },
                 { label: "Moderate", value: 30, percentage: 30 },
                 { label: "Balanced", value: 60, percentage: 60 },
+            ],
+        },
+        message: dtrVoltageUnbalanceSuccessMessage,
+    };
+
+/** OpenAPI example — Voltage unbalance donut distribution. */
+export const dtrVoltageUnbalanceContractOpenApiSampleResponse: DtrVoltageUnbalanceResponse =
+    {
+        success: true,
+        data: {
+            total: 341,
+            items: [
+                { label: "Severe", value: 8, percentage: 2.4 },
+                { label: "Moderate", value: 38, percentage: 11.2 },
+                { label: "Balanced", value: 295, percentage: 86.4 },
             ],
         },
         message: dtrVoltageUnbalanceSuccessMessage,
@@ -49,6 +66,7 @@ export const dtrVoltageUnbalanceContractAllBalancedResponse: DtrVoltageUnbalance
     {
         success: true,
         data: {
+            total: 100,
             items: [
                 { label: "Severe", value: 0, percentage: 0 },
                 { label: "Moderate", value: 0, percentage: 0 },
@@ -63,6 +81,7 @@ export const dtrVoltageUnbalanceContractAllSevereResponse: DtrVoltageUnbalanceRe
     {
         success: true,
         data: {
+            total: 50,
             items: [
                 { label: "Severe", value: 50, percentage: 100 },
                 { label: "Moderate", value: 0, percentage: 0 },
@@ -77,6 +96,7 @@ export const dtrVoltageUnbalanceContractPercentageConsistencyResponse: DtrVoltag
     {
         success: true,
         data: {
+            total: 3,
             items: [
                 { label: "Severe", value: 1, percentage: 33.33 },
                 { label: "Moderate", value: 1, percentage: 33.33 },
@@ -113,6 +133,8 @@ export function resolveDtrVoltageUnbalanceContractBody(
             return dtrVoltageUnbalanceContractAllZeroResponse;
         case "contract_mixed_distribution":
             return dtrVoltageUnbalanceContractMixedResponse;
+        case "contract_openapi_sample":
+            return dtrVoltageUnbalanceContractOpenApiSampleResponse;
         case "contract_all_balanced":
             return dtrVoltageUnbalanceContractAllBalancedResponse;
         case "contract_all_severe":
@@ -126,44 +148,47 @@ export function resolveDtrVoltageUnbalanceContractBody(
 
 export const dtrVoltageUnbalanceTestCases: DtrVoltageUnbalanceTestCase[] = [
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/voltage-unbalance — live distribution",
+        testName: "DTR voltage unbalance — chart opens with Severe / Moderate / Balanced counts",
         scenario: "dev_live_primary",
         tags: ["@smoke", "@dashboard", "@dtr-voltage-unbalance"],
     },
     {
-        testName:
-            "Validate GET /indore/dashboard/dtr/voltage-unbalance — unknown query params ignored",
+        testName: "DTR voltage unbalance — extra unused filters are ignored",
         scenario: "dev_ignore_unknown_query",
         tags: ["@dashboard", "@dtr-voltage-unbalance", "@edge"],
     },
     {
-        testName:
-            "Contract — all-zero Severe/Moderate/Balanced distribution (13 Jul 2026)",
+        testName: "Saved example — all-zero Severe/Moderate/Balanced distribution",
         scenario: "contract_all_zero",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-voltage-unbalance", "@edge"],
     },
     {
-        testName: "Contract — mixed Severe/Moderate/Balanced distribution",
+        testName: "Saved example — mixed Severe/Moderate/Balanced distribution",
         scenario: "contract_mixed_distribution",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-voltage-unbalance", "@edge"],
     },
     {
-        testName: "Contract — all DTRs Balanced",
+        testName: "Saved example — OpenAPI sample (total 341)",
+        scenario: "contract_openapi_sample",
+        isContractFixture: true,
+        tags: ["@dashboard", "@dtr-voltage-unbalance", "@edge"],
+    },
+    {
+        testName: "Saved example — all DTRs Balanced",
         scenario: "contract_all_balanced",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-voltage-unbalance", "@edge"],
     },
     {
-        testName: "Contract — all DTRs Severe",
+        testName: "Saved example — all DTRs Severe",
         scenario: "contract_all_severe",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-voltage-unbalance", "@edge"],
     },
     {
-        testName: "Contract — percentage consistency with rounding",
+        testName: "Saved example — percentage consistency with rounding",
         scenario: "contract_percentage_consistency",
         isContractFixture: true,
         tags: ["@dashboard", "@dtr-voltage-unbalance", "@edge"],

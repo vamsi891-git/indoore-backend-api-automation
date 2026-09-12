@@ -20,7 +20,8 @@ import { assertNegativeMasterDataHttpStatus } from "../utils/master-data-negativ
 
 const SUCCESS_SCENARIOS = new Set(["success", "success_toggle_inactive"]);
 
-test.describe("Update Meter API", () => {
+// SKIPPED: PUT / update meter scenarios are commented out (mutating).
+test.describe.skip("Master data — update meter", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

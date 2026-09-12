@@ -1,24 +1,36 @@
 {
   "httpMethod": "GET",
-  "pathPattern": "/indore/dashboard/metrics",
+  "pathPattern": "/indore/dashboard/overall-metrics",
   "successEnvelopeKeys": [
     "data",
     "success"
   ],
   "dataKeys": [
-    "categoryWiseConsumer",
-    "connectionStatus",
-    "consumerType",
-    "networkDetails",
-    "oemWiseConsumer",
-    "phaseWiseConsumer",
-    "timestamp"
+    "atrAmountChart",
+    "avgImprovement",
+    "benefitsAtrCasesDonut",
+    "benefitsAtrCasesPeriod",
+    "billingAvailability",
+    "billingEfficiency",
+    "billingEfficiencyChart",
+    "billingEfficiencyDonut",
+    "defaultLineData",
+    "disconnectionData",
+    "disconnectionSummary",
+    "expectedRoi",
+    "incentivePf",
+    "installationSummary",
+    "lineChartData",
+    "loadEnhanced",
+    "penaltyPf",
+    "revenueGainedRpu",
+    "subsidySave",
+    "totalImprovement"
   ],
   "itemKeys": [
-    "consumers",
-    "dtrs",
-    "feeders",
-    "substations"
+    "label",
+    "percent",
+    "value"
   ],
   "hasColumnsGrid": false
 }

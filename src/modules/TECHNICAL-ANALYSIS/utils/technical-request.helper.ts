@@ -6,6 +6,12 @@ const TECHNICAL_RETRY_STATUSES = new Set([500, 502, 503, 504]);
 const TECHNICAL_MAX_ATTEMPTS = 5;
 const TECHNICAL_RETRY_DELAY_MS = 5_000;
 
+export interface TechnicalReportRequestOptions {
+  params?: Record<string, string | number | boolean>;
+  requestTimeoutMs?: number;
+  timeout?: number;
+}
+
 export interface TechnicalRequestResult {
   response: APIResponse;
   responseTime: number;
@@ -19,16 +25,18 @@ async function sleep(ms: number): Promise<void> {
 export async function getTechnicalReportWithRetry(
   request: APIRequestContext,
   url: string,
-  options?: Parameters<typeof getWithAutoRefresh>[2],
+  options?: TechnicalReportRequestOptions,
 ): Promise<TechnicalRequestResult> {
+  const { requestTimeoutMs, ...requestOptions } = options ?? {};
+  const timeout = requestTimeoutMs ?? TECHNICAL_ANALYSIS_REQUEST_TIMEOUT_MS;
   let lastResponse: APIResponse | undefined;
   let lastAttemptTime = 0;
 
   for (let attempt = 1; attempt <= TECHNICAL_MAX_ATTEMPTS; attempt++) {
     const attemptStart = Date.now();
     const response = await getWithAutoRefresh(request, url, {
-      timeout: TECHNICAL_ANALYSIS_REQUEST_TIMEOUT_MS,
-      ...options,
+      timeout,
+      ...requestOptions,
     });
     lastAttemptTime = Date.now() - attemptStart;
     lastResponse = response;

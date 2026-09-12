@@ -24,15 +24,16 @@ export const dtrProfileExpectedTitles = [
   "Zone",
   "Sub Station",
   "Feeder",
-  "Capacity",
   "Meter SL No",
+  "Meter Phase",
   "MF",
+  "Capacity",
   "Permanent Address",
   "Latitude",
   "Longitude",
 ] as const;
 
-export const dtrProfileFieldCount = 13;
+export const dtrProfileFieldCount = 14;
 
 export const dtrProfileMaxActivities = 5;
 
@@ -52,9 +53,10 @@ export const dtrProfileContractLive11Iw3Response: DtrProfileResponse = {
       { title: "Zone", value: "GPH" },
       { title: "Sub Station", value: "Citi Control Room" },
       { title: "Feeder", value: "SHIV VILLAS PALA.(CHQ)" },
-      { title: "Capacity", value: null },
       { title: "Meter SL No", value: "19272307" },
+      { title: "Meter Phase", value: "3 PH" },
       { title: "MF", value: "60" },
+      { title: "Capacity", value: null },
       { title: "Permanent Address", value: "11IW3" },
       { title: "Latitude", value: null },
       { title: "Longitude", value: null },
@@ -80,9 +82,10 @@ export const dtrProfileContractNullOptionalResponse: DtrProfileResponse = {
       { title: "Zone", value: "Zone C" },
       { title: "Sub Station", value: "Sub Station X" },
       { title: "Feeder", value: "Feeder Y" },
-      { title: "Capacity", value: null },
       { title: "Meter SL No", value: "12345678" },
+      { title: "Meter Phase", value: "1 PH" },
       { title: "MF", value: "1" },
+      { title: "Capacity", value: null },
       { title: "Permanent Address", value: "Test Address" },
       { title: "Latitude", value: null },
       { title: "Longitude", value: null },
@@ -139,9 +142,10 @@ export const dtrProfileContractCapacityKvaResponse: DtrProfileResponse = {
       { title: "Zone", value: "Zone" },
       { title: "Sub Station", value: "SS" },
       { title: "Feeder", value: "Feeder" },
-      { title: "Capacity", value: "250 kVA" },
       { title: "Meter SL No", value: "99887766" },
+      { title: "Meter Phase", value: "3 PH" },
       { title: "MF", value: "40" },
+      { title: "Capacity", value: "250 kVA" },
       { title: "Permanent Address", value: "Addr" },
       { title: "Latitude", value: "22.7196" },
       { title: "Longitude", value: "75.8577" },
@@ -259,69 +263,66 @@ export const dtrProfileData = {
 export const dtrProfileTestCases: DtrProfileTestCase[] = [
   {
     testName:
-      "Validate GET /indore/dtr/{code}/profile — primary DTR (11IW3) profile",
+      "DTR profile — name, meter, feeder, and location load, each field once",
     scenario: "dpr_by_code_primary",
     tags: ["@smoke", "@dtr", "@profile"],
   },
   {
-    testName: "Validate GET /indore/dtr/{code}/profile — alternate DTR code",
+    testName: "DTR profile — a second transformer still shows a profile",
     scenario: "dpr_by_code_alt",
     tags: ["@dtr", "@profile", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/dtr/{code}/profile — unknown query params ignored",
+      "DTR profile — extra filters that nobody uses are ignored",
     scenario: "dpr_ignore_unknown_query",
     tags: ["@dtr", "@profile", "@edge"],
   },
   {
-    testName: "Contract — live 11IW3 profile shape (profile + hierarchy)",
+    testName: "Sample profile — transformer 11IW3 with empty recent activity",
     scenario: "contract_live_11iw3",
     isContractFixture: true,
     tags: ["@dtr", "@profile", "@edge"],
   },
   {
     testName:
-      "Contract — null Capacity/Latitude/Longitude when rated capacity unavailable",
+      "Sample profile — capacity and map pin can be empty",
     scenario: "contract_null_optional_fields",
     isContractFixture: true,
     tags: ["@dtr", "@profile", "@edge"],
   },
   {
-    testName:
-      "Contract — empty latestActivities (archive timeout or no events)",
+    testName: "Sample profile — no recent activity is allowed",
     scenario: "contract_empty_activities",
     isContractFixture: true,
     tags: ["@dtr", "@profile", "@edge"],
   },
   {
-    testName:
-      "Contract — latestActivities with alarm title and Meter event fallback",
+    testName: "Sample profile — recent alarms with date and time",
     scenario: "contract_with_activities",
     isContractFixture: true,
     tags: ["@dtr", "@profile", "@edge"],
   },
   {
-    testName: "Contract — Capacity formatted as \"{n} kVA\" with coordinates",
+    testName: "Sample profile — capacity shown as kVA with a map pin",
     scenario: "contract_capacity_kva",
     isContractFixture: true,
     tags: ["@dtr", "@profile", "@edge"],
   },
   {
     testName:
-      "Contract — hierarchy depth DESC (root → … → DTR last)",
+      "Sample profile — network path ends at this transformer, each level once",
     scenario: "contract_deep_hierarchy",
     isContractFixture: true,
     tags: ["@dtr", "@profile", "@edge"],
   },
   {
-    testName: "Validate GET /indore/dtr/{code}/profile — DTR not found",
+    testName: "DTR profile — unknown transformer is not shown",
     scenario: "dtr_not_found",
     tags: ["@dtr", "@profile", "@negative"],
   },
   {
-    testName:
-      "Validate GET /indore/dtr/{code}/profile — blank DTR code rejected",
+    testName: "DTR profile — a blank transformer code is not allowed",
     scenario: "empty_dtr_code",
     expectedStatus: 400,
     tags: ["@dtr", "@profile", "@negative"],

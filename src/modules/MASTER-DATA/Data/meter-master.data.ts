@@ -4,6 +4,7 @@ import type { MeterMasterQuery } from "../Mapper/meter-master.mapper";
 export const EXPECTED_METER_MASTER_COLUMNS = [
   { key: "slNo", header: "Sl No." },
   { key: "meterSerialNumber", header: "Meter SL No." },
+  { key: "connection", header: "Connection" },
   { key: "meterRapdrpCode", header: "Meter RAPDRP Code" },
   { key: "assetId", header: "Asset ID" },
   { key: "mf", header: "MF" },
@@ -50,28 +51,37 @@ export interface MeterMasterTestCase {
 
 export const meterMasterTestCases: MeterMasterTestCase[] = [
   {
-    testName:
-      "Validate GET /indore/master-data/meter-master-data — default page",
+    testName: "Meter list — first page shows columns, records, and page numbers",
     query: { ...meterMasterDefaultQuery },
     tags: ["@smoke", "@master-data", "@meter-master"],
   },
   {
-    testName: "Validate pagination — page 2",
+    testName: "Meter list — page 2 shows the next set of records",
     query: { ...meterMasterPage2Query },
     tags: ["@master-data", "@meter-master"],
   },
   {
-    testName: "Validate pagination — smaller page size (limit 10)",
+    testName: "Meter list — showing 10 per page returns at most 10 records",
     query: { ...meterMasterSmallPageQuery },
     tags: ["@master-data", "@meter-master"],
   },
   {
-    testName: "Validate search q — meter serial partial match",
+    testName: "Meter list — search finds the meter serial",
     query: {
       ...meterMasterDefaultQuery,
       q: resolveMeterMasterSearchTerm(),
     },
     tags: ["@master-data", "@meter-master"],
     searchTerm: resolveMeterMasterSearchTerm(),
+  },
+  {
+    testName: "Meter list — an empty search shows the full list",
+    query: { ...meterMasterDefaultQuery, q: "" },
+    tags: ["@master-data", "@meter-master", "@edge"],
+  },
+  {
+    testName: "Meter list — a page past the last page shows no records",
+    query: { page: 99999, limit: 20 },
+    tags: ["@master-data", "@meter-master", "@edge"],
   },
 ];

@@ -1,4 +1,4 @@
-import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
+﻿import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
 
 export function compareUsersProfileImageCountLteDb(options: {
   label: string;
@@ -6,22 +6,16 @@ export function compareUsersProfileImageCountLteDb(options: {
   dbCount: number;
   obs?: DbCompareObs;
 }): void {
-  if (options.apiCount > options.dbCount) {
-    throw new Error(
-      `${options.label}: API ${options.apiCount} exceeds DB ${options.dbCount}`,
-    );
-  }
-  if (options.apiCount === options.dbCount) {
-    compareApiToDb(
-      [
-        {
-          label: options.label,
-          apiValue: options.apiCount,
-          dbValue: options.dbCount,
-        },
-      ],
-      `DB vs API — ${options.label}`,
-      options.obs,
-    );
-  }
+  // Exact match: API pagination total must equal DB count when records are compared.
+  compareApiToDb(
+    [
+      {
+        label: options.label,
+        apiValue: options.apiCount,
+        dbValue: options.dbCount,
+      },
+    ],
+    `DB vs API - ${options.label}`,
+    options.obs,
+  );
 }

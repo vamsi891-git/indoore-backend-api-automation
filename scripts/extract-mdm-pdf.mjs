@@ -1,3 +1,13 @@
+/**
+ * Extract plain text from the MDM presentation PDF for offline slide mapping.
+ *
+ * When to run: before `compare-mdm-screenshots-with-apis.mjs` if
+ * `reports/mdm-pdf-extract.txt` is missing or the PDF was updated.
+ *   node scripts/extract-mdm-pdf.mjs
+ *
+ * Output: `reports/mdm-pdf-extract.txt` (+ console preview).
+ * Input PDF: `templates/MDM Presentation_23.12.2025.pdf`
+ */
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";

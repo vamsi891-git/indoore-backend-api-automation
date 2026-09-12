@@ -5,6 +5,15 @@ import { CreateMeterApi } from "../Api/create-meter.api";
 import { ValidateDtrMeterApi } from "../Api/validate-dtr-meter.api";
 import { buildCreateMeterRequest } from "./create-meter.data";
 
+function assertWritesAllowed(action: string): void {
+  if (process.env.ALLOW_WRITE_TESTS?.trim().toLowerCase() === "true") {
+    return;
+  }
+  throw new Error(
+    `Blocked ${action}. Create tests are off. Do not set ALLOW_WRITE_TESTS=true on production.`,
+  );
+}
+
 export const DEFAULT_DTR_METER_POOL_TARGET = 4;
 export const DEFAULT_DTR_METER_MAX_CREATE_ATTEMPTS = 12;
 
@@ -89,6 +98,7 @@ export async function provisionDtrAssignableMeterPool(
   authenticatedApi: APIRequestContext,
   options?: ProvisionDtrAssignableMeterPoolOptions,
 ): Promise<string[]> {
+  assertWritesAllowed("ensure DTR meter pool (creates meters)");
   const targetCount = options?.targetCount ?? DEFAULT_DTR_METER_POOL_TARGET;
   const maxCreateAttempts =
     options?.maxCreateAttempts ?? DEFAULT_DTR_METER_MAX_CREATE_ATTEMPTS;

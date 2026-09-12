@@ -2,6 +2,24 @@
 
 Backend API test automation with [Playwright Test](https://playwright.dev/) and TypeScript. Tests use a shared authenticated API fixture; login runs once in global setup and writes tokens under `playwright/.auth/` (gitignored).
 
+**Who maintains this:** one QA engineer. Start with [docs/SOLO-QA.md](./docs/SOLO-QA.md) — read that before the longer docs.
+
+**Framework phase:** architecture is **complete**. Focus is **maintenance and expansion** (new APIs, four pillars, CI reliability, docs) — not redesigning core layers.
+
+## Documentation
+
+| Doc | Purpose |
+|-----|---------|
+| [docs/API-COVERAGE.md](./docs/API-COVERAGE.md) | Every API: what we check, ON vs skipped, gaps |
+| [CONTRIBUTING.md](./CONTRIBUTING.md) | Coding standards, PR checklist, branch flow |
+| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | Layered design, engines, request flow, pillars |
+| [docs/MODULE_GUIDE.md](./docs/MODULE_GUIDE.md) | How to add a module in ~30 minutes |
+| [docs/HARDENING-STATUS.md](./docs/HARDENING-STATUS.md) | Module × Zod / contract / mutation / DB status |
+| [docs/ENTERPRISE-HANDBOOK.md](./docs/ENTERPRISE-HANDBOOK.md) | Enterprise handbook v2.0 (source) |
+| [docs/Indoore-Backend-API-Automation-Framework-Enterprise-Handbook-v2.pdf](./docs/Indoore-Backend-API-Automation-Framework-Enterprise-Handbook-v2.pdf) | Enterprise handbook v2.0 (PDF) |
+| [docs/MDM-PRESENTATION-COVERAGE.md](./docs/MDM-PRESENTATION-COVERAGE.md) | Followed `MDM Presentation_23.12.2025.pdf`? Slide → API gap analysis |
+| [docs/FRAMEWORK-NOTES.md](./docs/FRAMEWORK-NOTES.md) | Living deep inventory and operational notes |
+
 ## Prerequisites
 
 - Node.js (LTS recommended)
@@ -73,9 +91,9 @@ SWAGGER_URL=http://localhost:3000/indore/api-docs/
 | `npm run test:module -- <slug> --smoke` | Run **@smoke** tests for one module |
 | `npm run test:module -- <slug> --api` | Run module tests excluding `@db` |
 | `npm run test:module -- <slug> --db` | Run **@db** tests for one module |
-| `npm run test:modules:list` | List module slugs (for CI / local runs) |
-| `npm run check:modules-ci` | Fail if Actions module dropdown is out of sync |
-| `npm run sync:modules-ci` | Rewrite Actions module dropdown from `src/modules` |
+| `npm run test:<slug>:contract` | Contract snapshots for one module |
+| `npm run test:<slug>:mutation-proof` | Mutation-proof suite for one module |
+| `npm run test:modules:list` | List module slugs (for local runs) |
 | `npm run test:ui` | Playwright UI mode |
 | `npm run report` | Open the last HTML report |
 | `npm run typecheck` | TypeScript check (`tsc --noEmit`) |
@@ -115,7 +133,7 @@ src/
   core/                 # Shared client, assertion/validation engines, models
   fixtures/             # Playwright test extensions (authenticated API)
   global.setup.ts       # One-time API login before tests
-  modules/               # 24 modules — run `npm run test:modules:list` for slugs
+  modules/               # Business modules — run `npm run test:modules:list` for slugs
     ASSET-MANAGEMENT/
     AUDIT-LOGS/
     AUTH/
@@ -135,6 +153,7 @@ src/
     NOTIFICATIONS/
     OVERALL-DASHBOARD/
     REPORTS/
+    REVENUE-PROTECTION/
     ROLE-PERMISSIONS/
     TECHNICAL-ANALYSIS/
     USERS-ADMIN/
@@ -147,10 +166,29 @@ Module folder names use hyphens (e.g. `ASSET-MANAGEMENT`, not `ASSET MANAGEMENT`
 Typical module folders:
 
 - `Api/` — HTTP calls, timing, typed responses (no assertions)
+- `Data/` — Query/body payloads (report modules)
 - `Mapper/` — Response types and normalization
 - `Validator/` — Business rules and field checks
-- `Data/` — Query/body payloads (report modules)
-- `tests/` — `*.spec.ts` files
+- `schemas/` — Zod contracts
+- `Db/` — Read-only SQL + gated API↔DB compare
+- `tests/` — `*.spec.ts` (smoke, negative, contract, mutation, db, e2e)
+
+See [docs/MODULE_GUIDE.md](./docs/MODULE_GUIDE.md) to add a new module.
+
+## Four quality pillars
+
+1. **Zod schemas** — response shape contracts under `schemas/`  
+2. **Contract snapshots** — `contract-snapshots/<slug>/` via `@contract-snapshot`  
+3. **Mutation-proof** — broken fixtures must fail validators (`@mutation-proof`)  
+4. **Gated DB cross-validation** — read-only SQL vs API when `*_DB_SQL_READY=true`
+
+Status matrix: [docs/HARDENING-STATUS.md](./docs/HARDENING-STATUS.md).
+
+```bash
+UPDATE_CONTRACT_SNAPSHOTS=true npm run test:<slug>:contract
+npm run test:<slug>:mutation-proof
+<MODULE>_DB_SQL_READY=true npm run test:<slug>:db
+```
 
 ## Framework flow
 
@@ -204,43 +242,25 @@ npx playwright test --grep "@event-report"
 
 ## CI (GitHub Actions)
 
-### Promotion flow (module → QA → main)
+Module-wise GitHub Actions (QA module gate, manual module dropdown, reusable module workflow) are **removed for now**. Run modules locally with `npm run test:<slug>`. They can be added back after the framework is organized.
+
+### Promotion flow
 
 ```text
-module-branch ──PR──► QA ──(post-merge)──► module suites
-                         │
-                         └── green gate ──PR──► main ──push──► full regression
+feature-branch ──PR──► QA ──PR──► main ──push──► full regression
 ```
 
-1. Create a branch named after the module (example: `dashboard`, `master-data`).
-2. Push your changes and open a **pull request into `QA`** (review/approval only — **no module test run on the open PR**).
-3. Merge into `QA`.
-4. **After merge**, **QA Module Gate** runs on the `QA` push: it diffs the new QA tip against the previous tip, detects affected modules, and runs those suites.
-   - Shared/core changes (`src/core`, fixtures, Playwright/package config, workflow scripts) run **all** modules.
-   - Docs-only changes skip the API matrix and still pass the gate.
-5. If the module gate fails, the code stays on **`QA`** until you fix and merge again (or re-run the workflow). Do **not** promote to `main` yet.
-6. When the post-merge gate is green, open a **pull request from `QA` → `main`**. **Main Promotion Policy** requires:
-   - source branch is exactly `QA`
-   - a successful **QA Module Gate** workflow run exists for that QA tip commit
-7. After approval + green policy check, merge into `main`.
-8. The push to `main` runs the **full** Playwright suite (`playwright.yml`).
-
-Local detector:
-
-```bash
-npm run test:detect-modules
-node scripts/detect-changed-modules.mjs --base origin/QA
-```
+1. Open a pull request into `QA`.
+2. Merge into `QA`.
+3. Open a pull request from `QA` → `main`. **Main Promotion Policy** requires the source branch to be exactly `QA`.
+4. After merge to `main`, `playwright.yml` runs the full suite.
 
 ### Workflows
 
 | Workflow | File | When |
 |----------|------|------|
-| **QA Module Gate** | [qa-module-gate.yml](.github/workflows/qa-module-gate.yml) | **Push** to `QA` (after merge) — detect + run affected modules |
-| **Main Promotion Policy** | [main-promotion-policy.yml](.github/workflows/main-promotion-policy.yml) | PR → `main`/`master` — source must be `QA` + green post-merge gate |
+| **Main Promotion Policy** | [main-promotion-policy.yml](.github/workflows/main-promotion-policy.yml) | PR → `main`/`master` — source must be `QA` |
 | **Playwright API Tests** | [playwright.yml](.github/workflows/playwright.yml) | Push to `main`/`master` (full), manual smoke/full |
-| **Playwright Module Tests** | [playwright-module.yml](.github/workflows/playwright-module.yml) | Manual — pick **one module** + scope (`api` / `all` / `smoke` / `db`) |
-| **Reusable Module Tests** | [reusable-module-tests.yml](.github/workflows/reusable-module-tests.yml) | Called by QA gate and manual module workflow |
 
 ### Required GitHub branch protection / rulesets
 
@@ -250,10 +270,9 @@ Configure under **Settings → Rules → Rulesets** (or classic branch protectio
 
 - Require a pull request before merging
 - Require approvals (at least 1)
-- Do **not** require **QA Module Gate** on the PR (module tests run **after** merge on push)
 - Require branches to be up to date before merging (optional but recommended)
 - Block force pushes and deletions
-- Restrict direct pushes (no bypass for routine work)
+- Restrict direct pushes
 
 **Ruleset for `main` (and `master` if used)**
 
@@ -263,24 +282,7 @@ Configure under **Settings → Rules → Rulesets** (or classic branch protectio
 - Require branches to be up to date before merging
 - Block force pushes and deletions
 - Restrict direct pushes
-- Do **not** allow merges from feature/module branches; only `QA` → `main` PRs satisfy the policy job
-
-After the first `QA` → `main` PR runs the policy workflow, the status-check name appears in the ruleset dropdown. Use the job name exactly: `Main Promotion Policy`.
-
-### Module workflow (manual / per module)
-
-1. Open **[Actions → Playwright Module Tests](https://github.com/vamsi891-git/indoore-backend-api-automation/actions/workflows/playwright-module.yml)**
-2. **Run workflow**
-3. **module:** choose from the dropdown (includes `revenue-protection`, `meter-replacement`, …). Options are synced from `src/modules` — if you add a module folder, run `npm run sync:modules-ci` before merging.
-4. **scope:**
-   - `api` — exclude `@db` (default; fastest stable gate)
-   - `all` — every test in the module `tests/` folder
-   - `smoke` — `@smoke` only
-   - `db` — `@db` only (needs `DB_*` secrets + module `RP_*_DB_SQL_READY` vars when applicable)
-
-The **module** job uses **1 worker** (`PLAYWRIGHT_WORKERS=1`). The **main** full-regression workflow uses **2 workers**. Full regression runs on **push to main/master** (after QA promotion), not on pull requests into main. When a run finishes (pass or fail), it generates an **Allure** report and uploads artifacts. If SMTP secrets are configured, the Allure report is emailed to the developer inbox.
-
-QA Module Gate (post-merge on `QA`) also defaults to **scope=api** and fans out up to **4 modules in parallel** (`fail-fast: false`). Re-run the gate manually with `scope=all` or `scope=db` when you need deeper coverage.
+- Only `QA` → `main` PRs satisfy the policy job
 
 Set `PLAYWRIGHT_WORKERS=1` in `.env` if you see token refresh races locally.
 

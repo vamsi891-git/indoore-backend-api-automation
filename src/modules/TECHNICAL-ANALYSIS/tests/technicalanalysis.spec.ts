@@ -1,15 +1,16 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
 import { TechnicalReportApi } from "../Api/technicalanalysis.api";
-import { getTechnicalReportLiveConfig, resolveTechnicalReportContractBody, resolveTechnicalReportQuery, technicalReportTestCases, type TechnicalAnalysisLiveConfig, } from "../Data/technicalanalysis.data";
-import { TechnicalReportMapper, type TechnicalReportMapped, } from "../Mapper/technicalanalysis.mapper";
+import { getTechnicalReportLiveConfig, resolveTechnicalReportContractBody, resolveTechnicalReportQuery, technicalAnalysisLiveConfigs, technicalAnalysisReportTitle, technicalReportTestCases, type TechnicalAnalysisLiveConfig, } from "../Data/technicalanalysis.data";
+import { isTechnicalGridData, TechnicalReportMapper, type TechnicalReportMapped, } from "../Mapper/technicalanalysis.mapper";
 import { TechnicalReportValidator } from "../Validator/technical-analysis.shared";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { TECHNICAL_ANALYSIS_MAX_RESPONSE_TIME_MS, TECHNICAL_ANALYSIS_TEST_TIMEOUT_MS, } from "../../../core/constants/api-timeouts";
-function runLiveReportValidations(validation: ValidationEngine, validator: TechnicalReportValidator, mapped: TechnicalReportMapped, liveConfig: TechnicalAnalysisLiveConfig,): void {
+import { logTechnicalAnalysisDataQualityFindings } from "../Db/technical-analysis-db.validator";
+function runLiveReportValidations(validation: ValidationEngine, validator: TechnicalReportValidator, mapped: TechnicalReportMapped, liveConfig: TechnicalAnalysisLiveConfig, columns?: Array<{ key: string; header: string }>,): void {
   validation.execute("Response Structure Validation", () =>
     validator.validateResponseStructure(mapped),
   );
@@ -25,12 +26,40 @@ function runLiveReportValidations(validation: ValidationEngine, validator: Techn
   validation.execute("Year Validation", () =>
     validator.validateYear(mapped.year, liveConfig.year),
   );
-  validation.execute("Pagination Validation", () =>
-    validator.validatePagination(mapped),
-  );
-  validation.execute("Pagination Consistency Validation", () =>
-    validator.validatePaginationConsistency(mapped),
-  );
+  if (liveConfig.validationType === "phase") {
+    validation.execute("Phase column header", () =>
+      validator.validatePhaseColumns(columns),
+    );
+  } else {
+    validation.execute("Zone column header", () =>
+      validator.validateZoneColumn(columns),
+    );
+  }
+  if (
+    liveConfig.validationType === "duration100" ||
+    liveConfig.validationType === "duration12" ||
+    liveConfig.validationType === "duration10"
+  ) {
+    validation.execute("Duration column headers", () =>
+      validator.validateDurationColumns(
+        columns,
+        liveConfig.hasData,
+        liveConfig.analysisType.startsWith("ynr_"),
+      ),
+    );
+  }
+  if (liveConfig.validationType === "phase") {
+    validation.execute("Phase Pagination Validation", () =>
+      validator.validatePhasePagination(mapped),
+    );
+  } else {
+    validation.execute("Pagination Validation", () =>
+      validator.validatePagination(mapped),
+    );
+    validation.execute("Pagination Consistency Validation", () =>
+      validator.validatePaginationConsistency(mapped),
+    );
+  }
   validation.execute("Cross Field Validation", () =>
     validator.validateCrossFieldLogic(mapped),
   );
@@ -41,6 +70,14 @@ function runLiveReportValidations(validation: ValidationEngine, validator: Techn
     );
     return;
   }
+
+  if (liveConfig.validationType === "phase") {
+    validation.execute("Phase Report Validation", () =>
+      validator.validatePhaseReport(mapped.rows),
+    );
+    return;
+  }
+
   mapped.rows.forEach((row, index) => {
     validation.execute(`Row ${index + 1} Structure Validation`, () =>
       validator.validateRowStructure(row),
@@ -62,20 +99,8 @@ function runLiveReportValidations(validation: ValidationEngine, validator: Techn
     );
   });
 
-  validation.execute("Duplicate Meter Id Validation", () =>
-    validator.validateDuplicateMeterIds(mapped.rows),
-  );
-  validation.execute("Duplicate MSN Validation", () =>
-    validator.validateDuplicateMSN(mapped.rows),
-  );
-  validation.execute("Duplicate IVRS Validation", () =>
-    validator.validateDuplicateIVRS(mapped.rows),
-  );
-  validation.execute("Duplicate Meter Event Validation", () =>
-    validator.validateDuplicateMeterEvent(mapped.rows),
-  );
-  validation.execute("Duplicate Row Validation", () =>
-    validator.validateDuplicateRows(mapped.rows),
+  validation.execute("Duplicate meter contract", () =>
+    validator.validateDuplicateContract(mapped.rows),
   );
 
   switch (liveConfig.validationType) {
@@ -104,14 +129,13 @@ function runLiveReportValidations(validation: ValidationEngine, validator: Techn
       );
       break;
     case "count":
-    case "phase":
       validation.execute("Count Report Validation", () =>
         validator.validateCountReport(mapped.rows),
       );
       break;
   }
 }
-test.describe("Technical Analysis Report API", () => {
+test.describe("Technical report", () => {
   test.describe.configure({ mode: "serial", retries: 1 });
   test.setTimeout(TECHNICAL_ANALYSIS_TEST_TIMEOUT_MS);
 
@@ -137,7 +161,7 @@ test.describe("Technical Analysis Report API", () => {
           const mapped = TechnicalReportMapper.map(fixtureBody, {
             analysisType:
               query.analysisType ?? "power_failure",
-            month: query.month ?? 12,
+            month: query.month ?? 10,
             year: query.year ?? 2025,
             pageSize: query.pageSize ?? 10,
             category: query.category,
@@ -218,7 +242,7 @@ test.describe("Technical Analysis Report API", () => {
           }
           const mapped = TechnicalReportMapper.map(responseBody, {
             analysisType: query.analysisType ?? "power_failure",
-            month: query.month ?? 12,
+            month: query.month ?? 10,
             year: query.year ?? 2025,
             pageSize: query.pageSize ?? 100,
             category: query.category,
@@ -230,7 +254,13 @@ test.describe("Technical Analysis Report API", () => {
               validator,
               mapped,
               liveConfig,
+              isTechnicalGridData(responseBody.data)
+                ? responseBody.data.columns
+                : undefined,
             );
+            await logTechnicalAnalysisDataQualityFindings("report", {
+              rows: mapped.rows,
+            });
             return;
           }
           validation.execute("Response Structure Validation", () =>
@@ -249,10 +279,79 @@ test.describe("Technical Analysis Report API", () => {
               query.page,
             ),
           );
+          if (
+            testCase.scenario === "dev_category_domestic" ||
+            testCase.scenario === "dev_category_non_domestic"
+          ) {
+            validation.execute("No duplicate meters", () =>
+              validator.validateDuplicateContract(mapped.rows),
+            );
+          }
         } finally {
           validation.finalize(testCase.testName, responseTime);
         }
       },
     );
   }
+
+  test.describe("Technical report — first and last page have no duplicate meters", () => {
+    test.describe.configure({ retries: 0 });
+
+    for (const liveConfig of technicalAnalysisLiveConfigs.filter((c) => c.hasData)) {
+      test(
+        `${technicalAnalysisReportTitle(liveConfig.analysisType)} report — first and last page have no duplicate meters`,
+        { tag: ["@technical-analysis", "@report"] },
+        async ({ authenticatedApi }) => {
+          const api = new TechnicalReportApi(authenticatedApi);
+          const validator = new TechnicalReportValidator();
+          const validation = new ValidationEngine();
+          const query = resolveTechnicalReportQuery("dev_live_report", liveConfig);
+          const first = await api.getTechnicalReport(query);
+          expect(first.rawResponse.status()).toBe(200);
+          const mappedFirst = TechnicalReportMapper.map(first.responseBody, {
+            analysisType: liveConfig.analysisType,
+            month: liveConfig.month,
+            year: liveConfig.year,
+            pageSize: liveConfig.pageSize,
+            category: query.category,
+            page: 1,
+          });
+          const uniqueness =
+            liveConfig.validationType === "phase"
+              ? (rows: typeof mappedFirst.rows) =>
+                  validator.validatePhaseReport(rows)
+              : (rows: typeof mappedFirst.rows) =>
+                  validator.validateDuplicateContract(rows);
+          validation.execute("Page 1 uniqueness", () =>
+            uniqueness(mappedFirst.rows),
+          );
+          if (liveConfig.validationType === "phase") {
+            validation.finalize(
+              `${liveConfig.analysisType} first/last uniqueness`,
+              first.responseTime,
+            );
+            return;
+          }
+          const lastPage = Math.max(1, mappedFirst.totalPages);
+          const last = await api.getTechnicalReport({ ...query, page: lastPage });
+          expect(last.rawResponse.status()).toBe(200);
+          const mappedLast = TechnicalReportMapper.map(last.responseBody, {
+            analysisType: liveConfig.analysisType,
+            month: liveConfig.month,
+            year: liveConfig.year,
+            pageSize: liveConfig.pageSize,
+            category: query.category,
+            page: lastPage,
+          });
+          validation.execute(`Last page ${lastPage} uniqueness`, () =>
+            uniqueness(mappedLast.rows),
+          );
+          validation.finalize(
+            `${liveConfig.analysisType} first/last uniqueness`,
+            first.responseTime,
+          );
+        },
+      );
+    }
+  });
 });

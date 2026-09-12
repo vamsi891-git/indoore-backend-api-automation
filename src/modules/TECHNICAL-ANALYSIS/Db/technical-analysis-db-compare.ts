@@ -1,7 +1,7 @@
-import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
+﻿import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
 import type { DbTechnicalConsumerRow } from "./technical-analysis.db";
 
-/** DB often stores ", First Last" — API usually returns "First Last". */
+/** DB often stores ", First Last" â€” API usually returns "First Last". */
 export function normalizeConsumerName(value: string | null | undefined): string {
   return String(value ?? "")
     .trim()
@@ -60,7 +60,7 @@ export function compareTechnicalReportRowToDb(options: {
         optional: true,
       },
     ],
-    `DB vs API — technical report row (${lookupKey})`,
+    `DB vs API â€” technical report row (${lookupKey})`,
     obs,
   );
 }
@@ -79,7 +79,7 @@ export function compareSummaryTotalToReportTotal(options: {
         dbValue: options.reportPaginationTotal,
       },
     ],
-    `Summary vs report total — ${options.analysisType}`,
+    `Summary vs report total â€” ${options.analysisType}`,
     options.obs,
   );
 }

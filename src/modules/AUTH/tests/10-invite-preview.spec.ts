@@ -24,7 +24,8 @@ async function createPublicApiContext() {
   });
 }
 
-test.describe("Auth Invite Preview API", () => {
+// SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
+test.describe.skip("Auth Invite Preview API", () => {
   test(
     "Validate invalid invitation preview",
     { tag: ["@smoke", "@auth", "@invite"] },

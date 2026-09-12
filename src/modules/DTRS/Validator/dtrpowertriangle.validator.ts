@@ -89,7 +89,7 @@ export class DtrPowerTriangleValidator {
     }
   }
 
-  validateNonNegativePower(mapped: MappedDtrPowerTriangle): void {
+  validateFinitePower(mapped: MappedDtrPowerTriangle): void {
     const fields = [
       "activePowerKw",
       "reactivePowerKvar",
@@ -98,8 +98,16 @@ export class DtrPowerTriangleValidator {
     for (const field of fields) {
       const value = mapped[field];
       if (value !== null) {
-        expect(value).toBeGreaterThanOrEqual(0);
+        expect(Number.isFinite(value)).toBeTruthy();
+        expect(Number.isNaN(value)).toBeFalsy();
       }
+    }
+    // Active / apparent are magnitudes; reactive may be signed (lagging/leading).
+    if (mapped.activePowerKw !== null) {
+      expect(mapped.activePowerKw).toBeGreaterThanOrEqual(0);
+    }
+    if (mapped.apparentPowerKva !== null) {
+      expect(mapped.apparentPowerKva).toBeGreaterThanOrEqual(0);
     }
   }
 
@@ -153,8 +161,7 @@ export class DtrPowerTriangleValidator {
         Math.round(
           Math.sqrt(apparentPowerKva ** 2 - activePowerKw ** 2) * 100,
         ) / 100;
-      expect(reactivePowerKvar).toBeGreaterThanOrEqual(0);
-      expect(reactivePowerKvar).toBeLessThanOrEqual(maxQ + 0.01);
+      expect(Math.abs(reactivePowerKvar)).toBeLessThanOrEqual(maxQ + 0.01);
       return;
     }
 
@@ -181,7 +188,7 @@ export class DtrPowerTriangleValidator {
     this.validateTypes(mapped);
     this.validateFiniteNumbers(mapped);
     this.validatePowerFactor(mapped.powerFactor);
-    this.validateNonNegativePower(mapped);
+    this.validateFinitePower(mapped);
     this.validateTriangleConstraint(mapped);
     this.validateReactiveDerivation(mapped);
   }

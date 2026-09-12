@@ -15,7 +15,6 @@
     "consumerCid",
     "consumerMobileNumber",
     "consumerName",
-    "existingIvrsNo",
     "id",
     "ivrsNo",
     "meterSerialNumber"
@@ -24,7 +23,7 @@
   "columns": [
     {
       "key": "consumerName",
-      "header": "Consumer Name"
+      "header": "Consumer"
     },
     {
       "key": "consumerCid",
@@ -32,23 +31,19 @@
     },
     {
       "key": "consumerAddress",
-      "header": "Consumer Address"
+      "header": "Address"
     },
     {
       "key": "ivrsNo",
-      "header": "IVRS No."
-    },
-    {
-      "key": "existingIvrsNo",
-      "header": "Existing IVRS No."
+      "header": "IVRS"
     },
     {
       "key": "meterSerialNumber",
-      "header": "Meter Serial Number"
+      "header": "Meter"
     },
     {
       "key": "consumerMobileNumber",
-      "header": "Mobile No."
+      "header": "Mobile"
     }
   ]
 }

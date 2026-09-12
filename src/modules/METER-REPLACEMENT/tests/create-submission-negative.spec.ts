@@ -14,14 +14,16 @@ import {
   meterReplacementPaths,
   type MeterReplacementErrorBody,
 } from "../Validator/meter-replacement-common.validator";
-import { ensureEligibleConsumer, ensureUsableConsumer } from "../utils/create-submission.helper";
+import { ensureUsableConsumer } from "../utils/create-submission.helper";
+import { resolveActiveReplacementNewMeter } from "../utils/meter-replacement-bulk-runtime.helper";
 import {
   pauseMs,
   safeResponseJson,
   withRateLimitRetry,
 } from "../utils/response.helper";
 
-test.describe("Meter Replacement Create Submission API — Negative & Edge", () => {
+// SKIPPED: add consumer/DTR/meter/user/role/bulk-upload/meter-replacement create scenarios are commented out (mutating).
+test.describe.skip("Meter Replacement Create Submission API — Negative & Edge", () => {
   test(
     "Empty body returns 400 VALIDATION_ERROR",
     {
@@ -118,34 +120,28 @@ test.describe("Meter Replacement Create Submission API — Negative & Edge", () 
       const detail = await detailApi.getConsumerDetail(
         createSubmissionData.ineligibleConsumerId,
       );
+      const d = detail.responseBody.data;
 
-      let d = detail.responseBody.data;
-      if (
+      // Must be a live ineligible consumer — never substitute an eligible one.
+      test.skip(
         detail.rawResponse.status() !== 200 ||
-        !d ||
-        d.replacementEligible === true
-      ) {
-        const fallback = await ensureEligibleConsumer(authenticatedApi);
-        d = {
-          ...fallback,
-          consumerId: fallback.consumerId,
-          oldMeterLookupId: fallback.oldMeterLookupId,
-          oldMeterSerial: fallback.oldMeterSerial,
-          latitude: fallback.latitude,
-          longitude: fallback.longitude,
-        } as typeof d;
-      }
+          !d ||
+          d.replacementEligible === true,
+        `Consumer ${createSubmissionData.ineligibleConsumerId} is eligible or missing — set METER_REPLACEMENT_PENDING_CONSUMER_OLD_SERIAL / a known ineligible id`,
+      );
+
+      const activeNew =
+        (await resolveActiveReplacementNewMeter(authenticatedApi)) ??
+        createSubmissionData.activeReplacementNewMeter;
 
       const payload = buildCreateSubmissionPayload({
-        consumerId: d.consumerId,
-        oldMeterLookupId: d.oldMeterLookupId,
-        oldMeterSerial: d.oldMeterSerial,
-        newMeterLookupId:
-          createSubmissionData.activeReplacementNewMeter.newMeterLookupId,
-        newMeterSerial:
-          createSubmissionData.activeReplacementNewMeter.newMeterSerial,
-        latitude: Number(d.latitude) || createSubmissionData.defaultLatitude,
-        longitude: Number(d.longitude) || createSubmissionData.defaultLongitude,
+        consumerId: d!.consumerId,
+        oldMeterLookupId: d!.oldMeterLookupId,
+        oldMeterSerial: d!.oldMeterSerial,
+        newMeterLookupId: activeNew.newMeterLookupId,
+        newMeterSerial: activeNew.newMeterSerial,
+        latitude: Number(d!.latitude) || createSubmissionData.defaultLatitude,
+        longitude: Number(d!.longitude) || createSubmissionData.defaultLongitude,
       });
 
       const { rawResponse, responseBody } =
@@ -259,15 +255,19 @@ test.describe("Meter Replacement Create Submission API — Negative & Edge", () 
       const api = new CreateSubmissionApi(authenticatedApi);
       const validation = new ValidationEngine();
 
+      const activeNew = await resolveActiveReplacementNewMeter(authenticatedApi);
+      test.skip(
+        !activeNew,
+        "No PENDING replacement new-meter available — set activeReplacement fixture or seed a PENDING submission",
+      );
+
       const consumer = await ensureUsableConsumer(authenticatedApi);
       const payload = buildCreateSubmissionPayload({
         consumerId: consumer.consumerId,
         oldMeterLookupId: consumer.oldMeterLookupId,
         oldMeterSerial: consumer.oldMeterSerial,
-        newMeterLookupId:
-          createSubmissionData.activeReplacementNewMeter.newMeterLookupId,
-        newMeterSerial:
-          createSubmissionData.activeReplacementNewMeter.newMeterSerial,
+        newMeterLookupId: activeNew!.newMeterLookupId,
+        newMeterSerial: activeNew!.newMeterSerial,
         latitude: Number(consumer.latitude) || createSubmissionData.defaultLatitude,
         longitude:
           Number(consumer.longitude) || createSubmissionData.defaultLongitude,

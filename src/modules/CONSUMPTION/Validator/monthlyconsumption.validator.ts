@@ -1,5 +1,9 @@
 import { expect } from "@playwright/test";
 import {MonthlyReportConsumptionData,MonthlyReportConsumptionItem,} from "../Mapper/monthlyconsumption.mapper";
+import {
+  validateSharedHierarchyAllowed as assertSharedHierarchyAllowed,
+  validateUniqueConsumerKeys,
+} from "../utils/consumption-identity.helper";
 const ITEM_REQUIRED_FIELDS = [
   "slNo",
   "division",
@@ -62,6 +66,12 @@ export class MonthlyReportConsumptionValidator {
     items.forEach((item, index) => {
       expect(item.slNo).toBe(base + index + 1);
     });
+  }
+  validateUniqueConsumers(items: MonthlyReportConsumptionItem[]): void {
+    validateUniqueConsumerKeys(items);
+  }
+  validateSharedHierarchyAllowed(items: MonthlyReportConsumptionItem[]): void {
+    assertSharedHierarchyAllowed(items);
   }
   validateEnergyFields(items: MonthlyReportConsumptionItem[]): void {
     items.forEach((item) => {

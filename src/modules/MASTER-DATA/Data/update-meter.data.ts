@@ -44,8 +44,7 @@ export function toUpdateMeterPayload(
 
 export const updateMeterTestCases: UpdateMeterTestCase[] = [
   {
-    testName:
-      "Validate PUT /indore/master-data/meters/:id — update meter successfully",
+    testName: "Update meter — meter details are updated",
     scenario: "success",
     expectedStatus: 200,
     provisionMeter: true,
@@ -60,8 +59,7 @@ export const updateMeterTestCases: UpdateMeterTestCase[] = [
     tags: ["@smoke", "@master-data", "@update-meter", "@meter-master"],
   },
   {
-    testName:
-      "Validate PUT /indore/master-data/meters/:id — set isActiveStatus false",
+    testName: "Update meter — meter can be marked inactive",
     scenario: "success_toggle_inactive",
     expectedStatus: 200,
     provisionMeter: true,
@@ -73,8 +71,7 @@ export const updateMeterTestCases: UpdateMeterTestCase[] = [
     tags: ["@master-data", "@update-meter", "@meter-master"],
   },
   {
-    testName:
-      "Validate PUT /indore/master-data/meters/:id — meter not found / out of scope",
+    testName: "Update meter — unknown meter is rejected",
     scenario: "not_found",
     expectedStatus: 400,
     provisionMeter: false,
@@ -84,8 +81,7 @@ export const updateMeterTestCases: UpdateMeterTestCase[] = [
     tags: ["@master-data", "@update-meter", "@negative"],
   },
   {
-    testName:
-      "Validate PUT /indore/master-data/meters/:id — DEVICE_MANUFACTURER_NOT_FOUND",
+    testName: "Update meter — unknown manufacturer is rejected",
     scenario: "manufacturer_not_found",
     expectedStatus: 400,
     provisionMeter: true,
@@ -96,8 +92,7 @@ export const updateMeterTestCases: UpdateMeterTestCase[] = [
     tags: ["@master-data", "@update-meter", "@negative"],
   },
   {
-    testName:
-      "Validate PUT /indore/master-data/meters/:id — MF must be greater than zero",
+    testName: "Update meter — multiplication factor must be greater than zero",
     scenario: "validation_error",
     expectedStatus: 400,
     provisionMeter: true,
@@ -106,8 +101,7 @@ export const updateMeterTestCases: UpdateMeterTestCase[] = [
     tags: ["@master-data", "@update-meter", "@negative"],
   },
   {
-    testName:
-      "Validate PUT /indore/master-data/meters/:id — invalid DLMS / Non-DLMS value",
+    testName: "Update meter — DLMS type must be valid",
     scenario: "validation_error",
     expectedStatus: 400,
     provisionMeter: true,
@@ -117,8 +111,7 @@ export const updateMeterTestCases: UpdateMeterTestCase[] = [
     tags: ["@master-data", "@update-meter", "@negative"],
   },
   {
-    testName:
-      "Validate PUT /indore/master-data/meters/:id — empty meter serial rejected",
+    testName: "Update meter — meter serial cannot be blank",
     scenario: "validation_error",
     expectedStatus: 400,
     provisionMeter: true,
@@ -128,8 +121,7 @@ export const updateMeterTestCases: UpdateMeterTestCase[] = [
     tags: ["@master-data", "@update-meter", "@negative"],
   },
   {
-    testName:
-      "Validate PUT /indore/master-data/meters/:id — display digit must be positive",
+    testName: "Update meter — display digits must be greater than zero",
     scenario: "validation_error",
     expectedStatus: 400,
     provisionMeter: true,
@@ -139,8 +131,7 @@ export const updateMeterTestCases: UpdateMeterTestCase[] = [
     tags: ["@master-data", "@update-meter", "@negative"],
   },
   {
-    testName:
-      "Validate PUT /indore/master-data/meters/:id — accuracy class max 8 chars",
+    testName: "Update meter — accuracy class cannot be longer than 8 characters",
     scenario: "validation_error",
     expectedStatus: 400,
     provisionMeter: true,

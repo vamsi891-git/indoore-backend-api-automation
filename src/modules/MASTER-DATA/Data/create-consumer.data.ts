@@ -821,7 +821,7 @@ const invalidLookupId = 99999;
 
 export const createConsumerTestCases: CreateConsumerTestCase[] = [
   {
-    testName: "Validate POST /indore/consumers — create consumer success",
+    testName: "Add consumer — new consumer is created",
     scenario: "create_success",
     expectedStatus: 201,
     /** Some gateways return 200; treat both as success. */
@@ -835,7 +835,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@positive", "@smoke"],
   },
   {
-    testName: "Validate POST /indore/consumers — Consumer ID required",
+    testName: "Add consumer — consumer ID is required",
     scenario: "missing_consumer_id",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -847,8 +847,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/consumers — Nearest Account ID required",
+    testName: "Add consumer — nearest account ID is required",
     scenario: "missing_nearest_acct_id",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -861,8 +860,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/consumers — Nearest Account ID must be valid",
+    testName: "Add consumer — nearest account ID must be valid",
     scenario: "invalid_nearest_acct_id",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -875,8 +873,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/consumers — existing Consumer ID rejected",
+    testName: "Add consumer — a consumer ID that already exists is rejected",
     scenario: "consumer_id_exists",
     expectedStatus: 400,
     acceptableStatuses: [400, 409],
@@ -889,8 +886,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/consumers — Bill Day must be between 1 and 28 (above range)",
+    testName: "Add consumer — bill day cannot be greater than 28",
     scenario: "invalid_bill_day",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -902,8 +898,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/consumers — Bill Day must be between 1 and 28 (below range)",
+    testName: "Add consumer — bill day cannot be less than 1",
     scenario: "invalid_bill_day_zero",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -915,8 +910,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/consumers — Consumer Category must be valid",
+    testName: "Add consumer — consumer category must be valid",
     scenario: "invalid_consumer_category",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -928,8 +922,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/consumers — Billing Cycle must be valid",
+    testName: "Add consumer — billing cycle must be valid",
     scenario: "invalid_billing_cycle",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -941,8 +934,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/consumers — Connection Type must be valid",
+    testName: "Add consumer — connection type must be valid",
     scenario: "invalid_connection_type",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -954,8 +946,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/consumers — Connection Status must be valid",
+    testName: "Add consumer — connection status must be valid",
     scenario: "invalid_connection_status",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -967,7 +958,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName: "Validate POST /indore/consumers — TOD must be valid",
+    testName: "Add consumer — TOD must be valid",
     scenario: "invalid_tod",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -979,8 +970,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/consumers — Sub Station must belong to hierarchy",
+    testName: "Add consumer — substation must belong to the selected network",
     scenario: "invalid_substation",
     expectedStatus: 400,
     envKeys: ["BULK_DTR_ZONE_NAME", "BULK_DTR_FEEDER_NAME"],
@@ -992,8 +982,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/consumers — Feeder must belong to hierarchy",
+    testName: "Add consumer — feeder must belong to the selected network",
     scenario: "invalid_feeder",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -1005,7 +994,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName: "Validate POST /indore/consumers — DTR must be valid",
+    testName: "Add consumer — DTR must be valid",
     scenario: "invalid_dtr",
     expectedStatus: 400,
     envKeys: [
@@ -1021,7 +1010,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName: "Validate POST /indore/consumers — MSN required",
+    testName: "Add consumer — meter serial is required",
     scenario: "missing_msn",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -1033,7 +1022,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName: "Validate POST /indore/consumers — meter must exist",
+    testName: "Add consumer — meter serial must already exist",
     scenario: "meter_not_found",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -1045,7 +1034,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName: "Validate POST /indore/consumers — meter must be active",
+    testName: "Add consumer — meter must be active",
     scenario: "meter_inactive",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -1057,8 +1046,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/consumers — meter must not already be mapped",
+    testName: "Add consumer — meter cannot already be assigned to another consumer",
     scenario: "meter_already_mapped",
     expectedStatus: 400,
     acceptableStatuses: [400, 409],
@@ -1071,8 +1059,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/consumers — Main/Sub Meter must be valid",
+    testName: "Add consumer — main/sub meter type must be valid",
     scenario: "invalid_main_sub_meter",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -1084,7 +1071,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName: "Validate POST /indore/consumers — Meter Phase must be valid",
+    testName: "Add consumer — meter phase must be valid",
     scenario: "invalid_meter_phase",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -1096,8 +1083,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/consumers — Service Point ID mandatory",
+    testName: "Add consumer — service point ID is required",
     scenario: "missing_service_point",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -1109,8 +1095,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/consumers — Meter Initial Reading must be greater than 0",
+    testName: "Add consumer — initial reading must be greater than zero",
     scenario: "reading_zero",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -1122,7 +1107,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName: "Validate POST /indore/consumers — SIM Number mandatory",
+    testName: "Add consumer — SIM number is required",
     scenario: "missing_sim",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -1134,7 +1119,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName: "Validate POST /indore/consumers — IMSI must be numeric",
+    testName: "Add consumer — IMSI must contain digits only",
     scenario: "invalid_imsi",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -1146,8 +1131,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/consumers — Meter Mobile Number must be 10 digits",
+    testName: "Add consumer — meter mobile number must be 10 digits",
     scenario: "invalid_meter_mobile",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -1159,7 +1143,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName: "Validate POST /indore/consumers — IP Address must be valid",
+    testName: "Add consumer — IP address must be valid",
     scenario: "invalid_ip",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
@@ -1171,8 +1155,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
     tags: ["@master-data", "@create-consumer", "@negative"],
   },
   {
-    testName:
-      "Validate POST /indore/consumers — Modem Serial Number mandatory",
+    testName: "Add consumer — modem serial is required",
     scenario: "missing_modem_serial",
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
