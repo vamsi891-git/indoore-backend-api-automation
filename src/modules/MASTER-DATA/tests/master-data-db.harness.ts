@@ -195,18 +195,17 @@ export async function runMasterDataDbCoverage(
     });
 
     const apiRow = (responseBody.data?.rows ?? []).find(
-      (row) => row.meterLookupTblRefId > 0 && row.meterSerialNumber?.trim(),
+      (row) =>
+        (row.meterLookupTblRefId ?? 0) > 0 && row.meterSerialNumber?.trim(),
     );
-    if (apiRow) {
-      const dbRow = await getConsumerByMeterLookupId(
-        db,
-        apiRow.meterLookupTblRefId,
-      );
+    if (apiRow?.meterLookupTblRefId) {
+      const lookupId = apiRow.meterLookupTblRefId;
+      const dbRow = await getConsumerByMeterLookupId(db, lookupId);
       validation.execute("Consumer Master spot vs V_Consumerdetails", () => {
         expect(dbRow, "DB row for API meter lookup id").toBeTruthy();
         compareConsumerMasterSpotToDb({
           api: {
-            meterLookupTblRefId: apiRow.meterLookupTblRefId,
+            meterLookupTblRefId: lookupId,
             meterSerialNumber: apiRow.meterSerialNumber,
             ivrsNo: apiRow.ivrsNo,
           },

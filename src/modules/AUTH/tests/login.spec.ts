@@ -165,8 +165,9 @@ test.describe("Auth Login API", () => {
               validator.validateLoginSession(session),
             );
           } else if (isTwoFactorChallengePayload(parsed.data)) {
+            const challenge = parsed.data;
             validation.execute("Two-Factor Challenge Payload", () =>
-              validator.validateTwoFactorChallenge(parsed.data),
+              validator.validateTwoFactorChallenge(challenge),
             );
           } else {
             const selection = AuthMapper.mapDeviceSelection(parsed.data);
