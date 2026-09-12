@@ -25,6 +25,7 @@ import {
   putWithAutoRefresh,
 } from "../../../core/utils/authenticated.request";
 import { LoggerEngine } from "../../../core/engine/logger.engine";
+import { normalizeApiBaseUrl } from "../../../core/utils/api-path.util";
 import {
   loadSharedInviteTokenContext,
   publishCapturedInviteTokenContext,
@@ -392,7 +393,7 @@ export async function createAuthenticatedApiContext(): Promise<APIRequestContext
   }
 
   const apiContext = await request.newContext({
-    baseURL: process.env.BASE_URL,
+    baseURL: normalizeApiBaseUrl(process.env.BASE_URL),
     extraHTTPHeaders: { Accept: "application/json" },
   });
 

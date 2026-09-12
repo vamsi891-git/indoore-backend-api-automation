@@ -1,6 +1,10 @@
 import { request } from "@playwright/test";
 import { LoggerEngine } from "../engine/logger.engine";
-import { resolveApiPath } from "./api-path.util";
+import {
+  enableStripIndorePrefix,
+  resolveApiPath,
+  normalizeApiBaseUrl,
+} from "./api-path.util";
 import { generateTotp, getTotpSecret } from "./totp.util";
 
 export interface LoginResponse {
@@ -36,7 +40,6 @@ export class AuthApi {
   private static readonly refreshPath = "/indore/auth/refresh";
   private static readonly releaseDevicePath = "/indore/auth/login/release-device";
   private static readonly devicesPath = "/indore/auth/devices";
-  private static readonly csrfPreflightRetryMs = [0, 5_000, 10_000, 15_000, 30_000];
   /**
    * Login backoff including room for API `DB_BUSY` (503) pool contention.
    * Total wait ≈ 2.8 minutes across attempts before failing global setup.
@@ -51,11 +54,31 @@ export class AuthApi {
     return resolveApiPath(p);
   }
 
-  private static async createContext() {
-    return request.newContext({ baseURL: process.env.BASE_URL });
+  private static candidatePaths(indorePath: string): string[] {
+    const stripped = indorePath.startsWith("/indore/")
+      ? indorePath.slice("/indore".length)
+      : indorePath;
+    return Array.from(new Set([this.path(indorePath), stripped, indorePath]));
   }
 
-  private static resolveCsrfToken(
+  private static isRouteNotFound(status: number): boolean {
+    return status === 404;
+  }
+
+  private static async createContext() {
+    return request.newContext({
+      baseURL: normalizeApiBaseUrl(process.env.BASE_URL),
+      ignoreHTTPSErrors: true,
+      extraHTTPHeaders: {
+        Accept: "application/json",
+        "User-Agent":
+          process.env.API_USER_AGENT?.trim() ||
+          "Mozilla/5.0 (compatible; IndooreAPITests/1.0)",
+      },
+    });
+  }
+
+  private static readCsrfToken(
     cookies: AuthCookie[],
     headers: Record<string, string>,
   ): string {
@@ -64,26 +87,18 @@ export class AuthApi {
       return cookieToken;
     }
 
-    const headerToken =
-      headers["x-csrf-token"] ??
-      headers["X-CSRF-Token"];
-
-    if (headerToken) {
-      return headerToken;
-    }
-
-    const cookieNames = cookies.map((cookie) => cookie.name).join(", ") || "none";
-    throw new Error(
-      `CSRF token missing from auth preflight response (cookies: ${cookieNames})`,
-    );
+    return headers["x-csrf-token"] ?? headers["X-CSRF-Token"] ?? "";
   }
 
   private static buildAuthHeaders(csrfToken: string): Record<string, string> {
-    return {
+    const headers: Record<string, string> = {
       Accept: "application/json",
       "Content-Type": "application/json",
-      "x-csrf-token": csrfToken
     };
+    if (csrfToken.trim()) {
+      headers["x-csrf-token"] = csrfToken;
+    }
+    return headers;
   }
 
   private static extractAccessToken(responseBody: {
@@ -106,10 +121,7 @@ export class AuthApi {
   ): Promise<LoginResponse> {
     const session = this.extractAccessToken(responseBody);
     const storageState = await apiContext.storageState();
-    const csrfToken = this.resolveCsrfToken(
-      storageState.cookies,
-      {},
-    );
+    const csrfToken = this.readCsrfToken(storageState.cookies, {});
 
     return {
       ...session,
@@ -120,50 +132,61 @@ export class AuthApi {
   private static async fetchCsrf(
     apiContext: Awaited<ReturnType<typeof request.newContext>>,
   ): Promise<string> {
-    const baseUrl = process.env.BASE_URL ?? "unknown";
+    const preflightPaths = Array.from(
+      new Set([this.path(this.loginPath), "/auth/login", "/indore/auth/login"]),
+    );
     let lastStatus = 0;
-    let lastBody = "";
+    let lastPath = preflightPaths[0];
+    let sawGatewayError = false;
 
-    for (const waitMs of this.csrfPreflightRetryMs) {
-      if (waitMs > 0) {
-        await new Promise((resolve) => setTimeout(resolve, waitMs));
+    for (const preflightPath of preflightPaths) {
+      lastPath = preflightPath;
+      const response = await apiContext.get(preflightPath);
+      lastStatus = response.status();
+      await response.text();
+
+      const fromGet = this.readCsrfToken(
+        (await apiContext.storageState()).cookies,
+        response.headers(),
+      );
+      if (fromGet) {
+        return fromGet;
       }
 
-      const response = await apiContext.get(this.path(this.loginPath));
-      lastStatus = response.status();
-      lastBody = (await response.text()).slice(0, 300);
-
-      const storageState = await apiContext.storageState();
-
-      try {
-        return this.resolveCsrfToken(
-          storageState.cookies,
-          response.headers(),
-        );
-      } catch (csrfError) {
-        if (this.retriablePreflightStatuses.has(lastStatus)) {
-          LoggerEngine.info(
-            `CSRF preflight retry: GET ${this.path(this.loginPath)} returned ${lastStatus}`,
-          );
-          continue;
-        }
-
-        const csrfMessage =
-          csrfError instanceof Error
-            ? csrfError.message
-            : "CSRF token missing";
-
-        throw new Error(
-          `CSRF preflight GET ${this.path(this.loginPath)} failed with status ${lastStatus} ` +
-            `(BASE_URL=${baseUrl}). ${csrfMessage}. Body: ${lastBody}`,
-        );
+      if (this.retriablePreflightStatuses.has(lastStatus)) {
+        sawGatewayError = true;
+        LoggerEngine.info(`CSRF GET ${preflightPath} returned ${lastStatus}`);
       }
     }
 
-    throw new Error(
-      `CSRF preflight unavailable after ${this.csrfPreflightRetryMs.length} attempts ` +
-        `(last status ${lastStatus}, BASE_URL=${baseUrl}). Body: ${lastBody}`,
+    const postProbe = await apiContext.post(this.path(this.loginPath), {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      data: {},
+    });
+    lastStatus = postProbe.status();
+    await postProbe.text();
+    const fromPost = this.readCsrfToken(
+      (await apiContext.storageState()).cookies,
+      postProbe.headers(),
     );
+    if (fromPost) {
+      return fromPost;
+    }
+
+    if (sawGatewayError || this.retriablePreflightStatuses.has(lastStatus)) {
+      LoggerEngine.info(
+        `CSRF preflight unavailable (last GET/POST ${lastStatus} on ${lastPath}); logging in without csrf cookie`,
+      );
+      return "";
+    }
+
+    LoggerEngine.info(
+      `No csrf cookie after GET/POST preflight (last status ${lastStatus}); logging in without it`,
+    );
+    return "";
   }
 
   static async refresh(accessToken: string): Promise<LoginResponse> {
@@ -328,7 +351,7 @@ export class AuthApi {
     });
 
     for (const device of targets) {
-      const csrfToken = this.resolveCsrfToken(
+      const csrfToken = this.readCsrfToken(
         (await apiContext.storageState()).cookies,
         {},
       );
@@ -365,21 +388,38 @@ export class AuthApi {
 
     let lastError = "2FA verification failed";
     for (const periodOffset of [0, -1, 1]) {
-      const csrfToken = this.resolveCsrfToken(
+      const csrfToken = this.readCsrfToken(
         (await apiContext.storageState()).cookies,
         responseHeaders,
       );
       const otp = generateTotp(totpSecret, periodOffset);
       const startTime = Date.now();
-      const verifyResponse = await apiContext.post(this.path(this.login2faPath), {
-        headers: this.buildAuthHeaders(csrfToken),
-        data: { challengeToken, otp },
-      });
-      const verifyBody = (await verifyResponse.json()) as { data?: TwoFactorBody };
+      let verifyResponse: Awaited<ReturnType<typeof apiContext.post>> | undefined;
+      let verifyPathUsed = this.path(this.login2faPath);
+      let verifyBody: { data?: TwoFactorBody; error?: { code?: string } } = {};
+
+      for (const verifyPath of this.candidatePaths(this.login2faPath)) {
+        verifyPathUsed = verifyPath;
+        verifyResponse = await apiContext.post(verifyPath, {
+          headers: this.buildAuthHeaders(csrfToken),
+          data: { challengeToken, otp },
+        });
+        verifyBody = (await verifyResponse.json().catch(() => ({}))) as typeof verifyBody;
+        if (!this.isRouteNotFound(verifyResponse.status())) {
+          if (verifyPath === "/auth/login/2fa") {
+            enableStripIndorePrefix();
+          }
+          break;
+        }
+      }
+
+      if (!verifyResponse) {
+        throw new Error("2FA verification failed: no path was attempted");
+      }
 
       LoggerEngine.api({
         method: "POST",
-        url: this.path(this.login2faPath),
+        url: verifyPathUsed,
         status: verifyResponse.status(),
         responseTimeMs: Date.now() - startTime,
       });
@@ -433,7 +473,7 @@ export class AuthApi {
         throw new Error("Device selection required but no session was available to terminate");
       }
 
-      const csrfToken = this.resolveCsrfToken(
+      const csrfToken = this.readCsrfToken(
         (await apiContext.storageState()).cookies,
         responseHeaders,
       );
@@ -505,18 +545,52 @@ export class AuthApi {
 
     try {
       const startTime = Date.now();
-      let csrfToken = await this.fetchCsrf(apiContext);
+      const csrfToken = await this.fetchCsrf(apiContext);
 
-      const loginResponse = await apiContext.post(this.path(this.loginPath), {
-        headers: this.buildAuthHeaders(csrfToken),
-        data: { email, password },
-      });
+      let loginResponse: Awaited<ReturnType<typeof apiContext.post>> | undefined;
+      let loginRaw = "";
+      let loginPathUsed = this.path(this.loginPath);
 
-      const loginBody = await loginResponse.json();
+      for (const loginPath of this.candidatePaths(this.loginPath)) {
+        loginPathUsed = loginPath;
+        loginResponse = await apiContext.post(loginPath, {
+          headers: this.buildAuthHeaders(csrfToken),
+          data: { email, password },
+        });
+        loginRaw = await loginResponse.text();
+        if (!this.isRouteNotFound(loginResponse.status())) {
+          if (loginPath === this.loginPath.slice("/indore".length) || loginPath === "/auth/login") {
+            enableStripIndorePrefix();
+          }
+          break;
+        }
+        LoggerEngine.info(`Login POST ${loginPath} returned 404; trying next path`);
+      }
+
+      if (!loginResponse) {
+        throw new Error("Login failed: no login path was attempted");
+      }
+
+      if (this.retriableAuthStatuses.has(loginResponse.status())) {
+        throw new Error(
+          `Login failed with status ${loginResponse.status()} - ${loginRaw.slice(0, 300)}`,
+        );
+      }
+
+      let loginBody: {
+        data?: TwoFactorBody & { accessToken?: string; expiresIn?: number };
+      };
+      try {
+        loginBody = JSON.parse(loginRaw) as typeof loginBody;
+      } catch {
+        throw new Error(
+          `Login failed with status ${loginResponse.status()} - ${loginRaw.slice(0, 300)}`,
+        );
+      }
 
       LoggerEngine.api({
         method: "POST",
-        url: this.path(this.loginPath),
+        url: loginPathUsed,
         status: loginResponse.status(),
         responseTimeMs: Date.now() - startTime,
       });

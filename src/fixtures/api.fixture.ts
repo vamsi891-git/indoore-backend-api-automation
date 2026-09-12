@@ -2,6 +2,7 @@ import { test as base, request, APIRequestContext } from "./base.fixture";
 import { LoggerEngine } from "../core/engine/logger.engine";
 import { DEFAULT_REQUEST_TIMEOUT_MS } from "../core/constants/api-timeouts";
 import {getWithAutoRefresh,postWithAutoRefresh,putWithAutoRefresh,patchWithAutoRefresh,deleteWithAutoRefresh} from "../core/utils/authenticated.request";
+import { normalizeApiBaseUrl } from "../core/utils/api-path.util";
 type ApiFixtures = {
   authenticatedApi: APIRequestContext;
 };
@@ -11,10 +12,10 @@ export const test = base.extend<ApiFixtures>({
       throw new Error("BASE_URL missing in environment");
     }
     const apiContext = await request.newContext({
-      baseURL: process.env.BASE_URL,
+      baseURL: normalizeApiBaseUrl(process.env.BASE_URL),
       extraHTTPHeaders: {
-        Accept: "application/json"
-      }
+        Accept: "application/json",
+      },
     });
     const wrappedApiContext = {
       ...apiContext,

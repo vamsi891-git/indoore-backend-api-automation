@@ -35,6 +35,8 @@ jobs:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
       PLAYWRIGHT_WORKERS: 2
       BASE_URL: ${{ secrets.BASE_URL }}
+      # Live MPPKVVCL API is POST /auth/login (no /indore prefix).
+      STRIP_INDORE_PREFIX: ${{ vars.STRIP_INDORE_PREFIX || 'true' }}
       EMAIL: ${{ secrets.EMAIL }}
       USERNAME: ${{ secrets.USERNAME }}
       PASSWORD: ${{ secrets.PASSWORD }}
@@ -130,6 +132,25 @@ jobs:
         with:
           node-version: "20"
           cache: npm
+
+      - name: Confirm API host
+        run: |
+          node -e "
+            const raw = (process.env.BASE_URL || '').trim().replace(/\/+$/, '').replace(/\/indore$/i, '');
+            if (!raw) {
+              console.error('BASE_URL secret is empty.');
+              process.exit(1);
+            }
+            const u = new URL(raw);
+            console.log('API origin host=' + u.hostname + ' protocol=' + u.protocol);
+            if (process.env.BASE_URL.trim() !== raw) {
+              console.log('Note: trailing slash or /indore was stripped from BASE_URL so paths are not doubled.');
+            }
+            if (/^(localhost|127\\.0\\.0\\.1|0\\.0\\.0\\.0)$/i.test(u.hostname)) {
+              console.error('BASE_URL points at localhost. GitHub Actions cannot reach your PC.');
+              process.exit(1);
+            }
+          "
 
       - name: Setup Java (Allure CLI)
         uses: actions/setup-java@v4

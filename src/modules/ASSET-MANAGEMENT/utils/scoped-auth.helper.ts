@@ -1,5 +1,6 @@
 import { request, type APIRequestContext } from "@playwright/test";
 import { AuthApi } from "../../../core/utils/auth.util";
+import { normalizeApiBaseUrl } from "../../../core/utils/api-path.util";
 
 export async function createBearerApiContext(
   accessToken: string,
@@ -9,7 +10,7 @@ export async function createBearerApiContext(
   }
 
   return request.newContext({
-    baseURL: process.env.BASE_URL,
+    baseURL: normalizeApiBaseUrl(process.env.BASE_URL),
     extraHTTPHeaders: {
       Accept: "application/json",
       Authorization: `Bearer ${accessToken}`,
