@@ -38,6 +38,8 @@ jobs:
       EMAIL: ${{ secrets.EMAIL }}
       USERNAME: ${{ secrets.USERNAME }}
       PASSWORD: ${{ secrets.PASSWORD }}
+      # Authenticator base32 secret (same as local TOTP_SECRET). Not the 6-digit OTP.
+      TOTP_SECRET: ${{ secrets.TOTP_SECRET }}
       DEVICE_ID: ${{ secrets.DEVICE_ID }}
       GMAIL_IMAP_USER: ${{ secrets.GMAIL_IMAP_USER }}
       GMAIL_IMAP_APP_PASSWORD: ${{ secrets.GMAIL_IMAP_APP_PASSWORD }}
@@ -110,6 +112,7 @@ jobs:
           if [ -z "$GMAIL_IMAP_USER" ] && [ -z "$INVITE_ACCEPT_TOKEN" ]; then
             optional_missing="$optional_missing GMAIL_IMAP_* or INVITE_ACCEPT_TOKEN"
           fi
+          [ -z "$TOTP_SECRET" ] && optional_missing="$optional_missing TOTP_SECRET"
           if [ -n "$optional_missing" ]; then
             echo "::notice title=Optional secrets not set::Tests that need these will skip:$optional_missing"
           else

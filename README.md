@@ -339,6 +339,7 @@ CI does **not** use your local `.env` file. You must add secrets on GitHub:
 | `PASSWORD` | **Yes** | Same as local `.env` |
 | `EMAIL` | Yes* | Same as local `.env` |
 | `USERNAME` | Yes* | Use instead of `EMAIL` if that is what you use locally |
+| `TOTP_SECRET` | If login uses 2FA | Same base32 secret as local `.env` — **not** the 6-digit code |
 | `DEVICE_ID` | No | Only if login requires device selection |
 | `GMAIL_IMAP_USER` | No | Invite E2E auto-capture in CI |
 | `GMAIL_IMAP_APP_PASSWORD` | No | Gmail app password for invite tests |
