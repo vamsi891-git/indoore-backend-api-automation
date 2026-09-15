@@ -1,0 +1,19 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/mis-dashboard/communication-category",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "categories",
+    "fromDate",
+    "toDate"
+  ],
+  "itemKeys": [
+    "categories",
+    "fromDate",
+    "toDate"
+  ],
+  "hasColumnsGrid": false
+}

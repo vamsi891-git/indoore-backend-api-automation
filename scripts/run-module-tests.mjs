@@ -3,8 +3,10 @@
  *
  *   npm run test:module -- master-data
  *   npm run test:module -- master-data --smoke
+ *   npm run test:module -- master-data --api
  *   npm run test:module -- master-data --db
  *
+ * Default is API-only (skips @db). Use --db or npm run test:<slug>:db for SQL checks.
  * Mutation-proof tests stay off unless INCLUDE_MUTATION_PROOF=true
  * or you run npm run test:<slug>:mutation-proof
  */
@@ -39,19 +41,20 @@ if (!module) {
 }
 
 const playwrightArgs = ["playwright", "test", module.testPath, "--workers=1"];
-let scopeLabel = "all";
+let scopeLabel = "api";
 const wantMutationProof =
   process.env.INCLUDE_MUTATION_PROOF?.trim().toLowerCase() === "true";
 
 if (smoke) {
   playwrightArgs.push("--grep", "@smoke");
   scopeLabel = "smoke";
-} else if (apiOnly) {
-  playwrightArgs.push("--grep-invert", "@db");
-  scopeLabel = "api";
 } else if (dbOnly) {
   playwrightArgs.push("--grep", "@db");
   scopeLabel = "db";
+} else {
+  // Default (and --api): GET/list specs only. Archive DB checks are `npm run test:<slug>:db`.
+  playwrightArgs.push("--grep-invert", "@db");
+  scopeLabel = "api";
 }
 
 const env = { ...process.env };

@@ -1,0 +1,19 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/mis-dashboard/priority-overview",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "fromDate",
+    "priorities",
+    "toDate"
+  ],
+  "itemKeys": [
+    "fromDate",
+    "priorities",
+    "toDate"
+  ],
+  "hasColumnsGrid": false
+}

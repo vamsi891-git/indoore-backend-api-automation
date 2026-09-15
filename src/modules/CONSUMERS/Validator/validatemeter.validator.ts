@@ -102,6 +102,41 @@ export class ValidateMeterValidator {
     this.validateMeterDetails(response.data.meterDetails);
   }
 
+  /** Same serial must not produce a second, different assignment outcome. */
+  validateDuplicateGetConsistency(
+    first: ValidateMeterData,
+    second: ValidateMeterData,
+  ): void {
+    expect(second.valid).toBe(first.valid);
+    expect(second.reason ?? null).toBe(first.reason ?? null);
+    expect(second.meterExists ?? null).toBe(first.meterExists ?? null);
+    expect(second.meterLookupId ?? null).toBe(first.meterLookupId ?? null);
+    expect(second.meterSerialNumber?.trim()).toBe(
+      first.meterSerialNumber?.trim(),
+    );
+  }
+
+  validatePaddedSerialEcho(
+    data: ValidateMeterData,
+    requestedSerial: string,
+  ): void {
+    expect(data.meterSerialNumber?.trim()).toBe(requestedSerial.trim());
+  }
+
+  validateOrganisationQueryAccepted(data: ValidateMeterData): void {
+    expect(typeof data.valid).toBe("boolean");
+    if (!data.valid && data.reason) {
+      expect(INVALID_REASONS).toContain(data.reason);
+    }
+  }
+
+  validateForeignOrganisationOutcome(data: ValidateMeterData): void {
+    expect(typeof data.valid).toBe("boolean");
+    if (data.reason) {
+      expect(INVALID_REASONS).toContain(data.reason);
+    }
+  }
+
   validateMeterInactive(response: ValidateMeterResponse): void {
     expect(response.data.valid).toBe(false);
     expect(response.data.reason).toBe("METER_INACTIVE");
@@ -140,6 +175,8 @@ export class ValidateMeterValidator {
     );
     const fieldErrors = responseBody.error.details?.fieldErrors?.[field];
     expect(Array.isArray(fieldErrors) && fieldErrors.length > 0).toBeTruthy();
+    const uniqueErrors = new Set(fieldErrors);
+    expect(uniqueErrors.size).toBe(fieldErrors!.length);
   }
 
   validateScenario(
@@ -161,6 +198,18 @@ export class ValidateMeterValidator {
         break;
       case "inactive":
         this.validateMeterInactive(response);
+        break;
+      case "duplicate_get":
+      case "unknown_query":
+      case "organisation_lookup":
+        this.validateOrganisationQueryAccepted(response.data);
+        break;
+      case "padded_serial":
+        this.validatePaddedSerialEcho(response.data, requestedSerial);
+        this.validateOrganisationQueryAccepted(response.data);
+        break;
+      case "foreign_org_id":
+        this.validateForeignOrganisationOutcome(response.data);
         break;
       default:
         break;

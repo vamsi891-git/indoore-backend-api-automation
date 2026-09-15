@@ -3,8 +3,8 @@ import { isDbConfigured } from "../../../core/db/postgres.client";
 import { isConsumersDbSqlReady } from "../Db/consumers.db";
 import { runConsumersDbCoverage } from "./consumers-db.harness";
 
-apiDbTest.describe("CONSUMERS — DB Coverage", () => {
-  apiDbTest.describe.configure({ retries: 1 });
+apiDbTest.describe("Consumers — screen data matches the database", () => {
+  apiDbTest.describe.configure({ retries: 0 });
   apiDbTest.setTimeout(180_000);
 
   apiDbTest.beforeEach(() => {
@@ -16,7 +16,7 @@ apiDbTest.describe("CONSUMERS — DB Coverage", () => {
   });
 
   apiDbTest(
-    "IND-CON-DB-001 — Profile + meter + activation + billing + communication + real-time-power + power-quality vs DB",
+    "Consumers — profile, meter, billing, communication and live readings match the database",
     { tag: ["@consumers", "@db", "@profile"] },
     async ({ authenticatedApi, db, archiveDb }) => {
       await runConsumersDbCoverage(authenticatedApi, db, archiveDb);

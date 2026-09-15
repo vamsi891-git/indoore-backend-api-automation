@@ -38,11 +38,18 @@ export class NearestAccountIdsValidator {
   }
 
   validateNearestAccountIdsShape(data: NearestAccountIdsData): void {
-    for (const id of data.nearestAccountIds) {
+    const trimmedIds = data.nearestAccountIds.map((id) => {
       expect(typeof id).toBe("string");
       expect(id.trim().length).toBeGreaterThan(0);
       expect(extractTrailingAccountIdNumber(id)).not.toBeNull();
-    }
+      return id.trim();
+    });
+    expect(new Set(trimmedIds).size).toBe(trimmedIds.length);
+  }
+
+  validateNoDuplicateAccountIds(data: NearestAccountIdsData): void {
+    const trimmedIds = data.nearestAccountIds.map((id) => id.trim());
+    expect(new Set(trimmedIds).size).toBe(trimmedIds.length);
   }
 
   validateExcludesInputAccount(

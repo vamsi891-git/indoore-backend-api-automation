@@ -5,7 +5,9 @@ import { MIS_SLOW_REQUEST_TIMEOUT_MS } from "../../../core/constants/api-timeout
 export type EventTransactionApiResult = ApiCallResult;
 
 export class EventTransactionApi extends TimedApiClient {
-  getTransactionData(params: Record<string, string>): Promise<EventTransactionApiResult> {
+  getTransactionData(
+    params: Record<string, string | number | boolean>,
+  ): Promise<EventTransactionApiResult> {
     return this.getJson("/indore/mis-dashboard/event-data/transaction", {
       params,
       timeout: MIS_SLOW_REQUEST_TIMEOUT_MS

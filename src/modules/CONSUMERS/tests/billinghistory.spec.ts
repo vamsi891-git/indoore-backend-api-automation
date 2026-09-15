@@ -8,7 +8,7 @@ import { BillingHistoryApi } from "../Api/billinghistory.api";
 import {billingHistoryMaxResponseTimeMs,billingHistoryTestCases,resolveBillingHistoryContractBody,resolveBillingHistoryExpectedLimit,resolveBillingHistoryQuery,resolveBillingHistoryRef,} from "../Data/billinghistory.data";
 import {BillingHistoryMapper,type BillingHistoryErrorResponse,} from "../Mapper/billinghistory.mapper";
 import { BillingHistoryValidator } from "../Validator/billinghistory.validator";
-test.describe("Billing History API", () => {
+test.describe("Billing history", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
   for (const testCase of billingHistoryTestCases) {
@@ -132,6 +132,9 @@ test.describe("Billing History API", () => {
         );
 
         const mapped = BillingHistoryMapper.map(responseBody);
+        validation.execute("No Duplicate Period Labels", () =>
+          validator.validateUniquePeriodLabels(mapped.items),
+        );
         validation.execute("Billing History Scenario", () =>
           validator.validateScenario(mapped, testCase.scenario, billingLimit),
         );

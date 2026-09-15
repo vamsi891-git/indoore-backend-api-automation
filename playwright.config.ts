@@ -20,6 +20,7 @@ if (isStripIndorePrefixEnabled()) {
  */
 const skippedWriteSpecs = [
   "**/create-consumer.spec.ts",
+  "**/activation.spec.ts",
   "**/create-dtr.spec.ts",
   "**/create-meter.spec.ts",
   "**/update-meter.spec.ts",

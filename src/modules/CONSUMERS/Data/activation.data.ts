@@ -44,14 +44,14 @@ export function resolveActivationConsumerId(scenario: ActivationScenario,): stri
 export const activationTestCases: ActivationTestCase[] = [
   {
     testName:
-      "Validate PATCH /indore/consumers/{consumerId}/activation — activate consumer",
+      "Turn consumer on — active status is saved",
     scenario: "activate",
     requestStatus: "active",
     tags: ["@smoke", "@consumer", "@activation"],
   },
   {
     testName:
-      "Validate PATCH /indore/consumers/{consumerId}/activation — deactivate consumer",
+      "Turn consumer off — inactive status is saved",
     scenario: "deactivate",
     requestStatus: "inactive",
     restoreStatus: "active",
@@ -59,14 +59,14 @@ export const activationTestCases: ActivationTestCase[] = [
   },
   {
     testName:
-      "Validate PATCH /indore/consumers/{consumerId}/activation — idempotent activate when already active",
+      "Turn consumer on — already active stays active",
     scenario: "activate_idempotent",
     requestStatus: "active",
     tags: ["@consumer", "@activation", "@edge"],
   },
   {
     testName:
-      "Validate PATCH /indore/consumers/{consumerId}/activation — consumer not found",
+      "Turn consumer on or off — unknown consumer is not found",
     scenario: "consumer_not_found",
     requestStatus: "active",
     expectedStatus: 404,
@@ -74,7 +74,7 @@ export const activationTestCases: ActivationTestCase[] = [
   },
   {
     testName:
-      "Validate PATCH /indore/consumers/{consumerId}/activation — meter route rejected",
+      "Turn consumer on or off — cannot use a meter number here",
     scenario: "meter_route_rejected",
     requestStatus: "active",
     expectedStatus: 404,
@@ -82,7 +82,7 @@ export const activationTestCases: ActivationTestCase[] = [
   },
   {
     testName:
-      "Validate PATCH /indore/consumers/{consumerId}/activation — invalid status enum",
+      "Turn consumer on or off — invalid status is rejected",
     scenario: "invalid_status",
     invalidStatus: "invalid",
     expectedStatus: 400,
@@ -90,7 +90,7 @@ export const activationTestCases: ActivationTestCase[] = [
   },
   {
     testName:
-      "Validate PATCH /indore/consumers/{consumerId}/activation — empty status rejected",
+      "Turn consumer on or off — empty status is rejected",
     scenario: "empty_status",
     invalidStatus: "",
     expectedStatus: 400,
@@ -98,7 +98,7 @@ export const activationTestCases: ActivationTestCase[] = [
   },
   {
     testName:
-      "Validate PATCH /indore/consumers/{consumerId}/activation — missing status required",
+      "Turn consumer on or off — status is required",
     scenario: "missing_status",
     expectedStatus: 400,
     tags: ["@consumer", "@activation", "@negative"],

@@ -8,7 +8,7 @@ import { CommunicationStatusApi } from "../Api/communicationstatus.api";
 import {communicationStatusMaxResponseTimeMs,communicationStatusSampleDate,communicationStatusTestCases,resolveCommunicationStatusContractBody,resolveCommunicationStatusQuery,resolveCommunicationStatusRef,} from "../Data/communicationstatus.data";
 import {CommunicationStatusMapper,type CommunicationStatusErrorResponse,} from "../Mapper/communicationstatus.mapper";
 import { CommunicationStatusValidator } from "../Validator/communicationstatus.validator";
-test.describe("Communication Status API", () => {
+test.describe("Meter communication", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
   for (const testCase of communicationStatusTestCases) {

@@ -285,117 +285,117 @@ export const energyConsumptionGraphTestCases: EnergyConsumptionGraphTestCase[] =
   [
     {
       testName:
-        "Validate GET /indore/consumers/{ivrs}/energy-consumption-graph?period=daily — success with chart points",
+        "Consumption chart — daily usage for the consumer",
       scenario: "ecg_by_ivrs_daily",
       tags: ["@smoke", "@consumer", "@energy-consumption-graph"],
     },
     {
       testName:
-        "Validate GET /indore/consumers/{ivrs}/energy-consumption-graph?period=hourly — rolling 12 IST hours",
+        "Consumption chart — last few hours",
       scenario: "ecg_period_hourly",
       tags: ["@consumer", "@energy-consumption-graph", "@edge"],
     },
     {
       testName:
-        "Validate GET /indore/consumers/{ivrs}/energy-consumption-graph?period=weekly — 8 week buckets",
+        "Consumption chart — weekly view",
       scenario: "ecg_period_weekly",
       tags: ["@consumer", "@energy-consumption-graph", "@edge"],
     },
     {
       testName:
-        "Validate GET /indore/consumers/{ivrs}/energy-consumption-graph?period=monthly — 12 month buckets",
+        "Consumption chart — monthly view",
       scenario: "ecg_period_monthly",
       tags: ["@consumer", "@energy-consumption-graph", "@edge"],
     },
     {
       testName:
-        "Validate GET /indore/consumers/{ivrs}/energy-consumption-graph?period=yearly — 12 year buckets",
+        "Consumption chart — yearly view",
       scenario: "ecg_period_yearly",
       tags: ["@consumer", "@energy-consumption-graph", "@edge"],
     },
     {
       testName:
-        "Validate GET /indore/consumers/{consumerId}/energy-consumption-graph — resolve by account id",
+        "Consumption chart — opens using the account number",
       scenario: "ecg_by_account",
       tags: ["@consumer", "@energy-consumption-graph", "@edge"],
     },
     {
       testName:
-        "Validate GET /indore/consumers/meter-{id}/energy-consumption-graph — resolve by meter lookup id",
+        "Consumption chart — opens using the meter",
       scenario: "ecg_by_meter",
       tags: ["@consumer", "@energy-consumption-graph", "@edge"],
     },
     {
       testName:
-        "Validate GET /indore/consumers/{ivrs}/energy-consumption-graph — unknown query params ignored",
+        "Consumption chart — extra unused options are ignored",
       scenario: "ecg_ignore_unknown_query",
       tags: ["@consumer", "@energy-consumption-graph", "@edge"],
     },
     {
       testName:
-        "Contract — hourly period with 12 HH:00 labels and consumptionKwh",
+        "Consumption chart — sample: hourly usage",
       scenario: "contract_hourly",
       isContractFixture: true,
       tags: ["@consumer", "@energy-consumption-graph", "@edge"],
     },
     {
       testName:
-        "Contract — daily period with 12 day labels (D Mon) and consumptionKwh",
+        "Consumption chart — sample: daily usage",
       scenario: "contract_daily",
       isContractFixture: true,
       tags: ["@consumer", "@energy-consumption-graph", "@edge"],
     },
     {
       testName:
-        "Contract — weekly period with W1–W8 labels and consumptionKwh",
+        "Consumption chart — sample: weekly usage",
       scenario: "contract_weekly",
       isContractFixture: true,
       tags: ["@consumer", "@energy-consumption-graph", "@edge"],
     },
     {
       testName:
-        "Contract — monthly period with Mon YYYY labels and consumptionKwh",
+        "Consumption chart — sample: monthly usage",
       scenario: "contract_monthly",
       isContractFixture: true,
       tags: ["@consumer", "@energy-consumption-graph", "@edge"],
     },
     {
       testName:
-        "Contract — yearly period with 4-digit year labels and consumptionKwh",
+        "Consumption chart — sample: yearly usage",
       scenario: "contract_yearly",
       isContractFixture: true,
       tags: ["@consumer", "@energy-consumption-graph", "@edge"],
     },
     {
       testName:
-        "Contract — daily period with non-zero consumptionKwh deltas (roundEnergy)",
+        "Consumption chart — sample: days with usage",
       scenario: "contract_nonzero_consumption",
       isContractFixture: true,
       tags: ["@consumer", "@energy-consumption-graph", "@edge"],
     },
     {
       testName:
-        "Validate GET /indore/consumers/{consumerId}/energy-consumption-graph — consumer not found",
+        "Consumption chart — unknown consumer is not found",
       scenario: "consumer_not_found",
       expectedStatus: 404,
       tags: ["@consumer", "@energy-consumption-graph", "@negative"],
     },
     {
       testName:
-        "Validate GET /indore/consumers/meter-{id}/energy-consumption-graph — unknown meter not found or empty chart",
+        "Consumption chart — unknown meter is empty or not found",
       scenario: "meter_not_found",
       tags: ["@consumer", "@energy-consumption-graph", "@negative"],
     },
     {
       testName:
-        "Validate GET /indore/consumers/{ref}/energy-consumption-graph — blank consumer ref rejected",
+        "Consumption chart — blank consumer number is rejected",
       scenario: "empty_consumer_ref",
       expectedStatus: 400,
       tags: ["@consumer", "@energy-consumption-graph", "@negative"],
     },
     {
       testName:
-        "Validate GET /indore/consumers/{ivrs}/energy-consumption-graph — invalid period enum rejected",
+        "Consumption chart — invalid time range is rejected",
       scenario: "invalid_period",
       expectedStatus: 400,
       tags: ["@consumer", "@energy-consumption-graph", "@negative"],

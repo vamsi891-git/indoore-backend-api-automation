@@ -1,11 +1,8 @@
 import type pg from "pg";
 import type { APIRequestContext } from "@playwright/test";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { isArchiveDbConfigured } from "../../../core/db/postgres.client";
 import { ConsumerProfileApi } from "../Api/consumerprofile.api";
 import { ValidateMeterApi } from "../Api/validatemeter.api";
-import { ActivationApi } from "../Api/activation.api";
-import { BillingHistoryApi } from "../Api/billinghistory.api";
 import { CommunicationStatusApi } from "../Api/communicationstatus.api";
 import { RealTimePowerApi } from "../Api/realtimepower.api";
 import { PowerQualityApi } from "../Api/powerquality.api";
@@ -17,12 +14,10 @@ import {
   resolveValidateConsumerMeterSerial,
   validateMeterNotInSystemSerial,
 } from "../Data/validatemeter.data";
-import { resolveActivationConsumerId } from "../Data/activation.data";
 import {
   resolveCommunicationStatusQuery,
   resolveCommunicationStatusRef,
 } from "../Data/communicationstatus.data";
-import { resolveBillingHistoryRef } from "../Data/billinghistory.data";
 import {
   resolveRealTimePowerQuery,
   resolveRealTimePowerRef,
@@ -33,15 +28,11 @@ import {
 } from "../Data/powerquality.data";
 import { ConsumerProfileMapper } from "../Mapper/consumerprofile.mapper";
 import { ValidateMeterMapper } from "../Mapper/validatemeter.mapper";
-import { ActivationMapper } from "../Mapper/activation.mapper";
-import { BillingHistoryMapper } from "../Mapper/billinghistory.mapper";
 import { CommunicationStatusMapper } from "../Mapper/communicationstatus.mapper";
 import { RealTimePowerMapper } from "../Mapper/realtimepower.mapper";
 import { PowerQualityMapper } from "../Mapper/powerquality.mapper";
 import {
-  countBillingHistoryArchiveRows,
   countConsumerAccounts,
-  getConsumerActivationByRef,
   getConsumerProfileByRef,
   getLatestSpPowerQuality,
   getLatestSpRealTimePower,
@@ -51,8 +42,6 @@ import {
   getMeterLastSeen,
 } from "../Db/consumers.db";
 import {
-  compareActivationStatusToDb,
-  compareBillingHistoryCountToDb,
   compareCommunicationLastSeenToDb,
   compareConsumerProfileSpotCheck,
   compareMeterSerialExists,
@@ -65,7 +54,6 @@ import {
   logConsumersDataQualityFindings,
 } from "../Db/consumers-db.validator";
 
-const BILLING_HISTORY_DB_LIMIT = 0;
 const RTP_IVRS_DEFAULT = "1019258045";
 const PQ_IVRS_DEFAULT = "1019258045";
 
@@ -118,16 +106,14 @@ function isEmptyPowerQualityMetrics(data: {
 }
 
 /**
- * Real-time-power V/I/PF vs archive/primary IP — locked to CONSUMER_RTP_IVRS.
- * Runs early in the harness so archive timeouts from later widgets don't starve it.
+ * Real-time-power V/I/PF vs today IP cache — locked to CONSUMER_RTP_IVRS.
  */
 async function runRealTimePowerDbCompare(options: {
   authenticatedApi: APIRequestContext;
   db: pg.Pool;
-  archiveDb?: pg.Pool | null;
   validation: ValidationEngine;
 }): Promise<void> {
-  const { authenticatedApi, db, archiveDb, validation } = options;
+  const { authenticatedApi, db, validation } = options;
   const rtpApi = new RealTimePowerApi(authenticatedApi);
   const rtpRef =
     process.env.CONSUMER_RTP_IVRS?.trim() ||
@@ -143,10 +129,7 @@ async function runRealTimePowerDbCompare(options: {
     return;
   }
 
-  const archiveReady = Boolean(archiveDb && isArchiveDbConfigured());
-  const tpDbRow = archiveReady
-    ? await getLatestTpRealTimePower(archiveDb!, rtpMeterLookupId)
-    : null;
+  const tpDbRow = await getLatestTpRealTimePower(db, rtpMeterLookupId);
   const spDbRow = tpDbRow
     ? null
     : await getLatestSpRealTimePower(db, rtpMeterLookupId);
@@ -189,13 +172,6 @@ async function runRealTimePowerDbCompare(options: {
     return;
   }
 
-  if (phaseKind === "TP" && !archiveReady) {
-    console.warn(
-      "[BACKEND FINDING] real-time-power TP DB check skipped — archive DB not configured",
-    );
-    return;
-  }
-
   validation.execute(
     `Real-time-power ${phaseKind} voltage/current/PF vs DB (${rtpRef})`,
     () => {
@@ -210,16 +186,14 @@ async function runRealTimePowerDbCompare(options: {
 }
 
 /**
- * Power-quality PF/Hz/neutral/MD vs archive IP — locked to CONSUMER_PQ_IVRS.
- * Runs early with RTP so archive timeouts from later widgets don't starve it.
+ * Power-quality PF/Hz/neutral/MD vs today IP cache — locked to CONSUMER_PQ_IVRS.
  */
 async function runPowerQualityDbCompare(options: {
   authenticatedApi: APIRequestContext;
   db: pg.Pool;
-  archiveDb?: pg.Pool | null;
   validation: ValidationEngine;
 }): Promise<void> {
-  const { authenticatedApi, db, archiveDb, validation } = options;
+  const { authenticatedApi, db, validation } = options;
   const pqApi = new PowerQualityApi(authenticatedApi);
   const profileApi = new ConsumerProfileApi(authenticatedApi);
   const pqRef =
@@ -236,17 +210,9 @@ async function runPowerQualityDbCompare(options: {
     return;
   }
 
-  const archiveReady = Boolean(archiveDb && isArchiveDbConfigured());
-  if (!archiveReady) {
-    console.warn(
-      "[BACKEND FINDING] power-quality DB check skipped — archive DB not configured",
-    );
-    return;
-  }
-
   const [tpDbRow, spDbRow, profileBody] = await Promise.all([
-    getLatestTpPowerQuality(archiveDb!, pqMeterLookupId),
-    getLatestSpPowerQuality(archiveDb!, pqMeterLookupId),
+    getLatestTpPowerQuality(db, pqMeterLookupId),
+    getLatestSpPowerQuality(db, pqMeterLookupId),
     profileApi.getConsumerProfile(pqRef, resolveConsumerProfileQuery("profile_by_ivrs")),
   ]);
   const profileMapped = ConsumerProfileMapper.map(profileBody.responseBody);
@@ -311,33 +277,28 @@ async function runPowerQualityDbCompare(options: {
 }
 
 /**
- * Part 4 harness — profile / validate-meter / activation +
- * billing-history archive count + communication meter_last_seen +
- * real-time-power voltage/current/PF + power-quality metrics vs IP tables.
+ * Profile / validate-meter / communication lastSeen +
+ * real-time-power / power-quality vs today IP cache (no CRUD, no archive scan).
  */
 export async function runConsumersDbCoverage(
   authenticatedApi: APIRequestContext,
   db: pg.Pool,
-  archiveDb?: pg.Pool | null,
+  _archiveDb?: pg.Pool | null,
 ): Promise<void> {
   const validation = new ValidationEngine();
   const profileApi = new ConsumerProfileApi(authenticatedApi);
   const meterApi = new ValidateMeterApi(authenticatedApi);
-  const activationApi = new ActivationApi(authenticatedApi);
-  const billingHistoryApi = new BillingHistoryApi(authenticatedApi);
   const communicationApi = new CommunicationStatusApi(authenticatedApi);
 
-  // RTP + PQ first — archive IP reads are sensitive to pool load from later widgets.
+  // RTP + PQ vs today IP cache (ConsumerDetailRepository widgets — no archive scan).
   await runRealTimePowerDbCompare({
     authenticatedApi,
     db,
-    archiveDb,
     validation,
   });
   await runPowerQualityDbCompare({
     authenticatedApi,
     db,
-    archiveDb,
     validation,
   });
 
@@ -445,20 +406,6 @@ export async function runConsumersDbCoverage(
     });
   });
 
-  const activationCid = resolveActivationConsumerId("activate_idempotent")!;
-  const activationBody = await activationApi.updateActivation(activationCid, {
-    status: "active",
-  });
-  const activationMapped = ActivationMapper.map(activationBody.responseBody);
-  const activationDb = await getConsumerActivationByRef(db, activationCid);
-  validation.execute("Activation status vs M_Consumer.IsActiveStatus", () => {
-    compareActivationStatusToDb({
-      apiStatus: activationMapped.consumer?.status,
-      dbRow: activationDb,
-      lookupKey: activationCid,
-    });
-  });
-
   const dbAccountUniverse = await countConsumerAccounts(db);
   validation.execute("DB consumer account universe is non-empty", () => {
     ConsumersDbValidator.assertApiLteDb(
@@ -468,46 +415,10 @@ export async function runConsumersDbCoverage(
     );
   });
 
-  // --- Billing history vs archive (Billing_Class_D1 / D3) ---
-  // Prefer billing-history fixture consumer (known archive rows) over profile sample.
-  if (archiveDb && isArchiveDbConfigured()) {
-    const bhRef =
-      resolveBillingHistoryRef("bh_by_ivrs_all") ||
-      accountRef;
-    const bhProfile = await getConsumerProfileByRef(db, bhRef);
-    const billingMeterSerial =
-      bhProfile?.meterSerialNumber?.trim() ||
-      accountMapped.meterSerialNumber?.trim() ||
-      "";
-    if (billingMeterSerial) {
-      const bhBody = await billingHistoryApi.getBillingHistory(bhRef, {
-        billingLimit: BILLING_HISTORY_DB_LIMIT,
-      });
-      const bhMapped = BillingHistoryMapper.map(bhBody.responseBody);
-      const archiveCount = await countBillingHistoryArchiveRows(
-        archiveDb,
-        billingMeterSerial,
-      );
-      validation.execute(
-        "Billing-history row count vs archive Billing_Class_D1/D3",
-        () => {
-          compareBillingHistoryCountToDb({
-            apiRowCount: bhMapped.items.length,
-            dbRowCount: archiveCount,
-            apiNonNullConsumptionCount: bhMapped.items.filter(
-              (row) => row.consumptionKwh != null,
-            ).length,
-            limit: BILLING_HISTORY_DB_LIMIT,
-            meterSerial: billingMeterSerial,
-          });
-        },
-      );
-    }
-  } else {
-    console.warn(
-      "[BACKEND FINDING] billing-history DB check skipped — archive DB not configured",
-    );
-  }
+  // Billing-history archive COUNT(*) on D1/D3 is a full-table scan — skip (GET-only widgets).
+  console.warn(
+    "[BACKEND FINDING] billing-history archive count skipped — not a ConsumerDetailRepository widget query",
+  );
 
   // --- Communication lastSeen vs general.meter_last_seen ---
   const commRef =

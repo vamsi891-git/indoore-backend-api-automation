@@ -18,7 +18,7 @@ import {
 } from "../Mapper/powerquality.mapper";
 import { PowerQualityValidator } from "../Validator/powerquality.validator";
 
-test.describe("Power Quality API", () => {
+test.describe("Power quality", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

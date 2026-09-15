@@ -148,13 +148,13 @@ export async function getLatestSpRealTimePower(
   return rows[0] ?? null;
 }
 
-/** Archive DB — TP instantaneous IP for real-time-power. */
+/** Primary DB — TP today IP cache for real-time-power. */
 export async function getLatestTpRealTimePower(
-  archivePool: pg.Pool,
+  pool: pg.Pool,
   meterLookupId: number,
 ): Promise<DbRealTimePowerRow | null> {
   const rows = await queryReadOnly<DbRealTimePowerRow>(
-    archivePool,
+    pool,
     REALTIME_POWER_TP_LATEST_SQL,
     [meterLookupId],
   );
@@ -169,26 +169,26 @@ export type DbPowerQualityRow = {
   mdKva: number | string | null;
 };
 
-/** Archive DB — SP power-quality from T_IPData_CateSP. */
+/** Primary DB — SP today IP cache for power-quality. */
 export async function getLatestSpPowerQuality(
-  archivePool: pg.Pool,
+  pool: pg.Pool,
   meterLookupId: number,
 ): Promise<DbPowerQualityRow | null> {
   const rows = await queryReadOnly<DbPowerQualityRow>(
-    archivePool,
+    pool,
     POWER_QUALITY_SP_LATEST_SQL,
     [meterLookupId],
   );
   return rows[0] ?? null;
 }
 
-/** Archive DB — TP power-quality from T_IPData_CateTP. */
+/** Primary DB — TP today IP cache for power-quality. */
 export async function getLatestTpPowerQuality(
-  archivePool: pg.Pool,
+  pool: pg.Pool,
   meterLookupId: number,
 ): Promise<DbPowerQualityRow | null> {
   const rows = await queryReadOnly<DbPowerQualityRow>(
-    archivePool,
+    pool,
     POWER_QUALITY_TP_LATEST_SQL,
     [meterLookupId],
   );

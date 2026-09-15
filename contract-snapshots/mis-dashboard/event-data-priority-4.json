@@ -1,0 +1,29 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/mis-dashboard/event-data/priority-wise/Priority4",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "fromDate",
+    "label",
+    "period",
+    "phases",
+    "priorityId",
+    "toDate",
+    "totalCount",
+    "trend"
+  ],
+  "itemKeys": [
+    "fromDate",
+    "label",
+    "period",
+    "phases",
+    "priorityId",
+    "toDate",
+    "totalCount",
+    "trend"
+  ],
+  "hasColumnsGrid": false
+}

@@ -143,66 +143,66 @@ export function resolveCommunicationStatusContractBody(
 export const communicationStatusTestCases: CommunicationStatusTestCase[] = [
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/communication-status — status for explicit date",
+      "Meter communication — status for a chosen date",
     scenario: "status_with_date",
     tags: ["@smoke", "@consumer", "@communication-status"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/communication-status — default date is IST today",
+      "Meter communication — status for today when no date is given",
     scenario: "status_default_today",
     tags: ["@consumer", "@communication-status", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/communication-status — DD-MM-YYYY date rejected (YYYY-MM-DD only)",
+      "Meter communication — wrong date format is rejected",
     scenario: "status_dd_mm_yyyy",
     expectedStatus: 400,
     tags: ["@consumer", "@communication-status", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/communication-status — resolve by meter lookup",
+      "Meter communication — status opens using the meter",
     scenario: "status_by_meter",
     tags: ["@consumer", "@communication-status", "@edge"],
   },
   {
     testName:
-      "Contract — zero intervals (0/96) display and delayed 00:00",
+      "Meter communication — sample: no readings for the day",
     scenario: "contract_zero_intervals",
     isContractFixture: true,
     tags: ["@consumer", "@communication-status", "@edge"],
   },
   {
     testName:
-      "Contract — readings present with percent, lastSeen, and delaySeconds",
+      "Meter communication — sample: readings received with delay",
     scenario: "contract_with_readings",
     isContractFixture: true,
     tags: ["@consumer", "@communication-status", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/communication-status — invalid date rejected",
+      "Meter communication — invalid date is rejected",
     scenario: "invalid_date",
     expectedStatus: 400,
     tags: ["@consumer", "@communication-status", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{consumerId}/communication-status — consumer not found",
+      "Meter communication — unknown consumer is not found",
     scenario: "consumer_not_found",
     expectedStatus: 404,
     tags: ["@consumer", "@communication-status", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/communication-status — unknown meter not found or empty status",
+      "Meter communication — unknown meter shows empty or not found",
     scenario: "meter_not_found",
     tags: ["@consumer", "@communication-status", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ref}/communication-status — blank consumer ref rejected",
+      "Meter communication — blank consumer number is rejected",
     scenario: "empty_consumer_ref",
     expectedStatus: 400,
     tags: ["@consumer", "@communication-status", "@negative"],

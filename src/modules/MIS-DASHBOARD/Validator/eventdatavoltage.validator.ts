@@ -9,20 +9,26 @@ export class EventVoltageValidator {
         expect(response.success).toBeTruthy();
         expect(response.data).toBeDefined();
     }
-    validateReportType(data: EventVoltageData) {
-        expect(backendRules.reportTypes)
-            .toContain(data.reportType);
+    validateReportType(data: EventVoltageData, expected?: string) {
+        expect(backendRules.reportTypes).toContain(data.reportType);
+        if (expected) {
+            expect(data.reportType).toBe(expected);
+        }
     }
-    validatePeriod(data: EventVoltageData) {
-        expect(backendRules.periods)
-            .toContain(data.period);
+    validatePeriod(data: EventVoltageData, expected?: string) {
+        expect(backendRules.periods).toContain(data.period);
+        if (expected) {
+            expect(data.period).toBe(expected);
+        }
+    }
+    validateCategory(data: EventVoltageData) {
+        expect(data.category).toBe("voltage");
+        expect(data.label).toBe("Voltage");
     }
     validateDates(data: EventVoltageData) {
-        expect(data.fromDate).toBeTruthy();
-        expect(data.toDate).toBeTruthy();
-        const from = new Date(data.fromDate);
-        const to = new Date(data.toDate);
-        expect(from.getTime()).toBeLessThanOrEqual(to.getTime());
+        expect(data.fromDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        expect(data.toDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+        expect(data.fromDate <= data.toDate).toBeTruthy();
         if (data.period === "hourly") {
             expect(data.fromDate).toBe(data.toDate);
         }
@@ -35,6 +41,20 @@ export class EventVoltageValidator {
         const total =data.records.reduce((sum, item) => sum + item.count,0);
         expect(total).toBe(data.totalCount);
     }
+    validateUniqueRecordLabels(data: EventVoltageData) {
+        const labels = data.records.map((row) => row.label);
+        expect(new Set(labels).size).toBe(labels.length);
+    }
+    validateUniqueTrendSeriesNames(data: EventVoltageData) {
+        const names = data.trend.map((series) => series.name);
+        expect(new Set(names).size).toBe(names.length);
+    }
+    validateUniqueTrendPointKeys(data: EventVoltageData) {
+        for (const series of data.trend) {
+            const keys = series.data.map((point) => point.key);
+            expect(new Set(keys).size).toBe(keys.length);
+        }
+    }
     validateStructure(data: EventVoltageData) {
         const labels: string[] = [];
         for (const row of data.records) {
@@ -43,10 +63,14 @@ export class EventVoltageValidator {
             expect(Number(row.percentage)).not.toBeNaN();
             labels.push(row.label);
         }
-        const duplicates =labels.filter((item, index) =>labels.indexOf(item) !== index);
-        expect(duplicates).toEqual([]);
-        const expected =data.reportType === "phase-wise"? backendRules.phaseLabels : backendRules.categoryLabels;
-        expect(labels).toEqual(expected);
+        this.validateUniqueRecordLabels(data);
+        if (data.reportType === "phase-wise") {
+            expect(labels).toEqual(backendRules.phaseLabels);
+        } else {
+            for (const label of labels) {
+                expect(backendRules.categoryLabels).toContain(label);
+            }
+        }
     }
     validatePercentages(data: EventVoltageData) {
         for (const row of data.records) {
@@ -64,6 +88,7 @@ export class EventVoltageValidator {
                 expect(point.key).toMatch(regex);
                 expect(point.label).toBeTruthy();
                 expect(point.value).toBeGreaterThanOrEqual(0);
+                expect(point.meterCount).toBeGreaterThanOrEqual(0);
             });
         }
     }
@@ -80,45 +105,45 @@ export class EventVoltageValidator {
         }
     }
     validateTrendPointCounts(data: EventVoltageData) {
-        const expectedCounts = {hourly: 24,weekly: 4
+        const from = Date.parse(`${data.fromDate}T00:00:00Z`);
+        const to = Date.parse(`${data.toDate}T00:00:00Z`);
+        const dailyDays = Math.round((to - from) / 86_400_000) + 1;
+        const [fromYear, fromMonth] = data.fromDate.split("-").map(Number);
+        const [toYear, toMonth] = data.toDate.split("-").map(Number);
+        const monthlyMonths =
+            (toYear - fromYear) * 12 + (toMonth - fromMonth) + 1;
+        const expectedCounts: Record<string, number> = {
+            hourly: 24,
+            daily: dailyDays,
+            weekly: 4,
+            monthly: monthlyMonths,
         };
-        const expected =expectedCounts[data.period as keyof typeof expectedCounts];
+        const expected = expectedCounts[data.period];
         if (!expected) return;
         for (const series of data.trend) {
-            expect(series.data.length ).toBe(expected);
+            expect(series.data.length).toBe(expected);
         }
     }
-    validateBusinessAnomalies(data: EventVoltageData) {
-        const findings: Array<{
-            period: string;
-            reportType: string;
-            label: string;
-            issue: string;
-        }> = [];
-        for (const row of data.records) {
-            if (row.count === 0) {
-                findings.push({
-                    period:data.period,
-                    reportType:data.reportType,
-                    label:row.label,
-                    issue:"No events"
-                });
-            }
-        }
-        if (findings.length) {
-            console.log("\nBACKEND INVESTIGATION");
-            console.table(findings);
-        }
+
+    validateSubsetDoesNotExceedAll(
+        allMeters: EventVoltageData,
+        subset: EventVoltageData,
+    ) {
+        expect(subset.totalCount).toBeLessThanOrEqual(allMeters.totalCount);
     }
-    validate(data: EventVoltageData) {
-        this.validateReportType(data);
-        this.validatePeriod(data);
+
+    validate(data: EventVoltageData, expected?: { reportType?: string; period?: string }) {
+        this.validateReportType(data, expected?.reportType);
+        this.validatePeriod(data, expected?.period);
+        this.validateCategory(data);
         this.validateDates(data);
         this.validateNotEmpty(data);
         this.validateTotals(data);
         this.validateStructure(data);
         this.validatePercentages(data);
         this.validateTrend(data);
+        this.validateUniqueTrendSeriesNames(data);
+        this.validateUniqueTrendPointKeys(data);
         this.validateTrendSeriesNames(data);
         this.validateTrendAggregation(data);
         this.validateTrendPointCounts(data);

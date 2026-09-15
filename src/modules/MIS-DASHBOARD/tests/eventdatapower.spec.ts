@@ -1,53 +1,115 @@
 import { test } from "../../../fixtures/api.fixture";
-
 import { EventPowerApi } from "../Api/eventdatapower.api";
-import { EventPowerMapper }  from "../Mapper/eventdatapower.mapper";
+import { EventPowerMapper } from "../Mapper/eventdatapower.mapper";
 import { EventPowerValidator } from "../Validator/eventdatapower.validator";
-import { eventPowerQueries } from "../Data/eventdatapower.data";
+import { eventPowerTestCases } from "../Data/eventdatapower.data";
+import { MisDashboardEdgesValidator } from "../Validator/mis-dashboard.edges.validator";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { BackendResponse } from "../../../core/utils/backend-response.util";
-test.describe("MIS Event Data Power API",() => {
-        eventPowerQueries.forEach( query => {
-                test(`Validate ${query.reportType}-${query.period}`,
-                    async ({authenticatedApi}) => {
-                        const api =new EventPowerApi(authenticatedApi);
-                        let result;
-                        try {
-                            result =await api.getPowerData(query);
-                        } catch (error) {
-                            if (query.period === "monthly") {
-                                console.log("BACKEND FINDING: monthly timeout");
-                                return;
-                            }
-                            throw error;
-                        }
-                        if (
-                            BackendResponse.shouldSkipServerFailure(
-                                result.rawResponse.status(),
-                                `${query.reportType}-${query.period}`,
-                                result.responseBody
-                            )
-                        ) {
-                            return;
-                        }
-                        const validation =new ValidationEngine();
-                        const assert =new AssertionEngine();
-                        validation.execute("Status",() => 
-                            assert.validateStatusCode(result.rawResponse,200));
-                        validation.execute("Content Type",() => 
-                            assert.validateContentType(result.rawResponse,"application/json"));
-                        validation.execute("Response Time",() => 
-                            assert.validateResponseTime(result.responseTime,120000));
-                        const data =EventPowerMapper.map(result.responseBody.data);
-                        const validator =new EventPowerValidator();
-                        validation.execute("Response",() => 
-                            validator.validateResponse(result.responseBody));
-                        validation.execute("Power Validation",() => 
-                            validator.validate(data));
-                        validation.execute("Backend Investigation",() => 
-                            validator.validateBusinessAnomalies(data));
-                        validation.printSummary(`${query.reportType}-${query.period}`,result.responseTime);
-                    });
-            });
+
+test.describe("Power problems", () => {
+  test.setTimeout(180_000);
+  for (const testCase of eventPowerTestCases) {
+    test(testCase.testName, { tag: testCase.tags }, async ({ authenticatedApi }) => {
+      const api = new EventPowerApi(authenticatedApi);
+      const { rawResponse, responseBody, responseTime } = await api.getPowerData(
+        testCase.params,
+      );
+      const assert = new AssertionEngine();
+      const validation = new ValidationEngine();
+      const validator = new EventPowerValidator();
+      const edges = new MisDashboardEdgesValidator();
+
+      validation.execute("Status", () =>
+        assert.validateStatusCode(
+          rawResponse,
+          testCase.expectedStatus,
+          responseBody,
+        ),
+      );
+      validation.execute("Content", () =>
+        assert.validateContentType(rawResponse, "application/json"),
+      );
+      validation.execute("Performance", () =>
+        assert.validateResponseTime(responseTime, 120000),
+      );
+      validation.execute("Sensitive Data", () =>
+        assert.validateSensitiveData(responseBody),
+      );
+
+      if (testCase.expectedStatus !== 200) {
+        validation.execute("Error code", () =>
+          edges.validateValidationError(responseBody),
+        );
+        validation.printSummary(testCase.testName, responseTime);
+        return;
+      }
+
+      const mapped = EventPowerMapper.map(responseBody.data);
+      validation.execute("Response", () =>
+        validator.validateResponse(responseBody),
+      );
+      validation.execute("Power chart", () =>
+        validator.validate(mapped, {
+          reportType: testCase.expectedReportType,
+          period: testCase.expectedPeriod,
+        }),
+      );
+      validation.execute("No duplicate chart labels", () =>
+        validator.validateUniqueRecordLabels(mapped),
+      );
+      validation.execute("No duplicate trend series names", () =>
+        validator.validateUniqueTrendSeriesNames(mapped),
+      );
+      validation.execute("No duplicate trend point keys", () =>
+        validator.validateUniqueTrendPointKeys(mapped),
+      );
+      validation.printSummary(testCase.testName, responseTime);
     });
+  }
+
+  test(
+    "Power problems — consumer and DTR stay within all meters",
+    { tag: ["@mis-dashboard", "@event-data", "@edge"] },
+    async ({ authenticatedApi }) => {
+      const api = new EventPowerApi(authenticatedApi);
+      const assert = new AssertionEngine();
+      const validation = new ValidationEngine();
+      const validator = new EventPowerValidator();
+      const query = {
+        reportType: "phase-wise",
+        period: "monthly",
+        assetType: "all",
+      };
+      const [allResult, consumerResult, dtrResult] = await Promise.all([
+        api.getPowerData({ ...query, assetType: "all" }),
+        api.getPowerData({ ...query, assetType: "consumer" }),
+        api.getPowerData({ ...query, assetType: "dtr" }),
+      ]);
+
+      validation.execute("All meters status", () =>
+        assert.validateStatusCode(allResult.rawResponse, 200),
+      );
+      validation.execute("Consumer status", () =>
+        assert.validateStatusCode(consumerResult.rawResponse, 200),
+      );
+      validation.execute("DTR status", () =>
+        assert.validateStatusCode(dtrResult.rawResponse, 200),
+      );
+
+      const allMeters = EventPowerMapper.map(allResult.responseBody.data);
+      const consumers = EventPowerMapper.map(consumerResult.responseBody.data);
+      const dtrs = EventPowerMapper.map(dtrResult.responseBody.data);
+      validation.execute("Consumer counts do not exceed all meters", () =>
+        validator.validateSubsetDoesNotExceedAll(allMeters, consumers),
+      );
+      validation.execute("DTR counts do not exceed all meters", () =>
+        validator.validateSubsetDoesNotExceedAll(allMeters, dtrs),
+      );
+      validation.printSummary(
+        "Power problems — consumer and DTR stay within all meters",
+        allResult.responseTime,
+      );
+    },
+  );
+});

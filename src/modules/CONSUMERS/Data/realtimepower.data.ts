@@ -137,65 +137,65 @@ export function resolveRealTimePowerContractBody(
 export const realTimePowerTestCases: RealTimePowerTestCase[] = [
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/real-time-power — success with data null or R/Y/B phases",
+      "Live voltage and current — shown for the consumer",
     scenario: "power_by_ivrs",
     tags: ["@smoke", "@consumer", "@real-time-power"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{consumerId}/real-time-power — resolve by account id",
+      "Live voltage and current — opens using the account number",
     scenario: "power_by_account",
     tags: ["@consumer", "@real-time-power", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/real-time-power — resolve by meter lookup id",
+      "Live voltage and current — opens using the meter",
     scenario: "power_by_meter",
     tags: ["@consumer", "@real-time-power", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/real-time-power — unknown query params ignored",
+      "Live voltage and current — extra unused options are ignored",
     scenario: "power_ignore_unknown_query",
     tags: ["@consumer", "@real-time-power", "@edge"],
   },
   {
     testName:
-      "Contract — Shape A success envelope with data null (no live IP row)",
+      "Live voltage and current — sample: no live reading yet",
     scenario: "contract_null_data",
     isContractFixture: true,
     tags: ["@consumer", "@real-time-power", "@edge"],
   },
   {
     testName:
-      "Contract — Shape B TP populated R/Y/B phases (sample + backend mapTp)",
+      "Live voltage and current — sample: three-phase meter",
     scenario: "contract_tp_phases",
     isContractFixture: true,
     tags: ["@consumer", "@real-time-power", "@edge"],
   },
   {
     testName:
-      "Contract — SP map: R-Phase populated, Y/B null (backend mapSp)",
+      "Live voltage and current — sample: single-phase meter",
     scenario: "contract_sp_phases",
     isContractFixture: true,
     tags: ["@consumer", "@real-time-power", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{consumerId}/real-time-power — consumer not found",
+      "Live voltage and current — unknown consumer is not found",
     scenario: "consumer_not_found",
     expectedStatus: 200,
     tags: ["@consumer", "@real-time-power", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/real-time-power — unknown meter not found or null data",
+      "Live voltage and current — unknown meter is empty or not found",
     scenario: "meter_not_found",
     tags: ["@consumer", "@real-time-power", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ref}/real-time-power — blank consumer ref rejected",
+      "Live voltage and current — blank consumer number is rejected",
     scenario: "empty_consumer_ref",
     expectedStatus: 400,
     tags: ["@consumer", "@real-time-power", "@negative"],

@@ -18,7 +18,7 @@ import {
 } from "../Mapper/liveloadprofile.mapper";
 import { LiveLoadProfileValidator } from "../Validator/liveloadprofile.validator";
 
-test.describe("Live Load Profile API", () => {
+test.describe("Live load", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
@@ -139,6 +139,11 @@ test.describe("Live Load Profile API", () => {
         );
 
         const mapped = LiveLoadProfileMapper.map(responseBody);
+        if (mapped.data) {
+          validation.execute("No Duplicate Metric Titles", () =>
+            validator.validateUniqueMetricTitles(mapped.data!),
+          );
+        }
         validation.execute("Live Load Profile Scenario", () =>
           validator.validateScenario(mapped, testCase.scenario),
         );

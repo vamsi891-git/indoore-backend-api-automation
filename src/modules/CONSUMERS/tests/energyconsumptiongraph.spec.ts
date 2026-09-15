@@ -19,7 +19,7 @@ import {
 } from "../Mapper/energyconsumptiongraph.mapper";
 import { EnergyConsumptionGraphValidator } from "../Validator/energyconsumptiongraph.validator";
 
-test.describe("Energy Consumption Graph API", () => {
+test.describe("Consumption chart", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
@@ -156,6 +156,9 @@ test.describe("Energy Consumption Graph API", () => {
         );
 
         const mapped = EnergyConsumptionGraphMapper.map(responseBody);
+        validation.execute("No Duplicate Chart Labels", () =>
+          validator.validateUniquePointLabels(mapped.points),
+        );
         validation.execute("Energy Consumption Graph Scenario", () =>
           validator.validateScenario(mapped, testCase.scenario, expectedPeriod),
         );

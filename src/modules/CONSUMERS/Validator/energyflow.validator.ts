@@ -132,6 +132,12 @@ export class EnergyFlowValidator {
         expect(Number.isFinite(point[key])).toBeTruthy();
       }
     }
+    this.validateUniquePointLabels(points);
+  }
+
+  validateUniquePointLabels(points: EnergyFlowPoint[]) {
+    const labels = points.map((point) => point.label.trim());
+    expect(new Set(labels).size).toBe(labels.length);
   }
 
   /** Backend roundEnergy: 2 decimal places, non-negative cumulative registers. */

@@ -124,9 +124,15 @@ export class LiveLoadProfileValidator {
     expect(data.metrics).toHaveLength(3);
     const titles = data.metrics.map((m) => m.title);
     expect(titles).toEqual([...METRIC_TITLES]);
+    expect(new Set(titles).size).toBe(titles.length);
     for (const metric of data.metrics) {
       this.validateMetricShape(metric);
     }
+  }
+
+  validateUniqueMetricTitles(data: LiveLoadProfileData) {
+    const titles = data.metrics.map((metric) => metric.title.trim());
+    expect(new Set(titles).size).toBe(titles.length);
   }
 
   validatePowerRanges(data: LiveLoadProfileData) {

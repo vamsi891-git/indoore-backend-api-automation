@@ -69,38 +69,38 @@ export function resolveConsumerProfileQuery(
 export const consumerProfileTestCases: ConsumerProfileTestCase[] = [
   {
     testName:
-      "Validate GET /indore/consumers/{consumerId}/profile — profile found with billing/event query",
+      "Consumer profile — details open using the account number",
     scenario: "profile_found",
     tags: ["@smoke", "@consumer", "@profile"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{consumerId}/profile — profile found without query params",
+      "Consumer profile — details open with no extra filters",
     scenario: "profile_no_query",
     tags: ["@consumer", "@profile", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/profile — resolve consumer by IVRS number",
+      "Consumer profile — details open using the IVRS number",
     scenario: "profile_by_ivrs",
     tags: ["@consumer", "@profile", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/profile — resolve consumer by meter lookup id",
+      "Consumer profile — details open using the meter",
     scenario: "profile_by_meter",
     tags: ["@consumer", "@profile", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{consumerId}/profile — consumer not found",
+      "Consumer profile — unknown account is not found",
     scenario: "consumer_not_found",
     expectedStatus: 404,
     tags: ["@consumer", "@profile", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/profile — unknown meter lookup id not found",
+      "Consumer profile — unknown meter is not found",
     scenario: "meter_not_found",
     expectedStatus: 404,
     tags: ["@consumer", "@profile", "@negative"],

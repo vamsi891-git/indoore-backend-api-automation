@@ -310,124 +310,124 @@ export function resolveEnergyFlowContractBody(
 export const energyFlowTestCases: EnergyFlowTestCase[] = [
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/energy-flow?period=daily — success with cumulative chart points",
+      "Energy flow chart — daily view for the consumer",
     scenario: "ef_by_ivrs_daily",
     tags: ["@smoke", "@consumer", "@energy-flow"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/energy-flow?period=hourly — rolling 6 IST hours",
+      "Energy flow chart — last few hours",
     scenario: "ef_period_hourly",
     tags: ["@consumer", "@energy-flow", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/energy-flow?period=weekly — 4 week buckets",
+      "Energy flow chart — weekly view",
     scenario: "ef_period_weekly",
     tags: ["@consumer", "@energy-flow", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/energy-flow?period=monthly — 6 month buckets",
+      "Energy flow chart — monthly view",
     scenario: "ef_period_monthly",
     tags: ["@consumer", "@energy-flow", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/energy-flow?period=yearly — 6 year buckets",
+      "Energy flow chart — yearly view",
     scenario: "ef_period_yearly",
     tags: ["@consumer", "@energy-flow", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{consumerId}/energy-flow — resolve by account id",
+      "Energy flow chart — opens using the account number",
     scenario: "ef_by_account",
     tags: ["@consumer", "@energy-flow", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/energy-flow — resolve by meter lookup id",
+      "Energy flow chart — opens using the meter",
     scenario: "ef_by_meter",
     tags: ["@consumer", "@energy-flow", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/energy-flow — unknown query params ignored",
+      "Energy flow chart — extra unused options are ignored",
     scenario: "ef_ignore_unknown_query",
     tags: ["@consumer", "@energy-flow", "@edge"],
   },
   {
     testName:
-      "Contract — hourly period with 6 HH:00 labels and cumulative energy fields",
+      "Energy flow chart — sample: hourly points",
     scenario: "contract_hourly",
     isContractFixture: true,
     tags: ["@consumer", "@energy-flow", "@edge"],
   },
   {
     testName:
-      "Contract — daily period with 6 day labels (D Mon) and cumulative energy fields",
+      "Energy flow chart — sample: daily points",
     scenario: "contract_daily",
     isContractFixture: true,
     tags: ["@consumer", "@energy-flow", "@edge"],
   },
   {
     testName:
-      "Contract — weekly period with W1–W4 labels and cumulative energy fields",
+      "Energy flow chart — sample: weekly points",
     scenario: "contract_weekly",
     isContractFixture: true,
     tags: ["@consumer", "@energy-flow", "@edge"],
   },
   {
     testName:
-      "Contract — monthly period with Mon YYYY labels and cumulative energy fields",
+      "Energy flow chart — sample: monthly points",
     scenario: "contract_monthly",
     isContractFixture: true,
     tags: ["@consumer", "@energy-flow", "@edge"],
   },
   {
     testName:
-      "Contract — yearly period with 4-digit year labels and cumulative energy fields",
+      "Energy flow chart — sample: yearly points",
     scenario: "contract_yearly",
     isContractFixture: true,
     tags: ["@consumer", "@energy-flow", "@edge"],
   },
   {
     testName:
-      "Contract — daily cumulative registers non-decreasing with roundEnergy (energyFlow view)",
+      "Energy flow chart — sample: totals only go up over time",
     scenario: "contract_cumulative_nonzero",
     isContractFixture: true,
     tags: ["@consumer", "@energy-flow", "@edge"],
   },
   {
     testName:
-      "Contract — consumption deltas match max(0, endCumulative − startCumulative) per bucket",
+      "Energy flow chart — sample: usage matches meter totals",
     scenario: "contract_consumption_formula",
     isContractFixture: true,
     tags: ["@consumer", "@energy-flow", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{consumerId}/energy-flow — consumer not found",
+      "Energy flow chart — unknown consumer is not found",
     scenario: "consumer_not_found",
     expectedStatus: 404,
     tags: ["@consumer", "@energy-flow", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/energy-flow — unknown meter not found or empty chart",
+      "Energy flow chart — unknown meter is empty or not found",
     scenario: "meter_not_found",
     tags: ["@consumer", "@energy-flow", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ref}/energy-flow — blank consumer ref rejected",
+      "Energy flow chart — blank consumer number is rejected",
     scenario: "empty_consumer_ref",
     expectedStatus: 400,
     tags: ["@consumer", "@energy-flow", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/energy-flow — invalid period enum rejected",
+      "Energy flow chart — invalid time range is rejected",
     scenario: "invalid_period",
     expectedStatus: 400,
     tags: ["@consumer", "@energy-flow", "@negative"],

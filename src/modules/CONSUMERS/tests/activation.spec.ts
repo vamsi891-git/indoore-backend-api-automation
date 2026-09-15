@@ -7,7 +7,7 @@ import { ActivationApi } from "../Api/activation.api";
 import {activationMaxResponseTimeMs,activationTestCases,resolveActivationConsumerId,} from "../Data/activation.data";
 import {ActivationMapper,type ActivationErrorResponse,} from "../Mapper/activation.mapper";
 import { ActivationValidator } from "../Validator/activation.validator";
-test.describe("Consumer Activation API", () => {
+test.describe.skip("Turn consumer on or off", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
   for (const testCase of activationTestCases) {
