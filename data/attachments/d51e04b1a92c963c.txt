@@ -1,0 +1,13 @@
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+[FAIL] Dashboard Summary — Query Pollution — 0/2 checks, 7602ms
+  1. Status — FAIL
+     Expected status 200 but received 401
+  2. Envelope — FAIL
+     expect(received).toBeTruthy()
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Dashboard-Summary-Query-Pollution-2026-09-15T17-03-05-338Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Dashboard-Summary-Query-Pollution-2026-09-15T17-03-05-338Z.triage.json [heuristic] contract_mismatch/medium

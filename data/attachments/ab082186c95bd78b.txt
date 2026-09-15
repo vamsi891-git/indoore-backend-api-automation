@@ -1,0 +1,171 @@
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+
+==================================
+API : Meter Replacement Progress API — Injection ' OR 1=1 --
+DNS : 2.47 ms
+Connection : 214.51 ms
+Server Processing : 7349.0199999999995 ms
+Download : 100 ms
+Total : 7666 ms
+===================================
+
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+
+==================================
+API : Meter Replacement Progress API — Injection <script>aler
+DNS : 2.72 ms
+Connection : 214.48 ms
+Server Processing : 6647.8 ms
+Download : 100 ms
+Total : 6965 ms
+===================================
+
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+
+==================================
+API : Meter Replacement Progress API — Injection తెలుగు
+DNS : 1.93 ms
+Connection : 214.46 ms
+Server Processing : 8169.610000000001 ms
+Download : 100 ms
+Total : 8486 ms
+===================================
+
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+
+==================================
+API : Meter Replacement Progress API — Injection 😀😀😀
+DNS : 2.4 ms
+Connection : 214.36 ms
+Server Processing : 6461.240000000001 ms
+Download : 100 ms
+Total : 6778 ms
+===================================
+
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+
+==================================
+API : Meter Replacement Progress API — Injection      
+DNS : 2.02 ms
+Connection : 214.39 ms
+Server Processing : 5894.589999999999 ms
+Download : 100 ms
+Total : 6211 ms
+===================================
+
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+
+==================================
+API : Meter Replacement Progress API — Injection 
+DNS : 1.73 ms
+Connection : 214.51 ms
+Server Processing : 5728.76 ms
+Download : 100 ms
+Total : 6045 ms
+===================================
+
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+
+==================================
+API : Meter Replacement Progress API — Injection aaaaaaaaaaaa
+DNS : 9.04 ms
+Connection : 214.95 ms
+Server Processing : 5774.01 ms
+Download : 100 ms
+Total : 6098 ms
+===================================
+
+[FAIL] Meter Replacement Progress API — Injection Queries — 0/28 checks, 0ms
+  1. Status (' OR 1=1 --) — FAIL
+     Expected status 200 but received 401
+  2. Envelope (' OR 1=1 --) — FAIL
+     expect(received).toBeTruthy()
+  3. Weekly (' OR 1=1 --) — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  4. Monthly (' OR 1=1 --) — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  5. Status (<script>aler) — FAIL
+     Expected status 200 but received 401
+  6. Envelope (<script>aler) — FAIL
+     expect(received).toBeTruthy()
+  7. Weekly (<script>aler) — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  8. Monthly (<script>aler) — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  9. Status (తెలుగు) — FAIL
+     Expected status 200 but received 401
+  10. Envelope (తెలుగు) — FAIL
+     expect(received).toBeTruthy()
+  11. Weekly (తెలుగు) — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  12. Monthly (తెలుగు) — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  13. Status (😀😀😀) — FAIL
+     Expected status 200 but received 401
+  14. Envelope (😀😀😀) — FAIL
+     expect(received).toBeTruthy()
+  15. Weekly (😀😀😀) — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  16. Monthly (😀😀😀) — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  17. Status (     ) — FAIL
+     Expected status 200 but received 401
+  18. Envelope (     ) — FAIL
+     expect(received).toBeTruthy()
+  19. Weekly (     ) — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  20. Monthly (     ) — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  21. Status () — FAIL
+     Expected status 200 but received 401
+  22. Envelope () — FAIL
+     expect(received).toBeTruthy()
+  23. Weekly () — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  24. Monthly () — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  25. Status (aaaaaaaaaaaa) — FAIL
+     Expected status 200 but received 401
+  26. Envelope (aaaaaaaaaaaa) — FAIL
+     expect(received).toBeTruthy()
+  27. Weekly (aaaaaaaaaaaa) — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  28. Monthly (aaaaaaaaaaaa) — FAIL
+     expect(received).toBe(expected) // Object.is equality
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Replacement-Progress-API-Injection-Queries-2026-09-15T17-12-35-475Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Replacement-Progress-API-Injection-Queries-2026-09-15T17-12-35-475Z.triage.json [heuristic] contract_mismatch/medium

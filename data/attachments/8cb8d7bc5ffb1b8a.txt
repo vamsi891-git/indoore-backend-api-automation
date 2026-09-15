@@ -1,0 +1,287 @@
+
+==================================
+API : Commands Metering Mode — Init Job
+DNS : 108.49 ms
+Connection : 214.47 ms
+Server Processing : 278.03999999999996 ms
+Download : 100 ms
+Total : 701 ms
+===================================
+
+
+=== Commands Metering Mode — POST init response ===
+{
+  "success": true,
+  "data": {
+    "summary": {
+      "requested": 1,
+      "duplicatesRemoved": 0,
+      "successful": 1,
+      "failed": 0,
+      "rejectedOutOfScope": 0,
+      "rejectedUnknown": 0,
+      "batchesProcessed": 1
+    },
+    "successfulMeters": [
+      "99751580"
+    ],
+    "rejectedMeters": [],
+    "meterResults": [
+      {
+        "meterId": "99751580",
+        "status": "IN_PROGRESS",
+        "jobName": "1789482455880612",
+        "hesStatusCode": 200
+      }
+    ],
+    "hesCallbackConfigured": true,
+    "commandExecutionTimeMs": null,
+    "meterResponseTimeMs": null,
+    "note": "Final completion status will be delivered via HES callback."
+  },
+  "message": "Get Metering Mode job initiated successfully. HES callback is configured; final completion status will be delivered asynchronously."
+}
+
+--- poll: jobName=1789482455880612, attempts=23 ---
+
+=== Commands Metering Mode — GET query-meter-job response ===
+{
+  "success": true,
+  "data": {
+    "jobName": "1789482455880612",
+    "synced": true,
+    "autoSynced": false,
+    "hesJobStatus": "FINISHED",
+    "hesStatusCode": 200,
+    "summary": {
+      "requested": 1,
+      "successful": 1,
+      "failed": 0,
+      "inProgress": 0,
+      "rejected": 0
+    },
+    "meterResults": [
+      {
+        "meterId": "99751580",
+        "action": "GET_CONFIG",
+        "status": "SUCCESS",
+        "hesStatusCode": 200,
+        "hesResponse": {
+          "meterId": "99751580",
+          "status": "SUCCESS",
+          "failureStep": "0",
+          "progress": null,
+          "response": [
+            {
+              "type": "METERING_MODE",
+              "active": true,
+              "meteringMode": "IMPORT"
+            }
+          ],
+          "__mdmsMeta": {
+            "startedAt": "2026-09-15T14:27:35.884Z",
+            "completedAt": "2026-09-15T14:28:55.471Z",
+            "executionDurationMs": 79587,
+            "publicRequestId": "6781590451",
+            "commandApiType": "metering_mode_get",
+            "executionDeadlineAt": "2026-09-15T14:37:35.884Z",
+            "leaseOwner": null,
+            "leaseExpiresAt": null,
+            "retryAt": null
+          }
+        },
+        "reason": null,
+        "message": "Get Metering Mode completed successfully.",
+        "note": null,
+        "meterResponse": "Metering Mode: Import",
+        "meterResponseRows": [
+          {
+            "label": "Metering Mode",
+            "value": "Import"
+          }
+        ]
+      }
+    ],
+    "reason": null,
+    "message": "Get Metering Mode completed successfully.",
+    "note": null,
+    "meterResponse": "Metering Mode: Import",
+    "meterResponseRows": [
+      {
+        "label": "Metering Mode",
+        "value": "Import"
+      }
+    ]
+  },
+  "message": "Job status fetched successfully."
+}
+
+==================================
+API : Commands Metering Mode — Query Meter Job
+DNS : 101.12 ms
+Connection : 214.57 ms
+Server Processing : 11095.31 ms
+Download : 100 ms
+Total : 11511 ms
+===================================
+
+
+--------------------------------------------------
+API RESPONSE
+--------------------------------------------------
+API    : Commands Metering Mode E2E
+Status : 200
+Request:
+{
+  "body": {
+    "type": "metering_mode_get",
+    "meters": "99751580"
+  },
+  "jobName": "1789482455880612",
+  "pollAttempts": 23,
+  "completed": true
+}
+Body:
+{
+  "init": {
+    "success": true,
+    "data": {
+      "summary": {
+        "requested": 1,
+        "duplicatesRemoved": 0,
+        "successful": 1,
+        "failed": 0,
+        "rejectedOutOfScope": 0,
+        "rejectedUnknown": 0,
+        "batchesProcessed": 1
+      },
+      "successfulMeters": [
+        "99751580"
+      ],
+      "rejectedMeters": [],
+      "meterResults": [
+        {
+          "meterId": "99751580",
+          "status": "IN_PROGRESS",
+          "jobName": "1789482455880612",
+          "hesStatusCode": 200
+        }
+      ],
+      "hesCallbackConfigured": true,
+      "commandExecutionTimeMs": null,
+      "meterResponseTimeMs": null,
+      "note": "Final completion status will be delivered via HES callback."
+    },
+    "message": "Get Metering Mode job initiated successfully. HES callback is configured; final completion status will be delivered asynchronously."
+  },
+  "query": {
+    "success": true,
+    "data": {
+      "jobName": "1789482455880612",
+      "synced": true,
+      "autoSynced": false,
+      "hesJobStatus": "FINISHED",
+      "hesStatusCode": 200,
+      "summary": {
+        "requested": 1,
+        "successful": 1,
+        "failed": 0,
+        "inProgress": 0,
+        "rejected": 0
+      },
+      "meterResults": [
+        {
+          "meterId": "99751580",
+          "action": "GET_CONFIG",
+          "status": "SUCCESS",
+          "hesStatusCode": 200,
+          "hesResponse": {
+            "meterId": "99751580",
+            "status": "SUCCESS",
+            "failureStep": "0",
+            "progress": null,
+            "response": [
+              {
+                "type": "METERING_MODE",
+                "active": true,
+                "meteringMode": "IMPORT"
+              }
+            ],
+            "__mdmsMeta": {
+              "startedAt": "2026-09-15T14:27:35.884Z",
+              "completedAt": "2026-09-15T14:28:55.471Z",
+              "executionDurationMs": 79587,
+              "publicRequestId": "6781590451",
+              "commandApiType": "metering_mode_get",
+              "executionDeadlineAt": "2026-09-15T14:37:35.884Z",
+              "leaseOwner": null,
+              "leaseExpiresAt": null,
+              "retryAt": null
+            }
+          },
+          "reason": null,
+          "message": "Get Metering Mode completed successfully.",
+          "note": null,
+          "meterResponse": "Metering Mode: Import",
+          "meterResponseRows": [
+            {
+              "label": "Metering Mode",
+              "value": "Import"
+            }
+          ]
+        }
+      ],
+      "reason": null,
+      "message": "Get Metering Mode completed successfully.",
+      "note": null,
+      "meterResponse": "Metering Mode: Import",
+      "meterResponseRows": [
+        {
+          "label": "Metering Mode",
+          "value": "Import"
+        }
+      ]
+    },
+    "message": "Job status fetched successfully."
+  }
+}
+--------------------------------------------------
+
+[FAIL] Commands Metering Mode E2E — 33/34 checks, 12212ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Init Response Envelope — PASS
+  6. Init Success Response — PASS
+  7. Init Summary Counts — PASS
+  8. Init Successful Meters — PASS
+  9. Init Rejected Meters — PASS
+  10. Init HES Callback Configured — PASS
+  11. Init Note — PASS
+  12. Init Meter Results — PASS
+  13. Init IN_PROGRESS Status — PASS
+  14. Init Message — PASS
+  15. Init Full Contract — PASS
+  16. Job Name Captured — PASS
+  17. Status — PASS
+  18. Content Type — PASS
+  19. Response Time — PASS
+  20. Sensitive Data — PASS
+  21. Query Success Response — PASS
+  22. Query Job Name Echo — PASS
+  23. Query Sync Flags — PASS
+  24. Query HES Status Code — PASS
+  25. Query Expected Meter Present — PASS
+  26. Query Response Envelope — PASS
+  27. Query Finished Message — PASS
+  28. Query HES Job Status FINISHED — PASS
+  29. Query Summary Counts — PASS
+  30. Query Summary vs Meter Results — PASS
+  31. Query Status Summary Alignment — PASS
+  32. Query All Meter Results — PASS
+  33. Query Metering Mode HES Response — All Fields — FAIL
+     expect(received).toBeNull()
+  34. Query Full Contract — PASS
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Commands-Metering-Mode-E2E-2026-09-15T14-28-58-444Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Commands-Metering-Mode-E2E-2026-09-15T14-28-58-444Z.triage.json [heuristic] contract_mismatch/medium

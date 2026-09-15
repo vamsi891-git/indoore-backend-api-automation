@@ -1,0 +1,14 @@
+
+==================================
+API : DTR consumption-details ACCESS_TOKEN_INVALID
+DNS : 1.8 ms
+Connection : 216.44 ms
+Server Processing : -96.24000000000001 ms
+Download : 100 ms
+Total : 222 ms
+===================================
+
+[PASS] DTR Consumption Details — ACCESS_TOKEN_INVALID — 3/3 checks, 222ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

@@ -1,0 +1,19 @@
+
+==================================
+API : Min-max voltage count — page and limit do not change the total
+DNS : 8.32 ms
+Connection : 214.6 ms
+Server Processing : -90.91999999999999 ms
+Download : 100 ms
+Total : 232 ms
+===================================
+
+[PASS] Min-max voltage count — page and limit do not change the total — 8/8 checks, 232ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Count Keys — PASS
+  8. Min-Max Voltage Count Scenario — PASS

@@ -1,0 +1,13 @@
+
+==================================
+API : Nearby accounts — empty account number is rejected
+DNS : 1.9 ms
+Connection : 215.57 ms
+Server Processing : -88.47 ms
+Download : 100 ms
+Total : 229 ms
+===================================
+
+[PASS] Nearby accounts — empty account number is rejected — 2/2 checks, 229ms
+  1. Status Validation — PASS
+  2. Validation Error — PASS

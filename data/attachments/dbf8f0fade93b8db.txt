@@ -1,0 +1,13 @@
+
+==================================
+API : Nearby accounts — list size cannot be zero
+DNS : 1.95 ms
+Connection : 214.51 ms
+Server Processing : -84.45999999999998 ms
+Download : 100 ms
+Total : 232 ms
+===================================
+
+[PASS] Nearby accounts — list size cannot be zero — 2/2 checks, 232ms
+  1. Status Validation — PASS
+  2. Validation Error — PASS

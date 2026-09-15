@@ -1,0 +1,11 @@
+{
+  "warnings": [],
+  "counts": {
+    "rows": 0,
+    "unknownEvents": 0,
+    "emptyConsumerName": 0,
+    "emptyAddress": 0,
+    "emptyMsn": 0,
+    "realisationOutliers": 0
+  }
+}

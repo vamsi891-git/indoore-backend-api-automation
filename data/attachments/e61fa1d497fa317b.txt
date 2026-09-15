@@ -1,0 +1,16 @@
+
+==================================
+API : Communication DTRs — invalid period type is rejected
+DNS : 3 ms
+Connection : 214.31 ms
+Server Processing : -79.31 ms
+Download : 100 ms
+Total : 238 ms
+===================================
+
+[PASS] Communication DTRs — invalid period type is rejected — 5/5 checks, 238ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

@@ -1,0 +1,52 @@
+
+======== MD MD > CD LAST THREE MONTH UNFILTERED — PAGINATION COUNTS ========
+connectionCategory : (all)
+page / pageSize    : 1 / 10
+pagination.total   : 58000
+pagination.totalPages : 5800
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+
+======== MD MD > CD LAST THREE MONTH DOMESTIC — PAGINATION COUNTS ========
+connectionCategory : domestic
+page / pageSize    : 1 / 10
+pagination.total   : 47116
+pagination.totalPages : 4712
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+
+======== MD MD > CD LAST THREE MONTH NON-DOMESTIC — PAGINATION COUNTS ========
+connectionCategory : non-domestic
+page / pageSize    : 1 / 10
+pagination.total   : 10884
+pagination.totalPages : 1089
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+
+======== CONNECTION CATEGORY SPLIT ========
+unfiltered total     : 58000
+domestic total       : 47116
+non-domestic total   : 10884
+domestic + non-dom   : 58000
+uncategorized (gap)  : 0
+partition check      : PASS (sum ≤ all)
+==============================================
+
+[PASS] MD Analysis API (split MD > CD Last Three Month) — 8/8 checks, 754ms
+  1. All three category requests return 200 — PASS
+  2. Unfiltered pagination counts — PASS
+  3. Domestic pagination counts — PASS
+  4. Non-domestic pagination counts — PASS
+  5. Domestic + non-domestic = unfiltered total — PASS
+  6. Unfiltered page uniqueness — PASS
+  7. Domestic page uniqueness — PASS
+  8. Non-domestic page uniqueness — PASS

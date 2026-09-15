@@ -1,0 +1,14 @@
+
+==================================
+API : DTR load-unbalance-details ACCESS_TOKEN_INVALID
+DNS : 2.51 ms
+Connection : 215.68 ms
+Server Processing : -96.19 ms
+Download : 100 ms
+Total : 222 ms
+===================================
+
+[PASS] DTR Load Unbalance Details — ACCESS_TOKEN_INVALID — 3/3 checks, 222ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

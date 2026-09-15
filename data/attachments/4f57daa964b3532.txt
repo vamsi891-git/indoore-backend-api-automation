@@ -1,0 +1,18 @@
+
+==================================
+API : DTR load unbalance list — moderately unbalanced DTRs
+DNS : 82.65 ms
+Connection : 214.53 ms
+Server Processing : -166.18 ms
+Download : 100 ms
+Total : 231 ms
+===================================
+
+[PASS] DTR load unbalance list — moderately unbalanced DTRs — 7/7 checks, 231ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Load Unbalance Details Scenario — PASS

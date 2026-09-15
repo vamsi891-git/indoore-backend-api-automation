@@ -1,0 +1,22 @@
+
+==================================
+API : Organisation hierarchy — live tree
+DNS : 1.9 ms
+Connection : 241.53 ms
+Server Processing : -105.43 ms
+Download : 100 ms
+Total : 238 ms
+===================================
+
+[PASS] Organisation hierarchy — live tree — 11/11 checks, 238ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Envelope — PASS
+  6. Response — PASS
+  7. Items — PASS
+  8. Fields — PASS
+  9. Duplicate Codes — PASS
+  10. Order Sequence — PASS
+  11. Expected Hierarchy — PASS

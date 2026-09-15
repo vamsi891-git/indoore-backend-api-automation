@@ -1,0 +1,67 @@
+
+==================================
+API : DTR event — page 2 continues serial numbers without duplicates
+DNS : 1.92 ms
+Connection : 214.23 ms
+Server Processing : -56.150000000000006 ms
+Download : 100 ms
+Total : 260 ms
+===================================
+
+{
+  "msg": "dtr_event_live_response",
+  "query": {
+    "fromDate": "2025-10-01",
+    "toDate": "2025-10-30",
+    "page": 2,
+    "limit": 10
+  },
+  "queryString": "fromDate=2025-10-01&toDate=2025-10-30&page=2&limit=10",
+  "pagination": {
+    "page": 2,
+    "limit": 10,
+    "total": 794,
+    "totalPages": 80,
+    "totalIsExact": true,
+    "hasMore": true
+  },
+  "columnKeys": [
+    "slNo",
+    "circle",
+    "division",
+    "zone",
+    "subStation",
+    "feeder",
+    "dt",
+    "dtrMeterNo",
+    "dtrRatingKva",
+    "eventCount",
+    "durationHhMmSs"
+  ],
+  "rowCount": 10,
+  "sampleRow": {
+    "id": "row-11-762-19272194",
+    "slNo": 11,
+    "circle": "Indore city circle",
+    "division": "WEST",
+    "zone": "GPH",
+    "subStation": "Gandhi Nagar",
+    "feeder": "GANDHINAGAR(CHQ)",
+    "dt": "WI713",
+    "dtrMeterNo": "19272194",
+    "dtrRatingKva": 200,
+    "eventCount": 48,
+    "durationHhMmSs": "19:24:00",
+    "dtrNetworkLookupId": 762,
+    "meterLookupId": 120854,
+    "eventId": 529
+  }
+}
+[PASS] DTR event — page 2 continues serial numbers without duplicates — 7/7 checks, 260ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Event Scenario — PASS

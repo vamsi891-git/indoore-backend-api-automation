@@ -1,0 +1,35 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/master-data/dtr-master-data",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "circle",
+    "division",
+    "dtrCapacity",
+    "dtrCode",
+    "dtrName",
+    "feederCode",
+    "feederName",
+    "id",
+    "latitude",
+    "longitude",
+    "meterLookupTblRefId",
+    "meterMake",
+    "meterSerialNumber",
+    "mf",
+    "newDtrCode",
+    "serviceDate",
+    "slNo",
+    "subStation",
+    "zone"
+  ],
+  "hasColumnsGrid": false
+}

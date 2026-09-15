@@ -1,0 +1,3 @@
+[PASS] By IVRS — Missing Auth — 2/2 checks, 0ms
+  1. Unauthorized / forbidden without auth — PASS
+  2. ErrorResponseSchema — PASS

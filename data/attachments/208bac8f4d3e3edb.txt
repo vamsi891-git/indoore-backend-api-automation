@@ -1,0 +1,7 @@
+[FAIL] Submission Detail — Invalid Auth — 2/3 checks, 0ms
+  1. Unauthorized (Bearer invalid.tok) — FAIL
+     expect(received).toContain(expected) // indexOf
+  2. Unauthorized (not-a-bearer-token) — PASS
+  3. Unauthorized (Bearer ) — PASS
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Submission-Detail-Invalid-Auth-2026-09-15T17-18-51-547Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Submission-Detail-Invalid-Auth-2026-09-15T17-18-51-547Z.triage.json [heuristic] contract_mismatch/medium

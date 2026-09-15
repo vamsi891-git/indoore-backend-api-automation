@@ -1,0 +1,2 @@
+[PASS] Consumer categories — field names stay the same — 1/1 checks, 234ms
+  1. Status Validation — PASS

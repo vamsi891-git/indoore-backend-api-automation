@@ -1,0 +1,16 @@
+
+==================================
+API : DTR data — invalid report type is rejected
+DNS : 6.65 ms
+Connection : 215.2 ms
+Server Processing : -88.85 ms
+Download : 100 ms
+Total : 233 ms
+===================================
+
+[PASS] DTR data — invalid report type is rejected — 5/5 checks, 233ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Error Envelope — PASS

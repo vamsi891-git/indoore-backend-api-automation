@@ -1,0 +1,16 @@
+
+==================================
+API : Event list — blank consumer number is rejected
+DNS : 1.67 ms
+Connection : 215.69 ms
+Server Processing : -83.35999999999999 ms
+Download : 100 ms
+Total : 234 ms
+===================================
+
+[PASS] Event list — blank consumer number is rejected — 5/5 checks, 234ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Blank Ref Validation Error — PASS

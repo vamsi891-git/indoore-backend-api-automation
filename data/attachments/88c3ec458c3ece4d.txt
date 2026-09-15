@@ -1,0 +1,16 @@
+
+==================================
+API : Event restoration — page 0 is rejected (page must start at 1)
+DNS : 2.6 ms
+Connection : 213.97 ms
+Server Processing : -87.57 ms
+Download : 100 ms
+Total : 229 ms
+===================================
+
+[PASS] Event restoration — page 0 is rejected (page must start at 1) — 5/5 checks, 229ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

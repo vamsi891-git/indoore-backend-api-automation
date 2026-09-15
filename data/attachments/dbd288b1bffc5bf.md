@@ -1,0 +1,186 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: modules/METER-REPLACEMENT/tests/meter-replacement.contract.spec.ts >> METER-REPLACEMENT — Contract Snapshots >> Consumer Detail Contract Snapshot
+- Location: src/modules/METER-REPLACEMENT/tests/meter-replacement.contract.spec.ts:133:7
+
+# Error details
+
+```
+Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: true
+Received: false
+```
+
+# Test source
+
+```ts
+  1   | /**
+  2   |  * METER-REPLACEMENT contract snapshots — structural only (counts/IDs drift).
+  3   |  *
+  4   |  * First run / intentional shape change:
+  5   |  *   UPDATE_CONTRACT_SNAPSHOTS=true npm run test:meter-replacement:contract
+  6   |  */
+  7   | import { test, expect } from "../../../fixtures/observability.fixture";
+  8   | import {
+  9   |   assertContractSnapshot,
+  10  |   buildLookupItemsContractSnapshot,
+  11  | } from "../../../core/contract/contract-snapshot.helper";
+  12  | import { DashboardSummaryApi } from "../Api/dashboard-summary.api";
+  13  | import { ProgressApi } from "../Api/progress.api";
+  14  | import { ConsumerSearchApi } from "../Api/consumer-search.api";
+  15  | import { ConsumerDetailApi } from "../Api/consumer-detail.api";
+  16  | import { MeterValidationApi } from "../Api/meter-validation.api";
+  17  | import { SubmissionHistoryApi } from "../Api/submission-history.api";
+  18  | import { SubmissionDetailApi } from "../Api/submission-detail.api";
+  19  | import { consumerDetailData } from "../Data/consumer-detail.data";
+  20  | import { consumerSearchData } from "../Data/consumer-search.data";
+  21  | import { meterValidationData } from "../Data/meter-validation.data";
+  22  | import { submissionHistoryData } from "../Data/submission-history.data";
+  23  | import { submissionDetailData } from "../Data/submission-detail.data";
+  24  | 
+  25  | function asRecord(value: unknown): Record<string, unknown> {
+  26  |   return value !== null && typeof value === "object"
+  27  |     ? (value as Record<string, unknown>)
+  28  |     : {};
+  29  | }
+  30  | 
+  31  | function resolveConsumerId(): number {
+  32  |   const fromEnv = Number(process.env.METER_REPLACEMENT_CONSUMER_ID ?? "");
+  33  |   if (Number.isFinite(fromEnv) && fromEnv > 0) {
+  34  |     return Math.floor(fromEnv);
+  35  |   }
+  36  |   return consumerDetailData.consumerId;
+  37  | }
+  38  | 
+  39  | function resolveValidateSerial(): string {
+  40  |   return (
+  41  |     process.env.METER_REPLACEMENT_VALIDATE_SERIAL?.trim() ||
+  42  |     meterValidationData.validMeterSerial
+  43  |   );
+  44  | }
+  45  | 
+  46  | function resolveSubmissionId(): number {
+  47  |   const fromEnv = Number(process.env.METER_REPLACEMENT_SUBMISSION_ID ?? "");
+  48  |   if (Number.isFinite(fromEnv) && fromEnv > 0) {
+  49  |     return Math.floor(fromEnv);
+  50  |   }
+  51  |   return submissionDetailData.submissionId;
+  52  | }
+  53  | 
+  54  | async function snapshotEnvelope(
+  55  |   name: string,
+  56  |   pathPattern: string,
+  57  |   responseBody: unknown,
+  58  |   itemSource?: unknown[],
+  59  | ): Promise<void> {
+  60  |   const body = asRecord(responseBody);
+> 61  |   expect(body.success).toBe(true);
+      |                        ^ Error: expect(received).toBe(expected) // Object.is equality
+  62  |   const data = body.data;
+  63  |   const dataRecord = Array.isArray(data) ? {} : asRecord(data);
+  64  |   const items = itemSource ?? (Array.isArray(data) ? data : []);
+  65  |   const itemKeys =
+  66  |     items.length > 0 ? Object.keys(asRecord(items[0])) : Object.keys(dataRecord);
+  67  |   await assertContractSnapshot(
+  68  |     name,
+  69  |     buildLookupItemsContractSnapshot({
+  70  |       pathPattern,
+  71  |       dataKeys: Array.isArray(data)
+  72  |         ? ["data"]
+  73  |         : Object.keys(dataRecord),
+  74  |       itemKeys,
+  75  |     }),
+  76  |   );
+  77  | }
+  78  | 
+  79  | test.describe("METER-REPLACEMENT — Contract Snapshots", () => {
+  80  |   test.setTimeout(180_000);
+  81  | 
+  82  |   test(
+  83  |     "Dashboard Summary Contract Snapshot",
+  84  |     { tag: ["@contract-snapshot", "@meter-replacement", "@dashboard-summary"] },
+  85  |     async ({ authenticatedApi }) => {
+  86  |       const { responseBody } = await new DashboardSummaryApi(
+  87  |         authenticatedApi,
+  88  |       ).getDashboardSummary();
+  89  |       const data = asRecord(asRecord(responseBody).data);
+  90  |       await snapshotEnvelope(
+  91  |         "meter-replacement/dashboard-summary",
+  92  |         "/indore/meter-replacement/dashboard-summary",
+  93  |         responseBody,
+  94  |         [data.overall, data.myWork].filter(Boolean),
+  95  |       );
+  96  |     },
+  97  |   );
+  98  | 
+  99  |   test(
+  100 |     "Progress Contract Snapshot",
+  101 |     { tag: ["@contract-snapshot", "@meter-replacement", "@progress"] },
+  102 |     async ({ authenticatedApi }) => {
+  103 |       const { responseBody } = await new ProgressApi(
+  104 |         authenticatedApi,
+  105 |       ).getProgress();
+  106 |       const data = asRecord(asRecord(responseBody).data);
+  107 |       await snapshotEnvelope(
+  108 |         "meter-replacement/progress",
+  109 |         "/indore/meter-replacement/progress",
+  110 |         responseBody,
+  111 |         [data.weekly, data.monthly].filter(Boolean),
+  112 |       );
+  113 |     },
+  114 |   );
+  115 | 
+  116 |   test(
+  117 |     "Consumer Search Contract Snapshot",
+  118 |     { tag: ["@contract-snapshot", "@meter-replacement", "@consumer-search"] },
+  119 |     async ({ authenticatedApi }) => {
+  120 |       const { responseBody } = await new ConsumerSearchApi(
+  121 |         authenticatedApi,
+  122 |       ).searchConsumer(consumerSearchData.validSearch);
+  123 |       const data = asRecord(responseBody).data;
+  124 |       await snapshotEnvelope(
+  125 |         "meter-replacement/consumer-search",
+  126 |         "/indore/meter-replacement/consumers/search",
+  127 |         responseBody,
+  128 |         Array.isArray(data) ? data : [],
+  129 |       );
+  130 |     },
+  131 |   );
+  132 | 
+  133 |   test(
+  134 |     "Consumer Detail Contract Snapshot",
+  135 |     { tag: ["@contract-snapshot", "@meter-replacement", "@consumer-detail"] },
+  136 |     async ({ authenticatedApi }) => {
+  137 |       const { responseBody } = await new ConsumerDetailApi(
+  138 |         authenticatedApi,
+  139 |       ).getConsumerDetail(resolveConsumerId());
+  140 |       await snapshotEnvelope(
+  141 |         "meter-replacement/consumer-detail",
+  142 |         "/indore/meter-replacement/consumers/{consumerId}",
+  143 |         responseBody,
+  144 |       );
+  145 |     },
+  146 |   );
+  147 | 
+  148 |   test(
+  149 |     "Meter Validation Contract Snapshot",
+  150 |     { tag: ["@contract-snapshot", "@meter-replacement", "@meter-validation"] },
+  151 |     async ({ authenticatedApi }) => {
+  152 |       const { responseBody } = await new MeterValidationApi(
+  153 |         authenticatedApi,
+  154 |       ).validateMeter(resolveValidateSerial());
+  155 |       await snapshotEnvelope(
+  156 |         "meter-replacement/meter-validation",
+  157 |         "/indore/meter-replacement/meters/validate",
+  158 |         responseBody,
+  159 |       );
+  160 |     },
+  161 |   );
+```

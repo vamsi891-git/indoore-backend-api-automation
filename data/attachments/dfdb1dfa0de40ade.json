@@ -1,0 +1,19 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumers/{ref}/event-log/cards",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "avgResolutionTime",
+    "pendingEvents",
+    "resolvedEvents"
+  ],
+  "itemKeys": [
+    "avgResolutionTime",
+    "pendingEvents",
+    "resolvedEvents"
+  ],
+  "hasColumnsGrid": false
+}

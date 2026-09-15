@@ -1,0 +1,78 @@
+
+==================================
+API : DTR event detail — page 2 continues serial numbers without duplicates
+DNS : 2.13 ms
+Connection : 214.45 ms
+Server Processing : 1088.4199999999998 ms
+Download : 100 ms
+Total : 1405 ms
+===================================
+
+{
+  "msg": "dtr_event_detail_live_response",
+  "scenario": "dev_live_page2",
+  "query": {
+    "fromDate": "2025-10-01",
+    "toDate": "2025-10-30",
+    "page": 2,
+    "limit": 10
+  },
+  "queryString": "fromDate=2025-10-01&toDate=2025-10-30&page=2&limit=10",
+  "pagination": {
+    "page": 2,
+    "limit": 10,
+    "total": 18888,
+    "totalPages": 1889,
+    "totalIsExact": true,
+    "hasMore": true
+  },
+  "columnKeys": [
+    "slNo",
+    "circle",
+    "division",
+    "zone",
+    "subStation",
+    "feeder",
+    "dtr",
+    "dtrType",
+    "dtrRating",
+    "msn",
+    "logDate",
+    "eventClassificationName",
+    "eventName",
+    "priority",
+    "eventCount",
+    "durationHhMm"
+  ],
+  "rowCount": 10,
+  "sampleRow": {
+    "id": "row-11-19272262-116107-554",
+    "slNo": 11,
+    "circle": "Indore city circle",
+    "division": "WEST",
+    "zone": "GPH",
+    "subStation": "JINCY",
+    "feeder": "LOHARPATTI 2(CHQ)",
+    "dtr": "RJM0000175",
+    "dtrType": "",
+    "dtrRating": 200,
+    "msn": "19272262",
+    "logDate": "2025-10-30",
+    "eventClassificationName": "Current",
+    "eventName": "Current unbalance",
+    "priority": "Priority4",
+    "eventCount": 2,
+    "durationHhMm": "0:00:36",
+    "dtrNetworkLookupId": 6105,
+    "meterLookupId": 116107,
+    "eventId": 554
+  }
+}
+[PASS] DTR event detail — page 2 continues serial numbers without duplicates — 7/7 checks, 1405ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Event Detail Scenario — PASS

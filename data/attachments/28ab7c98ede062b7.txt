@@ -1,0 +1,16 @@
+
+==================================
+API : Consumption chart — unknown consumer is not found
+DNS : 2.08 ms
+Connection : 215.6 ms
+Server Processing : -84.68 ms
+Download : 100 ms
+Total : 233 ms
+===================================
+
+[PASS] Consumption chart — unknown consumer is not found — 5/5 checks, 233ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Not Found Error — PASS

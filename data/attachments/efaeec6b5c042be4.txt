@@ -1,0 +1,14 @@
+[PASS] Day Night API (Night consumption <= 10% of Day consumption) — 13/13 checks, 2206ms
+  1. Status Code Validation — PASS
+  2. Content Type Validation — PASS
+  3. Response Time Validation — PASS
+  4. Sensitive Data Validation — PASS
+  5. Response Validation (empty allowed) — PASS
+  6. Grid Columns — PASS
+  7. Query Params Validation — PASS
+  8. Report Kind Validation — PASS
+  9. Mandatory Fields Validation — PASS
+  10. Day-Night Business Rules — PASS
+  11. Duplicate contract — PASS
+  12. Pagination Validation — PASS
+  13. Total Count Validation — PASS

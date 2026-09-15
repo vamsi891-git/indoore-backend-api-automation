@@ -1,0 +1,18 @@
+
+==================================
+API : DTR event detail — showing 1 per page returns at most 1 record
+DNS : 2.21 ms
+Connection : 214.42 ms
+Server Processing : 67.37000000000003 ms
+Download : 100 ms
+Total : 384 ms
+===================================
+
+[PASS] DTR event detail — showing 1 per page returns at most 1 record — 7/7 checks, 384ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Event Detail Scenario — PASS

@@ -1,0 +1,14 @@
+[PASS] Energy Audit Loss Analysis Trends (dtr) — 13/13 checks, 452ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Response Contract — PASS
+  6. Query Echo — PASS
+  7. Root Fields — PASS
+  8. Item Count — PASS
+  9. Item Shape — PASS
+  10. Loss Percentage Range — PASS
+  11. No Duplicate Hours — PASS
+  12. Hour Sequence — PASS
+  13. Cross Field Logic — PASS

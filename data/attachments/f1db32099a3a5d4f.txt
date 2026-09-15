@@ -1,0 +1,13 @@
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+[FAIL] Consumer Detail — Valid Sanity — 0/2 checks, 0ms
+  1. Status — FAIL
+     Expected status 200 but received 401
+  2. Success — FAIL
+     expect(received).toBeTruthy()
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Consumer-Detail-Valid-Sanity-2026-09-15T16-57-14-577Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Consumer-Detail-Valid-Sanity-2026-09-15T16-57-14-577Z.triage.json [heuristic] contract_mismatch/medium

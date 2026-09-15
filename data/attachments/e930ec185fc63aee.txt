@@ -1,0 +1,40 @@
+
+==================================
+API : Get Users
+DNS : 2.9 ms
+Connection : 214.42 ms
+Server Processing : 649.6800000000001 ms
+Download : 100 ms
+Total : 967 ms
+===================================
+
+
+==================================
+API : Get User By Id
+DNS : 1.76 ms
+Connection : 214.24 ms
+Server Processing : -47 ms
+Download : 100 ms
+Total : 269 ms
+===================================
+
+
+==================================
+API : Update User
+DNS : 2.18 ms
+Connection : 215.29 ms
+Server Processing : -7.469999999999999 ms
+Download : 100 ms
+Total : 310 ms
+===================================
+
+
+==================================
+API : Update Status
+DNS : 2.09 ms
+Connection : 213.94 ms
+Server Processing : -51.02999999999997 ms
+Download : 100 ms
+Total : 265 ms
+===================================
+

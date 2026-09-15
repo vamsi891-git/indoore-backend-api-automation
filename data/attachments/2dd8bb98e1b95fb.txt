@@ -1,0 +1,5 @@
+[PASS] EENLTMT — Single Page Total Match — 4/4 checks, 1009ms
+  1. Status Validation — PASS
+  2. Response Time — PASS
+  3. Pagination — PASS
+  4. Month/Year Echo — PASS

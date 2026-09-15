@@ -1,0 +1,18 @@
+
+==================================
+API : Consumers by connection status — connected consumers
+DNS : 4.52 ms
+Connection : 214.59 ms
+Server Processing : 1248.89 ms
+Download : 100 ms
+Total : 1568 ms
+===================================
+
+[PASS] Consumers by connection status — connected consumers — 7/7 checks, 1568ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Connection Status Scenario — PASS

@@ -1,0 +1,16 @@
+
+==================================
+API : DTR energy over time — an unknown time grouping is not allowed
+DNS : 2.46 ms
+Connection : 214.52 ms
+Server Processing : -81.98000000000002 ms
+Download : 100 ms
+Total : 235 ms
+===================================
+
+[PASS] DTR energy over time — an unknown time grouping is not allowed — 5/5 checks, 235ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Invalid Period Error — PASS

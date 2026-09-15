@@ -1,0 +1,23 @@
+
+==================================
+API : Can this meter be given to a consumer? — extra unused options are ignored
+DNS : 2.18 ms
+Connection : 215.11 ms
+Server Processing : -80.29000000000002 ms
+Download : 100 ms
+Total : 237 ms
+===================================
+
+[PASS] Can this meter be given to a consumer? — extra unused options are ignored — 12/12 checks, 237ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Required Fields — PASS
+  6. Response — PASS
+  7. Root Structure — PASS
+  8. Meter Exists Type — PASS
+  9. Reason Type — PASS
+  10. Valid Reason Consistency — PASS
+  11. Invalid Scenario Rules — PASS
+  12. Scenario Outcome — PASS

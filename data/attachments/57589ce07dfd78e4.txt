@@ -1,0 +1,4 @@
+[PASS] Auth Sent Invitations List API (q=binetwor) — 3/3 checks, 245ms
+  1. Email Search Status — PASS
+  2. Email Search Items — PASS
+  3. Email Search Contains Sample — PASS

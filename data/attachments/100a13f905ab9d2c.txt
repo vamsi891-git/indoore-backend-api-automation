@@ -1,0 +1,23 @@
+
+==================================
+API : Auth Sent Invitations List API (all)
+DNS : 1.62 ms
+Connection : 215.64 ms
+Server Processing : -63.25999999999999 ms
+Download : 100 ms
+Total : 254 ms
+===================================
+
+[PASS] Auth Sent Invitations List API (all) — 12/12 checks, 254ms
+  1. List Status — PASS
+  2. List Content Type — PASS
+  3. List Response Time — PASS
+  4. List Sensitive Data — PASS
+  5. List Zod — PASS
+  6. Summary Partition — PASS
+  7. Filtered Total — PASS
+  8. Pagination — PASS
+  9. Filter Options — PASS
+  10. Filter Roles Catalog — PASS
+  11. Created At Desc Order — PASS
+  12. Invitation Items — PASS

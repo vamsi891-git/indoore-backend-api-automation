@@ -1,0 +1,15 @@
+
+==================================
+API : Transformer load — leaving out the start date is rejected
+DNS : 2.14 ms
+Connection : 214.68 ms
+Server Processing : -64.82 ms
+Download : 100 ms
+Total : 252 ms
+===================================
+
+[PASS] Transformer load — leaving out the start date is rejected — 4/4 checks, 252ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS

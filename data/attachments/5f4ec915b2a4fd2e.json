@@ -1,0 +1,18 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/dashboard/dtr/communication-status",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "period",
+    "points"
+  ],
+  "itemKeys": [
+    "communicating",
+    "label",
+    "nonCommunicating"
+  ],
+  "hasColumnsGrid": false
+}

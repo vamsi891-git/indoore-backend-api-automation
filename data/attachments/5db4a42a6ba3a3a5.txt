@@ -1,0 +1,13 @@
+
+==================================
+API : Commands Meter Location
+DNS : 2.42 ms
+Connection : 214.46 ms
+Server Processing : 24.119999999999976 ms
+Download : 100 ms
+Total : 341 ms
+===================================
+
+BACKEND FINDING: Commands Meter Location — 500 {"success":false,"error":{"code":"HES_ERROR","message":"Failed to set meter location on HES","details":"<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"><soap:Body><soap:Fault><faultcode>soap:Server</faultcode><faultstring>Node with identifier '00-1b-c5-0c-60-30-52-26' is not registered in the system.</faultstring><detail><ns2:NodeFault xmlns:ns2=\"http://ws.terminal.service.connode.com/\"><message>Node with identifier '00-1b-c5-0c-60-30-52-26' is not registered in the system.</message></ns2:NodeFault></detail></soap:Fault></soap:Body></soap:Envelope>\n"}}
+[PASS] Commands Meter Location — 1/1 checks, 341ms
+  1. Error Response (500 backend defect) — PASS

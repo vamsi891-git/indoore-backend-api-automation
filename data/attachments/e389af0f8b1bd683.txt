@@ -1,0 +1,3 @@
+[PASS] Create Module — Invalid Name — 2/2 checks, 227ms
+  1. Status (validation error) — PASS
+  2. Error envelope — PASS

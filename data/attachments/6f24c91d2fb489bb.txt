@@ -1,0 +1,664 @@
+
+--------------------------------------------------
+API RESPONSE
+--------------------------------------------------
+API    : Energy Audit Loss Analysis (feeder/dp)
+Status : 200
+Request:
+{
+  "report-type": "dp",
+  "month": 12,
+  "year": 2025,
+  "fromDate": "2025-12-20",
+  "toDate": "2025-12-20",
+  "page": 1,
+  "limit": 30,
+  "networkType": "feeder",
+  "networkLookupId": 4
+}
+Body:
+{
+  "success": true,
+  "data": {
+    "columns": [
+      {
+        "key": "circle",
+        "header": "CIRCLE"
+      },
+      {
+        "key": "division",
+        "header": "DIVISION"
+      },
+      {
+        "key": "zone",
+        "header": "ZONE"
+      },
+      {
+        "key": "feeder",
+        "header": "FEEDER"
+      },
+      {
+        "key": "dtrName",
+        "header": "DTR NAME"
+      },
+      {
+        "key": "mf",
+        "header": "MF"
+      },
+      {
+        "key": "meterSerialNumber",
+        "header": "Meter_Serial_Number"
+      },
+      {
+        "key": "inputUnits",
+        "header": "Input Units"
+      },
+      {
+        "key": "consumerCount",
+        "header": "Consumer Count"
+      },
+      {
+        "key": "totalSoldUnits",
+        "header": "Total Sold Units"
+      },
+      {
+        "key": "lossKwh",
+        "header": "Loss in KWH"
+      },
+      {
+        "key": "billingEfficiencyPct",
+        "header": "% Billing efficiency"
+      },
+      {
+        "key": "lossPct",
+        "header": "Loss %"
+      }
+    ],
+    "rows": [
+      {
+        "id": "meter-85104185",
+        "slNo": 1,
+        "dtrCode": "DTR1783144765849",
+        "dtrName": "Auto DTR bad-imei",
+        "dtrRating": null,
+        "meterSerialNumber": "85104185",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 0,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "PragatiNagar",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "1"
+      },
+      {
+        "id": "meter-88012235",
+        "slNo": 2,
+        "dtrCode": "DTR1783144903078",
+        "dtrName": "Auto DTR cap-zero",
+        "dtrRating": null,
+        "meterSerialNumber": "88012235",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 0,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "PragatiNagar",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "1"
+      },
+      {
+        "id": "meter-X1580068",
+        "slNo": 3,
+        "dtrCode": "DTR5827549451281",
+        "dtrName": "Auto DTR meter-dtr-e2e1785827549451509",
+        "dtrRating": null,
+        "meterSerialNumber": "X1580068",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 0,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "PragatiNagar",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "5"
+      },
+      {
+        "id": "meter-97788461",
+        "slNo": 4,
+        "dtrCode": "DTR1783144891219",
+        "dtrName": "Auto DTR success",
+        "dtrRating": null,
+        "meterSerialNumber": "97788461",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 0,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "PragatiNagar",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "1"
+      },
+      {
+        "id": "meter-24021328",
+        "slNo": 5,
+        "dtrCode": "DTR8270681162810",
+        "dtrName": "Auto DTR success-1",
+        "dtrRating": null,
+        "meterSerialNumber": "24021328",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 0,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "PragatiNagar",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "5"
+      },
+      {
+        "id": "meter-85092713",
+        "slNo": 6,
+        "dtrCode": "DTR1783144695907",
+        "dtrName": "Auto DTR svc-future",
+        "dtrRating": null,
+        "meterSerialNumber": "85092713",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 0,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "PragatiNagar",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "1"
+      },
+      {
+        "id": "meter-19271014",
+        "slNo": 7,
+        "dtrCode": "RJ661",
+        "dtrName": "RJ661",
+        "dtrRating": null,
+        "meterSerialNumber": "19271014",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 80,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      },
+      {
+        "id": "meter-19271016",
+        "slNo": 8,
+        "dtrCode": "RJ6610",
+        "dtrName": "RJ6610",
+        "dtrRating": null,
+        "meterSerialNumber": "19271016",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 10,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      },
+      {
+        "id": "meter-19271039",
+        "slNo": 9,
+        "dtrCode": "RJ6611",
+        "dtrName": "RJ6611",
+        "dtrRating": null,
+        "meterSerialNumber": "19271039",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 0,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      },
+      {
+        "id": "meter-19271370",
+        "slNo": 10,
+        "dtrCode": "RJ6612",
+        "dtrName": "RJ6612",
+        "dtrRating": null,
+        "meterSerialNumber": "19271370",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 12186,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "1"
+      },
+      {
+        "id": "meter-85119166",
+        "slNo": 11,
+        "dtrCode": "RJ6612",
+        "dtrName": "RJ6612",
+        "dtrRating": null,
+        "meterSerialNumber": "85119166",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 12186,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "1"
+      },
+      {
+        "id": "meter-19271371",
+        "slNo": 12,
+        "dtrCode": "RJ6613",
+        "dtrName": "RJ6613",
+        "dtrRating": null,
+        "meterSerialNumber": "19271371",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 32,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      },
+      {
+        "id": "meter-19271372",
+        "slNo": 13,
+        "dtrCode": "RJ6614",
+        "dtrName": "RJ6614",
+        "dtrRating": null,
+        "meterSerialNumber": "19271372",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 32,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "1"
+      },
+      {
+        "id": "meter-19271379",
+        "slNo": 14,
+        "dtrCode": "RJ6615",
+        "dtrName": "RJ6615",
+        "dtrRating": null,
+        "meterSerialNumber": "19271379",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 36,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      },
+      {
+        "id": "meter-19271376",
+        "slNo": 15,
+        "dtrCode": "RJ6617",
+        "dtrName": "RJ6617",
+        "dtrRating": null,
+        "meterSerialNumber": "19271376",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 99,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      },
+      {
+        "id": "meter-19271380",
+        "slNo": 16,
+        "dtrCode": "RJ6618",
+        "dtrName": "RJ6618",
+        "dtrRating": null,
+        "meterSerialNumber": "19271380",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 23,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      },
+      {
+        "id": "meter-19271378",
+        "slNo": 17,
+        "dtrCode": "RJ6619",
+        "dtrName": "RJ6619",
+        "dtrRating": null,
+        "meterSerialNumber": "19271378",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 161,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      },
+      {
+        "id": "meter-19271632",
+        "slNo": 18,
+        "dtrCode": "RJ662",
+        "dtrName": "RJ662",
+        "dtrRating": null,
+        "meterSerialNumber": "19271632",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 5,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      },
+      {
+        "id": "meter-19271375",
+        "slNo": 19,
+        "dtrCode": "RJ6620",
+        "dtrName": "RJ6620",
+        "dtrRating": null,
+        "meterSerialNumber": "19271375",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 258,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      },
+      {
+        "id": "meter-19271377",
+        "slNo": 20,
+        "dtrCode": "RJ6621",
+        "dtrName": "RJ6621",
+        "dtrRating": null,
+        "meterSerialNumber": "19271377",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 17,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      },
+      {
+        "id": "meter-19271630",
+        "slNo": 21,
+        "dtrCode": "RJ6622",
+        "dtrName": "RJ6622",
+        "dtrRating": null,
+        "meterSerialNumber": "19271630",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 61,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      },
+      {
+        "id": "meter-19271567",
+        "slNo": 22,
+        "dtrCode": "RJ6623",
+        "dtrName": "RJ6623",
+        "dtrRating": null,
+        "meterSerialNumber": "19271567",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 3,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      },
+      {
+        "id": "meter-19271006",
+        "slNo": 23,
+        "dtrCode": "RJ663",
+        "dtrName": "RJ663",
+        "dtrRating": null,
+        "meterSerialNumber": "19271006",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 5,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      },
+      {
+        "id": "meter-19271036",
+        "slNo": 24,
+        "dtrCode": "RJ664",
+        "dtrName": "RJ664",
+        "dtrRating": null,
+        "meterSerialNumber": "19271036",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 6,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      },
+      {
+        "id": "meter-19271030",
+        "slNo": 25,
+        "dtrCode": "RJ665",
+        "dtrName": "RJ665",
+        "dtrRating": null,
+        "meterSerialNumber": "19271030",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 4,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      },
+      {
+        "id": "meter-19271631",
+        "slNo": 26,
+        "dtrCode": "RJ666",
+        "dtrName": "RJ666",
+        "dtrRating": null,
+        "meterSerialNumber": "19271631",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 71,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      },
+      {
+        "id": "meter-19271564",
+        "slNo": 27,
+        "dtrCode": "RJ667",
+        "dtrName": "RJ667",
+        "dtrRating": null,
+        "meterSerialNumber": "19271564",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 24,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      },
+      {
+        "id": "meter-19271025",
+        "slNo": 28,
+        "dtrCode": "RJ668",
+        "dtrName": "RJ668",
+        "dtrRating": null,
+        "meterSerialNumber": "19271025",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 13,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      },
+      {
+        "id": "meter-19271548",
+        "slNo": 29,
+        "dtrCode": "RJ669",
+        "dtrName": "RJ669",
+        "dtrRating": null,
+        "meterSerialNumber": "19271548",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 33,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 30,
+      "total": 29,
+      "totalPages": 1
+    }
+  }
+}
+--------------------------------------------------
+
+[FAIL] Energy Audit Loss Analysis (feeder/dp) — 20/21 checks, 1479ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Response Contract — PASS
+  6. Columns Contract — FAIL
+     expect(received).toEqual(expected) // deep equality
+  7. Pagination — PASS
+  8. Total Count — PASS
+  9. Rows Exist — PASS
+  10. SL No Sequence — PASS
+  11. Mandatory Fields — PASS
+  12. Field Types — PASS
+  13. Non-Negative Metrics — PASS
+  14. Row ID Format — PASS
+  15. Feeder Meter Serial Format — PASS
+  16. Feeder Scope Consistency — PASS
+  17. Duplicate IDs — PASS
+  18. Duplicate Meter Serials — PASS
+  19. Duplicate DTR Names — PASS
+  20. Loss Calculations — PASS
+  21. Cross Field Logic — PASS
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Energy-Audit-Loss-Analysis-feeder-dp--2026-09-15T14-20-54-178Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Energy-Audit-Loss-Analysis-feeder-dp--2026-09-15T14-20-54-178Z.triage.json [heuristic] contract_mismatch/medium

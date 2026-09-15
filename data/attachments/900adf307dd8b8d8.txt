@@ -1,0 +1,25 @@
+
+==================================
+API : Transformer load — first page lists how much energy each transformer used by hour
+DNS : 13.32 ms
+Connection : 214.29 ms
+Server Processing : 213.39 ms
+Download : 100 ms
+Total : 541 ms
+===================================
+
+[PASS] Transformer load — first page lists how much energy each transformer used by hour — 14/14 checks, 541ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Zod Response Schema — PASS
+  6. Columns — PASS
+  7. Pagination — PASS
+  8. Rows — PASS
+  9. Unique meters — PASS
+  10. Shared feeder allowed — PASS
+  11. MSN matches serial — PASS
+  12. Hourly values — PASS
+  13. Consumption unit — PASS
+  14. No Data Scenario — PASS

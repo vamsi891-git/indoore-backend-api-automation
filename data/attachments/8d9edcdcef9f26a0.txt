@@ -1,0 +1,17 @@
+
+==================================
+API : DTR power now — extra filters that nobody uses are ignored
+DNS : 2.19 ms
+Connection : 214.36 ms
+Server Processing : -84.55000000000001 ms
+Download : 100 ms
+Total : 232 ms
+===================================
+
+[PASS] DTR power now — extra filters that nobody uses are ignored — 6/6 checks, 232ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. DTR Power Triangle Scenario — PASS

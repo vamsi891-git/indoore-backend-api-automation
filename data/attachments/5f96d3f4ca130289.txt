@@ -1,0 +1,14 @@
+
+==================================
+API : Feeder alerts UNAUTHORIZED
+DNS : 79.18 ms
+Connection : 215.89 ms
+Server Processing : -173.07 ms
+Download : 100 ms
+Total : 222 ms
+===================================
+
+[PASS] Feeder alerts — UNAUTHORIZED — 3/3 checks, 222ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

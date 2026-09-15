@@ -1,0 +1,73 @@
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+
+==================================
+API : Meter Replacement Dashboard Summary API
+DNS : 2.28 ms
+Connection : 215.22 ms
+Server Processing : 7060.5 ms
+Download : 100 ms
+Total : 7378 ms
+===================================
+
+[FAIL] Meter Replacement Dashboard Summary API — 46/50 checks, 7378ms
+  1. Status Code — FAIL
+     Expected status 200 but received 401
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Root Fields — FAIL
+     Missing or undefined field: data
+  6. Required Data Fields — FAIL
+     Cannot read properties of undefined (reading 'overall')
+  7. Success — FAIL
+     expect(received).toBeTruthy()
+  8. Root Structure — PASS
+  9. Overall Object — PASS
+  10. My Work Object — PASS
+  11. Overall Required Fields — PASS
+  12. My Work Required Fields — PASS
+  13. Overall Types — PASS
+  14. My Work Types — PASS
+  15. Total Meters Requested — PASS
+  16. Total Meters Replaced — PASS
+  17. Total Pending Meters — PASS
+  18. Total Unmapped Meters — PASS
+  19. Completed Today — PASS
+  20. Completed This Month — PASS
+  21. Total Completed — PASS
+  22. Latest Completed Date — PASS
+  23. Overall Integer Values — PASS
+  24. My Work Integer Values — PASS
+  25. No Null Critical Fields — PASS
+  26. No Undefined Critical Fields — PASS
+  27. Business Rules — PASS
+  28. Overall Business Rule — PASS
+  29. My Work Business Rule — PASS
+  30. Overall Object Size — PASS
+  31. My Work Object Size — PASS
+  32. Overall No Extra Fields — PASS
+  33. My Work No Extra Fields — PASS
+  34. Latest Completed Date Trim — PASS
+  35. Latest Completed Date Business Rule — PASS
+  36. Overall Response Integrity — PASS
+  37. My Work Response Integrity — PASS
+  38. Overall Safe Integer — PASS
+  39. My Work Safe Integer — PASS
+  40. Overall Non Negative — PASS
+  41. My Work Non Negative — PASS
+  42. Requested Consistency — PASS
+  43. Completed Counts Consistency — PASS
+  44. Zero Dashboard Scenario — PASS
+  45. Completed Date Presence — PASS
+  46. Overall Counts Relationship — PASS
+  47. Today Month Relationship — PASS
+  48. Month Total Relationship — PASS
+  49. Overall Numeric Fields — PASS
+  50. My Work Numeric Fields — PASS
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Replacement-Dashboard-Summary-API-2026-09-15T17-03-46-081Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Replacement-Dashboard-Summary-API-2026-09-15T17-03-46-081Z.triage.json [heuristic] contract_mismatch/medium

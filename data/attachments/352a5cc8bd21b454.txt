@@ -1,0 +1,4 @@
+[PASS] Auth Sent Invitations List API (role=Manager) — 3/3 checks, 249ms
+  1. Role Filter Status — PASS
+  2. Role Filter Items — PASS
+  3. Role Filter Total — PASS

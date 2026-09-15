@@ -1,0 +1,18 @@
+
+==================================
+API : Consumer profile — details open using the account number
+DNS : 2.52 ms
+Connection : 215.56 ms
+Server Processing : 417.9200000000001 ms
+Download : 100 ms
+Total : 736 ms
+===================================
+
+[PASS] Consumer profile — details open using the account number — 7/7 checks, 736ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Identity Fields — PASS
+  7. Profile Scenario — PASS

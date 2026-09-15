@@ -1,0 +1,16 @@
+
+==================================
+API : Communication DTRs — missing date for day is rejected
+DNS : 1.86 ms
+Connection : 218.17 ms
+Server Processing : -87.03 ms
+Download : 100 ms
+Total : 233 ms
+===================================
+
+[PASS] Communication DTRs — missing date for day is rejected — 5/5 checks, 233ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

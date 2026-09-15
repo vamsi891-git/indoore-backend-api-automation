@@ -1,0 +1,15 @@
+
+==================================
+API : Monthly billing — year 0 is rejected
+DNS : 2.54 ms
+Connection : 214.36 ms
+Server Processing : -88.9 ms
+Download : 100 ms
+Total : 228 ms
+===================================
+
+[PASS] Monthly billing — year 0 is rejected — 4/4 checks, 228ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS

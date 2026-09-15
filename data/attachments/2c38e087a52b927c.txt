@@ -1,0 +1,15 @@
+
+==================================
+API : Monthly billing — asking for zero rows per page is rejected
+DNS : 1.82 ms
+Connection : 215.05 ms
+Server Processing : -84.87 ms
+Download : 100 ms
+Total : 232 ms
+===================================
+
+[PASS] Monthly billing — asking for zero rows per page is rejected — 4/4 checks, 232ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS

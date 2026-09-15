@@ -1,0 +1,18 @@
+
+==================================
+API : Master data change history — showing 10 per page returns at most 10 changes
+DNS : 25.22 ms
+Connection : 214.35 ms
+Server Processing : -64.57 ms
+Download : 100 ms
+Total : 275 ms
+===================================
+
+[PASS] Master data change history — showing 10 per page returns at most 10 changes — 7/7 checks, 275ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Zod Response Schema — PASS
+  6. Response Envelope — PASS
+  7. Live Validations — PASS

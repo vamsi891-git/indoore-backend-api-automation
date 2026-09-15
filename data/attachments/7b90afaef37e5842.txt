@@ -1,0 +1,16 @@
+
+==================================
+API : Consumer profile — unknown account is not found
+DNS : 108.23 ms
+Connection : 214.54 ms
+Server Processing : 370.23 ms
+Download : 100 ms
+Total : 793 ms
+===================================
+
+[PASS] Consumer profile — unknown account is not found — 5/5 checks, 793ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Not Found Error — PASS

@@ -1,0 +1,24 @@
+
+==================================
+API : Ip!=In (Phase current is not equal to neutral current) report — first page shows columns and meters
+DNS : 2.68 ms
+Connection : 214.28 ms
+Server Processing : 2402.04 ms
+Download : 100 ms
+Total : 2719 ms
+===================================
+
+[PASS] Ip!=In (Phase current is not equal to neutral current) report — first page shows columns and meters — 13/13 checks, 2719ms
+  1. Status Code Validation — PASS
+  2. Content Type Validation — PASS
+  3. Response Time Validation — PASS
+  4. Sensitive Data Validation — PASS
+  5. Success Validation — PASS
+  6. Response Structure Validation — PASS
+  7. Analysis Type Validation — PASS
+  8. Month Validation — PASS
+  9. Year Validation — PASS
+  10. Phase column header — PASS
+  11. Phase Pagination Validation — PASS
+  12. Cross Field Validation — PASS
+  13. Phase Report Validation — PASS

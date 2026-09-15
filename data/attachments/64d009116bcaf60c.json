@@ -1,0 +1,22 @@
+{
+  "triage": {
+    "title": "LF Analysis uniqueness (LF < 5% Last Three month) — LF < 5% Last Three month collected uniqueness",
+    "severity": "medium",
+    "classification": "contract_mismatch",
+    "likelyOwner": "backend",
+    "confidence": 0.55,
+    "summary": "Duplicate LF Analysis msn=97790242 dtr=rj6612 with same value=3.05",
+    "nextSteps": [
+      "Expected behavior: meterLookupId unique. Same MSN with different LF is allowed. Same MSN with the same LF is a duplicate.",
+      "Diff actual JSON fields against mapper/validator expectations.",
+      "Confirm fixture month/year/IDs still exist in this environment.",
+      "Share this defect report with the API owner for the module."
+    ],
+    "tags": [
+      "contract",
+      "COMMERICIAL-ANALYSIS",
+      "LF < 5% Last Three month collected uniqueness"
+    ]
+  },
+  "source": "heuristic"
+}

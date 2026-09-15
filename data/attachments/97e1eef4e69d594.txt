@@ -1,0 +1,16 @@
+
+==================================
+API : Energy flow chart — blank consumer number is rejected
+DNS : 1.96 ms
+Connection : 214.54 ms
+Server Processing : 893.5 ms
+Download : 100 ms
+Total : 1210 ms
+===================================
+
+[PASS] Energy flow chart — blank consumer number is rejected — 5/5 checks, 1210ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Blank Ref Validation Error — PASS

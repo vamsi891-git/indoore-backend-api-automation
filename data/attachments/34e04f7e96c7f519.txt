@@ -1,0 +1,28 @@
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+
+==================================
+API : Validate POST /indore/meter-replacement/bulk/validate — duplicate column names rejected
+DNS : 3.04 ms
+Connection : 214.49 ms
+Server Processing : 6468.47 ms
+Download : 100 ms
+Total : 6786 ms
+===================================
+
+[FAIL] Validate POST /indore/meter-replacement/bulk/validate — duplicate column names rejected — 5/7 checks, 6786ms
+  1. Status Validation — FAIL
+     expect(received).toContain(expected) // indexOf
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Required Fields — PASS
+  6. Response — PASS
+  7. Scenario Outcome — FAIL
+     expect(received).toBeTruthy()
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Validate-POST-indore-meter-replacement-bulk-validate-duplicate-column-names-rejected-2026-09-15T14-39-39-304Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Validate-POST-indore-meter-replacement-bulk-validate-duplicate-column-names-rejected-2026-09-15T14-39-39-304Z.triage.json [heuristic] contract_mismatch/medium

@@ -1,0 +1,1 @@
+[validate-meter] add-valid=CM1789483116 add-exists=00250709 dtr-valid=skip dtr-on-dtr=skip dtr-inactive=skip dtr-assigned=88017671

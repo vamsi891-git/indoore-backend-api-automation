@@ -1,0 +1,27 @@
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+
+==================================
+API : Validate POST /indore/meter-replacement/bulk/validate — only .xlsx allowed
+DNS : 3.03 ms
+Connection : 214.58 ms
+Server Processing : 7055.39 ms
+Download : 100 ms
+Total : 7373 ms
+===================================
+
+[FAIL] Validate POST /indore/meter-replacement/bulk/validate — only .xlsx allowed — 6/7 checks, 7373ms
+  1. Status Validation — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Required Fields — PASS
+  6. Response — PASS
+  7. Scenario Outcome — PASS
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Validate-POST-indore-meter-replacement-bulk-validate-only-xlsx-allowed-2026-09-15T14-39-06-519Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Validate-POST-indore-meter-replacement-bulk-validate-only-xlsx-allowed-2026-09-15T14-39-06-519Z.triage.json [heuristic] contract_mismatch/medium

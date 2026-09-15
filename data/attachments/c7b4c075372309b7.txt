@@ -1,0 +1,18 @@
+
+==================================
+API : Home dashboard — charts and pie charts load
+DNS : 2.04 ms
+Connection : 216.9 ms
+Server Processing : -63.94 ms
+Download : 100 ms
+Total : 255 ms
+===================================
+
+[PASS] Home dashboard — charts and pie charts load — 7/7 checks, 255ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Overall Metrics Scenario — PASS

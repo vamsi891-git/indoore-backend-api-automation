@@ -1,0 +1,86 @@
+
+==================================
+API : Current without voltage — Oct 2025 phase B first page shows columns and readings
+DNS : 1.94 ms
+Connection : 214.6 ms
+Server Processing : 600.4599999999999 ms
+Download : 100 ms
+Total : 917 ms
+===================================
+
+{
+  "msg": "current_without_voltage_live_response",
+  "scenario": "dev_live_phase_b",
+  "query": {
+    "phase": "B",
+    "month": 10,
+    "year": 2025,
+    "page": 1,
+    "limit": 10,
+    "includeTotal": false
+  },
+  "queryString": "phase=B&month=10&year=2025&page=1&limit=10&includeTotal=false",
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": null,
+    "totalPages": null,
+    "totalIsExact": false,
+    "hasMore": true,
+    "nextCursor": "2025-10-31 16:45:00.000|38741"
+  },
+  "columnKeys": [
+    "slNo",
+    "circle",
+    "division",
+    "zone",
+    "subStation",
+    "feeder",
+    "dtr",
+    "sanctionedLoadKw",
+    "name",
+    "address",
+    "ivrsNumber",
+    "category",
+    "meterSerialNumber",
+    "phase",
+    "rCurrent",
+    "rnVoltage",
+    "nightKwh",
+    "dayKwh",
+    "meterReadingDateTime"
+  ],
+  "currentHeader": "B Current",
+  "voltageHeader": "BN Voltage",
+  "rowCount": 10,
+  "sampleRow": {
+    "id": "row-1-18167678",
+    "slNo": 1,
+    "circle": "Indore city circle",
+    "division": "SOUTH",
+    "zone": "OPH South",
+    "subStation": "OPH EAST SS",
+    "feeder": "DOULATGANG(CHQ)",
+    "dtr": "24SE12",
+    "sanctionedLoadKw": "4",
+    "name": "MOINUDDIN NAASRUDDIN",
+    "address": "..54 CHAMPA BAG BORING KE PASS.",
+    "ivrsNumber": "N3544012226",
+    "category": "LV1.2",
+    "meterSerialNumber": "18167678",
+    "phase": "3PH WC",
+    "rCurrent": "0.030",
+    "rnVoltage": "0.000",
+    "nightKwh": "0.000",
+    "dayKwh": "0.000",
+    "meterReadingDateTime": "31-10-2025 18:15"
+  }
+}
+[PASS] Current without voltage — Oct 2025 phase B first page shows columns and readings — 7/7 checks, 917ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Current Without Voltage Scenario — PASS

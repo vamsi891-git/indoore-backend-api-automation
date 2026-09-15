@@ -1,0 +1,16 @@
+
+==================================
+API : DTR communication — invalid fromDate is rejected
+DNS : 2.13 ms
+Connection : 213.91 ms
+Server Processing : -79.03999999999999 ms
+Download : 100 ms
+Total : 237 ms
+===================================
+
+[PASS] DTR communication — invalid fromDate is rejected — 5/5 checks, 237ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

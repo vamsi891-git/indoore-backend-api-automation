@@ -1,0 +1,26 @@
+
+==================================
+API : Consumer search — first page shows columns and records
+DNS : 109.92 ms
+Connection : 214.67 ms
+Server Processing : 927.4099999999999 ms
+Download : 100 ms
+Total : 1352 ms
+===================================
+
+[PASS] Consumer search — first page shows columns and records — 15/15 checks, 1352ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Envelope — PASS
+  6. Response — PASS
+  7. Columns — PASS
+  8. Pagination — PASS
+  9. Items — PASS
+  10. Required Fields — PASS
+  11. Data Types — PASS
+  12. Serial Sequence — PASS
+  13. Duplicate Meter Serial — PASS
+  14. Mobile Format — PASS
+  15. IVRS Fields — PASS

@@ -1,0 +1,136 @@
+
+==================================
+API : Commands Search Meters
+DNS : 70.68 ms
+Connection : 214.22 ms
+Server Processing : -42.900000000000006 ms
+Download : 100 ms
+Total : 342 ms
+===================================
+
+
+--------------------------------------------------
+API RESPONSE
+--------------------------------------------------
+API    : Commands Search Meters
+Status : 200
+Request:
+{
+  "itemCount": 10,
+  "itemStart": 1
+}
+Body:
+{
+  "success": true,
+  "data": [
+    {
+      "meterId": "9697800",
+      "nodeId": "00-1b-c5-0c-60-06-75-e9",
+      "vendor": "GENUS POWER INFRASTRUCTURES LTD",
+      "firmwareVersion": "T36A5.145202",
+      "hardwareVersion": "Single phase a.c. static direct connected watt-hour smart",
+      "createTime": "2026-08-05T12:48:40+05:30",
+      "updateTime": "2026-09-08T13:52:51+05:30"
+    },
+    {
+      "meterId": "EZ9100144",
+      "nodeId": "00-1b-c5-0c-60-06-77-36",
+      "vendor": "LINKWELL TELESYSTEMS PVT.LTD.HYD",
+      "firmwareVersion": "SM34-SV03.00-AV03.00",
+      "hardwareVersion": "Three phase a.c. static direct connected watt-hour smart",
+      "createTime": "2026-08-05T20:02:31+05:30",
+      "updateTime": "2026-09-15T19:21:44+05:30"
+    },
+    {
+      "meterId": "CA0225944",
+      "nodeId": "00-1b-c5-0c-60-38-e8-c2",
+      "vendor": "CAPITAL POWER SYSTEMS LIMITED",
+      "firmwareVersion": "RFPV06.29v2",
+      "hardwareVersion": "Three phase a.c. static direct connected watt-hour smart",
+      "createTime": "2026-08-06T13:25:48+05:30",
+      "updateTime": "2026-08-11T18:43:13+05:30"
+    },
+    {
+      "meterId": "SC12220562",
+      "nodeId": "00-1b-c5-0c-60-3b-1a-aa",
+      "vendor": "Schneider Electric India Private Limited",
+      "firmwareVersion": "TE01.00",
+      "hardwareVersion": "Single phase a.c. static direct connected watt-hour smart",
+      "createTime": "2026-08-06T13:28:27+05:30",
+      "updateTime": "2026-08-11T18:53:26+05:30"
+    },
+    {
+      "meterId": "6164177",
+      "nodeId": "00-1b-c5-0c-60-21-e5-25",
+      "vendor": "GENUS POWER INFRASTRUCTURES LTD",
+      "firmwareVersion": "G36A5.071011",
+      "hardwareVersion": "Single phase a.c. static direct connected watt-hour smart",
+      "createTime": "2026-08-07T13:53:28+05:30",
+      "updateTime": "2026-08-07T13:53:50+05:30"
+    },
+    {
+      "meterId": "40000002",
+      "nodeId": "00-1b-c5-0c-60-5a-c9-4c",
+      "vendor": "Shete Advanced Technologies Pvt Ltd",
+      "firmwareVersion": "02301001",
+      "hardwareVersion": "Single phase a.c. static direct connected watt-hour smart",
+      "createTime": "2026-08-07T23:49:30+05:30",
+      "updateTime": "2026-08-24T12:30:34+05:30"
+    },
+    {
+      "meterId": "19272930",
+      "nodeId": "00-1b-c5-0c-60-04-2f-60",
+      "vendor": "LARSEN AND TOUBRO LIMITED",
+      "firmwareVersion": "8PB10.60",
+      "hardwareVersion": "3P-4W LTCT smart meter",
+      "createTime": "2026-08-10T12:45:51+05:30",
+      "updateTime": "2026-09-15T19:46:06+05:30"
+    },
+    {
+      "meterId": "00250709",
+      "nodeId": "00-1b-c5-0c-60-55-12-3f",
+      "vendor": "LINKWELL TELESYSTEMS PVT.LTD.HYD",
+      "firmwareVersion": "SM12-SV02.01-AV01.04",
+      "hardwareVersion": "Single phase a.c. static direct connected watt-hour smart",
+      "createTime": "2026-08-10T12:46:03+05:30",
+      "updateTime": "2026-09-15T19:49:32+05:30"
+    },
+    {
+      "meterId": "99751580",
+      "nodeId": "00-1b-c5-0c-60-0b-9d-62",
+      "vendor": "Schneider Electric India Private Limited",
+      "firmwareVersion": "TE00.00",
+      "hardwareVersion": "Single phase a.c. static direct connected watt-hour smart",
+      "createTime": "2026-08-10T12:46:04+05:30",
+      "updateTime": "2026-09-15T19:48:57+05:30"
+    },
+    {
+      "meterId": "85092812",
+      "nodeId": null,
+      "vendor": "LARSEN AND TOUBRO LIMITED",
+      "firmwareVersion": "TE00.00",
+      "hardwareVersion": "Single phase a.c. static direct connected watt-hour smart",
+      "createTime": "2026-08-10T12:46:12+05:30",
+      "updateTime": "2026-09-09T17:19:45+05:30"
+    }
+  ]
+}
+--------------------------------------------------
+
+[FAIL] Commands Search Meters — 8/11 checks, 342ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Response — PASS
+  6. Result Count — PASS
+  7. Unique Meter IDs — PASS
+  8. All Meter Rows — PASS
+  9. Expected First Page Meter IDs — FAIL
+     expect(received).toEqual(expected) // deep equality
+  10. Known Meter Present — FAIL
+     expect(received).toContain(expected) // indexOf
+  11. Full API Contract — FAIL
+     expect(received).toEqual(expected) // deep equality
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Commands-Search-Meters-2026-09-15T14-29-40-823Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Commands-Search-Meters-2026-09-15T14-29-40-823Z.triage.json [heuristic] contract_mismatch/medium

@@ -1,0 +1,116 @@
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+
+==================================
+API : Meter Replacement Consumer Detail API
+DNS : 2.35 ms
+Connection : 214.66 ms
+Server Processing : 6221.99 ms
+Download : 100 ms
+Total : 6539 ms
+===================================
+
+[FAIL] Meter Replacement Consumer Detail API — 27/62 checks, 6539ms
+  1. Status Code — FAIL
+     Expected status 200 but received 401
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Root Fields — FAIL
+     Missing or undefined field: data
+  6. Success — FAIL
+     expect(received).toBeTruthy()
+  7. Root Structure — PASS
+  8. Required Fields — PASS
+  9. Consumer — FAIL
+     expect(received).toBeGreaterThan(expected)
+  10. Consumer Trim — PASS
+  11. Consumer Length — FAIL
+     expect(received).toBeGreaterThan(expected)
+  12. IVRS — FAIL
+     expect(received).toBeGreaterThan(expected)
+  13. IVRS Trim — PASS
+  14. RR Number — FAIL
+     expect(received).toBeGreaterThan(expected)
+  15. Consumer Id — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  16. Consumer CID — FAIL
+     expect(received).toBeGreaterThan(expected)
+  17. Account Id — FAIL
+     expect(received).toBeGreaterThan(expected)
+  18. Service Point Id — FAIL
+     expect(received).toBeGreaterThan(expected)
+  19. Address — FAIL
+     expect(received).toBeGreaterThan(expected)
+  20. Zone — PASS
+  21. Office — FAIL
+     expect(received).toBeGreaterThan(expected)
+  22. Old Meter Lookup Id — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  23. Old Meter Serial — FAIL
+     expect(received).toBeGreaterThan(expected)
+  24. Old Meter Status — FAIL
+     expect(received).toContain(expected) // indexOf
+  25. Consumer Status — FAIL
+     expect(received).toContain(expected) // indexOf
+  26. Latitude — FAIL
+     expect(received).toBeGreaterThan(expected)
+  27. Longitude — FAIL
+     expect(received).toBeGreaterThan(expected)
+  28. Replacement Eligible — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  29. No Null Values — PASS
+  30. No Undefined Values — FAIL
+     expect(received).not.toBeUndefined()
+  31. Consumer Identity — FAIL
+     expect(received).toBeGreaterThan(expected)
+  32. Meter Identity — FAIL
+     expect(received).toBeGreaterThan(expected)
+  33. Location Identity — FAIL
+     expect(received).toBeGreaterThan(expected)
+  34. IVRS Equals RR Number — PASS
+  35. Consumer CID Consistency — FAIL
+     expect(received).toBeGreaterThan(expected)
+  36. Account Id Consistency — FAIL
+     expect(received).toBeGreaterThan(expected)
+  37. Service Point Trim — PASS
+  38. Address Trim — PASS
+  39. Office Trim — PASS
+  40. Zone Trim — PASS
+  41. Old Meter Serial Trim — PASS
+  42. Latitude Trim — PASS
+  43. Longitude Trim — PASS
+  44. Latitude Range — PASS
+  45. Longitude Range — PASS
+  46. Coordinate Precision — FAIL
+     expect(received).toContain(expected) // indexOf
+  47. Active Consumer Rule — PASS
+  48. Active Meter Rule — PASS
+  49. Replacement Eligibility Rule — PASS
+  50. Replacement Ineligible Rule — PASS
+  51. Meter Lookup Relationship — FAIL
+     expect(received).toBeGreaterThan(expected)
+  52. Consumer Relationship — FAIL
+     expect(received).toBeGreaterThan(expected)
+  53. Location Relationship — FAIL
+     expect(received).toBeGreaterThan(expected)
+  54. No Extra Fields — PASS
+  55. Object Size — PASS
+  56. Response Integrity — FAIL
+     expect(received).toBeTruthy()
+  57. String Fields — PASS
+  58. Numeric Fields — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  59. Boolean Field — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  60. Status Fields — FAIL
+     expect(received).toContain(expected) // indexOf
+  61. Coordinate Consistency — PASS
+  62. Business Rules — FAIL
+     expect(received).toBeGreaterThan(expected)
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Replacement-Consumer-Detail-API-2026-09-15T16-57-39-448Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Replacement-Consumer-Detail-API-2026-09-15T16-57-39-448Z.triage.json [heuristic] contract_mismatch/medium

@@ -1,0 +1,20 @@
+
+==================================
+API : Consumer search — page 2 shows the next set of records
+DNS : 80.93 ms
+Connection : 215.08 ms
+Server Processing : 803.9899999999999 ms
+Download : 100 ms
+Total : 1200 ms
+===================================
+
+[PASS] Consumer search — page 2 shows the next set of records — 9/9 checks, 1200ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Envelope — PASS
+  6. Response — PASS
+  7. Columns — PASS
+  8. Pagination — PASS
+  9. Page Two — PASS

@@ -1,0 +1,22 @@
+{
+  "warnings": [
+    {
+      "code": "EMPTY_IVRS",
+      "message": "report row ivrsNumber is empty",
+      "field": "ivrsNumber"
+    },
+    {
+      "code": "DUPLICATE_MSN",
+      "message": "duplicate msn on 2 rows",
+      "field": "msn",
+      "actual": "93037509"
+    }
+  ],
+  "counts": {
+    "emptyIvrs": 1,
+    "emptyMsn": 0,
+    "emptyAnalysisType": 0,
+    "duplicateMsn": 1,
+    "duplicateIvrs": 0
+  }
+}

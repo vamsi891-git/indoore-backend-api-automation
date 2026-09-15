@@ -1,0 +1,25 @@
+
+==================================
+API : Auth Devices API
+DNS : 109.78 ms
+Connection : 215.56 ms
+Server Processing : 317.66 ms
+Download : 100 ms
+Total : 743 ms
+===================================
+
+[FAIL] Auth Devices API — 10/11 checks, 743ms
+  1. Devices Status Code — PASS
+  2. Devices Content Type — PASS
+  3. Devices Response Time — PASS
+  4. Devices Sensitive Data — PASS
+  5. Devices Success Envelope — PASS
+  6. Devices Zod Contract — FAIL
+     Zod contract mismatch:
+  7. Devices Response Shape — PASS
+  8. Device Groups — PASS
+  9. Devices — PASS
+  10. Device Types — PASS
+  11. Device Sessions — PASS
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Auth-Devices-API-2026-09-15T13-37-15-605Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Auth-Devices-API-2026-09-15T13-37-15-605Z.triage.json [heuristic] contract_mismatch/medium

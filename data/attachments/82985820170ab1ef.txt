@@ -1,0 +1,17 @@
+
+==================================
+API : Meter communication — status opens using the meter
+DNS : 73.5 ms
+Connection : 217.51 ms
+Server Processing : -139.01 ms
+Download : 100 ms
+Total : 252 ms
+===================================
+
+[PASS] Meter communication — status opens using the meter — 6/6 checks, 252ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Communication Status Scenario — PASS

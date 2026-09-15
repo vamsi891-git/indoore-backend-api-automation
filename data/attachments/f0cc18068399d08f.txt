@@ -1,0 +1,16 @@
+
+==================================
+API : Current without voltage — limit 0 is rejected (limit must be at least 1)
+DNS : 102.59 ms
+Connection : 215.39 ms
+Server Processing : -181.98 ms
+Download : 100 ms
+Total : 236 ms
+===================================
+
+[PASS] Current without voltage — limit 0 is rejected (limit must be at least 1) — 5/5 checks, 236ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

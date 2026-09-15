@@ -1,0 +1,10 @@
+
+==================================
+API : DTR Detail API
+DNS : 112.89 ms
+Connection : 216.26 ms
+Server Processing : 503.85 ms
+Download : 100 ms
+Total : 933 ms
+===================================
+

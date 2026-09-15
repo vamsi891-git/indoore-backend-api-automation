@@ -1,0 +1,7 @@
+[FAIL] Dashboard Summary — Invalid Auth — 2/3 checks, 0ms
+  1. Unauthorized (Bearer invalid.tok) — FAIL
+     expect(received).toContain(expected) // indexOf
+  2. Unauthorized (not-a-bearer-token) — PASS
+  3. Unauthorized (Bearer ) — PASS
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Dashboard-Summary-Invalid-Auth-2026-09-15T17-03-24-318Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Dashboard-Summary-Invalid-Auth-2026-09-15T17-03-24-318Z.triage.json [heuristic] contract_mismatch/medium

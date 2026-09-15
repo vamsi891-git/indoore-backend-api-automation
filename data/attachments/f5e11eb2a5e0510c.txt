@@ -1,0 +1,87 @@
+
+==================================
+API : Billing MD snapshot — includeTotal still shows the same columns
+DNS : 2.17 ms
+Connection : 215.2 ms
+Server Processing : 88.63 ms
+Download : 100 ms
+Total : 406 ms
+===================================
+
+{
+  "msg": "billing_md_snapshot_live_response",
+  "scenario": "dev_live_include_total",
+  "query": {
+    "month": 10,
+    "year": 2025,
+    "page": 1,
+    "limit": 10,
+    "includeTotal": true
+  },
+  "queryString": "month=10&year=2025&page=1&limit=10&includeTotal=true",
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 106653,
+    "totalPages": 10666,
+    "totalIsExact": true,
+    "hasMore": true
+  },
+  "columnKeys": [
+    "slNo",
+    "circle",
+    "division",
+    "zone",
+    "substation",
+    "feeder",
+    "dtr",
+    "consumerName",
+    "ivrsNumber",
+    "meterNumber",
+    "phase",
+    "tariff",
+    "sanctionedLoadKw",
+    "meterTimestamp",
+    "mdKw",
+    "mdKwOt",
+    "mdKva",
+    "mdKvaOt",
+    "pf",
+    "kwhC",
+    "kvahC"
+  ],
+  "rowCount": 10,
+  "sampleRow": {
+    "id": "row-1-8178-85087252-N3477027402",
+    "slNo": 1,
+    "circle": "Indore city circle",
+    "division": "WEST",
+    "zone": "GPH",
+    "substation": "Citi Control Room",
+    "feeder": "RAJWADA(CHQ)",
+    "dtr": "WI581",
+    "consumerName": "SMT GANGABAI KAMEDILAL",
+    "ivrsNumber": "N3477027402",
+    "meterNumber": "85087252",
+    "meterLookupTblRefId": 8178,
+    "phase": "1 PH",
+    "tariff": "LV1.2",
+    "sanctionedLoadKw": 1,
+    "meterTimestamp": "2025-10-01 00:00",
+    "mdKw": 1.834,
+    "mdKwOt": "2025-09-01 08:25",
+    "mdKva": 1.834,
+    "mdKvaOt": "2025-09-01 08:25",
+    "pf": 0.99,
+    "kwhC": 7476.59,
+    "kvahC": 7507.01
+  }
+}
+[PASS] Billing MD snapshot — includeTotal still shows the same columns — 7/7 checks, 406ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Billing MD Snapshot Scenario — PASS

@@ -1,0 +1,20 @@
+
+==================================
+API : Consumer search — a page past the last page shows no records
+DNS : 25.31 ms
+Connection : 214.63 ms
+Server Processing : 242.06000000000006 ms
+Download : 100 ms
+Total : 582 ms
+===================================
+
+[PASS] Consumer search — a page past the last page shows no records — 9/9 checks, 582ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Envelope — PASS
+  6. Response — PASS
+  7. Columns — PASS
+  8. Pagination — PASS
+  9. Empty Page — PASS

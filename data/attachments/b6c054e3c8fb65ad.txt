@@ -1,0 +1,16 @@
+
+==================================
+API : Energy flow chart — unknown consumer is not found
+DNS : 2.37 ms
+Connection : 214.39 ms
+Server Processing : 788.2400000000001 ms
+Download : 100 ms
+Total : 1105 ms
+===================================
+
+[PASS] Energy flow chart — unknown consumer is not found — 5/5 checks, 1105ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Not Found Error — PASS

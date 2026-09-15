@@ -1,0 +1,28 @@
+{
+  "reportFile": "/home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Technical-summary-October-2025-cards-show-counts-2026-09-15T17-42-03-685Z.md",
+  "triageFile": "/home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Technical-summary-October-2025-cards-show-counts-2026-09-15T17-42-03-685Z.triage.json",
+  "triage": {
+    "triage": {
+      "title": "Technical summary — October 2025 cards show counts — Report card count",
+      "severity": "medium",
+      "classification": "contract_mismatch",
+      "likelyOwner": "backend",
+      "confidence": 0.55,
+      "summary": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m",
+      "nextSteps": [
+        "Expected behavior: HTTP 200 with month/year echo and technical/YNR report aggregate counts",
+        "Diff actual JSON fields against mapper/validator expectations.",
+        "Confirm fixture month/year/IDs still exist in this environment.",
+        "Share this defect report with the API owner for the module."
+      ],
+      "tags": [
+        "contract",
+        "TECHNICAL-ANALYSIS",
+        "Report card count"
+      ]
+    },
+    "source": "heuristic"
+  },
+  "hint": "Share developer-defect-report.md with the backend team",
+  "llmEnabled": false
+}

@@ -1,0 +1,72 @@
+
+==================================
+API : Event detail — 1–30 Oct 2025 first page shows columns and meter events
+DNS : 7.74 ms
+Connection : 214.31 ms
+Server Processing : 1800.9500000000003 ms
+Download : 100 ms
+Total : 2123 ms
+===================================
+
+{
+  "msg": "event_detail_live_response",
+  "query": {
+    "fromDate": "2025-10-01",
+    "toDate": "2025-10-30",
+    "page": 1,
+    "limit": 10
+  },
+  "queryString": "fromDate=2025-10-01&toDate=2025-10-30&page=1&limit=10",
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 114119,
+    "totalPages": 11412,
+    "totalIsExact": true,
+    "hasMore": true
+  },
+  "columnKeys": [
+    "division",
+    "zone",
+    "feeder",
+    "dtr",
+    "name",
+    "address",
+    "ivrsNumber",
+    "tariff",
+    "msn",
+    "phase",
+    "eventClassificationName",
+    "eventName",
+    "eventCount",
+    "durationHhMm"
+  ],
+  "rowCount": 10,
+  "sampleRow": {
+    "id": "row-5793-530",
+    "meterLookupId": 5793,
+    "division": "CENTRAL",
+    "zone": "RajMohalla",
+    "feeder": "AIR(CHQ)",
+    "dtr": "RZ817",
+    "name": "KISHANRAO SHANKARRAO",
+    "address": "12/7 D MOG LINE ..12/7 D MOG LINE ..12/7 D MOG LINE ..",
+    "ivrsNumber": "N3004015448",
+    "tariff": "LV1.2",
+    "msn": "85084432",
+    "phase": "1 PH",
+    "eventClassificationName": "Transaction",
+    "eventId": 530,
+    "eventName": "Real time clock, date and time",
+    "eventCount": 27,
+    "durationHhMm": "NA"
+  }
+}
+[PASS] Event detail — 1–30 Oct 2025 first page shows columns and meter events — 7/7 checks, 2123ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Event Detail Scenario — PASS

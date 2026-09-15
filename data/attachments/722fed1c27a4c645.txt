@@ -1,0 +1,14 @@
+
+==================================
+API : Consumer search — a non-numeric page is rejected
+DNS : 71.35 ms
+Connection : 214.61 ms
+Server Processing : -155.96 ms
+Download : 100 ms
+Total : 230 ms
+===================================
+
+[PASS] Consumer search — a non-numeric page is rejected — 3/3 checks, 230ms
+  1. Status Validation — PASS
+  2. Response Time — PASS
+  3. Validation Error — PASS

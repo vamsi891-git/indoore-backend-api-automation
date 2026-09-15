@@ -1,0 +1,4 @@
+[PASS] Commands Meter Samples — Invalid Count — 3/3 checks, 641ms
+  1. Status (bad request) — PASS
+  2. Content Type — PASS
+  3. Error Response — PASS

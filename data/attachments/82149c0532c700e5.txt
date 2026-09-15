@@ -1,0 +1,18 @@
+
+==================================
+API : DTR voltage unbalance — chart opens with Severe / Moderate / Balanced counts
+DNS : 2.29 ms
+Connection : 214.66 ms
+Server Processing : -82.94999999999999 ms
+Download : 100 ms
+Total : 234 ms
+===================================
+
+[PASS] DTR voltage unbalance — chart opens with Severe / Moderate / Balanced counts — 7/7 checks, 234ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Voltage Unbalance Scenario — PASS

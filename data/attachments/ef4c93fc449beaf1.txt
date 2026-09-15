@@ -1,0 +1,18 @@
+
+==================================
+API : DTR billing — duplicate meter serials are sent once
+DNS : 69.84 ms
+Connection : 214.41 ms
+Server Processing : -51.25000000000003 ms
+Download : 100 ms
+Total : 333 ms
+===================================
+
+[PASS] DTR billing — duplicate meter serials are sent once — 7/7 checks, 333ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Billing Scenario — PASS

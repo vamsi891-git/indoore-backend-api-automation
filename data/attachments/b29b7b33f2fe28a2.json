@@ -1,0 +1,17 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/utils/consumer-categories",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "items"
+  ],
+  "itemKeys": [
+    "id",
+    "name",
+    "shortName"
+  ],
+  "hasColumnsGrid": false
+}

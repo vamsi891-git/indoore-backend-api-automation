@@ -1,0 +1,6 @@
+[PASS] Consumption Pattern first/last uniqueness (Zero Consumption for Last 3 months) — 5/5 checks, 239ms
+  1. Domestic page 1 uniqueness — PASS
+  2. Domestic last page 281 uniqueness — PASS
+  3. Non-domestic page 1 uniqueness — PASS
+  4. Non-domestic last page 281 uniqueness — PASS
+  5. Domestic last-page meters equal non-domestic last-page meters — PASS

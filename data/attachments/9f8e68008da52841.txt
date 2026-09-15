@@ -1,0 +1,21 @@
+
+==================================
+API : event classifications — ids and names are unique
+DNS : 2.76 ms
+Connection : 215.04 ms
+Server Processing : -85.79999999999998 ms
+Download : 100 ms
+Total : 232 ms
+===================================
+
+[PASS] event classifications — ids and names are unique — 10/10 checks, 232ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Envelope — PASS
+  6. Response — PASS
+  7. Items — PASS
+  8. Fields — PASS
+  9. Duplicate IDs — PASS
+  10. Duplicate Names — PASS

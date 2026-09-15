@@ -1,0 +1,9 @@
+[PASS] Talking meters by category — no dates uses today — 8/8 checks, 2226ms
+  1. Status — PASS
+  2. Content — PASS
+  3. Performance — PASS
+  4. Sensitive Data — PASS
+  5. Response — PASS
+  6. Date range — PASS
+  7. Category list — PASS
+  8. No duplicate category names — PASS

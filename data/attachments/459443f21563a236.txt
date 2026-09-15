@@ -1,0 +1,6 @@
+[PASS] Monthly consumption — page 2 continues without repeating a meter — 5/5 checks, 0ms
+  1. Status 200 — PASS
+  2. Items within limit — PASS
+  3. Unique consumers — PASS
+  4. Shared feeder allowed — PASS
+  5. No meter from page 1 — PASS

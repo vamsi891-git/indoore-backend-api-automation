@@ -1,0 +1,178 @@
+
+==================================
+API : Get Notification Stats
+DNS : 2.65 ms
+Connection : 214.32 ms
+Server Processing : -66.97 ms
+Download : 100 ms
+Total : 250 ms
+===================================
+
+
+==================================
+API : Get Notifications
+DNS : 99.91 ms
+Connection : 214.18 ms
+Server Processing : -169.09 ms
+Download : 100 ms
+Total : 245 ms
+===================================
+
+
+==================================
+API : Mark Notification Read
+DNS : 109.23 ms
+Connection : 214.75 ms
+Server Processing : -162.98000000000002 ms
+Download : 100 ms
+Total : 261 ms
+===================================
+
+
+==================================
+API : Get Notifications After Mark Read
+DNS : 116.31 ms
+Connection : 214.36 ms
+Server Processing : -180.67000000000002 ms
+Download : 100 ms
+Total : 250 ms
+===================================
+
+
+==================================
+API : Get Notification Stats After Mark Read
+DNS : 109.81 ms
+Connection : 214.5 ms
+Server Processing : -178.31 ms
+Download : 100 ms
+Total : 246 ms
+===================================
+
+
+==================================
+API : Mark All Notifications Read
+DNS : 2.15 ms
+Connection : 214.73 ms
+Server Processing : -42.87999999999997 ms
+Download : 100 ms
+Total : 274 ms
+===================================
+
+
+==================================
+API : Get Notifications After Mark All Read
+DNS : 1.61 ms
+Connection : 214.31 ms
+Server Processing : -70.92000000000002 ms
+Download : 100 ms
+Total : 245 ms
+===================================
+
+
+==================================
+API : Get Notification Stats After Mark All Read
+DNS : 107.86 ms
+Connection : 214.05 ms
+Server Processing : -167.91000000000003 ms
+Download : 100 ms
+Total : 254 ms
+===================================
+
+
+==================================
+API : Delete Notification
+DNS : 2.09 ms
+Connection : 214.6 ms
+Server Processing : -68.69 ms
+Download : 100 ms
+Total : 248 ms
+===================================
+
+
+==================================
+API : Get Notifications After Delete
+DNS : 1.9 ms
+Connection : 214.33 ms
+Server Processing : -73.23000000000002 ms
+Download : 100 ms
+Total : 243 ms
+===================================
+
+
+==================================
+API : Get Notification Stats After Delete
+DNS : 2.48 ms
+Connection : 214.23 ms
+Server Processing : -67.70999999999998 ms
+Download : 100 ms
+Total : 249 ms
+===================================
+
+[PASS] Notifications CRUD Flow — 67/67 checks, 2765ms
+  1. Notifications Status Code — PASS
+  2. Notifications Content Type — PASS
+  3. Notifications Response Time — PASS
+  4. Notifications Sensitive Data — PASS
+  5. Validate Notifications Response — PASS
+  6. Stats Status Code — PASS
+  7. Stats Content Type — PASS
+  8. Stats Response Time — PASS
+  9. Stats Sensitive Data — PASS
+  10. Validate Stats — PASS
+  11. Validate Stats Calculation — PASS
+  12. Validate Notifications — PASS
+  13. Validate Notification Structure — PASS
+  14. Validate Duplicate Notifications — PASS
+  15. Validate Notification IDs — PASS
+  16. Validate Notification Types — PASS
+  17. Validate Priorities — PASS
+  18. Validate Read Notifications — PASS
+  19. Validate Domain Events — PASS
+  20. Validate Notification Sorting — PASS
+  21. Validate Null Values — PASS
+  22. Validate NaN Values — PASS
+  23. Mark Read Status Code — PASS
+  24. Mark Read Content Type — PASS
+  25. Mark Read Response Time — PASS
+  26. Mark Read Sensitive Data — PASS
+  27. Validate Mark Read Response — PASS
+  28. Notifications After Mark Read Status Code — PASS
+  29. Notifications After Mark Read Content Type — PASS
+  30. Notifications After Mark Read Response Time — PASS
+  31. Notifications After Mark Read Sensitive Data — PASS
+  32. Validate Notification Marked Read — PASS
+  33. Stats After Mark Read Status Code — PASS
+  34. Stats After Mark Read Content Type — PASS
+  35. Stats After Mark Read Response Time — PASS
+  36. Stats After Mark Read Sensitive Data — PASS
+  37. Validate Stats After Read — PASS
+  38. Mark All Read Status Code — PASS
+  39. Mark All Read Content Type — PASS
+  40. Mark All Read Response Time — PASS
+  41. Mark All Read Sensitive Data — PASS
+  42. Validate Mark All Read Response — PASS
+  43. Notifications After Mark All Read Status Code — PASS
+  44. Notifications After Mark All Read Content Type — PASS
+  45. Notifications After Mark All Read Response Time — PASS
+  46. Notifications After Mark All Read Sensitive Data — PASS
+  47. Validate All Notifications Marked Read — PASS
+  48. Stats After Mark All Read Status Code — PASS
+  49. Stats After Mark All Read Content Type — PASS
+  50. Stats After Mark All Read Response Time — PASS
+  51. Stats After Mark All Read Sensitive Data — PASS
+  52. Validate All Notifications Read — PASS
+  53. Delete Notification Status Code — PASS
+  54. Delete Notification Content Type — PASS
+  55. Delete Notification Response Time — PASS
+  56. Delete Notification Sensitive Data — PASS
+  57. Validate Delete Response — PASS
+  58. Notifications After Delete Status Code — PASS
+  59. Notifications After Delete Content Type — PASS
+  60. Notifications After Delete Response Time — PASS
+  61. Notifications After Delete Sensitive Data — PASS
+  62. Validate Notification Deleted — PASS
+  63. Stats After Delete Status Code — PASS
+  64. Stats After Delete Content Type — PASS
+  65. Stats After Delete Response Time — PASS
+  66. Stats After Delete Sensitive Data — PASS
+  67. Validate Stats After Delete — PASS

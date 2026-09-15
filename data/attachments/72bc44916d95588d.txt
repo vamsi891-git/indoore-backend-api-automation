@@ -1,0 +1,17 @@
+
+==================================
+API : DTR energy over time — extra filters that nobody uses are ignored
+DNS : 2.54 ms
+Connection : 214.01 ms
+Server Processing : 66.44999999999999 ms
+Download : 100 ms
+Total : 383 ms
+===================================
+
+[PASS] DTR energy over time — extra filters that nobody uses are ignored — 6/6 checks, 383ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. DTR Daily Threshold Chart Scenario — PASS

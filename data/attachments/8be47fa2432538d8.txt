@@ -1,0 +1,18 @@
+
+==================================
+API : Consumption chart — opens using the meter
+DNS : 70.06 ms
+Connection : 214.15 ms
+Server Processing : -151.21 ms
+Download : 100 ms
+Total : 233 ms
+===================================
+
+[PASS] Consumption chart — opens using the meter — 7/7 checks, 233ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Chart Labels — PASS
+  7. Energy Consumption Graph Scenario — PASS

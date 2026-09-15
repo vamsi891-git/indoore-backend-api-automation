@@ -1,0 +1,14 @@
+
+==================================
+API : DTR percentage-loading-details ACCESS_TOKEN_INVALID
+DNS : 1.9 ms
+Connection : 214.18 ms
+Server Processing : -95.08000000000001 ms
+Download : 100 ms
+Total : 221 ms
+===================================
+
+[PASS] DTR Percentage Loading Details — ACCESS_TOKEN_INVALID — 3/3 checks, 221ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

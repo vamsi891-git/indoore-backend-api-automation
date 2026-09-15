@@ -1,0 +1,18 @@
+
+==================================
+API : DTR consumption chart — hourly view loads
+DNS : 2.43 ms
+Connection : 214.33 ms
+Server Processing : 1153.24 ms
+Download : 100 ms
+Total : 1470 ms
+===================================
+
+[PASS] DTR consumption chart — hourly view loads — 7/7 checks, 1470ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Consumption Scenario — PASS

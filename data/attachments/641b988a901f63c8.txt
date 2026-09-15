@@ -1,0 +1,9 @@
+[PASS] Consumer Search — Disallowed Methods — 8/8 checks, 0ms
+  1. POST status — PASS
+  2. POST no data array — PASS
+  3. PUT status — PASS
+  4. PUT no data array — PASS
+  5. PATCH status — PASS
+  6. PATCH no data array — PASS
+  7. DELETE status — PASS
+  8. DELETE no data array — PASS

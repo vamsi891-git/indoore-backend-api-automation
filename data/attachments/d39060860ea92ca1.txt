@@ -1,0 +1,4 @@
+[PASS] Audit Logs Action Filter — 3/3 checks, 255ms
+  1. Filtered audit logs status — PASS
+  2. All logs match action filter — PASS
+  3. Filtered logs sorted newest first — PASS

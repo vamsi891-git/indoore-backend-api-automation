@@ -1,0 +1,29 @@
+
+==================================
+API : DTR search — first page shows columns and records
+DNS : 2.07 ms
+Connection : 214.37 ms
+Server Processing : -54.44 ms
+Download : 100 ms
+Total : 262 ms
+===================================
+
+[PASS] DTR search — first page shows columns and records — 18/18 checks, 262ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Envelope — PASS
+  6. Response — PASS
+  7. Columns — PASS
+  8. Pagination — PASS
+  9. Items — PASS
+  10. Serial Numbers — PASS
+  11. Required Fields — PASS
+  12. Data Types — PASS
+  13. Meter Serial — PASS
+  14. Duplicate Meter — PASS
+  15. Coordinates — PASS
+  16. MF — PASS
+  17. Business Rules — PASS
+  18. Page Aggregation — PASS

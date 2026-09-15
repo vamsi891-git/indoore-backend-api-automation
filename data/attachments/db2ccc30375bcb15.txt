@@ -1,0 +1,16 @@
+
+==================================
+API : Current without voltage — invalid phase is rejected
+DNS : 25.75 ms
+Connection : 214.55 ms
+Server Processing : 653.7 ms
+Download : 100 ms
+Total : 994 ms
+===================================
+
+[PASS] Current without voltage — invalid phase is rejected — 5/5 checks, 994ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

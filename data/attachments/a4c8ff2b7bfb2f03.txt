@@ -1,0 +1,16 @@
+
+==================================
+API : Event summary — unknown consumer is empty or not found
+DNS : 2.01 ms
+Connection : 214.4 ms
+Server Processing : 772.59 ms
+Download : 100 ms
+Total : 1089 ms
+===================================
+
+[PASS] Event summary — unknown consumer is empty or not found — 5/5 checks, 1089ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Not Found Error — PASS

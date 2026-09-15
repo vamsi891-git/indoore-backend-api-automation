@@ -1,0 +1,18 @@
+
+==================================
+API : DTR consumption list — reactive energy (kVArh)
+DNS : 2.06 ms
+Connection : 214.32 ms
+Server Processing : 1374.6200000000001 ms
+Download : 100 ms
+Total : 1691 ms
+===================================
+
+[PASS] DTR consumption list — reactive energy (kVArh) — 7/7 checks, 1691ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Consumption Details Scenario — PASS

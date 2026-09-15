@@ -1,0 +1,7 @@
+[PASS] Night-time consumption — page 2 continues without repeating a meter — 6/6 checks, 0ms
+  1. Status 200 — PASS
+  2. Page echo — PASS
+  3. Items within limit — PASS
+  4. Unique consumers — PASS
+  5. Shared feeder allowed — PASS
+  6. No meter from page 1 — PASS

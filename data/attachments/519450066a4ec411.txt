@@ -1,0 +1,21 @@
+
+==================================
+API : event priorities — ids and names are unique
+DNS : 143.17 ms
+Connection : 215.11 ms
+Server Processing : -226.28 ms
+Download : 100 ms
+Total : 232 ms
+===================================
+
+[PASS] event priorities — ids and names are unique — 10/10 checks, 232ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Envelope — PASS
+  6. Response — PASS
+  7. Items — PASS
+  8. Fields — PASS
+  9. Duplicate Priorities — PASS
+  10. Ascending Order — PASS

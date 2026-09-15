@@ -1,0 +1,14 @@
+
+==================================
+API : Consumer connection-status ACCESS_TOKEN_INVALID
+DNS : 5.07 ms
+Connection : 215.53 ms
+Server Processing : -96.6 ms
+Download : 100 ms
+Total : 224 ms
+===================================
+
+[PASS] Consumer Connection Status — ACCESS_TOKEN_INVALID — 3/3 checks, 224ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

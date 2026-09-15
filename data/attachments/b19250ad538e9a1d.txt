@@ -1,0 +1,10 @@
+[PASS] Events that did not roll over — by meter type, hour by hour, all meters — 9/9 checks, 296ms
+  1. Status — PASS
+  2. Content — PASS
+  3. Performance — PASS
+  4. Sensitive Data — PASS
+  5. Response — PASS
+  6. Non-rollover chart — PASS
+  7. No duplicate chart labels — PASS
+  8. No duplicate trend series names — PASS
+  9. No duplicate trend point keys — PASS

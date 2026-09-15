@@ -1,0 +1,21 @@
+
+==================================
+API : Auth Me API
+DNS : 2.22 ms
+Connection : 214.36 ms
+Server Processing : 686.42 ms
+Download : 100 ms
+Total : 1003 ms
+===================================
+
+[PASS] Auth Me API — 10/10 checks, 1003ms
+  1. Me Status Code — PASS
+  2. Me Content Type — PASS
+  3. Me Response Time — PASS
+  4. Me Sensitive Data — PASS
+  5. Me Security — PASS
+  6. Me Success Envelope — PASS
+  7. Me Zod Contract — PASS
+  8. Me User Rules — PASS
+  9. Me Permissions — PASS
+  10. Me Session Flags — PASS

@@ -1,0 +1,28 @@
+
+==================================
+API : Meter list — showing 10 per page returns at most 10 records
+DNS : 70.75 ms
+Connection : 214.42 ms
+Server Processing : 2487.83 ms
+Download : 100 ms
+Total : 2873 ms
+===================================
+
+[PASS] Meter list — showing 10 per page returns at most 10 records — 17/17 checks, 2873ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Zod Response Schema — PASS
+  6. Response — PASS
+  7. Columns — PASS
+  8. Items Exist — PASS
+  9. Fields — PASS
+  10. Pagination — PASS
+  11. Query Params — PASS
+  12. Sl No Sequence — PASS
+  13. Unique Meter Lookup IDs — PASS
+  14. Unique Serials — PASS
+  15. Serial Asset Consistency — PASS
+  16. Connected Meter Profile — PASS
+  17. Row Keys Match Columns — PASS

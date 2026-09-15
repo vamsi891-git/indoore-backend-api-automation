@@ -1,0 +1,116 @@
+{
+  "columns": [
+    {
+      "key": "year",
+      "header": "Year"
+    },
+    {
+      "key": "month",
+      "header": "Month"
+    },
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtr",
+      "header": "DTR"
+    },
+    {
+      "key": "feeder1",
+      "header": "FEEDER1"
+    },
+    {
+      "key": "dtr1",
+      "header": "DTR1"
+    },
+    {
+      "key": "ivrs",
+      "header": "IVRS"
+    },
+    {
+      "key": "meterSerialNumber",
+      "header": "Meter_Serial_Number"
+    },
+    {
+      "key": "eventName",
+      "header": "Event Name"
+    },
+    {
+      "key": "eventCategory",
+      "header": "EventCategory"
+    },
+    {
+      "key": "occurrenceTime",
+      "header": "Occurence Time"
+    },
+    {
+      "key": "restorationTime",
+      "header": "Restoration Time"
+    },
+    {
+      "key": "remarks",
+      "header": "Remarks"
+    },
+    {
+      "key": "amountBilled",
+      "header": "Amt Billed"
+    },
+    {
+      "key": "amountRealised",
+      "header": "Amt Realised"
+    },
+    {
+      "key": "fieldRemarks",
+      "header": "Field Remarks"
+    },
+    {
+      "key": "p4Number",
+      "header": "P4_Number"
+    },
+    {
+      "key": "p4Date",
+      "header": "P4_Date"
+    },
+    {
+      "key": "entryDateTime",
+      "header": "entrydatetime"
+    }
+  ],
+  "rowFieldKeys": [
+    "amountBilled",
+    "amountRealised",
+    "circle",
+    "division",
+    "dtr",
+    "dtr1",
+    "entryDateTime",
+    "eventCategory",
+    "eventName",
+    "feeder",
+    "feeder1",
+    "fieldRemarks",
+    "ivrs",
+    "meterSerialNumber",
+    "month",
+    "occurrenceTime",
+    "p4Date",
+    "p4Number",
+    "remarks",
+    "restorationTime",
+    "year",
+    "zone"
+  ]
+}

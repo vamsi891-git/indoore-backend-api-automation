@@ -1,0 +1,17 @@
+
+==================================
+API : DTR power now — kW, kVA, kVAr, and power factor
+DNS : 2.35 ms
+Connection : 214.79 ms
+Server Processing : 52.859999999999985 ms
+Download : 100 ms
+Total : 370 ms
+===================================
+
+[PASS] DTR power now — kW, kVA, kVAr, and power factor — 6/6 checks, 370ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. DTR Power Triangle Scenario — PASS

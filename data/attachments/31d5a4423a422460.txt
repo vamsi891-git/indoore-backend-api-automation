@@ -1,0 +1,80 @@
+
+==================================
+API : Consumer report IP — first page shows columns and instants
+DNS : 2.06 ms
+Connection : 214.39 ms
+Server Processing : 57.55000000000001 ms
+Download : 100 ms
+Total : 374 ms
+===================================
+
+{
+  "msg": "consumer_report_live_response",
+  "scenario": "dev_live_ip",
+  "query": {
+    "fromDate": "2025-10-01",
+    "toDate": "2025-10-30",
+    "meterSerialNumber": "14080783",
+    "report-type": "ip",
+    "page": 1,
+    "limit": 10,
+    "includeTotal": true
+  },
+  "queryString": "fromDate=2025-10-01&toDate=2025-10-30&meterSerialNumber=14080783&report-type=ip&page=1&limit=10&includeTotal=true",
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 2855,
+    "totalPages": 286,
+    "totalIsExact": true,
+    "hasMore": true
+  },
+  "columnKeys": [
+    "slNo",
+    "name",
+    "address",
+    "ivrsNumber",
+    "msn",
+    "dateTime",
+    "voltage",
+    "cur",
+    "pf",
+    "kW",
+    "kWh",
+    "kva",
+    "kVAh",
+    "freq",
+    "neutralCurrent",
+    "sourceId",
+    "mf"
+  ],
+  "rowCount": 10,
+  "sampleRow": {
+    "id": "row-1-14080783",
+    "slNo": 1,
+    "name": "SHAILJA KARKARE",
+    "address": "25/1/2/4 HRS HERITEJRETI MUNDI F.NO. 401INDORE",
+    "ivrsNumber": "N3008001961",
+    "msn": "14080783",
+    "dateTime": "2025-10-30 23:45:22",
+    "voltage": "250.340",
+    "cur": "0.000",
+    "pf": "-0.470",
+    "kW": "0.000",
+    "kWh": "1788.42",
+    "kva": "0.010",
+    "kVAh": "1906.46",
+    "freq": "49.900",
+    "neutralCurrent": "0.000",
+    "sourceId": "1",
+    "mf": "1"
+  }
+}
+[PASS] Consumer report IP — first page shows columns and instants — 7/7 checks, 374ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Consumer Report Scenario — PASS

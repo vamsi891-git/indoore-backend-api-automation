@@ -1,0 +1,18 @@
+
+==================================
+API : Consumers by category — commercial connections
+DNS : 2.33 ms
+Connection : 214.63 ms
+Server Processing : 1393.04 ms
+Download : 100 ms
+Total : 1710 ms
+===================================
+
+[PASS] Consumers by category — commercial connections — 7/7 checks, 1710ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Category Distribution Scenario — PASS

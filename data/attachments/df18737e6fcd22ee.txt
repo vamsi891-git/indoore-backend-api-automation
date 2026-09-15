@@ -1,0 +1,14 @@
+
+==================================
+API : Consumer phase-distribution ACCESS_TOKEN_INVALID
+DNS : 2.94 ms
+Connection : 214.6 ms
+Server Processing : -92.53999999999999 ms
+Download : 100 ms
+Total : 225 ms
+===================================
+
+[PASS] Consumer Phase Distribution — ACCESS_TOKEN_INVALID — 3/3 checks, 225ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

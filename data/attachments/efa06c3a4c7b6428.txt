@@ -1,0 +1,293 @@
+
+==================================
+API : Technical summary — October 2025 cards show counts
+DNS : 2.23 ms
+Connection : 214.24 ms
+Server Processing : -79.47 ms
+Download : 100 ms
+Total : 237 ms
+===================================
+
+[FAIL] Technical summary — October 2025 cards show counts — 276/278 checks, 237ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Data Payload — PASS
+  6. Month Validation — PASS
+  7. Year Validation — PASS
+  8. Query Echo — PASS
+  9. Reports Validation — PASS
+  10. Duplicate Analysis Validation — PASS
+  11. Technical Category Validation — PASS
+  12. YNR Category Validation — PASS
+  13. Report card count — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  14. Expected Analysis Types — FAIL
+     expect(received).toEqual(expected) // deep equality
+  15. power_failure Field Validation — PASS
+  16. power_failure Type Validation — PASS
+  17. power_failure Count Validation — PASS
+  18. power_failure household + non-household split — PASS
+  19. power_failure report name — PASS
+  20. power_failure empty vs live card — PASS
+  21. power_failure NaN Validation — PASS
+  22. power_failure Category Validation — PASS
+  23. power_failure Business Rule Validation — PASS
+  24. power_failure Zero Count Validation — PASS
+  25. power_failure Empty String Validation — PASS
+  26. voltage_missing Field Validation — PASS
+  27. voltage_missing Type Validation — PASS
+  28. voltage_missing Count Validation — PASS
+  29. voltage_missing household + non-household split — PASS
+  30. voltage_missing report name — PASS
+  31. voltage_missing empty vs live card — PASS
+  32. voltage_missing NaN Validation — PASS
+  33. voltage_missing Category Validation — PASS
+  34. voltage_missing Business Rule Validation — PASS
+  35. voltage_missing Zero Count Validation — PASS
+  36. voltage_missing Empty String Validation — PASS
+  37. voltage_unbalance Field Validation — PASS
+  38. voltage_unbalance Type Validation — PASS
+  39. voltage_unbalance Count Validation — PASS
+  40. voltage_unbalance household + non-household split — PASS
+  41. voltage_unbalance report name — PASS
+  42. voltage_unbalance empty vs live card — PASS
+  43. voltage_unbalance NaN Validation — PASS
+  44. voltage_unbalance Category Validation — PASS
+  45. voltage_unbalance Business Rule Validation — PASS
+  46. voltage_unbalance Zero Count Validation — PASS
+  47. voltage_unbalance Empty String Validation — PASS
+  48. low_voltage Field Validation — PASS
+  49. low_voltage Type Validation — PASS
+  50. low_voltage Count Validation — PASS
+  51. low_voltage household + non-household split — PASS
+  52. low_voltage report name — PASS
+  53. low_voltage empty vs live card — PASS
+  54. low_voltage NaN Validation — PASS
+  55. low_voltage Category Validation — PASS
+  56. low_voltage Business Rule Validation — PASS
+  57. low_voltage Zero Count Validation — PASS
+  58. low_voltage Empty String Validation — PASS
+  59. over_voltage Field Validation — PASS
+  60. over_voltage Type Validation — PASS
+  61. over_voltage Count Validation — PASS
+  62. over_voltage household + non-household split — PASS
+  63. over_voltage report name — PASS
+  64. over_voltage empty vs live card — PASS
+  65. over_voltage NaN Validation — PASS
+  66. over_voltage Category Validation — PASS
+  67. over_voltage Business Rule Validation — PASS
+  68. over_voltage Zero Count Validation — PASS
+  69. over_voltage Empty String Validation — PASS
+  70. single_wire_operation Field Validation — PASS
+  71. single_wire_operation Type Validation — PASS
+  72. single_wire_operation Count Validation — PASS
+  73. single_wire_operation household + non-household split — PASS
+  74. single_wire_operation report name — PASS
+  75. single_wire_operation empty vs live card — PASS
+  76. single_wire_operation NaN Validation — PASS
+  77. single_wire_operation Category Validation — PASS
+  78. single_wire_operation Business Rule Validation — PASS
+  79. single_wire_operation Zero Count Validation — PASS
+  80. single_wire_operation Empty String Validation — PASS
+  81. neutral_disturbance Field Validation — PASS
+  82. neutral_disturbance Type Validation — PASS
+  83. neutral_disturbance Count Validation — PASS
+  84. neutral_disturbance household + non-household split — PASS
+  85. neutral_disturbance report name — PASS
+  86. neutral_disturbance empty vs live card — PASS
+  87. neutral_disturbance NaN Validation — PASS
+  88. neutral_disturbance Category Validation — PASS
+  89. neutral_disturbance Business Rule Validation — PASS
+  90. neutral_disturbance Zero Count Validation — PASS
+  91. neutral_disturbance Empty String Validation — PASS
+  92. current_without_voltage Field Validation — PASS
+  93. current_without_voltage Type Validation — PASS
+  94. current_without_voltage Count Validation — PASS
+  95. current_without_voltage household + non-household split — PASS
+  96. current_without_voltage report name — PASS
+  97. current_without_voltage empty vs live card — PASS
+  98. current_without_voltage NaN Validation — PASS
+  99. current_without_voltage Category Validation — PASS
+  100. current_without_voltage Business Rule Validation — PASS
+  101. current_without_voltage Zero Count Validation — PASS
+  102. current_without_voltage Empty String Validation — PASS
+  103. ct_open Field Validation — PASS
+  104. ct_open Type Validation — PASS
+  105. ct_open Count Validation — PASS
+  106. ct_open household + non-household split — PASS
+  107. ct_open report name — PASS
+  108. ct_open empty vs live card — PASS
+  109. ct_open NaN Validation — PASS
+  110. ct_open Category Validation — PASS
+  111. ct_open Business Rule Validation — PASS
+  112. ct_open Zero Count Validation — PASS
+  113. ct_open Empty String Validation — PASS
+  114. current_bypass Field Validation — PASS
+  115. current_bypass Type Validation — PASS
+  116. current_bypass Count Validation — PASS
+  117. current_bypass household + non-household split — PASS
+  118. current_bypass report name — PASS
+  119. current_bypass empty vs live card — PASS
+  120. current_bypass NaN Validation — PASS
+  121. current_bypass Category Validation — PASS
+  122. current_bypass Business Rule Validation — PASS
+  123. current_bypass Zero Count Validation — PASS
+  124. current_bypass Empty String Validation — PASS
+  125. current_unbalance Field Validation — PASS
+  126. current_unbalance Type Validation — PASS
+  127. current_unbalance Count Validation — PASS
+  128. current_unbalance household + non-household split — PASS
+  129. current_unbalance report name — PASS
+  130. current_unbalance empty vs live card — PASS
+  131. current_unbalance NaN Validation — PASS
+  132. current_unbalance Category Validation — PASS
+  133. current_unbalance Business Rule Validation — PASS
+  134. current_unbalance Zero Count Validation — PASS
+  135. current_unbalance Empty String Validation — PASS
+  136. earth_loading Field Validation — PASS
+  137. earth_loading Type Validation — PASS
+  138. earth_loading Count Validation — PASS
+  139. earth_loading household + non-household split — PASS
+  140. earth_loading report name — PASS
+  141. earth_loading empty vs live card — PASS
+  142. earth_loading NaN Validation — PASS
+  143. earth_loading Category Validation — PASS
+  144. earth_loading Business Rule Validation — PASS
+  145. earth_loading Zero Count Validation — PASS
+  146. earth_loading Empty String Validation — PASS
+  147. low_power_factor Field Validation — PASS
+  148. low_power_factor Type Validation — PASS
+  149. low_power_factor Count Validation — PASS
+  150. low_power_factor household + non-household split — PASS
+  151. low_power_factor report name — PASS
+  152. low_power_factor empty vs live card — PASS
+  153. low_power_factor NaN Validation — PASS
+  154. low_power_factor Category Validation — PASS
+  155. low_power_factor Business Rule Validation — PASS
+  156. low_power_factor Zero Count Validation — PASS
+  157. low_power_factor Empty String Validation — PASS
+  158. phase_neutral_mismatch Field Validation — PASS
+  159. phase_neutral_mismatch Type Validation — PASS
+  160. phase_neutral_mismatch Count Validation — PASS
+  161. phase_neutral_mismatch household + non-household split — PASS
+  162. phase_neutral_mismatch report name — PASS
+  163. phase_neutral_mismatch empty vs live card — PASS
+  164. phase_neutral_mismatch NaN Validation — PASS
+  165. phase_neutral_mismatch Category Validation — PASS
+  166. phase_neutral_mismatch Business Rule Validation — PASS
+  167. phase_neutral_mismatch Zero Count Validation — PASS
+  168. phase_neutral_mismatch Empty String Validation — PASS
+  169. magnet_event Field Validation — PASS
+  170. magnet_event Type Validation — PASS
+  171. magnet_event Count Validation — PASS
+  172. magnet_event household + non-household split — PASS
+  173. magnet_event report name — PASS
+  174. magnet_event empty vs live card — PASS
+  175. magnet_event NaN Validation — PASS
+  176. magnet_event Category Validation — PASS
+  177. magnet_event Business Rule Validation — PASS
+  178. magnet_event Zero Count Validation — PASS
+  179. magnet_event Empty String Validation — PASS
+  180. cover_open Field Validation — PASS
+  181. cover_open Type Validation — PASS
+  182. cover_open Count Validation — PASS
+  183. cover_open household + non-household split — PASS
+  184. cover_open report name — PASS
+  185. cover_open empty vs live card — PASS
+  186. cover_open NaN Validation — PASS
+  187. cover_open Category Validation — PASS
+  188. cover_open Business Rule Validation — PASS
+  189. cover_open Zero Count Validation — PASS
+  190. cover_open Empty String Validation — PASS
+  191. ynr_over_voltage Field Validation — PASS
+  192. ynr_over_voltage Type Validation — PASS
+  193. ynr_over_voltage Count Validation — PASS
+  194. ynr_over_voltage household + non-household split — PASS
+  195. ynr_over_voltage report name — PASS
+  196. ynr_over_voltage empty vs live card — PASS
+  197. ynr_over_voltage NaN Validation — PASS
+  198. ynr_over_voltage Category Validation — PASS
+  199. ynr_over_voltage Business Rule Validation — PASS
+  200. ynr_over_voltage Zero Count Validation — PASS
+  201. ynr_over_voltage Empty String Validation — PASS
+  202. ynr_neutral_disturbance Field Validation — PASS
+  203. ynr_neutral_disturbance Type Validation — PASS
+  204. ynr_neutral_disturbance Count Validation — PASS
+  205. ynr_neutral_disturbance household + non-household split — PASS
+  206. ynr_neutral_disturbance report name — PASS
+  207. ynr_neutral_disturbance empty vs live card — PASS
+  208. ynr_neutral_disturbance NaN Validation — PASS
+  209. ynr_neutral_disturbance Category Validation — PASS
+  210. ynr_neutral_disturbance Business Rule Validation — PASS
+  211. ynr_neutral_disturbance Zero Count Validation — PASS
+  212. ynr_neutral_disturbance Empty String Validation — PASS
+  213. ynr_ct_open_unbalance Field Validation — PASS
+  214. ynr_ct_open_unbalance Type Validation — PASS
+  215. ynr_ct_open_unbalance Count Validation — PASS
+  216. ynr_ct_open_unbalance household + non-household split — PASS
+  217. ynr_ct_open_unbalance report name — PASS
+  218. ynr_ct_open_unbalance empty vs live card — PASS
+  219. ynr_ct_open_unbalance NaN Validation — PASS
+  220. ynr_ct_open_unbalance Category Validation — PASS
+  221. ynr_ct_open_unbalance Business Rule Validation — PASS
+  222. ynr_ct_open_unbalance Zero Count Validation — PASS
+  223. ynr_ct_open_unbalance Empty String Validation — PASS
+  224. ynr_ct_bypass Field Validation — PASS
+  225. ynr_ct_bypass Type Validation — PASS
+  226. ynr_ct_bypass Count Validation — PASS
+  227. ynr_ct_bypass household + non-household split — PASS
+  228. ynr_ct_bypass report name — PASS
+  229. ynr_ct_bypass empty vs live card — PASS
+  230. ynr_ct_bypass NaN Validation — PASS
+  231. ynr_ct_bypass Category Validation — PASS
+  232. ynr_ct_bypass Business Rule Validation — PASS
+  233. ynr_ct_bypass Zero Count Validation — PASS
+  234. ynr_ct_bypass Empty String Validation — PASS
+  235. ynr_earth_loading Field Validation — PASS
+  236. ynr_earth_loading Type Validation — PASS
+  237. ynr_earth_loading Count Validation — PASS
+  238. ynr_earth_loading household + non-household split — PASS
+  239. ynr_earth_loading report name — PASS
+  240. ynr_earth_loading empty vs live card — PASS
+  241. ynr_earth_loading NaN Validation — PASS
+  242. ynr_earth_loading Category Validation — PASS
+  243. ynr_earth_loading Business Rule Validation — PASS
+  244. ynr_earth_loading Zero Count Validation — PASS
+  245. ynr_earth_loading Empty String Validation — PASS
+  246. ynr_low_power_factor Field Validation — PASS
+  247. ynr_low_power_factor Type Validation — PASS
+  248. ynr_low_power_factor Count Validation — PASS
+  249. ynr_low_power_factor household + non-household split — PASS
+  250. ynr_low_power_factor report name — PASS
+  251. ynr_low_power_factor empty vs live card — PASS
+  252. ynr_low_power_factor NaN Validation — PASS
+  253. ynr_low_power_factor Category Validation — PASS
+  254. ynr_low_power_factor Business Rule Validation — PASS
+  255. ynr_low_power_factor Zero Count Validation — PASS
+  256. ynr_low_power_factor Empty String Validation — PASS
+  257. ynr_magnet_event Field Validation — PASS
+  258. ynr_magnet_event Type Validation — PASS
+  259. ynr_magnet_event Count Validation — PASS
+  260. ynr_magnet_event household + non-household split — PASS
+  261. ynr_magnet_event report name — PASS
+  262. ynr_magnet_event empty vs live card — PASS
+  263. ynr_magnet_event NaN Validation — PASS
+  264. ynr_magnet_event Category Validation — PASS
+  265. ynr_magnet_event Business Rule Validation — PASS
+  266. ynr_magnet_event Zero Count Validation — PASS
+  267. ynr_magnet_event Empty String Validation — PASS
+  268. ynr_cover_open Field Validation — PASS
+  269. ynr_cover_open Type Validation — PASS
+  270. ynr_cover_open Count Validation — PASS
+  271. ynr_cover_open household + non-household split — PASS
+  272. ynr_cover_open report name — PASS
+  273. ynr_cover_open empty vs live card — PASS
+  274. ynr_cover_open NaN Validation — PASS
+  275. ynr_cover_open Category Validation — PASS
+  276. ynr_cover_open Business Rule Validation — PASS
+  277. ynr_cover_open Zero Count Validation — PASS
+  278. ynr_cover_open Empty String Validation — PASS
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Technical-summary-October-2025-cards-show-counts-2026-09-15T17-42-03-685Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Technical-summary-October-2025-cards-show-counts-2026-09-15T17-42-03-685Z.triage.json [heuristic] contract_mismatch/medium

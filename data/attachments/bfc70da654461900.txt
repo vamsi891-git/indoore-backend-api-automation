@@ -1,0 +1,16 @@
+
+==================================
+API : Billing MD snapshot — invalid month is rejected
+DNS : 2.34 ms
+Connection : 215.97 ms
+Server Processing : 905.69 ms
+Download : 100 ms
+Total : 1224 ms
+===================================
+
+[PASS] Billing MD snapshot — invalid month is rejected — 5/5 checks, 1224ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

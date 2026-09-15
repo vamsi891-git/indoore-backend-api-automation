@@ -1,0 +1,43 @@
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+
+==================================
+API : Meter Replacement Submission History API
+DNS : 80.92 ms
+Connection : 215.09 ms
+Server Processing : 6577.99 ms
+Download : 100 ms
+Total : 6974 ms
+===================================
+
+[FAIL] Meter Replacement Submission History API — 16/20 checks, 6974ms
+  1. Status Code — FAIL
+     Expected status 200 but received 401
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Root Fields — FAIL
+     Missing or undefined field: data
+  6. Required Data Fields — FAIL
+     Cannot read properties of undefined (reading 'items')
+  7. Success — FAIL
+     expect(received).toBeTruthy()
+  8. Root Structure — PASS
+  9. Items Array — PASS
+  10. Pagination Object — PASS
+  11. Pagination Required Fields — PASS
+  12. Pagination Types — PASS
+  13. Page — PASS
+  14. Limit — PASS
+  15. Total — PASS
+  16. Total Pages — PASS
+  17. Pagination Math — PASS
+  18. Items Limit — PASS
+  19. Empty Result — PASS
+  20. Rows Present — PASS
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Replacement-Submission-History-API-2026-09-15T17-21-06-240Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Replacement-Submission-History-API-2026-09-15T17-21-06-240Z.triage.json [heuristic] contract_mismatch/medium

@@ -1,0 +1,16 @@
+
+==================================
+API : Technical summary — missing year is rejected
+DNS : 5.79 ms
+Connection : 214.29 ms
+Server Processing : -85.07999999999998 ms
+Download : 100 ms
+Total : 235 ms
+===================================
+
+[PASS] Technical summary — missing year is rejected — 5/5 checks, 235ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

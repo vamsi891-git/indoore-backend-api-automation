@@ -1,0 +1,88 @@
+
+==================================
+API : Communication DTRs — day first page shows columns and DTRs
+DNS : 1.86 ms
+Connection : 214.52 ms
+Server Processing : 156.62 ms
+Download : 100 ms
+Total : 473 ms
+===================================
+
+{
+  "msg": "communication_dtrs_live_response",
+  "scenario": "dev_live_day",
+  "query": {
+    "periodType": "day",
+    "page": 1,
+    "limit": 50,
+    "date": "2025-10-01"
+  },
+  "queryString": "periodType=day&page=1&limit=50&date=2025-10-01",
+  "pagination": {
+    "page": 1,
+    "limit": 50,
+    "total": 1070,
+    "totalPages": 22,
+    "totalIsExact": true,
+    "hasMore": true
+  },
+  "columnKeys": [
+    "slNo",
+    "circle",
+    "division",
+    "zone",
+    "subStation",
+    "feederName",
+    "dtrName",
+    "feederCode",
+    "dtrCode",
+    "newDtrCode",
+    "dtrCapacity",
+    "meterSerialNumber",
+    "meterMake",
+    "mf",
+    "latitude",
+    "longitude",
+    "serviceDate",
+    "ipCount",
+    "dpCount",
+    "lsCount"
+  ],
+  "rowCount": 50,
+  "sampleRow": {
+    "id": "row-1-19271632-19",
+    "slNo": 1,
+    "dtrNetworkLookupId": 19,
+    "meterLookupId": 108401,
+    "circle": "Indore city circle",
+    "division": "CENTRAL",
+    "zone": "Hawabangla",
+    "subStation": "PragatiNagar",
+    "feederName": "Parmanu Nagar",
+    "dtrName": "RJ662",
+    "feederCode": "F3",
+    "dtrCode": "RJ662",
+    "newDtrCode": "HBZ0000109",
+    "dtrCapacity": "100",
+    "meterSerialNumber": "19271632",
+    "meterMake": "L&T",
+    "mf": "40",
+    "latitude": "22.672940",
+    "longitude": "75.824139",
+    "serviceDate": "2019-12-17 14:27:41.44",
+    "ipCount": 0,
+    "dpCount": 0,
+    "lsCount": 0,
+    "billingCount": 1,
+    "billingMappingStatus": "OK",
+    "eventCount": 0
+  }
+}
+[PASS] Communication DTRs — day first page shows columns and DTRs — 7/7 checks, 473ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Communication DTRs Scenario — PASS

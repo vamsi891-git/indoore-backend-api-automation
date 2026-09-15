@@ -1,0 +1,18 @@
+
+==================================
+API : Energy flow chart — opens using the account number
+DNS : 1.99 ms
+Connection : 214.74 ms
+Server Processing : -77.73000000000002 ms
+Download : 100 ms
+Total : 239 ms
+===================================
+
+[PASS] Energy flow chart — opens using the account number — 7/7 checks, 239ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Chart Labels — PASS
+  7. Energy Flow Scenario — PASS

@@ -1,0 +1,14 @@
+
+==================================
+API : DTR communication-details UNAUTHORIZED
+DNS : 2.04 ms
+Connection : 214.34 ms
+Server Processing : -93.38 ms
+Download : 100 ms
+Total : 223 ms
+===================================
+
+[PASS] DTR Communication Details — UNAUTHORIZED — 3/3 checks, 223ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

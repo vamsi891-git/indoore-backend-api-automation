@@ -1,0 +1,14 @@
+
+==================================
+API : Feeder daily energy UNAUTHORIZED
+DNS : 4.87 ms
+Connection : 214.41 ms
+Server Processing : 828.7200000000001 ms
+Download : 100 ms
+Total : 1148 ms
+===================================
+
+[PASS] Feeder daily energy — UNAUTHORIZED — 3/3 checks, 1148ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

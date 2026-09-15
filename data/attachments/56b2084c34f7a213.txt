@@ -1,0 +1,5 @@
+[PASS] Dashboard Summary — Disallowed Methods — 4/4 checks, 0ms
+  1. POST status — PASS
+  2. PUT status — PASS
+  3. PATCH status — PASS
+  4. DELETE status — PASS

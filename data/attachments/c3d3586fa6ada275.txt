@@ -1,0 +1,23 @@
+[PASS] User Devices Module — 12/12 checks, 1509ms
+  1. Get Devices Status Code — PASS
+  2. Get Devices Content Type — PASS
+  3. Get Devices Response Time — PASS
+  4. Validate Devices Response Shape — PASS
+  5. Validate Device Groups — PASS
+  6. Validate Devices — PASS
+  7. Validate Device Types — PASS
+  8. Validate Device Sessions — PASS
+  9. Delete Device Status Code — PASS
+  10. Validate Deleted Device — PASS
+  11. Verify Device Removed — PASS
+  12. Verify Device Count Reduced — PASS
+
+==================================
+API : Get Devices
+DNS : 2.58 ms
+Connection : 215.02 ms
+Server Processing : 637.4 ms
+Download : 100 ms
+Total : 955 ms
+===================================
+

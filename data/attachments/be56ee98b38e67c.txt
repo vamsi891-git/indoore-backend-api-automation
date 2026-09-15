@@ -1,0 +1,14 @@
+
+==================================
+API : Feeder voltage and current ACCESS_TOKEN_INVALID
+DNS : 2.15 ms
+Connection : 215.8 ms
+Server Processing : -93.95000000000002 ms
+Download : 100 ms
+Total : 224 ms
+===================================
+
+[PASS] Feeder voltage and current — ACCESS_TOKEN_INVALID — 3/3 checks, 224ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

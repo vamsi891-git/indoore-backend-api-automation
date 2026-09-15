@@ -1,0 +1,16 @@
+{
+  "warnings": [
+    {
+      "code": "EMPTY_IVRS",
+      "message": "report row ivrsNumber is empty",
+      "field": "ivrsNumber"
+    }
+  ],
+  "counts": {
+    "emptyIvrs": 1,
+    "emptyMsn": 0,
+    "emptyAnalysisType": 0,
+    "duplicateMsn": 0,
+    "duplicateIvrs": 0
+  }
+}

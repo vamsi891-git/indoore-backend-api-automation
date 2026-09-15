@@ -1,0 +1,30 @@
+
+======== ZERO CONSUMPTION FOR LAST 3 MONTHS DOMESTIC (FILTER IGNORED) — PAGINATION COUNTS ========
+connectionCategory : domestic
+page / pageSize    : 1 / 10
+pagination.total   : 2806
+pagination.totalPages : 281
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+
+======== ZERO CONSUMPTION FOR LAST 3 MONTHS NON-DOMESTIC (FILTER IGNORED) — PAGINATION COUNTS ========
+connectionCategory : non-domestic
+page / pageSize    : 1 / 10
+pagination.total   : 2806
+pagination.totalPages : 281
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+[PASS] Consumption Pattern API (Zero Consumption for Last 3 months connectionCategory ignored) — 7/7 checks, 239ms
+  1. Both requests return 200 — PASS
+  2. Domestic pagination.total equals non-domestic total — PASS
+  3. Domestic page uniqueness — PASS
+  4. Non-domestic page uniqueness — PASS
+  5. Domestic page business rules — PASS
+  6. Non-domestic page business rules — PASS
+  7. Domestic page-1 meters equal non-domestic page-1 meters — PASS

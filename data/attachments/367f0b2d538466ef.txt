@@ -1,0 +1,14 @@
+
+==================================
+API : Revenue subsidy PF UNAUTHORIZED
+DNS : 2.05 ms
+Connection : 214.42 ms
+Server Processing : -93.47 ms
+Download : 100 ms
+Total : 223 ms
+===================================
+
+[PASS] Revenue subsidy PF cannot open without logging in — 3/3 checks, 223ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

@@ -1,0 +1,18 @@
+
+==================================
+API : Home dashboard — cards, charts, and mapped vs unmapped meters load
+DNS : 2.26 ms
+Connection : 214.49 ms
+Server Processing : 4076.25 ms
+Download : 100 ms
+Total : 4393 ms
+===================================
+
+[PASS] Home dashboard — cards, charts, and mapped vs unmapped meters load — 7/7 checks, 4393ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Overall Metrics Scenario — PASS

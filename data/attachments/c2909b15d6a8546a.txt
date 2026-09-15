@@ -1,0 +1,22 @@
+
+==================================
+API : Hourly consumption — first page may be empty when there are no hourly readings
+DNS : 25.22 ms
+Connection : 214.51 ms
+Server Processing : -107.72999999999999 ms
+Download : 100 ms
+Total : 232 ms
+===================================
+
+[PASS] Hourly consumption — first page may be empty when there are no hourly readings — 11/11 checks, 232ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Zod Response Schema — PASS
+  7. Success — PASS
+  8. Root Structure — PASS
+  9. Query Echo — PASS
+  10. Pagination Bounds — PASS
+  11. Pagination Math — PASS

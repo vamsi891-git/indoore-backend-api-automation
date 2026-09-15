@@ -1,0 +1,9 @@
+[PASS] Commands History — Page 2 — 8/8 checks, 1406ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Response — PASS
+  6. Page 2 Pagination — PASS
+  7. Global SNO Sequence — PASS
+  8. Requested Time DESC — PASS

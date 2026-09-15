@@ -1,0 +1,16 @@
+
+==================================
+API : DTR power now — a blank transformer code is not allowed
+DNS : 2.48 ms
+Connection : 215.04 ms
+Server Processing : -76.51999999999998 ms
+Download : 100 ms
+Total : 241 ms
+===================================
+
+[PASS] DTR power now — a blank transformer code is not allowed — 5/5 checks, 241ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Blank DTR Code Validation Error — PASS

@@ -1,0 +1,28 @@
+
+======== LF < 5% DOMESTIC (FILTER IGNORED) — PAGINATION COUNTS ========
+connectionCategory : domestic
+page / pageSize    : 1 / 10
+pagination.total   : 15266
+pagination.totalPages : 1527
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+
+======== LF < 5% NON-DOMESTIC (FILTER IGNORED) — PAGINATION COUNTS ========
+connectionCategory : non-domestic
+page / pageSize    : 1 / 10
+pagination.total   : 15266
+pagination.totalPages : 1527
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+[PASS] LF Analysis API (LF < 5% connectionCategory ignored) — 5/5 checks, 248ms
+  1. Both requests return 200 — PASS
+  2. Domestic pagination.total equals non-domestic total — PASS
+  3. Domestic page uniqueness — PASS
+  4. Non-domestic page uniqueness — PASS
+  5. Domestic page-1 meters equal non-domestic page-1 meters — PASS

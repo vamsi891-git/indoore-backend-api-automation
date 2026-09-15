@@ -1,0 +1,25 @@
+
+==================================
+API : Feeder alerts — first page of events (an empty list is still OK)
+DNS : 2.49 ms
+Connection : 214.44 ms
+Server Processing : 818.0699999999999 ms
+Download : 100 ms
+Total : 1135 ms
+===================================
+
+[PASS] Feeder alerts — first page of events (an empty list is still OK) — 14/14 checks, 1135ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Zod Response Schema — PASS
+  7. Success — PASS
+  8. Root Structure — PASS
+  9. Query Echo — PASS
+  10. Pagination Bounds — PASS
+  11. Pagination Math — PASS
+  12. Empty Scenario — PASS
+  13. Rows Present When Total Positive — PASS
+  14. Business Rules — PASS

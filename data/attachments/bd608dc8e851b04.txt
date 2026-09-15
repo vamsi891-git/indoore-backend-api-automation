@@ -1,0 +1,18 @@
+
+==================================
+API : Consumers by meter phase — single-phase meters
+DNS : 2.18 ms
+Connection : 214.54 ms
+Server Processing : 1255.28 ms
+Download : 100 ms
+Total : 1572 ms
+===================================
+
+[PASS] Consumers by meter phase — single-phase meters — 7/7 checks, 1572ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Phase Distribution Scenario — PASS

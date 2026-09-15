@@ -1,0 +1,18 @@
+
+==================================
+API : Event restoration — a page past the last page shows no records
+DNS : 2.4 ms
+Connection : 214.51 ms
+Server Processing : 241.09000000000003 ms
+Download : 100 ms
+Total : 558 ms
+===================================
+
+[PASS] Event restoration — a page past the last page shows no records — 7/7 checks, 558ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Event Restoration Scenario — PASS

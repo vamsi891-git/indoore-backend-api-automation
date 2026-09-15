@@ -1,0 +1,4 @@
+[PASS] IND-RPT-ATZ-NEG-007 — limit=99999 is rejected or bounded — 3/3 checks, 0ms
+  1. Expected status — PASS
+  2. Rejected with error envelope — PASS
+  3. ErrorResponseSchema — PASS

@@ -1,0 +1,31 @@
+
+==================================
+API : Consumer list — showing 10 per page returns at most 10 records
+DNS : 106.97 ms
+Connection : 214.41 ms
+Server Processing : 1672.62 ms
+Download : 100 ms
+Total : 2094 ms
+===================================
+
+[PASS] Consumer list — showing 10 per page returns at most 10 records — 20/20 checks, 2094ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Zod Response Schema — PASS
+  6. Response — PASS
+  7. Columns — PASS
+  8. Items Exist — PASS
+  9. Fields — PASS
+  10. Pagination — PASS
+  11. Query Params — PASS
+  12. Sl No Sequence — PASS
+  13. Row Keys Match Columns — PASS
+  14. ID Matches Consumer CID — PASS
+  15. Unique Meter Lookup IDs — PASS
+  16. Unique Meter Serials — PASS
+  17. Unique Consumer CIDs — PASS
+  18. IVRS Consistency — PASS
+  19. Meter Phases — PASS
+  20. Hierarchy Fields — PASS

@@ -1,0 +1,30 @@
+
+==================================
+API : Get Modules
+DNS : 2.37 ms
+Connection : 214.95 ms
+Server Processing : -71.32 ms
+Download : 100 ms
+Total : 246 ms
+===================================
+
+[PASS] Get Modules — 19/19 checks, 246ms
+  1. Get Modules Status Code — PASS
+  2. Get Modules Content Type — PASS
+  3. Get Modules Response Time — PASS
+  4. Get Modules Sensitive Data — PASS
+  5. Validate Root Response — PASS
+  6. Validate Modules Exist — PASS
+  7. Validate Module Structure — PASS
+  8. Validate Module Business Rules — PASS
+  9. Validate Duplicate Modules — PASS
+  10. Validate Module Sorting — PASS
+  11. Validate Permission Structure — PASS
+  12. Validate Permission Business Rules — PASS
+  13. Validate Duplicate Permissions — PASS
+  14. Validate Permission Sorting — PASS
+  15. Validate Parent Child Relation — PASS
+  16. Validate Permission Pattern — PASS
+  17. Validate Permission Key Matches Module — PASS
+  18. Validate Null Values — PASS
+  19. Validate NaN Values — PASS

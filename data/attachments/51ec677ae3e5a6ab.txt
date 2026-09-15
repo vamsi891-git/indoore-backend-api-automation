@@ -1,0 +1,28 @@
+
+==================================
+API : Feeder list — an empty search shows the full list
+DNS : 113.23 ms
+Connection : 214.6 ms
+Server Processing : 60921.17 ms
+Download : 100 ms
+Total : 61349 ms
+===================================
+
+[PASS] Feeder list — an empty search shows the full list — 17/17 checks, 61349ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Zod Response Schema — PASS
+  6. Response — PASS
+  7. Columns — PASS
+  8. Items — PASS
+  9. Fields — PASS
+  10. Pagination — PASS
+  11. Query Params — PASS
+  12. Sl No Sequence — PASS
+  13. Row Keys Match Columns — PASS
+  14. Hierarchy Fields — PASS
+  15. Consumer DTR Relation — PASS
+  16. Unique Feeder Names — PASS
+  17. Ascending Feeder Order — PASS

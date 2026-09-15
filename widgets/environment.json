@@ -1,0 +1,1 @@
+[{"values":["https://api.mdm.mppkvvcl.bestinfra.app"],"name":"BASE_URL"},{"values":["v20.20.2"],"name":"Node"},{"values":["linux"],"name":"Platform"},{"values":["true"],"name":"CI"},{"values":["refs/heads/main"],"name":"GITHUB_REF"},{"values":["2a19bef10f46154e06ccc71b7ce7037f149566be"],"name":"GITHUB_SHA"}]

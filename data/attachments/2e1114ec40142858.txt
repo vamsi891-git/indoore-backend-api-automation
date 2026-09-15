@@ -1,0 +1,16 @@
+
+==================================
+API : Billing MD snapshot — missing year is rejected
+DNS : 2.41 ms
+Connection : 214.72 ms
+Server Processing : 927.8699999999999 ms
+Download : 100 ms
+Total : 1245 ms
+===================================
+
+[PASS] Billing MD snapshot — missing year is rejected — 5/5 checks, 1245ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

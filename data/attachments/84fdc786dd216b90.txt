@@ -1,0 +1,24 @@
+
+==================================
+API : Organisation search — limit 1 returns at most 1 record
+DNS : 108.71 ms
+Connection : 214.79 ms
+Server Processing : -176.49999999999997 ms
+Download : 100 ms
+Total : 247 ms
+===================================
+
+Duplicate organization names allowed: []
+[PASS] Organisation search — limit 1 returns at most 1 record — 12/12 checks, 247ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Envelope — PASS
+  6. Response — PASS
+  7. Items — PASS
+  8. Fields — PASS
+  9. Duplicate IDs — PASS
+  10. Backend Rules — PASS
+  11. Code Format — PASS
+  12. Limit One — PASS

@@ -1,0 +1,10 @@
+[PASS] Daily talking chart — from_date and to_date still work — 9/9 checks, 229ms
+  1. Status — PASS
+  2. Content — PASS
+  3. Performance — PASS
+  4. Sensitive Data — PASS
+  5. Response — PASS
+  6. Date range — PASS
+  7. Daily trend — PASS
+  8. No duplicate trend dates — PASS
+  9. One trend point for every day in the range — PASS

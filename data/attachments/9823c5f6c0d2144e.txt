@@ -1,0 +1,15 @@
+
+==================================
+API : Day-by-day billing — asking for zero rows per page is rejected
+DNS : 1.7 ms
+Connection : 215.1 ms
+Server Processing : -82.79999999999998 ms
+Download : 100 ms
+Total : 234 ms
+===================================
+
+[PASS] Day-by-day billing — asking for zero rows per page is rejected — 4/4 checks, 234ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS

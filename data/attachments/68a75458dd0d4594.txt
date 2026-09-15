@@ -1,0 +1,1 @@
+[BACKEND FINDING] meter count cards do not add to total: active=5 + nonOperational=9092 + unmapped=0 = 9097, total=126743

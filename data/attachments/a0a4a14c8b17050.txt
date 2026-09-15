@@ -1,0 +1,27 @@
+
+==================================
+API : IND-RPT-ATZ-001 — Validate GET /indore/revenue-protection/atr-zone — default page (2026)
+DNS : 2.21 ms
+Connection : 214.48 ms
+Server Processing : -78.69 ms
+Download : 100 ms
+Total : 238 ms
+===================================
+
+[PASS] IND-RPT-ATZ-001 — Validate GET /indore/revenue-protection/atr-zone — default page (2026) — 16/16 checks, 238ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Required Fields — PASS
+  6. Schema Validation — PASS
+  7. Response — PASS
+  8. Columns — PASS
+  9. Column Keys Match Rows — PASS
+  10. Rows Exist — PASS
+  11. Pagination — PASS
+  12. Unique Row IDs — PASS
+  13. Non-Negative Amounts — PASS
+  14. Query Echo — PASS
+  15. Year Echo — PASS
+  16. Occurrence Before Restoration — PASS

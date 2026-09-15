@@ -1,0 +1,23 @@
+
+==================================
+API : Can this meter be given to a consumer? — unknown serial is not in the system
+DNS : 2.36 ms
+Connection : 214.1 ms
+Server Processing : -51.46000000000001 ms
+Download : 100 ms
+Total : 265 ms
+===================================
+
+[PASS] Can this meter be given to a consumer? — unknown serial is not in the system — 12/12 checks, 265ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Required Fields — PASS
+  6. Response — PASS
+  7. Root Structure — PASS
+  8. Meter Exists Type — PASS
+  9. Reason Type — PASS
+  10. Valid Reason Consistency — PASS
+  11. Invalid Scenario Rules — PASS
+  12. Scenario Outcome — PASS

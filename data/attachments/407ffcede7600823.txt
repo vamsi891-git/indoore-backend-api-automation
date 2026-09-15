@@ -1,0 +1,14 @@
+
+==================================
+API : Consumer category-distribution ACCESS_TOKEN_INVALID
+DNS : 104.97 ms
+Connection : 215.29 ms
+Server Processing : -198.26 ms
+Download : 100 ms
+Total : 222 ms
+===================================
+
+[PASS] Consumer Category Distribution — ACCESS_TOKEN_INVALID — 3/3 checks, 222ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

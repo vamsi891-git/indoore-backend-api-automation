@@ -1,0 +1,21 @@
+
+==================================
+API : Monthly billing — a page far past the end of the list is empty
+DNS : 2.39 ms
+Connection : 214.26 ms
+Server Processing : 368.35 ms
+Download : 100 ms
+Total : 685 ms
+===================================
+
+[PASS] Monthly billing — a page far past the end of the list is empty — 10/10 checks, 685ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Zod Response Schema — PASS
+  6. Columns — PASS
+  7. Billing Data Exists — PASS
+  8. Pagination — PASS
+  9. Grid meta — PASS
+  10. No Data Scenario — PASS

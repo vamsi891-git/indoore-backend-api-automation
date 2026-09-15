@@ -1,0 +1,18 @@
+
+==================================
+API : DTR data — a far page still returns a valid table
+DNS : 4.19 ms
+Connection : 214.32 ms
+Server Processing : 542.49 ms
+Download : 100 ms
+Total : 861 ms
+===================================
+
+[PASS] DTR data — a far page still returns a valid table — 7/7 checks, 861ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Data Scenario — PASS

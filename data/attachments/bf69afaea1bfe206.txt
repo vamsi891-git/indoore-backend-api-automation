@@ -1,0 +1,8 @@
+[PASS] Event summary — by consumer category, week by week, DTR meters only — 7/7 checks, 1149ms
+  1. Status — PASS
+  2. Content — PASS
+  3. Performance — PASS
+  4. Sensitive Data — PASS
+  5. Response — PASS
+  6. Event summary — PASS
+  7. No duplicate event categories — PASS

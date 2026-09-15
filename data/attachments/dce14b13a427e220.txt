@@ -1,0 +1,16 @@
+
+==================================
+API : Master data change history — an action that is not from master data is rejected
+DNS : 105.9 ms
+Connection : 214.14 ms
+Server Processing : -183.04 ms
+Download : 100 ms
+Total : 237 ms
+===================================
+
+[PASS] Master data change history — an action that is not from master data is rejected — 5/5 checks, 237ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

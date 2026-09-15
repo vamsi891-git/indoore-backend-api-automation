@@ -1,0 +1,21 @@
+
+=== Commands Payment — Invalid Type — POST init response ===
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "type: Invalid enum value. Expected 'payment_get' | 'payment_set_prepaid' | 'payment_set_postpaid' | 'payment_recharge_set' | 'last_token_recharge_amount_get', received 'invalid_payment_type'",
+    "details": {
+      "formErrors": [],
+      "fieldErrors": {
+        "type": [
+          "Invalid enum value. Expected 'payment_get' | 'payment_set_prepaid' | 'payment_set_postpaid' | 'payment_recharge_set' | 'last_token_recharge_amount_get', received 'invalid_payment_type'"
+        ]
+      }
+    }
+  }
+}
+[PASS] Commands Payment — Invalid Type — 3/3 checks, 233ms
+  1. Status (validation error) — PASS
+  2. Content Type — PASS
+  3. Error Response — PASS

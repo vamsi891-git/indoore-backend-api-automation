@@ -1,0 +1,24 @@
+
+==================================
+API : Transformer load — first page lists how uneven the three phases are
+DNS : 2.85 ms
+Connection : 215.19 ms
+Server Processing : 1364.96 ms
+Download : 100 ms
+Total : 1683 ms
+===================================
+
+[PASS] Transformer load — first page lists how uneven the three phases are — 13/13 checks, 1683ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Zod Response Schema — PASS
+  6. Columns — PASS
+  7. Pagination — PASS
+  8. Rows — PASS
+  9. Unique meters — PASS
+  10. Shared feeder allowed — PASS
+  11. MSN matches serial — PASS
+  12. Phase currents — PASS
+  13. No Data Scenario — PASS

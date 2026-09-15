@@ -1,0 +1,18 @@
+
+==================================
+API : Event list — events for the consumer
+DNS : 1.75 ms
+Connection : 214.26 ms
+Server Processing : -80.00999999999999 ms
+Download : 100 ms
+Total : 236 ms
+===================================
+
+[PASS] Event list — events for the consumer — 7/7 checks, 236ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Serial Numbers — PASS
+  7. Event Log List Scenario — PASS

@@ -1,0 +1,14 @@
+
+==================================
+API : Feeder daily energy ACCESS_TOKEN_INVALID
+DNS : 1.78 ms
+Connection : 215.46 ms
+Server Processing : 838.76 ms
+Download : 100 ms
+Total : 1156 ms
+===================================
+
+[PASS] Feeder daily energy — ACCESS_TOKEN_INVALID — 3/3 checks, 1156ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

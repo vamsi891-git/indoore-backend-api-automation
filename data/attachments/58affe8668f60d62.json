@@ -1,0 +1,31 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumers/{ref}/live-load-profile",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "available",
+    "communicationState",
+    "lastCommunicationAt",
+    "lastReadingIso",
+    "meterPhase",
+    "meterSerialNumber",
+    "metrics",
+    "snapshotAt",
+    "total"
+  ],
+  "itemKeys": [
+    "available",
+    "communicationState",
+    "lastCommunicationAt",
+    "lastReadingIso",
+    "meterPhase",
+    "meterSerialNumber",
+    "metrics",
+    "snapshotAt",
+    "total"
+  ],
+  "hasColumnsGrid": false
+}

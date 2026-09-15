@@ -1,0 +1,17 @@
+
+==================================
+API : Power quality — opens using the meter
+DNS : 2.1 ms
+Connection : 214.54 ms
+Server Processing : -81.63999999999999 ms
+Download : 100 ms
+Total : 235 ms
+===================================
+
+[PASS] Power quality — opens using the meter — 6/6 checks, 235ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Power Quality Scenario — PASS

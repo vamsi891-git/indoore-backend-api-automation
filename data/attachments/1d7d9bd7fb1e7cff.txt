@@ -1,0 +1,18 @@
+
+==================================
+API : DTR load unbalance — chart opens with Severe / Moderate / Balanced counts
+DNS : 113.74 ms
+Connection : 214.47 ms
+Server Processing : -192.20999999999998 ms
+Download : 100 ms
+Total : 236 ms
+===================================
+
+[PASS] DTR load unbalance — chart opens with Severe / Moderate / Balanced counts — 7/7 checks, 236ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Load Unbalance Scenario — PASS

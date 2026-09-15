@@ -1,0 +1,17 @@
+
+==================================
+API : Power quality — shown for the consumer
+DNS : 2.15 ms
+Connection : 214.16 ms
+Server Processing : -86.31 ms
+Download : 100 ms
+Total : 230 ms
+===================================
+
+[PASS] Power quality — shown for the consumer — 6/6 checks, 230ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Power Quality Scenario — PASS

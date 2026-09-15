@@ -1,0 +1,16 @@
+[PASS] User Security Module — 5/5 checks, 288ms
+  1. Get Users Status Code — PASS
+  2. Force Logout Status Code — PASS
+  3. Force Logout Content Type — PASS
+  4. Force Logout Response Time — PASS
+  5. Validate Force Logout — PASS
+
+==================================
+API : Force Logout
+DNS : 2.72 ms
+Connection : 215.01 ms
+Server Processing : -29.730000000000018 ms
+Download : 100 ms
+Total : 288 ms
+===================================
+

@@ -1,0 +1,14 @@
+
+==================================
+API : Mapped vs unmapped meters UNAUTHORIZED
+DNS : 1.83 ms
+Connection : 214.33 ms
+Server Processing : -94.16000000000003 ms
+Download : 100 ms
+Total : 222 ms
+===================================
+
+[PASS] Mapped vs unmapped meters — UNAUTHORIZED — 3/3 checks, 222ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

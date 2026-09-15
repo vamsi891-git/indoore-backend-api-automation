@@ -1,0 +1,113 @@
+Contract snapshot mismatch — 28 difference(s):
+
+  ~ $.columns[7].header
+      expected: "FEEDER1"
+      actual:   "Feeder Name New"
+
+  ~ $.columns[8].header
+      expected: "DTR1"
+      actual:   "DTR Code New"
+
+  ~ $.columns[9].header
+      expected: "IVRS"
+      actual:   "IVRS No."
+
+  ~ $.columns[10].header
+      expected: "Meter_Serial_Number"
+      actual:   "Meter Serial No."
+
+  ~ $.columns[12].header
+      expected: "EventCategory"
+      actual:   "Event Category"
+
+  ~ $.columns[13].header
+      expected: "Occurence Time"
+      actual:   "Occurrence Time"
+
+  ~ $.columns[19].header
+      expected: "P4_Number"
+      actual:   "P4 No."
+
+  ~ $.columns[20].header
+      expected: "P4_Date"
+      actual:   "P4 Date"
+
+  ~ $.columns[21].header
+      expected: "entrydatetime"
+      actual:   "Entered By"
+
+  ~ $.columns[21].key
+      expected: "entryDateTime"
+      actual:   "enteredByName"
+
+  + $.columns[22]
+      actual:   {"key":"entryDateTime","header":"Entry Date"}
+
+  ~ $.rowFieldKeys[6]
+      expected: "entryDateTime"
+      actual:   "enteredByName"
+
+  ~ $.rowFieldKeys[7]
+      expected: "eventCategory"
+      actual:   "entryDateTime"
+
+  ~ $.rowFieldKeys[8]
+      expected: "eventName"
+      actual:   "eventCategory"
+
+  ~ $.rowFieldKeys[9]
+      expected: "feeder"
+      actual:   "eventName"
+
+  ~ $.rowFieldKeys[10]
+      expected: "feeder1"
+      actual:   "feeder"
+
+  ~ $.rowFieldKeys[11]
+      expected: "fieldRemarks"
+      actual:   "feeder1"
+
+  ~ $.rowFieldKeys[12]
+      expected: "ivrs"
+      actual:   "fieldRemarks"
+
+  ~ $.rowFieldKeys[13]
+      expected: "meterSerialNumber"
+      actual:   "ivrs"
+
+  ~ $.rowFieldKeys[14]
+      expected: "month"
+      actual:   "meterSerialNumber"
+
+  ~ $.rowFieldKeys[15]
+      expected: "occurrenceTime"
+      actual:   "month"
+
+  ~ $.rowFieldKeys[16]
+      expected: "p4Date"
+      actual:   "occurrenceTime"
+
+  ~ $.rowFieldKeys[17]
+      expected: "p4Number"
+      actual:   "p4Date"
+
+  ~ $.rowFieldKeys[18]
+      expected: "remarks"
+      actual:   "p4Number"
+
+  ~ $.rowFieldKeys[19]
+      expected: "restorationTime"
+      actual:   "remarks"
+
+  ~ $.rowFieldKeys[20]
+      expected: "year"
+      actual:   "restorationTime"
+
+  ~ $.rowFieldKeys[21]
+      expected: "zone"
+      actual:   "year"
+
+  + $.rowFieldKeys[22]
+      actual:   "zone"
+
+If this change is intentional, re-run with UPDATE_CONTRACT_SNAPSHOTS=true to accept the new contract.

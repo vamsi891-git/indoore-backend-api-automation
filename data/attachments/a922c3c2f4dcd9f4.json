@@ -1,0 +1,108 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/reports/communication/consumers",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "address",
+    "billingCount",
+    "billingMappingStatus",
+    "circle",
+    "consumerName",
+    "division",
+    "dpCount",
+    "dtrName",
+    "eventCount",
+    "feeder",
+    "id",
+    "ipCount",
+    "ivrsNumber",
+    "lsCount",
+    "meterLookupId",
+    "meterMake",
+    "mf",
+    "msn",
+    "phase",
+    "substation",
+    "tariff",
+    "zone"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "substation",
+      "header": "Sub Station"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtrName",
+      "header": "DTR Name"
+    },
+    {
+      "key": "consumerName",
+      "header": "Consumer Name"
+    },
+    {
+      "key": "address",
+      "header": "Address"
+    },
+    {
+      "key": "ivrsNumber",
+      "header": "IVRS Number"
+    },
+    {
+      "key": "tariff",
+      "header": "Tariff"
+    },
+    {
+      "key": "msn",
+      "header": "MSN"
+    },
+    {
+      "key": "phase",
+      "header": "Phase"
+    },
+    {
+      "key": "meterMake",
+      "header": "Meter Make"
+    },
+    {
+      "key": "mf",
+      "header": "MF"
+    },
+    {
+      "key": "ipCount",
+      "header": "IP Count"
+    },
+    {
+      "key": "dpCount",
+      "header": "DP Count"
+    },
+    {
+      "key": "lsCount",
+      "header": "LS Count"
+    }
+  ]
+}

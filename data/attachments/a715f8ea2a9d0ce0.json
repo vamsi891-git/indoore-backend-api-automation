@@ -1,0 +1,16 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/utils/meter-phases",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "items"
+  ],
+  "itemKeys": [
+    "id",
+    "name"
+  ],
+  "hasColumnsGrid": false
+}

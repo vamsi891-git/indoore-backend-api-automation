@@ -1,0 +1,13 @@
+
+==================================
+API : Connection types — missing route returns 404
+DNS : 2.53 ms
+Connection : 214.6 ms
+Server Processing : -97.13 ms
+Download : 100 ms
+Total : 220 ms
+===================================
+
+[PASS] Connection types — missing route returns 404 — 2/2 checks, 220ms
+  1. Status Validation — PASS
+  2. Response Time — PASS

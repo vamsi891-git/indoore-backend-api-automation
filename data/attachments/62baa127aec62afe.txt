@@ -1,0 +1,44 @@
+
+==================================
+API : Transformer load — October 2025 first page lists each transformer’s load by hour
+DNS : 1.97 ms
+Connection : 214.46 ms
+Server Processing : 328.56999999999994 ms
+Download : 100 ms
+Total : 645 ms
+===================================
+
+{
+  "msg": "dtr_load_live_response",
+  "query": {
+    "page": 1,
+    "limit": 10,
+    "fromDate": "2025-10-01",
+    "toDate": "2025-10-30",
+    "type": "hourly_actual_load"
+  },
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 798,
+    "totalPages": 80
+  },
+  "rowCount": 10,
+  "note": "live totals are not pinned",
+  "sampleDtr": "11IW10"
+}
+[PASS] Transformer load — October 2025 first page lists each transformer’s load by hour — 14/14 checks, 645ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Zod Response Schema — PASS
+  6. Columns — PASS
+  7. Pagination — PASS
+  8. Rows — PASS
+  9. Unique meters — PASS
+  10. Shared feeder allowed — PASS
+  11. MSN matches serial — PASS
+  12. Hourly values — PASS
+  13. Hourly totals — PASS
+  14. No Data Scenario — PASS

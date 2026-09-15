@@ -1,0 +1,16 @@
+
+==================================
+API : DTR event — limit 0 is rejected (limit must be at least 1)
+DNS : 1.92 ms
+Connection : 214.17 ms
+Server Processing : -83.08999999999997 ms
+Download : 100 ms
+Total : 233 ms
+===================================
+
+[PASS] DTR event — limit 0 is rejected (limit must be at least 1) — 5/5 checks, 233ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

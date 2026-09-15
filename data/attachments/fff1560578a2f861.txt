@@ -1,0 +1,3 @@
+[PASS] Delete Device — Not Found — 2/2 checks, 1073ms
+  1. Status (device not found) — PASS
+  2. Error envelope — PASS

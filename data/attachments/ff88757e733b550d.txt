@@ -1,0 +1,18 @@
+
+==================================
+API : Energy flow chart — last few hours
+DNS : 2.08 ms
+Connection : 215.54 ms
+Server Processing : -76.62 ms
+Download : 100 ms
+Total : 241 ms
+===================================
+
+[PASS] Energy flow chart — last few hours — 7/7 checks, 241ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Chart Labels — PASS
+  7. Energy Flow Scenario — PASS

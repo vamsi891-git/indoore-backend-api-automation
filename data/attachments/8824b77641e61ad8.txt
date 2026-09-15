@@ -1,0 +1,17 @@
+
+==================================
+API : DTR loading gauge — a second transformer still shows bands
+DNS : 1.87 ms
+Connection : 214.09 ms
+Server Processing : 391.03999999999996 ms
+Download : 100 ms
+Total : 707 ms
+===================================
+
+[PASS] DTR loading gauge — a second transformer still shows bands — 6/6 checks, 707ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. DTR Capacity Gauge Scenario — PASS

@@ -1,0 +1,17 @@
+[PASS] Energy Audit Loss Analysis Stats (dtr) — 16/16 checks, 1019ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Response Contract — PASS
+  6. Query Echo — PASS
+  7. Date Fields — PASS
+  8. Energy Metric Types — PASS
+  9. Non-Negative Totals — PASS
+  10. Total Loss Math — PASS
+  11. Loss Not Exceeding Input — PASS
+  12. Peak Loss Hour — PASS
+  13. Lowest Loss Hour — PASS
+  14. Peak Vs Lowest Loss — PASS
+  15. Zero Data Consistency — PASS
+  16. Cross Field Logic — PASS

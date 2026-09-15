@@ -1,0 +1,18 @@
+
+==================================
+API : DTR billing — showing 1 per page still lists a meter
+DNS : 112.98 ms
+Connection : 214.32 ms
+Server Processing : 667.7 ms
+Download : 100 ms
+Total : 1095 ms
+===================================
+
+[PASS] DTR billing — showing 1 per page still lists a meter — 7/7 checks, 1095ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Billing Scenario — PASS

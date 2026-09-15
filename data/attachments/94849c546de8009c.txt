@@ -1,0 +1,17 @@
+
+==================================
+API : DTR power now — a second transformer still shows power
+DNS : 2.31 ms
+Connection : 215.67 ms
+Server Processing : -9.97999999999999 ms
+Download : 100 ms
+Total : 308 ms
+===================================
+
+[PASS] DTR power now — a second transformer still shows power — 6/6 checks, 308ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. DTR Power Triangle Scenario — PASS

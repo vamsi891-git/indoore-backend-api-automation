@@ -1,0 +1,18 @@
+
+==================================
+API : Event list — page 2 of events loads
+DNS : 2 ms
+Connection : 214.37 ms
+Server Processing : -11.370000000000005 ms
+Download : 100 ms
+Total : 305 ms
+===================================
+
+[PASS] Event list — page 2 of events loads — 7/7 checks, 305ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Serial Numbers — PASS
+  7. Event Log List Scenario — PASS

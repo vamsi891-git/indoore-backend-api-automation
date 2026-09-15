@@ -1,0 +1,23 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumers/{ref}/power-quality",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "frequency",
+    "mdKva",
+    "mdKw",
+    "neutralCurrent",
+    "overallPf"
+  ],
+  "itemKeys": [
+    "frequency",
+    "mdKva",
+    "mdKw",
+    "neutralCurrent",
+    "overallPf"
+  ],
+  "hasColumnsGrid": false
+}

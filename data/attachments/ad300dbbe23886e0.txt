@@ -1,0 +1,15 @@
+
+==================================
+API : Monthly billing — month 13 is rejected (month must be January to December)
+DNS : 1.89 ms
+Connection : 215.19 ms
+Server Processing : -83.07999999999998 ms
+Download : 100 ms
+Total : 234 ms
+===================================
+
+[PASS] Monthly billing — month 13 is rejected (month must be January to December) — 4/4 checks, 234ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS

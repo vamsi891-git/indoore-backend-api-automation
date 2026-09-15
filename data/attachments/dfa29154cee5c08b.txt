@@ -1,0 +1,17 @@
+
+==================================
+API : Event summary — opens using the account number
+DNS : 2.04 ms
+Connection : 215.16 ms
+Server Processing : -86.19999999999999 ms
+Download : 100 ms
+Total : 231 ms
+===================================
+
+[PASS] Event summary — opens using the account number — 6/6 checks, 231ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Event Log Cards Scenario — PASS

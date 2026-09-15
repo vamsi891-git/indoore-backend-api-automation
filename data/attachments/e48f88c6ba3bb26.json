@@ -1,0 +1,10 @@
+{
+  "warnings": [],
+  "counts": {
+    "emptyIvrs": 0,
+    "emptyMsn": 0,
+    "emptyAnalysisType": 0,
+    "duplicateMsn": 0,
+    "duplicateIvrs": 0
+  }
+}

@@ -1,0 +1,21 @@
+
+==================================
+API : Get Roles
+DNS : 2.63 ms
+Connection : 214.27 ms
+Server Processing : 849.0999999999999 ms
+Download : 100 ms
+Total : 1166 ms
+===================================
+
+[PASS] Get Roles — 10/10 checks, 1166ms
+  1. Get Roles Status Code — PASS
+  2. Get Roles Content Type — PASS
+  3. Get Roles Response Time — PASS
+  4. Get Roles Sensitive Data — PASS
+  5. Validate Roles Response — PASS
+  6. Validate Roles List — PASS
+  7. Validate Role Structure — PASS
+  8. Validate Duplicate Roles — PASS
+  9. Validate Sort Order — PASS
+  10. Validate Ultimate Role — PASS

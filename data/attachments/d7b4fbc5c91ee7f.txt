@@ -1,0 +1,18 @@
+
+==================================
+API : Event list — opens using the meter
+DNS : 1.74 ms
+Connection : 214.17 ms
+Server Processing : -83.91 ms
+Download : 100 ms
+Total : 232 ms
+===================================
+
+[PASS] Event list — opens using the meter — 7/7 checks, 232ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Serial Numbers — PASS
+  7. Event Log List Scenario — PASS

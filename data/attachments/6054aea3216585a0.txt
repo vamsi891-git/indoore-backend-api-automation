@@ -1,0 +1,14 @@
+
+==================================
+API : Mapped vs unmapped meters ACCESS_TOKEN_INVALID
+DNS : 2.19 ms
+Connection : 214.05 ms
+Server Processing : -96.24000000000001 ms
+Download : 100 ms
+Total : 220 ms
+===================================
+
+[PASS] Mapped vs unmapped meters — ACCESS_TOKEN_INVALID — 3/3 checks, 220ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

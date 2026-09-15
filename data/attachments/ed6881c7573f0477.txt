@@ -1,0 +1,22 @@
+
+==================================
+API : Network hierarchy — live tree
+DNS : 2.27 ms
+Connection : 214.43 ms
+Server Processing : -77.70000000000002 ms
+Download : 100 ms
+Total : 239 ms
+===================================
+
+[PASS] Network hierarchy — live tree — 11/11 checks, 239ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Envelope — PASS
+  6. Response — PASS
+  7. Items — PASS
+  8. Fields — PASS
+  9. Duplicate Codes — PASS
+  10. Order Sequence — PASS
+  11. Expected Hierarchy — PASS

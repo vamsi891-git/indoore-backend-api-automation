@@ -1,0 +1,24 @@
+
+==================================
+API : Feeder daily energy — day-by-day kWh (an empty chart is still OK)
+DNS : 1.84 ms
+Connection : 215.72 ms
+Server Processing : -73.56 ms
+Download : 100 ms
+Total : 244 ms
+===================================
+
+[PASS] Feeder daily energy — day-by-day kWh (an empty chart is still OK) — 13/13 checks, 244ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Zod Response Schema — PASS
+  7. Success — PASS
+  8. Root Structure — PASS
+  9. Granularity Echo — PASS
+  10. Unit — PASS
+  11. Empty Scenario — PASS
+  12. Business Rules — PASS
+  13. Day Point Count — PASS

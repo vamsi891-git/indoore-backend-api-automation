@@ -1,0 +1,101 @@
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Login attempt 1/7 failed (retriable): Login failed with status 429 - Too many requests, please try again later.
+Login retry 2/7 after 5000ms
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+
+==================================
+API : Meter Replacement Submission Detail API
+DNS : 101.79 ms
+Connection : 214.64 ms
+Server Processing : 13241.57 ms
+Download : 100 ms
+Total : 13658 ms
+===================================
+
+[FAIL] Meter Replacement Submission Detail API — 44/62 checks, 13658ms
+  1. Status Code — FAIL
+     Expected status 200 but received 401
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Root Fields — FAIL
+     Missing or undefined field: data
+  6. Required Data Fields — FAIL
+     Cannot read properties of undefined (reading 'id')
+  7. Success — FAIL
+     expect(received).toBeTruthy()
+  8. Root Structure — PASS
+  9. Required Fields — PASS
+  10. Submission Id — FAIL
+     expect(received).toBeGreaterThan(expected)
+  11. Submission Status — PASS
+  12. Created Date — FAIL
+     expect(received).toBeGreaterThan(expected)
+  13. Completed Date — PASS
+  14. Consumer Object — PASS
+  15. Consumer Required Fields — PASS
+  16. Consumer Id — FAIL
+     expect(received).toBeGreaterThan(expected)
+  17. Consumer Name — FAIL
+     expect(received).toBeGreaterThan(expected)
+  18. Consumer Status — PASS
+  19. Consumer Identity — FAIL
+     expect(received).toBeGreaterThan(expected)
+  20. Old Meter Object — PASS
+  21. Old Meter Required Fields — PASS
+  22. Old Meter Lookup Id — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  23. Old Meter Serial — FAIL
+     expect(received).toBeGreaterThan(expected)
+  24. Old Meter Status — PASS
+  25. New Meter Object — PASS
+  26. New Meter Required Fields — PASS
+  27. New Meter Lookup Id — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  28. New Meter Serial — FAIL
+     expect(received).toBeGreaterThan(expected)
+  29. New Meter Status — PASS
+  30. Submitted By — FAIL
+     expect(received).toBeGreaterThan(expected)
+  31. Coordinates — PASS
+  32. No Null Critical Fields — PASS
+  33. Business Rules — PASS
+  34. Consumer Trim — PASS
+  35. Old Meter Trim — PASS
+  36. New Meter Trim — PASS
+  37. Replacement Reason — PASS
+  38. Remarks — PASS
+  39. Coordinate Range — PASS
+  40. Coordinate Precision — PASS
+  41. Submitted By Trim — PASS
+  42. Old And New Meters Different — FAIL
+     expect(received).not.toBe(expected) // Object.is equality
+  43. Consumer IVRS Consistency — PASS
+  44. Old Meter Reading Format — PASS
+  45. New Meter Reading Format — PASS
+  46. Meter Lookup Relationship — FAIL
+     expect(received).toBeGreaterThan(expected)
+  47. Response Integrity — FAIL
+     expect(received).toBeTruthy()
+  48. No Undefined Critical Fields — PASS
+  49. Root Object Size — PASS
+  50. Consumer Object Size — PASS
+  51. Old Meter Object Size — PASS
+  52. New Meter Object Size — PASS
+  53. No Extra Root Fields — PASS
+  54. Consumer Status Business Rule — PASS
+  55. Old Meter Status Business Rule — PASS
+  56. New Meter Status Business Rule — PASS
+  57. Completed Submission Rule — PASS
+  58. Pending Submission Rule — FAIL
+     expect(received).toBeGreaterThan(expected)
+  59. Submitted By Length — PASS
+  60. Consumer Name Length — PASS
+  61. Old Meter Serial Length — PASS
+  62. New Meter Serial Length — PASS
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Replacement-Submission-Detail-API-2026-09-15T17-19-18-858Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Replacement-Submission-Detail-API-2026-09-15T17-19-18-858Z.triage.json [heuristic] contract_mismatch/medium

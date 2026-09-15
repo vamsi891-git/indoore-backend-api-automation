@@ -1,0 +1,15 @@
+
+==================================
+API : Day-by-day billing — leaving out the month is rejected
+DNS : 25.19 ms
+Connection : 214.32 ms
+Server Processing : 791.49 ms
+Download : 100 ms
+Total : 1131 ms
+===================================
+
+[PASS] Day-by-day billing — leaving out the month is rejected — 4/4 checks, 1131ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS

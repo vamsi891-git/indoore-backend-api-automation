@@ -1,0 +1,17 @@
+
+==================================
+API : DTR energy over time — a second transformer still shows a chart
+DNS : 1.97 ms
+Connection : 215.7 ms
+Server Processing : 20.329999999999984 ms
+Download : 100 ms
+Total : 338 ms
+===================================
+
+[PASS] DTR energy over time — a second transformer still shows a chart — 6/6 checks, 338ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. DTR Daily Threshold Chart Scenario — PASS

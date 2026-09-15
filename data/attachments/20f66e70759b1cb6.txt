@@ -1,0 +1,17 @@
+
+==================================
+API : Event summary — opens using the meter
+DNS : 2.92 ms
+Connection : 214.5 ms
+Server Processing : 897.5799999999999 ms
+Download : 100 ms
+Total : 1215 ms
+===================================
+
+[PASS] Event summary — opens using the meter — 6/6 checks, 1215ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Event Log Cards Scenario — PASS

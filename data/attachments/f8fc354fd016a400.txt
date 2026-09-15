@@ -1,0 +1,16 @@
+
+==================================
+API : Technical summary — missing month is rejected
+DNS : 1.96 ms
+Connection : 214.07 ms
+Server Processing : -88.03 ms
+Download : 100 ms
+Total : 228 ms
+===================================
+
+[PASS] Technical summary — missing month is rejected — 5/5 checks, 228ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

@@ -1,0 +1,14 @@
+[PASS] What kinds of events happened — extra unused options are ignored — 13/13 checks, 231ms
+  1. Status — PASS
+  2. Content — PASS
+  3. Performance — PASS
+  4. Sensitive Data — PASS
+  5. Response — PASS
+  6. Grouping — PASS
+  7. Today compared with yesterday — PASS
+  8. Totals add up — PASS
+  9. Event type list — PASS
+  10. Expected event types — PASS
+  11. Expected event type names — PASS
+  12. No duplicate event categories — PASS
+  13. No duplicate event type names — PASS

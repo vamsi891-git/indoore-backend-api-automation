@@ -1,0 +1,18 @@
+
+==================================
+API : Live load — opens using the account number
+DNS : 1.85 ms
+Connection : 214.69 ms
+Server Processing : 359.46 ms
+Download : 100 ms
+Total : 676 ms
+===================================
+
+[PASS] Live load — opens using the account number — 7/7 checks, 676ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Metric Titles — PASS
+  7. Live Load Profile Scenario — PASS

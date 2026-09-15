@@ -1,0 +1,84 @@
+
+==================================
+API : Communication consumers — range first page shows columns and meters
+DNS : 2.4 ms
+Connection : 214.34 ms
+Server Processing : 1057.26 ms
+Download : 100 ms
+Total : 1374 ms
+===================================
+
+{
+  "msg": "communication_consumers_live_response",
+  "scenario": "dev_live_range",
+  "query": {
+    "periodType": "range",
+    "page": 1,
+    "limit": 50,
+    "meterType": "all",
+    "mappingType": "all",
+    "fromDate": "2025-10-01",
+    "toDate": "2025-10-30"
+  },
+  "queryString": "periodType=range&page=1&limit=50&meterType=all&mappingType=all&fromDate=2025-10-01&toDate=2025-10-30",
+  "pagination": {
+    "page": 1,
+    "limit": 50,
+    "total": null,
+    "totalPages": null,
+    "totalIsExact": false,
+    "hasMore": true
+  },
+  "columnKeys": [
+    "circle",
+    "division",
+    "zone",
+    "substation",
+    "feeder",
+    "dtrName",
+    "consumerName",
+    "address",
+    "ivrsNumber",
+    "tariff",
+    "msn",
+    "phase",
+    "meterMake",
+    "mf",
+    "ipCount",
+    "dpCount",
+    "lsCount"
+  ],
+  "rowCount": 50,
+  "sampleRow": {
+    "id": "row-1-85080223-1095",
+    "meterLookupId": 1095,
+    "consumerName": "M/S LAJWAN STEEL",
+    "circle": "Indore city circle",
+    "division": "SOUTH",
+    "zone": "OPH South",
+    "substation": "PragatiNagar",
+    "feeder": "PARMANU NAGAR(CHQ)",
+    "dtrName": "RJ666",
+    "address": "27-S-5 JAWAHAR NAGARINDOREINDORE",
+    "ivrsNumber": "3544019391",
+    "tariff": "LV1.2",
+    "msn": "85080223",
+    "phase": "1 PH",
+    "meterMake": "L&T",
+    "mf": "1",
+    "ipCount": 2792,
+    "dpCount": 30,
+    "lsCount": 2880,
+    "billingCount": 1,
+    "billingMappingStatus": "OK",
+    "eventCount": 8
+  }
+}
+[PASS] Communication consumers — range first page shows columns and meters — 7/7 checks, 1374ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Communication Consumers Scenario — PASS

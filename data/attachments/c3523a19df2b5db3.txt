@@ -1,0 +1,29 @@
+
+==================================
+API : Meter communication — non-communicating filter shows only non-communicating meters
+DNS : 1.88 ms
+Connection : 214.43 ms
+Server Processing : 854.6899999999998 ms
+Download : 100 ms
+Total : 1171 ms
+===================================
+
+[PASS] Meter communication — non-communicating filter shows only non-communicating meters — 18/18 checks, 1171ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Zod Response Schema — PASS
+  6. Response — PASS
+  7. Summary Counts — PASS
+  8. Columns — PASS
+  9. Items — PASS
+  10. Fields — PASS
+  11. Pagination — PASS
+  12. Query Params — PASS
+  13. Sl No Sequence — PASS
+  14. Unique Meter Serials On Page — PASS
+  15. Page Status Within Summary — PASS
+  16. Row Keys Match Columns — PASS
+  17. Communication Status Filter — PASS
+  18. Communicating Timestamp Rule — PASS

@@ -1,0 +1,7 @@
+[PASS] Module isEnabled Toggle — 6/6 checks, 1586ms
+  1. Create module — PASS
+  2. Disable module status — PASS
+  3. Disabled module response — PASS
+  4. Module isEnabled false in list — PASS
+  5. Re-enable module status — PASS
+  6. Module isEnabled true in list — PASS

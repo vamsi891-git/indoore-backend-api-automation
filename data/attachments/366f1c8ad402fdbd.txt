@@ -1,0 +1,9 @@
+[PASS] Transformer load — October 2025 sample row matches the live layout — 8/8 checks, 0ms
+  1. Required Fields — PASS
+  2. Columns — PASS
+  3. Rows — PASS
+  4. Unique meters — PASS
+  5. Shared feeder allowed — PASS
+  6. MSN matches serial — PASS
+  7. Hourly values — PASS
+  8. Hourly totals — PASS

@@ -1,0 +1,586 @@
+
+==================================
+API : Organisation Hierarchy API
+DNS : 109.51 ms
+Connection : 216.17 ms
+Server Processing : 2164.3199999999997 ms
+Download : 100 ms
+Total : 2590 ms
+===================================
+
+Empty officeCode: {
+  "organisationLookupId": 32,
+  "officeName": "AGAR",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 46,
+  "officeName": "O&M AGAR",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 125,
+  "officeName": "HT-O&M AGAR",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 47,
+  "officeName": "O&M Susner",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 134,
+  "officeName": "HT-O&M Susner",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 33,
+  "officeName": "Barwani",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 48,
+  "officeName": "Barwani",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 98,
+  "officeName": "HT-Barwani",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 34,
+  "officeName": "BURHANPUR",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 49,
+  "officeName": "BURHANPUR CITY",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 99,
+  "officeName": "HT-BURHANPUR CITY",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 50,
+  "officeName": "BURHANPUR O&M",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 100,
+  "officeName": "HT-BURHANPUR O&M",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 35,
+  "officeName": "Dewas",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 51,
+  "officeName": "BAGLI",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 95,
+  "officeName": "HT-BAGLI",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 52,
+  "officeName": "City Dewas",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 102,
+  "officeName": "HT-City Dewas",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 53,
+  "officeName": "O&M Dewas",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 127,
+  "officeName": "HT-O&M Dewas",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 54,
+  "officeName": "O&M Kannod",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 129,
+  "officeName": "HT-O&M Kannod",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 55,
+  "officeName": "SONKATCH",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 140,
+  "officeName": "HT-SONKATCH",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 36,
+  "officeName": "Dhar",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 56,
+  "officeName": "Dhar",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 105,
+  "officeName": "HT-Dhar",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 101,
+  "officeName": "HT-CENTRAL",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 106,
+  "officeName": "HT-EAST",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 123,
+  "officeName": "HT-NORTH",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 141,
+  "officeName": "HT-SOUTH",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 144,
+  "officeName": "HT-WEST",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 37,
+  "officeName": "Indore O&M",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 57,
+  "officeName": "Depalpur",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 104,
+  "officeName": "HT-Depalpur",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 58,
+  "officeName": "Indore",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 108,
+  "officeName": "HT-Indore",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 59,
+  "officeName": "Mhow",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 121,
+  "officeName": "HT-Mhow",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 60,
+  "officeName": "Pithampur",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 138,
+  "officeName": "HT-Pithampur",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 38,
+  "officeName": "Jhabua",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 61,
+  "officeName": "Jhabua",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 110,
+  "officeName": "HT-Jhabua",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 39,
+  "officeName": "KHANDWA",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 62,
+  "officeName": "KHANDWA CITY",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 111,
+  "officeName": "HT-KHANDWA CITY",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 65,
+  "officeName": "KHANDWA-I",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 114,
+  "officeName": "HT-KHANDWA-I",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 63,
+  "officeName": "KHANDWA O&M-I",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 112,
+  "officeName": "HT-KHANDWA O&M-I",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 64,
+  "officeName": "KHANDWA O&M-II",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 113,
+  "officeName": "HT-KHANDWA O&M-II",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 66,
+  "officeName": "PANDHANA",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 137,
+  "officeName": "HT-PANDHANA",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 40,
+  "officeName": "KHARGONE",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 67,
+  "officeName": "BADWAH",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 94,
+  "officeName": "HT-BADWAH",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 68,
+  "officeName": "BARWAH",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 96,
+  "officeName": "HT-BARWAH",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 69,
+  "officeName": "BARWAHA",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 97,
+  "officeName": "HT-BARWAHA",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 70,
+  "officeName": "KHARGONE-I",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 115,
+  "officeName": "HT-KHARGONE-I",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 71,
+  "officeName": "KHARGONE-II",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 116,
+  "officeName": "HT-KHARGONE-II",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 72,
+  "officeName": "MANDLESHWAR",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 119,
+  "officeName": "HT-MANDLESHWAR",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 41,
+  "officeName": "Mandsaur",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 73,
+  "officeName": "Garoth",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 107,
+  "officeName": "HT-Garoth",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 74,
+  "officeName": "Malhar Garh",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 117,
+  "officeName": "HT-Malhar Garh",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 75,
+  "officeName": "Mandsaur",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 120,
+  "officeName": "HT-Mandsaur",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 76,
+  "officeName": "Sitamahu",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 139,
+  "officeName": "HT-Sitamahu",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 42,
+  "officeName": "Neemuch",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 77,
+  "officeName": "JAWAD",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 109,
+  "officeName": "HT-JAWAD",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 78,
+  "officeName": "MANASA",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 118,
+  "officeName": "HT-MANASA",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 79,
+  "officeName": "Neemuch",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 122,
+  "officeName": "HT-Neemuch",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 43,
+  "officeName": "Ratlam",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 80,
+  "officeName": "ALOT",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 93,
+  "officeName": "HT-ALOT",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 81,
+  "officeName": "City Div. Ratlam",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 103,
+  "officeName": "HT-City Div. Ratlam",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 83,
+  "officeName": "O&M Div. Ratlam",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 128,
+  "officeName": "HT-O&M Div. Ratlam",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 82,
+  "officeName": "O & M JAORA",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 124,
+  "officeName": "HT-O & M JAORA",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 44,
+  "officeName": "Shajapur",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 84,
+  "officeName": "O&M Shajapur",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 132,
+  "officeName": "HT-O&M Shajapur",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 85,
+  "officeName": "O&M Sujalpur",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 133,
+  "officeName": "HT-O&M Sujalpur",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 45,
+  "officeName": "Ujjain",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 86,
+  "officeName": "O&M Bad Nagar",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 126,
+  "officeName": "HT-O&M Bad Nagar",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 87,
+  "officeName": "O&M MahidPur",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 130,
+  "officeName": "HT-O&M MahidPur",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 88,
+  "officeName": "O&M Nagda",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 131,
+  "officeName": "HT-O&M Nagda",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 89,
+  "officeName": "O&M Tarana",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 135,
+  "officeName": "HT-O&M Tarana",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 90,
+  "officeName": "O&M Ujjain",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 136,
+  "officeName": "HT-O&M Ujjain",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 91,
+  "officeName": "UJJAIN  EAST CITY",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 142,
+  "officeName": "HT-UJJAIN  EAST CITY",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 92,
+  "officeName": "UJJAIN  WEST CITY",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 143,
+  "officeName": "HT-UJJAIN  WEST CITY",
+  "hierarchyLevel": "Zone"
+}
+[PASS] Organisation Hierarchy API — 10/10 checks, 2590ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Response Contract — PASS
+  6. Items — PASS
+  7. Fields — PASS
+  8. Duplicate IDs — PASS
+  9. Expected Levels — PASS
+  10. Org DTR Uniqueness — PASS

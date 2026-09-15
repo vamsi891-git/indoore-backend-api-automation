@@ -1,0 +1,49 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/master-data/meter-master-data",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "accuracyClass",
+    "assetId",
+    "connection",
+    "deviceManufacturerTblRefId",
+    "displayDigitCount",
+    "dlmsNonDlms",
+    "id",
+    "ipAddress",
+    "isActiveStatus",
+    "ismiNumber",
+    "lctr",
+    "lptr",
+    "mctr",
+    "meterLookupTblRefId",
+    "meterManufacturer",
+    "meterModel",
+    "meterModelTblRefId",
+    "meterPoDate",
+    "meterPoNumber",
+    "meterRapdrpCode",
+    "meterRating",
+    "meterSerialNumber",
+    "meterStatus",
+    "meterTestingDate",
+    "meterVersion",
+    "mf",
+    "modemImeiNumber",
+    "modemSerialNumber",
+    "mtr",
+    "networkLookupTblRefId",
+    "organisationLookupTblRefId",
+    "simNumber",
+    "slNo"
+  ],
+  "hasColumnsGrid": false
+}

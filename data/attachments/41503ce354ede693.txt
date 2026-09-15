@@ -1,0 +1,16 @@
+
+==================================
+API : Meter communication — blank consumer number is rejected
+DNS : 2.36 ms
+Connection : 214.62 ms
+Server Processing : -81.98000000000002 ms
+Download : 100 ms
+Total : 235 ms
+===================================
+
+[PASS] Meter communication — blank consumer number is rejected — 5/5 checks, 235ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Blank Ref Validation Error — PASS

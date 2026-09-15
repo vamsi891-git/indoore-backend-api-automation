@@ -1,0 +1,18 @@
+
+==================================
+API : DTR loading list — normally loaded DTRs
+DNS : 2.64 ms
+Connection : 215.64 ms
+Server Processing : 621.72 ms
+Download : 100 ms
+Total : 940 ms
+===================================
+
+[PASS] DTR loading list — normally loaded DTRs — 7/7 checks, 940ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Percentage Loading Details Scenario — PASS

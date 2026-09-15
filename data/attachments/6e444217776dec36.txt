@@ -1,0 +1,14 @@
+
+==================================
+API : Consumer oem-distribution UNAUTHORIZED
+DNS : 2.01 ms
+Connection : 215.39 ms
+Server Processing : -94.39999999999998 ms
+Download : 100 ms
+Total : 223 ms
+===================================
+
+[PASS] Consumer OEM Distribution — UNAUTHORIZED — 3/3 checks, 223ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

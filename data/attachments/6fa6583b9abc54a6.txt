@@ -1,0 +1,18 @@
+
+==================================
+API : DTR consumption chart — monthly view loads
+DNS : 2.16 ms
+Connection : 214.26 ms
+Server Processing : 1170.58 ms
+Download : 100 ms
+Total : 1487 ms
+===================================
+
+[PASS] DTR consumption chart — monthly view loads — 7/7 checks, 1487ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Consumption Scenario — PASS

@@ -1,0 +1,18 @@
+
+==================================
+API : DTR power on/off list — DTRs that are ON
+DNS : 2.11 ms
+Connection : 214.55 ms
+Server Processing : 857.3400000000001 ms
+Download : 100 ms
+Total : 1174 ms
+===================================
+
+[PASS] DTR power on/off list — DTRs that are ON — 7/7 checks, 1174ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Power Status Details Scenario — PASS

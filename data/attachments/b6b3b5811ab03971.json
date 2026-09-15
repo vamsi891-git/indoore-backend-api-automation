@@ -1,0 +1,29 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/energy-audit/loss-analysis-stats",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "fromDate",
+    "lowestLossHour",
+    "networkLookupId",
+    "peakLossHour",
+    "toDate",
+    "totalConsumption",
+    "totalEnergyInput",
+    "totalLoss"
+  ],
+  "itemKeys": [
+    "fromDate",
+    "lowestLossHour",
+    "networkLookupId",
+    "peakLossHour",
+    "toDate",
+    "totalConsumption",
+    "totalEnergyInput",
+    "totalLoss"
+  ],
+  "hasColumnsGrid": false
+}

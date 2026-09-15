@@ -1,0 +1,16 @@
+
+==================================
+API : DTR communication — missing fromDate is rejected
+DNS : 17.5 ms
+Connection : 214.47 ms
+Server Processing : 131.03 ms
+Download : 100 ms
+Total : 463 ms
+===================================
+
+[PASS] DTR communication — missing fromDate is rejected — 5/5 checks, 463ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

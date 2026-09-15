@@ -1,0 +1,31 @@
+
+==================================
+API : Day-by-day billing — searching by a meter number returns only that meter
+DNS : 2.2 ms
+Connection : 216.66 ms
+Server Processing : -54.859999999999985 ms
+Download : 100 ms
+Total : 264 ms
+===================================
+
+[PASS] Day-by-day billing — searching by a meter number returns only that meter — 20/20 checks, 264ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Zod Response Schema — PASS
+  6. Columns — PASS
+  7. Data exists — PASS
+  8. Pagination — PASS
+  9. Month year — PASS
+  10. Has more — PASS
+  11. Meter details — PASS
+  12. Consumer — PASS
+  13. Daily kWh — PASS
+  14. Daily reading trend — PASS
+  15. Days in month — PASS
+  16. Unique readings — PASS
+  17. Shared keys allowed — PASS
+  18. Null-safe hierarchy — PASS
+  19. Meter filter — PASS
+  20. No Data Scenario — PASS

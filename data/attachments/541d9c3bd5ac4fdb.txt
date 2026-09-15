@@ -1,0 +1,18 @@
+
+==================================
+API : DTR load unbalance list — extra unused filters are ignored
+DNS : 69.17 ms
+Connection : 214.58 ms
+Server Processing : -148.75000000000003 ms
+Download : 100 ms
+Total : 235 ms
+===================================
+
+[PASS] DTR load unbalance list — extra unused filters are ignored — 7/7 checks, 235ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Load Unbalance Details Scenario — PASS

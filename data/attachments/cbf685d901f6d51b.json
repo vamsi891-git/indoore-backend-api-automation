@@ -1,0 +1,19 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/analysis/commercial/summary",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "month",
+    "reports",
+    "year"
+  ],
+  "itemKeys": [
+    "month",
+    "reports",
+    "year"
+  ],
+  "hasColumnsGrid": false
+}

@@ -1,0 +1,16 @@
+
+==================================
+API : Bill status — invalid month is rejected
+DNS : 4.15 ms
+Connection : 214.43 ms
+Server Processing : 802.4199999999998 ms
+Download : 100 ms
+Total : 1121 ms
+===================================
+
+[PASS] Bill status — invalid month is rejected — 5/5 checks, 1121ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

@@ -1,0 +1,53 @@
+
+==================================
+API : Event report — page 2 continues serial numbers without duplicates
+DNS : 11.95 ms
+Connection : 214.32 ms
+Server Processing : 44.73000000000002 ms
+Download : 100 ms
+Total : 371 ms
+===================================
+
+{
+  "msg": "event_report_live_response",
+  "query": {
+    "fromDate": "2025-10-01",
+    "toDate": "2025-10-01",
+    "page": 2,
+    "limit": 10
+  },
+  "pagination": {
+    "page": 2,
+    "limit": 10,
+    "total": 19,
+    "totalPages": 2,
+    "totalIsExact": true,
+    "hasMore": false
+  },
+  "columnKeys": [
+    "circle",
+    "eventName",
+    "meterCount",
+    "eventCount",
+    "durationHhMm"
+  ],
+  "rowCount": 9,
+  "sampleRow": {
+    "id": "row-11-548-Over_Voltage_in_any_phase",
+    "slNo": 11,
+    "circle": "ALL",
+    "eventId": 548,
+    "eventName": "Over Voltage in any phase",
+    "meterCount": 242,
+    "eventCount": 912,
+    "durationHhMm": "766:29"
+  }
+}
+[PASS] Event report — page 2 continues serial numbers without duplicates — 7/7 checks, 371ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Event Report Scenario — PASS

@@ -1,0 +1,4 @@
+[PASS] Last three months — asking for one consumer at a time still returns a row — 3/3 checks, 0ms
+  1. Status 200 — PASS
+  2. At most one item — PASS
+  3. Unique consumers — PASS

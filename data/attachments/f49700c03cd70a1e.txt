@@ -1,0 +1,17 @@
+
+==================================
+API : Meter communication — status for a chosen date
+DNS : 108.94 ms
+Connection : 214.15 ms
+Server Processing : -183.09 ms
+Download : 100 ms
+Total : 240 ms
+===================================
+
+[PASS] Meter communication — status for a chosen date — 6/6 checks, 240ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Communication Status Scenario — PASS

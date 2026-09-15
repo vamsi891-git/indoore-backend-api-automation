@@ -1,0 +1,24 @@
+
+==================================
+API : payment contracts — list shows ids and names
+DNS : 2.31 ms
+Connection : 214.99 ms
+Server Processing : -83.30000000000001 ms
+Download : 100 ms
+Total : 234 ms
+===================================
+
+[PASS] payment contracts — list shows ids and names — 13/13 checks, 234ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Envelope — PASS
+  6. Response — PASS
+  7. Items — PASS
+  8. Fields — PASS
+  9. Duplicate IDs — PASS
+  10. Duplicate Names — PASS
+  11. Duplicate Codes — PASS
+  12. Backend Rules — PASS
+  13. Expected Values — PASS

@@ -1,0 +1,13 @@
+
+==================================
+API : TODs — missing route returns 404
+DNS : 3.72 ms
+Connection : 214.42 ms
+Server Processing : -95.13999999999999 ms
+Download : 100 ms
+Total : 223 ms
+===================================
+
+[PASS] TODs — missing route returns 404 — 2/2 checks, 223ms
+  1. Status Validation — PASS
+  2. Response Time — PASS

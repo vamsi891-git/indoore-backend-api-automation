@@ -1,0 +1,4 @@
+[PASS] Monthly Net Meter — Invalid Token — 3/3 checks, 0ms
+  1. Unauthorized (Bearer invalid.token) — PASS
+  2. Unauthorized (not-a-bearer-token) — PASS
+  3. Unauthorized (Bearer ) — PASS

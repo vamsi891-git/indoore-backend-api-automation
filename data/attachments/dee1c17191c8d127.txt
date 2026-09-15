@@ -1,0 +1,18 @@
+
+==================================
+API : Event list — extra unused options are ignored
+DNS : 3.99 ms
+Connection : 214.04 ms
+Server Processing : -79.03 ms
+Download : 100 ms
+Total : 239 ms
+===================================
+
+[PASS] Event list — extra unused options are ignored — 7/7 checks, 239ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Serial Numbers — PASS
+  7. Event Log List Scenario — PASS

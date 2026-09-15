@@ -1,0 +1,46 @@
+{
+  "columns": [
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "month",
+      "header": "Month"
+    },
+    {
+      "key": "year",
+      "header": "Year"
+    },
+    {
+      "key": "noOfCases",
+      "header": "No Of Cases"
+    },
+    {
+      "key": "totalCasesAttended",
+      "header": "Total Cases Attended"
+    },
+    {
+      "key": "pending",
+      "header": "Pending"
+    },
+    {
+      "key": "amountBilled",
+      "header": "Amount Billed (In Rs.)"
+    },
+    {
+      "key": "amountRealisation",
+      "header": "Amount Realisation (In Rs.)"
+    }
+  ],
+  "rowFieldKeys": [
+    "amountBilled",
+    "amountRealisation",
+    "circle",
+    "month",
+    "noOfCases",
+    "pending",
+    "totalCasesAttended",
+    "year"
+  ]
+}

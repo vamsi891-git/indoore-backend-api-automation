@@ -1,0 +1,83 @@
+
+==================================
+API : Communication consumers — month first page shows columns and meters
+DNS : 3.43 ms
+Connection : 214.51 ms
+Server Processing : 982.06 ms
+Download : 100 ms
+Total : 1300 ms
+===================================
+
+{
+  "msg": "communication_consumers_live_response",
+  "scenario": "dev_live_month",
+  "query": {
+    "periodType": "month",
+    "page": 1,
+    "limit": 50,
+    "meterType": "all",
+    "mappingType": "all",
+    "month": "2025-10"
+  },
+  "queryString": "periodType=month&page=1&limit=50&meterType=all&mappingType=all&month=2025-10",
+  "pagination": {
+    "page": 1,
+    "limit": 50,
+    "total": null,
+    "totalPages": null,
+    "totalIsExact": false,
+    "hasMore": true
+  },
+  "columnKeys": [
+    "circle",
+    "division",
+    "zone",
+    "substation",
+    "feeder",
+    "dtrName",
+    "consumerName",
+    "address",
+    "ivrsNumber",
+    "tariff",
+    "msn",
+    "phase",
+    "meterMake",
+    "mf",
+    "ipCount",
+    "dpCount",
+    "lsCount"
+  ],
+  "rowCount": 50,
+  "sampleRow": {
+    "id": "row-1-85080223-1095",
+    "meterLookupId": 1095,
+    "consumerName": "M/S LAJWAN STEEL",
+    "circle": "Indore city circle",
+    "division": "SOUTH",
+    "zone": "OPH South",
+    "substation": "PragatiNagar",
+    "feeder": "PARMANU NAGAR(CHQ)",
+    "dtrName": "RJ666",
+    "address": "27-S-5 JAWAHAR NAGARINDOREINDORE",
+    "ivrsNumber": "3544019391",
+    "tariff": "LV1.2",
+    "msn": "85080223",
+    "phase": "1 PH",
+    "meterMake": "L&T",
+    "mf": "1",
+    "ipCount": 2887,
+    "dpCount": 31,
+    "lsCount": 2976,
+    "billingCount": 1,
+    "billingMappingStatus": "OK",
+    "eventCount": 9
+  }
+}
+[PASS] Communication consumers — month first page shows columns and meters — 7/7 checks, 1300ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Communication Consumers Scenario — PASS

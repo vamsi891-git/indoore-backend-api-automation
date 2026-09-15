@@ -1,0 +1,130 @@
+
+--------------------------------------------------
+API RESPONSE
+--------------------------------------------------
+API    : Energy Audit Loss Analysis (dtr/billing)
+Status : 200
+Request:
+{
+  "report-type": "billing",
+  "month": 12,
+  "year": 2025,
+  "fromDate": "2025-12-20",
+  "toDate": "2025-12-20",
+  "page": 1,
+  "limit": 30,
+  "networkType": "dtr",
+  "networkLookupId": 5
+}
+Body:
+{
+  "success": true,
+  "data": {
+    "columns": [
+      {
+        "key": "circle",
+        "header": "CIRCLE"
+      },
+      {
+        "key": "division",
+        "header": "DIVISION"
+      },
+      {
+        "key": "zone",
+        "header": "ZONE"
+      },
+      {
+        "key": "feeder",
+        "header": "FEEDER"
+      },
+      {
+        "key": "dtrName",
+        "header": "DTR NAME"
+      },
+      {
+        "key": "mf",
+        "header": "MF"
+      },
+      {
+        "key": "meterSerialNumber",
+        "header": "Meter_Serial_Number"
+      },
+      {
+        "key": "inputUnits",
+        "header": "Input Units"
+      },
+      {
+        "key": "consumerCount",
+        "header": "Consumer Count"
+      },
+      {
+        "key": "totalSoldUnits",
+        "header": "Total Sold Units"
+      },
+      {
+        "key": "lossKwh",
+        "header": "Loss in KWH"
+      },
+      {
+        "key": "billingEfficiencyPct",
+        "header": "% Billing efficiency"
+      },
+      {
+        "key": "lossPct",
+        "header": "Loss %"
+      }
+    ],
+    "rows": [
+      {
+        "id": "meter-19271632",
+        "slNo": 1,
+        "dtrCode": "RJ662",
+        "dtrName": "RJ662",
+        "dtrRating": null,
+        "meterSerialNumber": "19271632",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 5,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 30,
+      "total": 1,
+      "totalPages": 1
+    }
+  }
+}
+--------------------------------------------------
+
+[FAIL] Energy Audit Loss Analysis (dtr/billing) — 18/19 checks, 2385ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Response Contract — PASS
+  6. Columns Contract — FAIL
+     expect(received).toEqual(expected) // deep equality
+  7. Pagination — PASS
+  8. Total Count — PASS
+  9. Rows Exist — PASS
+  10. SL No Sequence — PASS
+  11. Mandatory Fields — PASS
+  12. Field Types — PASS
+  13. Non-Negative Metrics — PASS
+  14. Row ID Format — PASS
+  15. Duplicate IDs — PASS
+  16. Duplicate Meter Serials — PASS
+  17. Duplicate DTR Names — PASS
+  18. Loss Calculations — PASS
+  19. Cross Field Logic — PASS
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Energy-Audit-Loss-Analysis-dtr-billing--2026-09-15T14-20-12-318Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Energy-Audit-Loss-Analysis-dtr-billing--2026-09-15T14-20-12-318Z.triage.json [heuristic] contract_mismatch/medium

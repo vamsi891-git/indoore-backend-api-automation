@@ -1,0 +1,99 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/reports/event-restoration",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "address",
+    "circle",
+    "division",
+    "dtr",
+    "eventClassificationName",
+    "eventName",
+    "feeder",
+    "id",
+    "ivrsNumber",
+    "msn",
+    "name",
+    "occurrenceTime",
+    "phase",
+    "slNo",
+    "subStation",
+    "tariff",
+    "zone"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "slNo",
+      "header": "S No."
+    },
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "subStation",
+      "header": "Substation"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtr",
+      "header": "DTR"
+    },
+    {
+      "key": "name",
+      "header": "Consumer Name"
+    },
+    {
+      "key": "address",
+      "header": "Address"
+    },
+    {
+      "key": "ivrsNumber",
+      "header": "IVRS Number"
+    },
+    {
+      "key": "tariff",
+      "header": "Tariff"
+    },
+    {
+      "key": "msn",
+      "header": "MSN"
+    },
+    {
+      "key": "phase",
+      "header": "Phase"
+    },
+    {
+      "key": "eventClassificationName",
+      "header": "Event Classification"
+    },
+    {
+      "key": "eventName",
+      "header": "Event Name"
+    },
+    {
+      "key": "occurrenceTime",
+      "header": "Occurrence Time"
+    }
+  ]
+}

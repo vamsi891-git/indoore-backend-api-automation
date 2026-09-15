@@ -1,0 +1,49 @@
+
+======== PF UNFILTERED — PAGINATION COUNTS ========
+connectionCategory : (all)
+page / pageSize    : 1 / 10
+pagination.total   : 8938
+pagination.totalPages : 894
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+
+======== PF DOMESTIC — PAGINATION COUNTS ========
+connectionCategory : domestic
+page / pageSize    : 1 / 10
+pagination.total   : 5014
+pagination.totalPages : 502
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+
+======== PF NON-DOMESTIC — PAGINATION COUNTS ========
+connectionCategory : non-domestic
+page / pageSize    : 1 / 10
+pagination.total   : 3924
+pagination.totalPages : 393
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+
+======== CONNECTION CATEGORY SPLIT ========
+unfiltered total     : 8938
+domestic total       : 5014
+non-domestic total   : 3924
+domestic + non-dom   : 8938
+uncategorized (gap)  : 0
+partition check      : PASS (sum ≤ all)
+==============================================
+
+[PASS] Power Factor API (category split) — 5/5 checks, 237ms
+  1. All three category requests return 200 — PASS
+  2. Unfiltered pagination counts — PASS
+  3. Domestic pagination counts — PASS
+  4. Non-domestic pagination counts — PASS
+  5. Domestic + non-domestic ≤ unfiltered total — PASS

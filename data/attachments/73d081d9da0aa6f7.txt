@@ -1,0 +1,5 @@
+[PASS] How many meters we have — all meters equals consumer plus DTR — 4/4 checks, 238ms
+  1. All meters status — PASS
+  2. Consumer status — PASS
+  3. DTR status — PASS
+  4. All equals consumer plus DTR — PASS

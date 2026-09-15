@@ -1,0 +1,3 @@
+[PASS] Daily consumption — a badly formatted start date is rejected — 2/2 checks, 0ms
+  1. Client error status — PASS
+  2. Error envelope — PASS

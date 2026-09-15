@@ -1,0 +1,21 @@
+
+==================================
+API : Monthly billing — a meter number that does not exist shows an empty list
+DNS : 2.25 ms
+Connection : 214.61 ms
+Server Processing : 1000.1399999999999 ms
+Download : 100 ms
+Total : 1317 ms
+===================================
+
+[PASS] Monthly billing — a meter number that does not exist shows an empty list — 10/10 checks, 1317ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Zod Response Schema — PASS
+  6. Columns — PASS
+  7. Billing Data Exists — PASS
+  8. Pagination — PASS
+  9. Grid meta — PASS
+  10. No Data Scenario — PASS

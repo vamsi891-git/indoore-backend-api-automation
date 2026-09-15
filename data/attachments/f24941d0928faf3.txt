@@ -1,0 +1,17 @@
+
+==================================
+API : DTR profile — a second transformer still shows a profile
+DNS : 87.54 ms
+Connection : 215.6 ms
+Server Processing : -86.14000000000001 ms
+Download : 100 ms
+Total : 317 ms
+===================================
+
+[PASS] DTR profile — a second transformer still shows a profile — 6/6 checks, 317ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. DTR Profile Scenario — PASS

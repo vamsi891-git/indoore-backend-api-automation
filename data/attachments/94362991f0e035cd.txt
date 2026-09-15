@@ -1,0 +1,86 @@
+
+==================================
+API : Current without voltage — Oct 2025 phase R first page shows columns and readings
+DNS : 2.2 ms
+Connection : 214.43 ms
+Server Processing : 1038.37 ms
+Download : 100 ms
+Total : 1355 ms
+===================================
+
+{
+  "msg": "current_without_voltage_live_response",
+  "scenario": "dev_live_primary",
+  "query": {
+    "phase": "R",
+    "month": 10,
+    "year": 2025,
+    "page": 1,
+    "limit": 10,
+    "includeTotal": false
+  },
+  "queryString": "phase=R&month=10&year=2025&page=1&limit=10&includeTotal=false",
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": null,
+    "totalPages": null,
+    "totalIsExact": false,
+    "hasMore": true,
+    "nextCursor": "2025-10-31 23:30:00.000|91603"
+  },
+  "columnKeys": [
+    "slNo",
+    "circle",
+    "division",
+    "zone",
+    "subStation",
+    "feeder",
+    "dtr",
+    "sanctionedLoadKw",
+    "name",
+    "address",
+    "ivrsNumber",
+    "category",
+    "meterSerialNumber",
+    "phase",
+    "rCurrent",
+    "rnVoltage",
+    "nightKwh",
+    "dayKwh",
+    "meterReadingDateTime"
+  ],
+  "currentHeader": "R Current",
+  "voltageHeader": "RN Voltage",
+  "rowCount": 10,
+  "sampleRow": {
+    "id": "row-1-262710",
+    "slNo": 1,
+    "circle": "Indore city circle",
+    "division": "WEST",
+    "zone": "GPH",
+    "subStation": "JINCY",
+    "feeder": "KILAGATE(CHQ)",
+    "dtr": "WI682",
+    "sanctionedLoadKw": "0.1",
+    "name": "SNEHLATA TIWARI",
+    "address": "6-6 SHANKAR GANJ -INDORE",
+    "ivrsNumber": "N3477010442",
+    "category": "LV1.2",
+    "meterSerialNumber": "262710",
+    "phase": "1 PH",
+    "rCurrent": "1.350",
+    "rnVoltage": "0.000",
+    "nightKwh": "0.000",
+    "dayKwh": "0.080",
+    "meterReadingDateTime": "31-10-2025 23:45"
+  }
+}
+[PASS] Current without voltage — Oct 2025 phase R first page shows columns and readings — 7/7 checks, 1355ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Current Without Voltage Scenario — PASS

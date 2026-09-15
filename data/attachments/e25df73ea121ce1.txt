@@ -1,0 +1,17 @@
+
+==================================
+API : Revenue subsidy (power factor) — extra unused filters are rejected
+DNS : 1.59 ms
+Connection : 214.65 ms
+Server Processing : -85.24000000000001 ms
+Download : 100 ms
+Total : 231 ms
+===================================
+
+[PASS] Revenue subsidy (power factor) — extra unused filters are rejected — 6/6 checks, 231ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Unknown Query Validation — PASS

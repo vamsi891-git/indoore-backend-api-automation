@@ -1,0 +1,17 @@
+
+==================================
+API : Meter communication — status for today when no date is given
+DNS : 107.02 ms
+Connection : 214.59 ms
+Server Processing : -191.61 ms
+Download : 100 ms
+Total : 230 ms
+===================================
+
+[PASS] Meter communication — status for today when no date is given — 6/6 checks, 230ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Communication Status Scenario — PASS

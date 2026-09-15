@@ -1,0 +1,36 @@
+{
+  "warnings": [
+    {
+      "code": "EMPTY_IVRS",
+      "message": "report row ivrsNumber is empty",
+      "field": "ivrsNumber"
+    },
+    {
+      "code": "EMPTY_IVRS",
+      "message": "report row ivrsNumber is empty",
+      "field": "ivrsNumber"
+    },
+    {
+      "code": "EMPTY_IVRS",
+      "message": "report row ivrsNumber is empty",
+      "field": "ivrsNumber"
+    },
+    {
+      "code": "EMPTY_IVRS",
+      "message": "report row ivrsNumber is empty",
+      "field": "ivrsNumber"
+    },
+    {
+      "code": "EMPTY_IVRS",
+      "message": "report row ivrsNumber is empty",
+      "field": "ivrsNumber"
+    }
+  ],
+  "counts": {
+    "emptyIvrs": 5,
+    "emptyMsn": 0,
+    "emptyAnalysisType": 0,
+    "duplicateMsn": 0,
+    "duplicateIvrs": 0
+  }
+}

@@ -1,0 +1,14 @@
+
+==================================
+API : DTR search — limit 0 is rejected
+DNS : 69.97 ms
+Connection : 215 ms
+Server Processing : 624.03 ms
+Download : 100 ms
+Total : 1009 ms
+===================================
+
+[PASS] DTR search — limit 0 is rejected — 3/3 checks, 1009ms
+  1. Status Validation — PASS
+  2. Response Time — PASS
+  3. Validation Error — PASS

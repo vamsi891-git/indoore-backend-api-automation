@@ -1,0 +1,51 @@
+
+==================================
+API : Bill status — first page without a total still shows columns
+DNS : 2.57 ms
+Connection : 214.44 ms
+Server Processing : 9537.99 ms
+Download : 100 ms
+Total : 9855 ms
+===================================
+
+{
+  "msg": "bill_status_live_response",
+  "scenario": "dev_live_without_total",
+  "query": {
+    "month": 10,
+    "year": 2025,
+    "page": 1,
+    "limit": 10,
+    "includeTotal": false
+  },
+  "queryString": "month=10&year=2025&page=1&limit=10&includeTotal=false",
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 0,
+    "totalPages": 0,
+    "totalIsExact": true,
+    "hasMore": false
+  },
+  "columnKeys": [
+    "slNo",
+    "totalConsumer",
+    "billGenerated",
+    "billNotGenerated"
+  ],
+  "rowCount": 0,
+  "summary": {
+    "totalConsumers": 141059,
+    "billGenerated": 120010,
+    "billNotGenerated": 21049
+  },
+  "note": "empty rows with non-zero summary is valid"
+}
+[PASS] Bill status — first page without a total still shows columns — 7/7 checks, 9855ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Bill Status Scenario — PASS

@@ -1,0 +1,17 @@
+
+==================================
+API : Meter communication — unknown meter shows empty or not found
+DNS : 1.99 ms
+Connection : 215.62 ms
+Server Processing : 38.389999999999986 ms
+Download : 100 ms
+Total : 356 ms
+===================================
+
+[PASS] Meter communication — unknown meter shows empty or not found — 6/6 checks, 356ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Communication Status Scenario — PASS

@@ -1,0 +1,18 @@
+
+==================================
+API : DTR summary cards — monthly view loads
+DNS : 1.83 ms
+Connection : 214.61 ms
+Server Processing : 1795.56 ms
+Download : 100 ms
+Total : 2112 ms
+===================================
+
+[PASS] DTR summary cards — monthly view loads — 7/7 checks, 2112ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Summary Scenario — PASS

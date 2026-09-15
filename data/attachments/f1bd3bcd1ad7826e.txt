@@ -1,0 +1,33 @@
+
+==================================
+API : Yearly pattern — first page lists each consumer (month energy may be empty)
+DNS : 80.75 ms
+Connection : 214.24 ms
+Server Processing : 53.00999999999999 ms
+Download : 100 ms
+Total : 448 ms
+===================================
+
+[PASS] Yearly pattern — first page lists each consumer (month energy may be empty) — 22/22 checks, 448ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Data Present When 200 — PASS
+  7. Zod Response Schema — PASS
+  8. Success — PASS
+  9. Table Validation — PASS
+  10. Yearly Title — PASS
+  11. Yearly Columns — PASS
+  12. Pagination Validation — PASS
+  13. Rows Within Limit — PASS
+  14. SLNO Validation — PASS
+  15. Required Item Fields — PASS
+  16. Unique consumers — PASS
+  17. Shared feeder allowed — PASS
+  18. Phase Validation — PASS
+  19. Sanction Load Validation — PASS
+  20. Yearly Validation — PASS
+  21. Yearly Initial kWh Validation — PASS
+  22. NaN Validation — PASS

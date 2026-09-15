@@ -1,0 +1,31 @@
+
+==================================
+API : Feeder profile — name, status, parent DTR, and overview cards load
+DNS : 24.49 ms
+Connection : 214.49 ms
+Server Processing : -102.98000000000002 ms
+Download : 100 ms
+Total : 236 ms
+===================================
+
+[PASS] Feeder profile — name, status, parent DTR, and overview cards load — 20/20 checks, 236ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Zod Response Schema — PASS
+  6. Success Flag Validation — PASS
+  7. Response Data Validation — PASS
+  8. Field Validation — PASS
+  9. Feeder Code Validation — PASS
+  10. Overview Count Validation — PASS
+  11. Overview Structure Validation — PASS
+  12. Overview Order Validation — PASS
+  13. Type Validation — PASS
+  14. Status Validation — PASS
+  15. Parent DTR Validation — PASS
+  16. Feeder Status Logic Validation — PASS
+  17. DTR Number Logic Validation — PASS
+  18. Capacity Logic Validation — PASS
+  19. Unique Titles Validation — PASS
+  20. NaN Validation — PASS

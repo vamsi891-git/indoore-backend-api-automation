@@ -1,0 +1,14 @@
+
+==================================
+API : DTR voltage-unbalance-details UNAUTHORIZED
+DNS : 2.2 ms
+Connection : 214.12 ms
+Server Processing : -93.32 ms
+Download : 100 ms
+Total : 223 ms
+===================================
+
+[PASS] DTR Voltage Unbalance Details — UNAUTHORIZED — 3/3 checks, 223ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

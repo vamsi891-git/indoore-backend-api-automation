@@ -1,0 +1,18 @@
+
+==================================
+API : DTR event detail — a page past the last page shows no records
+DNS : 1.97 ms
+Connection : 214.03 ms
+Server Processing : 169 ms
+Download : 100 ms
+Total : 485 ms
+===================================
+
+[PASS] DTR event detail — a page past the last page shows no records — 7/7 checks, 485ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Event Detail Scenario — PASS

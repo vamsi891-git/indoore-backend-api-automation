@@ -1,0 +1,21 @@
+
+==================================
+API : Transformer sizes — leftover unused filters are ignored
+DNS : 1.91 ms
+Connection : 213.98 ms
+Server Processing : 246.11 ms
+Download : 100 ms
+Total : 562 ms
+===================================
+
+[PASS] Transformer sizes — leftover unused filters are ignored — 10/10 checks, 562ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Zod Response Schema — PASS
+  6. Items — PASS
+  7. Fields — PASS
+  8. Unique ids — PASS
+  9. Unique values — PASS
+  10. Ascending order — PASS

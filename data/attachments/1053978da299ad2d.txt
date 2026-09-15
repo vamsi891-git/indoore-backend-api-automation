@@ -1,0 +1,17 @@
+
+==================================
+API : DTR feeders — list under this transformer, each feeder only once
+DNS : 1.87 ms
+Connection : 214.88 ms
+Server Processing : -5.75 ms
+Download : 100 ms
+Total : 311 ms
+===================================
+
+[PASS] DTR feeders — list under this transformer, each feeder only once — 6/6 checks, 311ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. DTR Feeders Scenario — PASS

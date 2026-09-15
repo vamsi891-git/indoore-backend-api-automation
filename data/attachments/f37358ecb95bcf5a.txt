@@ -1,0 +1,18 @@
+
+==================================
+API : DTR communication chart — monthly view loads
+DNS : 2.19 ms
+Connection : 214.54 ms
+Server Processing : -69.72999999999999 ms
+Download : 100 ms
+Total : 247 ms
+===================================
+
+[PASS] DTR communication chart — monthly view loads — 7/7 checks, 247ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Communication Scenario — PASS

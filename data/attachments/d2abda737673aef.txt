@@ -1,0 +1,18 @@
+
+==================================
+API : Billing MD snapshot — a far page is empty or still consistent
+DNS : 2.21 ms
+Connection : 214.6 ms
+Server Processing : -59.81 ms
+Download : 100 ms
+Total : 257 ms
+===================================
+
+[PASS] Billing MD snapshot — a far page is empty or still consistent — 7/7 checks, 257ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Billing MD Snapshot Scenario — PASS

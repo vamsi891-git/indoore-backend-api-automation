@@ -1,0 +1,16 @@
+
+==================================
+API : Billing history — negative month limit is rejected
+DNS : 1.7 ms
+Connection : 214.45 ms
+Server Processing : -88.14999999999998 ms
+Download : 100 ms
+Total : 228 ms
+===================================
+
+[PASS] Billing history — negative month limit is rejected — 5/5 checks, 228ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Invalid Billing Limit Error — PASS

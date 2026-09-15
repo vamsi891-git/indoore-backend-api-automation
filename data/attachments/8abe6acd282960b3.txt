@@ -1,0 +1,6170 @@
+
+==================================
+API : Production Coverage — Network Hierarchy
+DNS : 105.59 ms
+Connection : 216.16 ms
+Server Processing : 3646.25 ms
+Download : 100 ms
+Total : 4068 ms
+===================================
+
+Empty networkCode node: {
+  "networkLookupId": 1409,
+  "networkName": "11  Dodiya Mena dlf",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1672,
+  "networkName": "11ka ida-2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1415,
+  "networkName": "11 KV 400 KV FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1673,
+  "networkName": "11KV 56 SHOP",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1416,
+  "networkName": "11 KV AB ROAD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1417,
+  "networkName": "11 KV ADITYA NAGAR FEEDAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1674,
+  "networkName": "11KV AGAR CHHAWNI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1418,
+  "networkName": "11 KV AHINSA GRAM",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1675,
+  "networkName": "11kv ahirkhedi",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1676,
+  "networkName": "11kv air-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1419,
+  "networkName": "11 kv air-2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1677,
+  "networkName": "11KV AKVN",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1678,
+  "networkName": "11KV AKVN -1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1679,
+  "networkName": "11KV AKVN-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1680,
+  "networkName": "11KV AKVN-2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1681,
+  "networkName": "11KV AKVN-I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1420,
+  "networkName": "11 KV Alakhnanda",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1421,
+  "networkName": "11 KV ALKAPURI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1682,
+  "networkName": "11KV ALWASA DLF",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1422,
+  "networkName": "11 KV Amarpura DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1423,
+  "networkName": "11 KV ANOOP NAGAR(FROM SSAI)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1424,
+  "networkName": "11 KV ANSAL TOWN",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1683,
+  "networkName": "11KV ANURAG NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1684,
+  "networkName": "11KV BAGHANA DLF",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1685,
+  "networkName": "11KV BALSAMUD DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1425,
+  "networkName": "11 KV BAMN BARDI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1426,
+  "networkName": "11 KV BARKHEDA KALA  (DL)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1427,
+  "networkName": "11 KV BARLA FEEDER(ORIGINAL)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1686,
+  "networkName": "11KV Baroda DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1428,
+  "networkName": "11 KV Barufatak DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1429,
+  "networkName": "11 KV Barzar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1430,
+  "networkName": "11 KV Basant Vihar-II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1687,
+  "networkName": "11KV BASKET BALL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1431,
+  "networkName": "11 KV Bawangaja",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1688,
+  "networkName": "11KV BCM HEIGHT",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1432,
+  "networkName": "11 kv Betma Town DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1433,
+  "networkName": "11 KV BHADLI DHQ",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1689,
+  "networkName": "11KV BHAGAT SINGH PARISAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1690,
+  "networkName": "11KV BHAGORA DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1691,
+  "networkName": "11KV BHAWARIYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1434,
+  "networkName": "11 KV Bhensoda Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1435,
+  "networkName": "11 KV BHOARA BAKHAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1692,
+  "networkName": "11KV Bhorasala",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1436,
+  "networkName": "11 KV BICHOLI MARDANA-2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1693,
+  "networkName": "11kv bilawali",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1437,
+  "networkName": "11 KV Bilawli DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1438,
+  "networkName": "11 KV BIMA HOSPITAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1439,
+  "networkName": "11 KV BISTAN ROAD DHQ",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1694,
+  "networkName": "11KV BOLA  DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1695,
+  "networkName": "11KV Borkheda DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1440,
+  "networkName": "11 KV BRG-I For BRG Grid S/S",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1441,
+  "networkName": "11 KV BRG-I From BRG Grid S/S",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1696,
+  "networkName": "11KV BRG-I FROM BRG MALIKHEDI GRID S/S",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1442,
+  "networkName": "11 KV BRG-II For BRG Grid S/S",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1443,
+  "networkName": "11 KV BRG-II From BRG Grid S/S",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1697,
+  "networkName": "11kv budh nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1698,
+  "networkName": "11kv budh nahar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1444,
+  "networkName": "11 kv Budi Barlai",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1445,
+  "networkName": "11 kv By pass",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1446,
+  "networkName": "11 KV BYPASS",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1699,
+  "networkName": "11KV By Pass 11 KV",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1447,
+  "networkName": "11 KV CHAMUNDA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1448,
+  "networkName": "11 KV CHANDNIPURA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1449,
+  "networkName": "11 KV CHANDRALOK",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1450,
+  "networkName": "11 KV CHAVANI FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1700,
+  "networkName": "11KV CHHAWNI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1451,
+  "networkName": "11 KV CHINGUN DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1452,
+  "networkName": "11 KV Chintaman DL Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1453,
+  "networkName": "11 KV CHITAWAD FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1454,
+  "networkName": "11 KV CHOPAL SAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1455,
+  "networkName": "11 KV CHOPATI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1456,
+  "networkName": "11 kv chopati feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1701,
+  "networkName": "11KV Chugh Reality",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1702,
+  "networkName": "11KV CITY CENTER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1457,
+  "networkName": "11 KV COLLECTORATE",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1458,
+  "networkName": "11 KV COLLECTORET",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1459,
+  "networkName": "11 KV CT-I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1460,
+  "networkName": "11 KV Dakachya DLF",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1703,
+  "networkName": "11KV DANTODA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1704,
+  "networkName": "11KV Datoda DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1461,
+  "networkName": "11 kv datoda feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1705,
+  "networkName": "11KV Datotter DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1462,
+  "networkName": "11 KV Dawana DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1463,
+  "networkName": "11 KV Devgarh DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1464,
+  "networkName": "11 KV Dewas road Ind.I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1465,
+  "networkName": "11 KV Dewas road Ind.II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1466,
+  "networkName": "11 KV DHABLA DLF",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1467,
+  "networkName": "11 KV DHAMNOD (DL)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1706,
+  "networkName": "11KV DHAMNOD IND.",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1469,
+  "networkName": "11 kv dhanlaxmi",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1468,
+  "networkName": "11 KV DHAN LAXMI FEEDAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1470,
+  "networkName": "11 KV Dhannad",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1471,
+  "networkName": "11 KV DHARAMPURI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1708,
+  "networkName": "11KV DHARAMPURI TOWN",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1707,
+  "networkName": "11KV DHAR ROAD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1709,
+  "networkName": "11KV Dharukhedi DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1472,
+  "networkName": "11 KV Dhudhlai",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1473,
+  "networkName": "11 KV DILIP NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1474,
+  "networkName": "11 KV DIVERSION ROAD DHQ",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1710,
+  "networkName": "11KV DLF -2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1475,
+  "networkName": "11 KV DO BATTI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1476,
+  "networkName": "11 KV DONGRE NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1477,
+  "networkName": "11 KV DRP DHQ",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1711,
+  "networkName": "11KV DRP LIN`E",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1478,
+  "networkName": "11 KV dudershi Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1479,
+  "networkName": "11 KV DUNGLAWDA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1480,
+  "networkName": "11 KV Durgaplaza",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1481,
+  "networkName": "11 kv Eklduna",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1712,
+  "networkName": "11KV E SECTOR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1482,
+  "networkName": "11 KV FAZALPURA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1483,
+  "networkName": "11 KV FEEDER NO. 2(MAYA KHEDI)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1713,
+  "networkName": "11kv footikothi",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1484,
+  "networkName": "11 KV FUSARIYA FS DLF",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1485,
+  "networkName": "11 KV Gaddewala Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1714,
+  "networkName": "11KV GANDHI NAGAR DLF",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1715,
+  "networkName": "11KV GANDHWANI THQ",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1716,
+  "networkName": "11KV GANESH MANDIR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1486,
+  "networkName": "11 KV GANESH NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1487,
+  "networkName": "11 KV Ganga Vihar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1488,
+  "networkName": "11 KV GAYTRI NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1489,
+  "networkName": "11 KV GEETA COLONY",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1490,
+  "networkName": "11 kv Ghandhisagar Colony",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1491,
+  "networkName": "11 KV GHANSBAZAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1492,
+  "networkName": "11 KV GIRDODA FS DLF",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1493,
+  "networkName": "11 kv Girner",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1494,
+  "networkName": "11 KV GOLWADI DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1495,
+  "networkName": "11 KV GOPAL MANDIR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1717,
+  "networkName": "11KV GOYAL AVENUE(FROM NORTH)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1718,
+  "networkName": "11kv gumasta nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1719,
+  "networkName": "11KV HARIFATAK",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1496,
+  "networkName": "11 KV HARKIYA KHAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1497,
+  "networkName": "11 KV HEERAPURA FREEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1498,
+  "networkName": "11 KV HOSPITAL DHQ",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1499,
+  "networkName": "11 KV Hospital Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1720,
+  "networkName": "11KV HOTEL TASSALI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1721,
+  "networkName": "11kv ida-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1722,
+  "networkName": "11kv ida-2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1815,
+  "networkName": "11kvida-2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1500,
+  "networkName": "11 KV Ind. Fdr.",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1501,
+  "networkName": "11 KV IND. SIYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1502,
+  "networkName": "11 KV Indus",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1723,
+  "networkName": "11kv industrial",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1503,
+  "networkName": "11 KV Industrial",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1510,
+  "networkName": "11 KV INDUSTRIAL-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1724,
+  "networkName": "11KV Industrial Dhamnod",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1504,
+  "networkName": "11 KV INDUSTRIAL DHQ",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1505,
+  "networkName": "11 KV Industrial Fdr Tajpur",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1506,
+  "networkName": "11 KV INDUSTRIAL FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1507,
+  "networkName": "11 KV Industrial I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1511,
+  "networkName": "11 KV INDUSTRIAL-I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1512,
+  "networkName": "11 KV INDUSTRIAL-II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1508,
+  "networkName": "11 kv Industrial -new",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1509,
+  "networkName": "11 kv Industrial -old",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1513,
+  "networkName": "11 KV Indutrial Feeder Jainpipe",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1514,
+  "networkName": "11 KV JADWASA KALA (DL)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1515,
+  "networkName": "11 kv jamli DL feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1516,
+  "networkName": "11 KV JAORA COMPOUND",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1725,
+  "networkName": "11KV Jatpura",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1517,
+  "networkName": "11 KV Javhar Nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1518,
+  "networkName": "11 KV Jetpura  DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1410,
+  "networkName": "11 KV  JHALARIYA DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1519,
+  "networkName": "11 kv Junapani",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1727,
+  "networkName": "11KV KALARIYA DLF",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1728,
+  "networkName": "11KV KALIKA MATA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1729,
+  "networkName": "11KV Kalindi",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1520,
+  "networkName": "11 KV KALINDI FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1521,
+  "networkName": "11 KV Kalindi Feeder From Dudhiya Grid S/S",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1730,
+  "networkName": "11KV KALINDIN FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1411,
+  "networkName": "11 kv  Kamalpura dlf",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1522,
+  "networkName": "11 KV KANADIYA DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1731,
+  "networkName": "11KV KANCHAN BAG",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1412,
+  "networkName": "11 KV  KANJARDA W/W",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1523,
+  "networkName": "11 KV KARTIK MELA -2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1386,
+  "networkName": "11 KV KASTURBAGRAM",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1525,
+  "networkName": "11 KV KASTURBAGRAM",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1524,
+  "networkName": "11 KV KASTURBA NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1726,
+  "networkName": "11KV K.C 2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1732,
+  "networkName": "11KV KHAJARANA(ORIGINAL)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1733,
+  "networkName": "11KV KHAJURIYA DLF",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1526,
+  "networkName": "11 KV KHANDELWAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1527,
+  "networkName": "11 KV KHANDELWAL COMPOUND",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1734,
+  "networkName": "11KV KHANDUWA NAKA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1735,
+  "networkName": "11KV Khatamba",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1528,
+  "networkName": "11 KV Kheda",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1529,
+  "networkName": "11 KV Khetiya T Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1736,
+  "networkName": "11KV KODRIYA DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1530,
+  "networkName": "11 KV KOHINOOR FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1413,
+  "networkName": "11 KV  KRISHNA PULSES",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1531,
+  "networkName": "11 KV KRISHNA PULSES",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1737,
+  "networkName": "11KV KSHIPRA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1532,
+  "networkName": "11 kv Kshipra DLF",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1738,
+  "networkName": "11KV Kumedi Indore",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1739,
+  "networkName": "11KV LATURI GEHLOT DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1533,
+  "networkName": "11 KV LAXMAN PURA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1534,
+  "networkName": "11 KV LiveCity",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1535,
+  "networkName": "11 KV LOHA MANDI FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1740,
+  "networkName": "11kv lokmanya nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1536,
+  "networkName": "11 KV Lonsara (DL)Taloon",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1741,
+  "networkName": "11KV LT CONSUMER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1537,
+  "networkName": "11 KV LT Consumer fdr",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1742,
+  "networkName": "11KV LT COUNSUMER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1540,
+  "networkName": "11 KV MACHANIC NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1743,
+  "networkName": "11KV Machwas DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1744,
+  "networkName": "11Kv Madhuban DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1541,
+  "networkName": "11 KV Mahakal Vanijay",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1745,
+  "networkName": "11KV MAHALAXMI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1542,
+  "networkName": "11 KV Mahashakati",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1543,
+  "networkName": "11 KV Maheshwar(T)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1544,
+  "networkName": "11 KV Mahukheda DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1545,
+  "networkName": "11 KV MAIN ATOOT S/SS",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1546,
+  "networkName": "11 KV MAIN GANDHWA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1547,
+  "networkName": "11 KV Malikhedi DL Feeder From Dudhiya Grid S/S",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1670,
+  "networkName": "11 KVMAL KHEDA FS DLF",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1746,
+  "networkName": "11KV MALTAR DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1747,
+  "networkName": "11KV MALVIYA NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1548,
+  "networkName": "11 KV MALWA HOUSE FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1549,
+  "networkName": "11 KV MANASA 1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1550,
+  "networkName": "11 KV Manawar Town",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1551,
+  "networkName": "11 KV Mandav DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1552,
+  "networkName": "11 KV Mandleshwar(T)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1553,
+  "networkName": "11 KV Mandsaur II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1554,
+  "networkName": "11 kv Mandsaur IV",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1555,
+  "networkName": "11 KV MANIK BAG  FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1556,
+  "networkName": "11 KV MANVTA FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1557,
+  "networkName": "11 KV Maxi Road",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1558,
+  "networkName": "11 KV Maxi Road- Ind.I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1563,
+  "networkName": "11 KV Maxi Road-Ind.I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1559,
+  "networkName": "11 KV Maxi Road- Ind.II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1560,
+  "networkName": "11 KV Maxi Road- Ind.III",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1561,
+  "networkName": "11 KV Maxi Road Ind.IV",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1562,
+  "networkName": "11 KV Maxi Road- Ind.IV",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1564,
+  "networkName": "11 KV Maxi Road-Ind.IV",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1748,
+  "networkName": "11KV MEGHDOOT",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1538,
+  "networkName": "11 KV M.G Hosp.",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1565,
+  "networkName": "11 kv mhow",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1749,
+  "networkName": "11kv mhow",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1566,
+  "networkName": "11 KV MHOW ROAD DHQ",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1750,
+  "networkName": "11KV MILL AREA-2(ORIGINAL)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1751,
+  "networkName": "11KV MILL ERA-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1752,
+  "networkName": "11KV MOLYAKHEDI DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1753,
+  "networkName": "11KV MR-4",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1567,
+  "networkName": "11 kv mundi",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1539,
+  "networkName": "11 KV M.Y.H.",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1568,
+  "networkName": "11 KV MYH FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1569,
+  "networkName": "11 KV Nagziri",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1570,
+  "networkName": "11 KV NAVALAKHA II FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1571,
+  "networkName": "11 KV NAVODAY Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1572,
+  "networkName": "11 KV NAYTA MUNDALA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1573,
+  "networkName": "11 KV NAYTA MUNDLA PALDA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1574,
+  "networkName": "11 KV Nazarpur DL Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1575,
+  "networkName": "11 KV Neelganga",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1754,
+  "networkName": "11KV NEHRU PARK",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1576,
+  "networkName": "11 KV NEMAWAR ROAD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1577,
+  "networkName": "11 KV New Industrial",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1755,
+  "networkName": "11KV NEW SIYAGANJ",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1578,
+  "networkName": "11 KV NIPANIYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1579,
+  "networkName": "11 KV Niwali Road Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1580,
+  "networkName": "11 KV NOT BELONGS FROM CITY WEST UJJAIN.",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1756,
+  "networkName": "11KV NR STATE PHASE-I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1757,
+  "networkName": "11Kv Palasi DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1581,
+  "networkName": "11 KV PANCHDEEP BHAWAN(ORIGINAL)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1758,
+  "networkName": "11KV Panda Jagir DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1582,
+  "networkName": "11 kv parmanu nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1759,
+  "networkName": "11kv parmanu nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1760,
+  "networkName": "11KV PASSPORT FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1761,
+  "networkName": "11KV PATHODA DSF FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1762,
+  "networkName": "11KV PATRAKAR COLONY",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1583,
+  "networkName": "11 KV PDPL From Dudhiya Grid S/S",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1584,
+  "networkName": "11 kv pigdamber feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1763,
+  "networkName": "11kv pigdamber ip",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1764,
+  "networkName": "11KV PIPLIYA PALA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1585,
+  "networkName": "11 KV PIPLIYA PALA FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1586,
+  "networkName": "11 KV Pithampur",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1587,
+  "networkName": "11 KV Pithampur Industry",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1765,
+  "networkName": "11KV Polystar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1588,
+  "networkName": "11 KV POST OFFICE",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1766,
+  "networkName": "11kv prajapat",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1589,
+  "networkName": "11 KV Pratapura dl",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1767,
+  "networkName": "11KV PRESS C. NEW",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1768,
+  "networkName": "11KV PRESS COMPLEX OLD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1769,
+  "networkName": "11KV PRESTIGE",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1770,
+  "networkName": "11KV PRIME CAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1771,
+  "networkName": "11KV PRIMIER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1590,
+  "networkName": "11 KV PUSHPGIRI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1592,
+  "networkName": "11 kv Raghuvansi",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1593,
+  "networkName": "11 KV RAHIMPURA DHQ",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1595,
+  "networkName": "11 KV Railway",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1594,
+  "networkName": "11 KV RAIL WAY DHQ",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1596,
+  "networkName": "11 kv Railway feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1597,
+  "networkName": "11 KV RAILWAY POWER HOUSE",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1772,
+  "networkName": "11KV Railway Power House Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1598,
+  "networkName": "11 KV RAJENDRA  NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1599,
+  "networkName": "11 KV RAJPURA  (DL)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1773,
+  "networkName": "11KV Rama Jetpura",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1601,
+  "networkName": "11 KV RAMGHAT",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1774,
+  "networkName": "11kv ramgwasa",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1600,
+  "networkName": "11 KV RAM NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1602,
+  "networkName": "11 kv rangwasa",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1775,
+  "networkName": "11kv rangwasa",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1776,
+  "networkName": "11KV Rasulpur",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1603,
+  "networkName": "11 KV RATANGARH",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1604,
+  "networkName": "11 kv Rau",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1777,
+  "networkName": "11kv rau-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1605,
+  "networkName": "11 kv rau-2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1778,
+  "networkName": "11kv rau-2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1591,
+  "networkName": "11 KV R D UDHYOG NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1606,
+  "networkName": "11 kv rd udyog nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1607,
+  "networkName": "11 KV REGAL CHOURAHA FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1779,
+  "networkName": "11KV REGAL TAKIES",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1608,
+  "networkName": "11 kv residency",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1609,
+  "networkName": "11 KV RESIDENCY FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1610,
+  "networkName": "11 KV Ring Road",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1780,
+  "networkName": "11KV RK NURSERY",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1781,
+  "networkName": "11KV RNT",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1611,
+  "networkName": "11 KV ROW HOUSE",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1782,
+  "networkName": "11kv royal park",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1783,
+  "networkName": "11KV RURAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1612,
+  "networkName": "11 KV Sabjimandi",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1613,
+  "networkName": "11 KV SAHA FIRM",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1614,
+  "networkName": "11 KV SAIFY NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1615,
+  "networkName": "11 KV Sajway DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1785,
+  "networkName": "11KV SAKET NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1616,
+  "networkName": "11 KV SALAKHEDI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1618,
+  "networkName": "11 KV SANCHAR NAGAR-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1617,
+  "networkName": "11 KV SANCHAR NAGAR RURAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1786,
+  "networkName": "11KV SANCHAR NAGAR RURAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1671,
+  "networkName": "11 kvsanjay nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1787,
+  "networkName": "11KV SANKAR BAG",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1619,
+  "networkName": "11 KV SANWAD NAGAR.",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1620,
+  "networkName": "11 KV Sarsoda DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1621,
+  "networkName": "11 KV SARWAN (DL)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1788,
+  "networkName": "11KV SC.NO.94",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1622,
+  "networkName": "11 KV SDA COMPOUND",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1789,
+  "networkName": "11KV SHALIMAR TOWNSHIP 1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1623,
+  "networkName": "11 Kv Shamgarh-2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1624,
+  "networkName": "11 KV Shankerpur DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1625,
+  "networkName": "11 KV SHIV DHAM",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1626,
+  "networkName": "11 kv shivni DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1627,
+  "networkName": "11 KV Shrikunj",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1628,
+  "networkName": "11 KV SIDHARTH NAGAR FEERER.",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1790,
+  "networkName": "11kv silicon -1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1791,
+  "networkName": "11kv silicon-3",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1792,
+  "networkName": "11kv silicon-5",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1629,
+  "networkName": "11 KV SINDHI BASTI FREEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1630,
+  "networkName": "11 KV Sindhi Colony",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1793,
+  "networkName": "11KV SIYAGANJ",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1794,
+  "networkName": "11KV SNEHLATAGANJ",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1784,
+  "networkName": "11KV S.P.OFFICE",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1631,
+  "networkName": "11 KV SR COMPOUND",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1632,
+  "networkName": "11 KV STATION ROAD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1633,
+  "networkName": "11 kv Stone Crusher",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1634,
+  "networkName": "11 KV Subhash Nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1635,
+  "networkName": "11 KV SUDHA VASHVANI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1636,
+  "networkName": "11 kv sukhniwas",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1795,
+  "networkName": "11kv sukhniwas",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1637,
+  "networkName": "11 kv suncity feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1796,
+  "networkName": "11Kv Sun City I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1797,
+  "networkName": "11KV SUNWANI (DL)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1798,
+  "networkName": "11KV SUNWANI MAHAKAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1638,
+  "networkName": "11 KV Surasa DL Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1639,
+  "networkName": "11 KV Surasa Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1640,
+  "networkName": "11 kv Surekha",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1799,
+  "networkName": "11KV TALANPUR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1641,
+  "networkName": "11 KV Tapobhomi Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1642,
+  "networkName": "11 KV TATA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1643,
+  "networkName": "11 KV Tegor Park",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1800,
+  "networkName": "11KV TELE PHONE EX.",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1801,
+  "networkName": "11KV TELEPHONE EX-2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1644,
+  "networkName": "11 KV TELEPHONE EX. ESSN.",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1645,
+  "networkName": "11 kv telikheda feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1646,
+  "networkName": "11 KV TEMLA DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1647,
+  "networkName": "11 KV thikri Road",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1648,
+  "networkName": "11 kv tihi feedr",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1802,
+  "networkName": "11KV TILAK NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1649,
+  "networkName": "11 Kv Tipras DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1803,
+  "networkName": "11KV TLTPHONE EX-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1650,
+  "networkName": "11 kv todi",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1651,
+  "networkName": "11 KV Tornod Basti",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1652,
+  "networkName": "11 KV Town",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1653,
+  "networkName": "11 KV TOWN 2 DHQ",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1804,
+  "networkName": "11KV TOWN -3 DEPALPUR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1654,
+  "networkName": "11 KV TOWN 3 DHQ",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1805,
+  "networkName": "11KV TOWN- I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1806,
+  "networkName": "11KV TOWN- III",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1655,
+  "networkName": "11 KV Triveni Vihar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1656,
+  "networkName": "11 KV TS-I FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1807,
+  "networkName": "11KV TULSI NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1808,
+  "networkName": "11KV University zone",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1809,
+  "networkName": "11kv usha nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1810,
+  "networkName": "11kv vaishali",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1811,
+  "networkName": "11kv vaishali nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1657,
+  "networkName": "11 KV VANVIBHAG",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1812,
+  "networkName": "11KV VELOCITY (ORIGINAL)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1658,
+  "networkName": "11 KV VENKATESH GINNIG",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1659,
+  "networkName": "11 KV Vidhyapati",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1813,
+  "networkName": "11KV VIJAY NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1660,
+  "networkName": "11 KV Vikas Bhavan I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1661,
+  "networkName": "11 KV Vikas Bhavan II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1662,
+  "networkName": "11 KV VINAYAK",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1663,
+  "networkName": "11 KV VINAYAK FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1664,
+  "networkName": "11 KV Vinod Mill",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1414,
+  "networkName": "11 KV  VISHNUPURI FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1814,
+  "networkName": "11kv vishwakarma nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1665,
+  "networkName": "11 kv vishwas nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1667,
+  "networkName": "11 KV WATER WORKS",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1668,
+  "networkName": "11 KV Water Works (Datwada)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1669,
+  "networkName": "11 KV WATER WORKS FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1666,
+  "networkName": "11 kv W/W",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1816,
+  "networkName": "132 KV",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1817,
+  "networkName": "132 KV BHAKLAY",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1823,
+  "networkName": "132kv cat-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1818,
+  "networkName": "132 KV Dhar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1819,
+  "networkName": "132 KV GRASIM FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1820,
+  "networkName": "132 KV MANAWAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1821,
+  "networkName": "132 KV NARMADA PHE",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1824,
+  "networkName": "132KV SUSARI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1822,
+  "networkName": "132 KV VIKRAM",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1825,
+  "networkName": "220 CLEAN WIND",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1826,
+  "networkName": "220 KV Badnager",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1833,
+  "networkName": "33 Goyal Nagar From 220 KV Grid S/S Bicholi Mardana",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2058,
+  "networkName": "33KV",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1841,
+  "networkName": "33 KV AAJAD NAGAR FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1842,
+  "networkName": "33 KV ACHAL PURA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2064,
+  "networkName": "33KV ACHAL PURA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1843,
+  "networkName": "33 kv Afjalpur",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1844,
+  "networkName": "33 KV AHIRKHEDA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1845,
+  "networkName": "33 KV Ajanda",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1846,
+  "networkName": "33 KV Ajnas",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2065,
+  "networkName": "33KV AKVN",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1847,
+  "networkName": "33 KV AKVN -I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1848,
+  "networkName": "33 KV ALCOLAID",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1387,
+  "networkName": "33 KV AMBICA SOLVNEX",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1849,
+  "networkName": "33 KV Ambodiya Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2066,
+  "networkName": "33KV AMLA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2067,
+  "networkName": "33KV ANAND NGR.",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1850,
+  "networkName": "33 KV Anjad (Bilwa)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1851,
+  "networkName": "33 KV Anjad R (barwani)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2068,
+  "networkName": "33kv annapurna -1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1852,
+  "networkName": "33 KV ASADI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2069,
+  "networkName": "33KV ASHOK FINE",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2070,
+  "networkName": "33KV AWALY",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2071,
+  "networkName": "33KV AZAAD NAGAR FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1853,
+  "networkName": "33 kv Azad Nagar  Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1855,
+  "networkName": "33 kv Babulda",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2072,
+  "networkName": "33KV BADGONDA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1856,
+  "networkName": "33 KV Badnawar Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1857,
+  "networkName": "33 KV BADODIYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2073,
+  "networkName": "33KV BAGH",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2074,
+  "networkName": "33KV Baijagwada",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2075,
+  "networkName": "33KV Bairagarh",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2076,
+  "networkName": "33KV BALGARH",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2077,
+  "networkName": "33KV BALSAMUD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1858,
+  "networkName": "33 KV BANJARI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1859,
+  "networkName": "33 kv Bardiya Amra",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1860,
+  "networkName": "33 kv Bardiya istmurar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1861,
+  "networkName": "33 kv Barkheda Gangasa",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2078,
+  "networkName": "33KV Barotha",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1862,
+  "networkName": "33 KV BARWAL FDR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1863,
+  "networkName": "33 KV Barwani",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1864,
+  "networkName": "33 KV Bawliya From 132 KV Grid S/S Shivni",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1865,
+  "networkName": "33 KV BERCHA ROAD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1866,
+  "networkName": "33 KV Berchha",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1867,
+  "networkName": "33 KV Berkheda",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1868,
+  "networkName": "33 KV Bhadgone Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1869,
+  "networkName": "33 KV Bhatki Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2079,
+  "networkName": "33KV BHAWARIYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2080,
+  "networkName": "33KV Bhourasa",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1870,
+  "networkName": "33 KV Bimawal",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1854,
+  "networkName": "33 KV B.N.P.",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2081,
+  "networkName": "33KV BNP",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1871,
+  "networkName": "33 KV BOLIYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2082,
+  "networkName": "33KV BOMBAY HOSPITAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1872,
+  "networkName": "33 KV Borali Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1873,
+  "networkName": "33 kv Botal ganj",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1874,
+  "networkName": "33 KV BPCL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2083,
+  "networkName": "33KV BPCL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2084,
+  "networkName": "33KV BUDHIBARLAI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1875,
+  "networkName": "33 kv Budi Barlai",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1876,
+  "networkName": "33 KV BUS STAND",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2085,
+  "networkName": "33KV CENTURY",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2086,
+  "networkName": "33KV CENTURY MALL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1877,
+  "networkName": "33 KV Chandukhedi Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1878,
+  "networkName": "33 KV CHANDWASA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1879,
+  "networkName": "33 kv Chapora Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1880,
+  "networkName": "33 KV CHHAYAN",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1881,
+  "networkName": "33 KV Chintaman feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1882,
+  "networkName": "33 KV DALY COLLAGE I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1883,
+  "networkName": "33 KV DALY COOLEGE II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1884,
+  "networkName": "33 KV DASAI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1885,
+  "networkName": "33 KV Dasshara Maidan",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2087,
+  "networkName": "33KV Datoda",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1887,
+  "networkName": "33 kv datoda feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1886,
+  "networkName": "33 KV DATODA  FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1888,
+  "networkName": "33 KV DATTA AKHADA-3",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1889,
+  "networkName": "33 KV DCL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2088,
+  "networkName": "33KV DCL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1890,
+  "networkName": "33 KV Dedla",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1891,
+  "networkName": "33 kv Deepakheda",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2089,
+  "networkName": "33KV DEHRI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2090,
+  "networkName": "33KV DEHRIYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1892,
+  "networkName": "33 KV Deoli",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2091,
+  "networkName": "33KV DHAMNOD FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2092,
+  "networkName": "33KV DHAMNOD INDUSTISH",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1894,
+  "networkName": "33 KV DHANERIYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2053,
+  "networkName": "33 KVDHANERIYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1834,
+  "networkName": "33 KV  DHAN LAXMI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1893,
+  "networkName": "33 KV DHAN LAXMI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1895,
+  "networkName": "33 KV DHANLAXMI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2093,
+  "networkName": "33KV DHARAMPURI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2094,
+  "networkName": "33KV DHAROLA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1896,
+  "networkName": "33 KV Dhodhar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1388,
+  "networkName": "33 KV Dhodhar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1897,
+  "networkName": "33 KV DHOLAWAD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1389,
+  "networkName": "33 KV DHOLAWAD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2095,
+  "networkName": "33KV DHOLIYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2096,
+  "networkName": "33KV DLF - 1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2097,
+  "networkName": "33KV DLF-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1898,
+  "networkName": "33 kv Double Chowki",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1899,
+  "networkName": "33 KV DRP Line",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1900,
+  "networkName": "33 KV Dudhiya",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1828,
+  "networkName": "33  KV DUDHIYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1835,
+  "networkName": "33 KV  DUDHIYA FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1901,
+  "networkName": "33 KV DUDHIYA FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1902,
+  "networkName": "33 KV FEEDER CHIKALI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1903,
+  "networkName": "33 KV FEEDER HT",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1836,
+  "networkName": "33 KV  FEEDER RUNIJA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1904,
+  "networkName": "33 KV FEEDER W/W",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1905,
+  "networkName": "33 KV Friends Salt Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1906,
+  "networkName": "33 KV GADKALIKA-3",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2098,
+  "networkName": "33KV GAMBHIR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2099,
+  "networkName": "33KV GANDHI HALL-2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1907,
+  "networkName": "33 KV GANGA SAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1908,
+  "networkName": "33 KV GANGASAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1390,
+  "networkName": "33 KV GANGASAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1909,
+  "networkName": "33 KV GHOSLA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1910,
+  "networkName": "33 kv golfview feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1911,
+  "networkName": "33 KV GOYAL NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1912,
+  "networkName": "33 KV Goyal Nagar From Bicholi mardana",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1913,
+  "networkName": "33 kv harfatak feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1914,
+  "networkName": "33 kv harifatak",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2100,
+  "networkName": "33KV HARI FATAK",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2101,
+  "networkName": "33KV HARIFATAK",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1837,
+  "networkName": "33 KV  HARKIYA KHAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1915,
+  "networkName": "33 KV HARKIYA KHAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2102,
+  "networkName": "33KV Harsola",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2103,
+  "networkName": "33KV Harsola Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2104,
+  "networkName": "33KV HATOD (N.Z)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1391,
+  "networkName": "33 KV HATPIPLIYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1916,
+  "networkName": "33 KV HATPIPLIYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1917,
+  "networkName": "33 KV Head Quarter Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1918,
+  "networkName": "33 KV IC-II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1919,
+  "networkName": "33 KV INDIRA COMPLEX I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1920,
+  "networkName": "33 KV INDIRA COMPLEX II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2105,
+  "networkName": "33KV INDORE.RD .",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1829,
+  "networkName": "33  KV INDRA COMPLEX I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1830,
+  "networkName": "33  KV INDUSTIRAL \"C\"",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1921,
+  "networkName": "33 KV INDUSTRIAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2106,
+  "networkName": "33KV INDUSTRIAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1922,
+  "networkName": "33 KV INDUSTRIAL 'A'",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1923,
+  "networkName": "33 KV Industrial Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1924,
+  "networkName": "33 KV INDUSTRIAL FEEDER MEGHNAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2107,
+  "networkName": "33KV Industrial  I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2108,
+  "networkName": "33KV Industrial  II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2109,
+  "networkName": "33KV Industrial III",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2059,
+  "networkName": "33KV  Industrial IV",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2110,
+  "networkName": "33KV Industrial IX",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2111,
+  "networkName": "33KV Industrial V",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2112,
+  "networkName": "33KV Industrial VI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2114,
+  "networkName": "33KV IndustrialVII",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2113,
+  "networkName": "33KV Industrial VIII",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1392,
+  "networkName": "33 KV I.O.C.L.",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1393,
+  "networkName": "33 KV IOCL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1925,
+  "networkName": "33 KV IOCL Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1926,
+  "networkName": "33 KV IPCA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1838,
+  "networkName": "33 KV  jaggakhedi",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1927,
+  "networkName": "33 KV JAIMALPURA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1928,
+  "networkName": "33 KV Jaithal Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1929,
+  "networkName": "33 KV Jaithal Feeder Bherugadh",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1930,
+  "networkName": "33 KV Jaithal Feeder Ujn",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2115,
+  "networkName": "33KV Jamli",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1931,
+  "networkName": "33 kv jamli feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1394,
+  "networkName": "33 KV Jaora (T)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1932,
+  "networkName": "33 KV JAWAD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1933,
+  "networkName": "33 KV JEERAN",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2116,
+  "networkName": "33KV JOHN DEERE",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1395,
+  "networkName": "33 KV JVL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1934,
+  "networkName": "33 KV Kaitha feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1936,
+  "networkName": "33 KV KAMPELFEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1935,
+  "networkName": "33 KV Kampel Feeder From 220 South Zone",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2117,
+  "networkName": "33KV KANAD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1937,
+  "networkName": "33 KV KANASIYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1938,
+  "networkName": "33 KV KANJARDA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2118,
+  "networkName": "33KV KANNOD-II FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1939,
+  "networkName": "33 KV Kannod-II Feeder Form Bicholi Mardana",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1940,
+  "networkName": "33 KV KARAHI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1941,
+  "networkName": "33 kv karbala feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1942,
+  "networkName": "33 kv Karjoo",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2119,
+  "networkName": "33KV Karnawad",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1943,
+  "networkName": "33 KV KARTIK MELA -2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2120,
+  "networkName": "33KV Kasturbagram",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1944,
+  "networkName": "33 KV KASTURBAGRAM FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2121,
+  "networkName": "33KV KATHORA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1945,
+  "networkName": "33 KV KAWALA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1946,
+  "networkName": "33 Kv Kayampur",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1947,
+  "networkName": "33 KV KAYTHA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1948,
+  "networkName": "33 KV KHACHROD FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1949,
+  "networkName": "33 KV KHARGONE-I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1950,
+  "networkName": "33 kv khdedi sehod",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1951,
+  "networkName": "33 KV KHEDAPATI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2122,
+  "networkName": "33KV KHEDISIHOD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2123,
+  "networkName": "33KV Kheriya Jagir",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1952,
+  "networkName": "33 KV Khetiya Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1953,
+  "networkName": "33 kv Khilchipura",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2124,
+  "networkName": "33KV KHIRKIYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1954,
+  "networkName": "33 KV Khudel",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1955,
+  "networkName": "33 KV Khudel Feeder Form Bicholi Mardana",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1956,
+  "networkName": "33 KV Khudel Feeder Form Shivni",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1957,
+  "networkName": "33 KV Khudel Grid S/S From Bicholi Mardana",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1958,
+  "networkName": "33 kv Kinetic",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2060,
+  "networkName": "33KV  Knw - I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2125,
+  "networkName": "33KV KSHIPRA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2182,
+  "networkName": "33KVLaxmisolvex",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1959,
+  "networkName": "33 KV Madhopur Dewas",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2129,
+  "networkName": "33KV MADKOTA (JAISINGHPURA)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1960,
+  "networkName": "33 KV Madwada",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2130,
+  "networkName": "33KV Mahasheta 1st Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1961,
+  "networkName": "33 KV Mahasweta-I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1962,
+  "networkName": "33 KV Mahasweta-II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1839,
+  "networkName": "33 KV  MAHESHWAR-I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1964,
+  "networkName": "33 KV MAHIDPUR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1965,
+  "networkName": "33 KV MAHIDPUR ROAD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1963,
+  "networkName": "33 KV MAHI PHE PETLAWAD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2131,
+  "networkName": "33KV Maksi",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1966,
+  "networkName": "33 KV MAKSI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1967,
+  "networkName": "33 KV Mandsaur City",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1968,
+  "networkName": "33 KV Mandwada",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1969,
+  "networkName": "33 KV MANGAL CITY",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2132,
+  "networkName": "33KV MANGAL CITY",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2133,
+  "networkName": "33KV MANPUR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1970,
+  "networkName": "33 kv manpur feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1971,
+  "networkName": "33 kv manpur feedr",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1972,
+  "networkName": "33 KV MASAND AGRO OUT GOING",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1973,
+  "networkName": "33 KV MAXI ROAD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1974,
+  "networkName": "33 KV MEDICAL COLLAGE FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1396,
+  "networkName": "33 KV Medical college",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2061,
+  "networkName": "33KV  Mehatwas Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1975,
+  "networkName": "33 KV MEHTWAS FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1976,
+  "networkName": "33 kv Metal man II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2128,
+  "networkName": "33KV M.G-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2126,
+  "networkName": "33KV M.G.-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2127,
+  "networkName": "33KV M.G.-2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2134,
+  "networkName": "33kv mhow",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1977,
+  "networkName": "33 kv mhow feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1978,
+  "networkName": "33 kv mhow jamli feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1397,
+  "networkName": "33 KV Mhow Road",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2135,
+  "networkName": "33KV MHOW T",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1979,
+  "networkName": "33 kv Mhow Town feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2136,
+  "networkName": "33KV MILLS",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2137,
+  "networkName": "33KV MOL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2138,
+  "networkName": "33KV MOORKHEDA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2139,
+  "networkName": "33KV MOYAKHEDA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2062,
+  "networkName": "33KV  MSK",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1980,
+  "networkName": "33 KV MULTHAN",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1981,
+  "networkName": "33 KV Mundla",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1982,
+  "networkName": "33 KV NAGDA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2140,
+  "networkName": "33kv nagin nagar -1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2141,
+  "networkName": "33KV NALKHEDA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2142,
+  "networkName": "33KV NALKHEDA (W/W)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1398,
+  "networkName": "33 KV Namli",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1399,
+  "networkName": "33 KV NAMLI FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1983,
+  "networkName": "33 KV NARANG COLD STORAGE",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1984,
+  "networkName": "33 KV Narayanpura",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1985,
+  "networkName": "33 KV Narwar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1986,
+  "networkName": "33 KV Narwar Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1987,
+  "networkName": "33 KV National Steel",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1988,
+  "networkName": "33 KV NAVALAKHA I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1989,
+  "networkName": "33 KV Navoday Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1990,
+  "networkName": "33 KV NAYA GOAN",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1991,
+  "networkName": "33 KV NEEMUCH",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2143,
+  "networkName": "33KV NEEW KATHORA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2144,
+  "networkName": "33KV Nemawer",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1992,
+  "networkName": "33 kv Nemmtur",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1993,
+  "networkName": "33 kv Nepanagar Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2145,
+  "networkName": "33KV NEW KATHORA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2146,
+  "networkName": "33KV NEW MARAL FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1994,
+  "networkName": "33 kv Nimbod",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2147,
+  "networkName": "33KV NISARPUR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1995,
+  "networkName": "33 KV Niwali Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2148,
+  "networkName": "33KV Noorani bag",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1996,
+  "networkName": "33 KV NVDA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2149,
+  "networkName": "33KV NVDA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1997,
+  "networkName": "33 KV OASIS Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2150,
+  "networkName": "33KV Olamba",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1998,
+  "networkName": "33 KV OON",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1831,
+  "networkName": "33  KV PAGNIDPAGA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1999,
+  "networkName": "33 KV PALASI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1400,
+  "networkName": "33 KV PALDA INDUSTRIAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2000,
+  "networkName": "33 KV PALDA INDUSTRIAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1840,
+  "networkName": "33 KV  PALDA INDUSTRIAL FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2001,
+  "networkName": "33 KV PALDA INDUSTRIAL FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2002,
+  "networkName": "33 KV PALDA INDUSTRIAL OUT GOING",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2003,
+  "networkName": "33 KV PALDA OUT GOING",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1832,
+  "networkName": "33  KV PALDA OUT GOING",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2004,
+  "networkName": "33 KV Palsood Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2151,
+  "networkName": "33KV Panda Jagir",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2005,
+  "networkName": "33 KV Panthpiplai-2 Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2006,
+  "networkName": "33 KV PANWADI FDR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2152,
+  "networkName": "33KV Pathan Kua",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2007,
+  "networkName": "33 KV PGCIL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2008,
+  "networkName": "33 KV PHE",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2153,
+  "networkName": "33KV PHE",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2154,
+  "networkName": "33kv pithampur",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2155,
+  "networkName": "33KV PLATHICO",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2009,
+  "networkName": "33 kv plathico feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2156,
+  "networkName": "33KV PLETHICO",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2157,
+  "networkName": "33KV Plethiko Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2158,
+  "networkName": "33KV PRESS COMPLEX",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2159,
+  "networkName": "33KV PS II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2160,
+  "networkName": "33KV Punjapura",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2011,
+  "networkName": "33 KV RAJENDRA NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2012,
+  "networkName": "33 KV RAJENDRA NAGAR FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2010,
+  "networkName": "33 KV RAJ MOHALLA II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2013,
+  "networkName": "33 KV Rajod Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2014,
+  "networkName": "33 KV RAMDI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2015,
+  "networkName": "33 KV Ramgadh Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2016,
+  "networkName": "33 KV RAMPURA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1401,
+  "networkName": "33 KV RAOTI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2161,
+  "networkName": "33kv rau",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2017,
+  "networkName": "33 KV RAU FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2162,
+  "networkName": "33KV REDISSION",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2018,
+  "networkName": "33 KV Rehgun",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2163,
+  "networkName": "33KV RINGNOD INDUSTRIAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2019,
+  "networkName": "33 kv RRB",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2020,
+  "networkName": "33 kv Ruchi Soya",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2021,
+  "networkName": "33 KV SABJI MANDI FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2022,
+  "networkName": "33 kv sabji mandi o/g",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2023,
+  "networkName": "33 KV SAJJAN MIL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2164,
+  "networkName": "33KV SANCHAR NAGAR-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2024,
+  "networkName": "33 KV SANCHAR NAGAR-2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2165,
+  "networkName": "33KV SANCHAR NAGAR-2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2025,
+  "networkName": "33 KV Sandalpur",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2026,
+  "networkName": "33 kv Sanwer Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1385,
+  "networkName": "33 KV Sarwan",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2166,
+  "networkName": "33Kv Satwas",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2027,
+  "networkName": "33 KV SAWAN",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2167,
+  "networkName": "33KV SAWDA BHEELGAON",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2168,
+  "networkName": "33KV SENDHWA INDUSTRIAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2028,
+  "networkName": "33 Kv Sendhwa Super Feeder Julwaniya",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2029,
+  "networkName": "33 KV Seprate feeder from  132/33 KV Ghatabillod",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2030,
+  "networkName": "33 KV SETKHEDI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2031,
+  "networkName": "33 kv Shamharh",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2032,
+  "networkName": "33 kv Shatkheda",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2033,
+  "networkName": "33 KV Shipravihar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2034,
+  "networkName": "33 KV SIDDHAWAT",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2169,
+  "networkName": "33kv silicon",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1402,
+  "networkName": "33 KV Simlawda",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2035,
+  "networkName": "33 kv simrol feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2170,
+  "networkName": "33KV Singawda",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2171,
+  "networkName": "33kv SInghana1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2172,
+  "networkName": "33KV SINGHANA2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2036,
+  "networkName": "33 kv Sitamau",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2037,
+  "networkName": "33 KV Somakhedi",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2038,
+  "networkName": "33 kv Soni Bio Came",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2039,
+  "networkName": "33 KV SONKTCH",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2040,
+  "networkName": "33 kv SOOTMILL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2173,
+  "networkName": "33KV SOYAT",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2174,
+  "networkName": "33KV SUNDREL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1403,
+  "networkName": "33 KV Tal",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2175,
+  "networkName": "33KV TANODIYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2041,
+  "networkName": "33 KV TARANA R",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2042,
+  "networkName": "33 KV TARANA T",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2043,
+  "networkName": "33 KV Tonkkala",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2176,
+  "networkName": "33KV Tonkkhurd",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2044,
+  "networkName": "33 KV TULSI NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2177,
+  "networkName": "33KV TULSI NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2045,
+  "networkName": "33 KV UNHEL FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2046,
+  "networkName": "33 KV UNHEL TOWN FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2048,
+  "networkName": "33 KV VANDANA NAGAR II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2179,
+  "networkName": "33kv VANDNA NAGAR-2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2178,
+  "networkName": "33KV VANDNA NAGAR MAIN",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2049,
+  "networkName": "33 kv vaternory",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2047,
+  "networkName": "33 KV V.G. Mandi Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2050,
+  "networkName": "33 KV Vikram Kirti",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2051,
+  "networkName": "33 KV Water works",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2052,
+  "networkName": "33 KV Water Works (Barwani)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2063,
+  "networkName": "33KV  W/W",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2180,
+  "networkName": "33kv zonal (rajmohalla-1)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2181,
+  "networkName": "33kv zonal-(rajmohalla -1)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2054,
+  "networkName": "33 LT Industrial",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2055,
+  "networkName": "33 Narwar Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2183,
+  "networkName": "33Neori Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2056,
+  "networkName": "33 NISARPUR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2057,
+  "networkName": "33 Steel Ingot",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2184,
+  "networkName": "34 KV INDUSTRIAL FEEDER MEGHNAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2185,
+  "networkName": "35 KV PHE",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1827,
+  "networkName": "3 NO. RAU KHEDI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2188,
+  "networkName": "Aarti Ind.",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2187,
+  "networkName": "A.B. ROAD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2189,
+  "networkName": "AIRPORT(CHQ)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2190,
+  "networkName": "AKASHWANI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2191,
+  "networkName": "AKODIYA TOWN",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2192,
+  "networkName": "AKVN -I / II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2193,
+  "networkName": "ALIRAJPUR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2194,
+  "networkName": "AMALPURA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2195,
+  "networkName": "ANAND NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2196,
+  "networkName": "ANJANIYAKALA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2197,
+  "networkName": "ANNAPURNA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2186,
+  "networkName": "A SECTOR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2198,
+  "networkName": "ASHA FOOD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2199,
+  "networkName": "Avantika Nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2200,
+  "networkName": "B-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2201,
+  "networkName": "BAAVDI FEEDAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2202,
+  "networkName": "BAGOD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2203,
+  "networkName": "Bajaj",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1404,
+  "networkName": "BALWADA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2204,
+  "networkName": "BALWADA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2205,
+  "networkName": "Balwasa",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2206,
+  "networkName": "BAMNIYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2207,
+  "networkName": "BAMNIYA FEEDAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2208,
+  "networkName": "Bardari",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2209,
+  "networkName": "BARDARI IND",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2210,
+  "networkName": "Bardari Indore",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2211,
+  "networkName": "BEDIYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2212,
+  "networkName": "BEEMA HOSPITAL(ORIGINAL)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2213,
+  "networkName": "BEMCO SLEEPER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2214,
+  "networkName": "Betma",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2215,
+  "networkName": "Betma Industrial",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2216,
+  "networkName": "BHAMORI PLAZA(FROM ELECTRONIC)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2217,
+  "networkName": "BHANGARH",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2218,
+  "networkName": "Bharti Telenet",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2219,
+  "networkName": "BHAVRASLA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2220,
+  "networkName": "BHAWANI NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2221,
+  "networkName": "bhondwas",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2222,
+  "networkName": "Bicholi Hapsi -1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2223,
+  "networkName": "BIJALPUR-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2224,
+  "networkName": "Bijepura",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2225,
+  "networkName": "BIR DLF",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2226,
+  "networkName": "BODALI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2227,
+  "networkName": "BPCL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2228,
+  "networkName": "BPCL Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2229,
+  "networkName": "BRH-PUNASA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2230,
+  "networkName": "Bsf",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2231,
+  "networkName": "BSNL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2232,
+  "networkName": "Budhaniya",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2233,
+  "networkName": "Budhibarlai",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2234,
+  "networkName": "Budibarlai",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2235,
+  "networkName": "CAMPEL FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2236,
+  "networkName": "CHANDEL - I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2237,
+  "networkName": "CHANDEL - II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2238,
+  "networkName": "Chatrapati Nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2239,
+  "networkName": "CHHEGAON",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2240,
+  "networkName": "CHICHGOHAN",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2241,
+  "networkName": "Chirag",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2242,
+  "networkName": "CHOUTHA SANSAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2243,
+  "networkName": "city",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2244,
+  "networkName": "CLERK COLONY",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2245,
+  "networkName": "Comrcial Ground",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2246,
+  "networkName": "CONTINENTAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2247,
+  "networkName": "Dakachaya DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2248,
+  "networkName": "datoda",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2249,
+  "networkName": "DATODA FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2250,
+  "networkName": "DCL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2251,
+  "networkName": "DEEPCHAYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2252,
+  "networkName": "Dental",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2253,
+  "networkName": "DHAMNOD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2254,
+  "networkName": "DHAMNOD INDUSTIAL FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2255,
+  "networkName": "Dhamnod T II 1 Kv feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2256,
+  "networkName": "Dhani 132 kva feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2257,
+  "networkName": "DL Sirpur Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2258,
+  "networkName": "DONGARGAON",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2259,
+  "networkName": "DOODH TALAI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2260,
+  "networkName": "dudhiya",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2262,
+  "networkName": "EC-2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2263,
+  "networkName": "Eicher",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2264,
+  "networkName": "EKLAVYA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2265,
+  "networkName": "ELECTRONIC COMPLEX 1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2266,
+  "networkName": "ELECTRONIC COMPLEX 2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2267,
+  "networkName": "EMERGENCY",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2261,
+  "networkName": "E SECTOR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2268,
+  "networkName": "ESI-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2269,
+  "networkName": "EWS(ORIGINAL)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2270,
+  "networkName": "FDR.NO.-2 RUDHI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2271,
+  "networkName": "FLUOROSIS",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2272,
+  "networkName": "FOOLMAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2273,
+  "networkName": "Fort-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2274,
+  "networkName": "GAJENDRA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2275,
+  "networkName": "Gambhir",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2276,
+  "networkName": "GAMBHIR DLF",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2277,
+  "networkName": "Gandhi Nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2278,
+  "networkName": "GANESH NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2279,
+  "networkName": "Girnar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2280,
+  "networkName": "Gohan",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1405,
+  "networkName": "Gohan",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2281,
+  "networkName": "Gohan Feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2282,
+  "networkName": "Goyal Avenue",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2283,
+  "networkName": "GRAMIN -IND.RD.",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2284,
+  "networkName": "GUDI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2285,
+  "networkName": "GYATRI MANDIR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2286,
+  "networkName": "HADLIYAKALA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2287,
+  "networkName": "Hatod",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2288,
+  "networkName": "Hi link",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2289,
+  "networkName": "HT Industrial",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2291,
+  "networkName": "IDA-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2292,
+  "networkName": "IDA-51",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2293,
+  "networkName": "IND. FEEDER BWH",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2296,
+  "networkName": "INDRISITAL-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2297,
+  "networkName": "INDRISITAL-2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2294,
+  "networkName": "IND. SECTOR B",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2295,
+  "networkName": "IND. SECTOR B1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2298,
+  "networkName": "Industrail",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2299,
+  "networkName": "Industrail-B",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2300,
+  "networkName": "Industrial",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2302,
+  "networkName": "Industrial -A",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2305,
+  "networkName": "Industrial-B",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2301,
+  "networkName": "INDUSTRIAL \"B\"",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2303,
+  "networkName": "INDUSTRIAL FEEDAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2304,
+  "networkName": "INDUSTRIAL H.T",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2306,
+  "networkName": "Industries GTB",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2307,
+  "networkName": "INDUSTRY",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2308,
+  "networkName": "INDUSTRY HOUSE(ORIGINAL)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2290,
+  "networkName": "I.T. PARK-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2309,
+  "networkName": "Jail Road",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2310,
+  "networkName": "JALKUNWA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2311,
+  "networkName": "JAMNER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2312,
+  "networkName": "JETPURA IND",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2313,
+  "networkName": "JHABUA TOWN FEEDAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2314,
+  "networkName": "Jhalariya DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2315,
+  "networkName": "Jobat",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2316,
+  "networkName": "Jobat Project",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2317,
+  "networkName": "KALALI  FEEDER(ORIGINAL)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2318,
+  "networkName": "KALIDEVI FEEDAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2319,
+  "networkName": "kalindi",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2320,
+  "networkName": "KASTURBAGRAM",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2321,
+  "networkName": "Khajuriya DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2322,
+  "networkName": "KHALWA TOWN",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2323,
+  "networkName": "Khasypra  dl",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2324,
+  "networkName": "KHAWASA FEEDAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2325,
+  "networkName": "khaypra DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2326,
+  "networkName": "KHEDISIHOD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2327,
+  "networkName": "KHEGAON",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2328,
+  "networkName": "Khudel",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2329,
+  "networkName": "Kila Gate",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2330,
+  "networkName": "Kinetic",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2332,
+  "networkName": "KNW-I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2331,
+  "networkName": "KNW - II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2333,
+  "networkName": "KNW-II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2334,
+  "networkName": "Krashnapura",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2335,
+  "networkName": "Kriti Ind.",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2336,
+  "networkName": "KUMEDI IND",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2337,
+  "networkName": "KUNDANPUR FEEDAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2338,
+  "networkName": "LAL BUNGLOW (ORIGINAL)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2339,
+  "networkName": "LASUDIYA NAKA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2340,
+  "networkName": "Laxmi bai Nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2341,
+  "networkName": "LOHA MANDI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2342,
+  "networkName": "LT CONSUMER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2343,
+  "networkName": "LT Industrial Sec III",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2345,
+  "networkName": "MAHALAKSHMI ZONE",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2346,
+  "networkName": "Mahalaxmi",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2347,
+  "networkName": "Mahalaxmi Zone City",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2348,
+  "networkName": "MAHI FEEDAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2349,
+  "networkName": "MAHI PHE FEEDAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2350,
+  "networkName": "Malti",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2351,
+  "networkName": "Malti out going",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2352,
+  "networkName": "Mangliya North zone",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2353,
+  "networkName": "MANPUR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2354,
+  "networkName": "MARIMATA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2355,
+  "networkName": "MASAND FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2356,
+  "networkName": "Meghanagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2357,
+  "networkName": "MEGHANAGAR FEEDAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2358,
+  "networkName": "MEHANDIPUR BALAJI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2359,
+  "networkName": "Metalman I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2360,
+  "networkName": "Metalman II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2361,
+  "networkName": "MG-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2362,
+  "networkName": "Mills",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2363,
+  "networkName": "Mittal Corp",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2364,
+  "networkName": "Mohadi dl",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2365,
+  "networkName": "MOROD FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2344,
+  "networkName": "M.P.Nagar 2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2366,
+  "networkName": "MR-10",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2367,
+  "networkName": "MSP",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2368,
+  "networkName": "MUHADI DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1406,
+  "networkName": "Muradpura dL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2369,
+  "networkName": "MURADPURA DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2371,
+  "networkName": "Nagar Nigam",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2372,
+  "networkName": "NAGIN NAGAR -1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2373,
+  "networkName": "NARMADA NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2374,
+  "networkName": "NEHRU NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2375,
+  "networkName": "NEPANAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2376,
+  "networkName": "NEPANAGAR 220",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2377,
+  "networkName": "NEW HSD.",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2378,
+  "networkName": "NEW MOONDI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2370,
+  "networkName": "N.H.D.C.",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2379,
+  "networkName": "NHDC",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2380,
+  "networkName": "Nicholas",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2381,
+  "networkName": "NIRANJANPUR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2382,
+  "networkName": "Non Industrial",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2383,
+  "networkName": "NOT FOUND",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2384,
+  "networkName": "Novino",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2385,
+  "networkName": "NTPC 1&2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2386,
+  "networkName": "OLD PALASIA(ORIGINAL)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2387,
+  "networkName": "Old palasiya",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2388,
+  "networkName": "OMAX CITY  1/1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2389,
+  "networkName": "Omaxe City 1/1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2391,
+  "networkName": "OMKARESHWAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2390,
+  "networkName": "OMKAR. LIFT IRR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2392,
+  "networkName": "PANDHANA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2393,
+  "networkName": "PANDHANA ROAD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2394,
+  "networkName": "Pansemal",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2395,
+  "networkName": "Pansemal Khetia",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2396,
+  "networkName": "Panther no-3",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2397,
+  "networkName": "PARA FEEDAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2398,
+  "networkName": "PDC",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2399,
+  "networkName": "Pedmi 33 kv",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2401,
+  "networkName": "Pedmi 33kv",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2400,
+  "networkName": "Pedmi 33 kva",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2402,
+  "networkName": "penther 3",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2403,
+  "networkName": "PETLAWAD/RAJGARH FEEDAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2404,
+  "networkName": "PGCIL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2405,
+  "networkName": "PGCIL JETPURA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2406,
+  "networkName": "PIPALRAMA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2407,
+  "networkName": "PITOL FEEDAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2408,
+  "networkName": "Plythico",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2409,
+  "networkName": "Pologround 2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2410,
+  "networkName": "Pologround-I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2411,
+  "networkName": "Pologround-II",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2412,
+  "networkName": "Pratibha",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2413,
+  "networkName": "Press Complex",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2414,
+  "networkName": "Prestige Metal",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2415,
+  "networkName": "PS 1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2416,
+  "networkName": "PURNI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2417,
+  "networkName": "RADISON",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2418,
+  "networkName": "Raipuriya Feedar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2421,
+  "networkName": "RAJIV VIHAR 2(ORIGINAL)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2419,
+  "networkName": "Raj Mohalla-2 (GUMASTA ZONAL)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2420,
+  "networkName": "Raj Mohalla-I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2422,
+  "networkName": "Rajratan",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2423,
+  "networkName": "Rajshree",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2424,
+  "networkName": "RAMA JETPURA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2426,
+  "networkName": "Ramaphasfet",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2425,
+  "networkName": "Rama phosphate",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2427,
+  "networkName": "RAMBHAPUR FEEDAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2428,
+  "networkName": "RANGAON",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2429,
+  "networkName": "RASOMA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2430,
+  "networkName": "Rathi Iron",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2431,
+  "networkName": "READY MADE COMPLEX",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2432,
+  "networkName": "RLY. STATION",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2433,
+  "networkName": "ROSHNI",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2434,
+  "networkName": "Ruchi soya",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2435,
+  "networkName": "RURAL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2436,
+  "networkName": "Sagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2437,
+  "networkName": "SAGAR INDUSTRY",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2439,
+  "networkName": "Sagore-Sec-I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2438,
+  "networkName": "Sagore Water works",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2440,
+  "networkName": "SAHAPUR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2441,
+  "networkName": "SAMPAT FARM 11KV OUTGOING 11",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2444,
+  "networkName": "Sanchar Nagar-2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2443,
+  "networkName": "Sanchar Nagar Rural",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2445,
+  "networkName": "Sangam nagar-2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2446,
+  "networkName": "Sangam Nagar-I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2447,
+  "networkName": "Sangam Nagar-III",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2442,
+  "networkName": "SAN JETPURA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2448,
+  "networkName": "SANWER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2449,
+  "networkName": "Sanwer 33 kv",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2450,
+  "networkName": "Sanwer Ind.",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2451,
+  "networkName": "Scheme 78-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2452,
+  "networkName": "SCHEME NO 74",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2453,
+  "networkName": "SCHEME NO 78(FROM VIJAY NAGAR)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2454,
+  "networkName": "SDA Compund",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2455,
+  "networkName": "Sec.-A",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2456,
+  "networkName": "SECTOR AD 134",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2461,
+  "networkName": "Sector-C",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2457,
+  "networkName": "SECTOR C2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2458,
+  "networkName": "SECTOR D",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2462,
+  "networkName": "Sector-D outgoing",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2459,
+  "networkName": "SECTOR E",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2460,
+  "networkName": "SECTOR E1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2463,
+  "networkName": "SENDHWA SUPER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2464,
+  "networkName": "SEZ-3",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2465,
+  "networkName": "SHAJAPUR I",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2466,
+  "networkName": "SHANKHESHVAR FEEDER NO.2",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2467,
+  "networkName": "SHIKARPUR FREEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2469,
+  "networkName": "SHIVAM GAS",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2470,
+  "networkName": "Shivangi",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2468,
+  "networkName": "SHIV SHAKTI NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2471,
+  "networkName": "SKY POWER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2472,
+  "networkName": "sondwa",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2473,
+  "networkName": "SRF",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1407,
+  "networkName": "S.R. FERRO",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2474,
+  "networkName": "Subhash Marg 1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2475,
+  "networkName": "Sudar Nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2476,
+  "networkName": "SUKHLIYA (original)",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2477,
+  "networkName": "Sundrel 33kv feeder",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2478,
+  "networkName": "SUPREME ROLL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2479,
+  "networkName": "Telephone Essential",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2480,
+  "networkName": "TILLORE FEEDER",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2481,
+  "networkName": "TINCHHA DL",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2482,
+  "networkName": "TOWN",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2483,
+  "networkName": "Udaigarh",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2484,
+  "networkName": "UJJAIN ROAD",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 1408,
+  "networkName": "vaishali nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2485,
+  "networkName": "Vandana Nagar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2486,
+  "networkName": "VIJAY NAGAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2487,
+  "networkName": "Vijay nagar-1",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2488,
+  "networkName": "Wajar",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2489,
+  "networkName": "WATER WORKS FEEDAR",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2490,
+  "networkName": "ZEST PHARMA",
+  "hierarchyLevel": "Feeder"
+}
+Empty networkCode node: {
+  "networkLookupId": 2491,
+  "networkName": "Zonal-1",
+  "hierarchyLevel": "Feeder"
+}
+[PASS] Production Coverage — Network Hierarchy — 11/11 checks, 4068ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Response Contract — PASS
+  6. Items — PASS
+  7. Fields — PASS
+  8. Duplicate IDs — PASS
+  9. Expected Levels — PASS
+  10. DTRs Not In Children — PASS
+  11. DTR Arrays — PASS
+
+==================================
+API : Production Coverage — Organisation Hierarchy
+DNS : 111.55 ms
+Connection : 216.86 ms
+Server Processing : 2865.5899999999997 ms
+Download : 100 ms
+Total : 3294 ms
+===================================
+
+Empty officeCode: {
+  "organisationLookupId": 32,
+  "officeName": "AGAR",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 46,
+  "officeName": "O&M AGAR",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 125,
+  "officeName": "HT-O&M AGAR",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 47,
+  "officeName": "O&M Susner",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 134,
+  "officeName": "HT-O&M Susner",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 33,
+  "officeName": "Barwani",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 48,
+  "officeName": "Barwani",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 98,
+  "officeName": "HT-Barwani",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 34,
+  "officeName": "BURHANPUR",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 49,
+  "officeName": "BURHANPUR CITY",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 99,
+  "officeName": "HT-BURHANPUR CITY",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 50,
+  "officeName": "BURHANPUR O&M",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 100,
+  "officeName": "HT-BURHANPUR O&M",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 35,
+  "officeName": "Dewas",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 51,
+  "officeName": "BAGLI",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 95,
+  "officeName": "HT-BAGLI",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 52,
+  "officeName": "City Dewas",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 102,
+  "officeName": "HT-City Dewas",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 53,
+  "officeName": "O&M Dewas",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 127,
+  "officeName": "HT-O&M Dewas",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 54,
+  "officeName": "O&M Kannod",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 129,
+  "officeName": "HT-O&M Kannod",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 55,
+  "officeName": "SONKATCH",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 140,
+  "officeName": "HT-SONKATCH",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 36,
+  "officeName": "Dhar",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 56,
+  "officeName": "Dhar",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 105,
+  "officeName": "HT-Dhar",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 101,
+  "officeName": "HT-CENTRAL",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 106,
+  "officeName": "HT-EAST",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 123,
+  "officeName": "HT-NORTH",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 141,
+  "officeName": "HT-SOUTH",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 144,
+  "officeName": "HT-WEST",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 37,
+  "officeName": "Indore O&M",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 57,
+  "officeName": "Depalpur",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 104,
+  "officeName": "HT-Depalpur",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 58,
+  "officeName": "Indore",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 108,
+  "officeName": "HT-Indore",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 59,
+  "officeName": "Mhow",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 121,
+  "officeName": "HT-Mhow",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 60,
+  "officeName": "Pithampur",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 138,
+  "officeName": "HT-Pithampur",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 38,
+  "officeName": "Jhabua",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 61,
+  "officeName": "Jhabua",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 110,
+  "officeName": "HT-Jhabua",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 39,
+  "officeName": "KHANDWA",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 62,
+  "officeName": "KHANDWA CITY",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 111,
+  "officeName": "HT-KHANDWA CITY",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 65,
+  "officeName": "KHANDWA-I",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 114,
+  "officeName": "HT-KHANDWA-I",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 63,
+  "officeName": "KHANDWA O&M-I",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 112,
+  "officeName": "HT-KHANDWA O&M-I",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 64,
+  "officeName": "KHANDWA O&M-II",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 113,
+  "officeName": "HT-KHANDWA O&M-II",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 66,
+  "officeName": "PANDHANA",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 137,
+  "officeName": "HT-PANDHANA",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 40,
+  "officeName": "KHARGONE",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 67,
+  "officeName": "BADWAH",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 94,
+  "officeName": "HT-BADWAH",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 68,
+  "officeName": "BARWAH",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 96,
+  "officeName": "HT-BARWAH",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 69,
+  "officeName": "BARWAHA",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 97,
+  "officeName": "HT-BARWAHA",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 70,
+  "officeName": "KHARGONE-I",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 115,
+  "officeName": "HT-KHARGONE-I",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 71,
+  "officeName": "KHARGONE-II",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 116,
+  "officeName": "HT-KHARGONE-II",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 72,
+  "officeName": "MANDLESHWAR",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 119,
+  "officeName": "HT-MANDLESHWAR",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 41,
+  "officeName": "Mandsaur",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 73,
+  "officeName": "Garoth",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 107,
+  "officeName": "HT-Garoth",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 74,
+  "officeName": "Malhar Garh",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 117,
+  "officeName": "HT-Malhar Garh",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 75,
+  "officeName": "Mandsaur",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 120,
+  "officeName": "HT-Mandsaur",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 76,
+  "officeName": "Sitamahu",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 139,
+  "officeName": "HT-Sitamahu",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 42,
+  "officeName": "Neemuch",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 77,
+  "officeName": "JAWAD",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 109,
+  "officeName": "HT-JAWAD",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 78,
+  "officeName": "MANASA",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 118,
+  "officeName": "HT-MANASA",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 79,
+  "officeName": "Neemuch",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 122,
+  "officeName": "HT-Neemuch",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 43,
+  "officeName": "Ratlam",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 80,
+  "officeName": "ALOT",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 93,
+  "officeName": "HT-ALOT",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 81,
+  "officeName": "City Div. Ratlam",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 103,
+  "officeName": "HT-City Div. Ratlam",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 83,
+  "officeName": "O&M Div. Ratlam",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 128,
+  "officeName": "HT-O&M Div. Ratlam",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 82,
+  "officeName": "O & M JAORA",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 124,
+  "officeName": "HT-O & M JAORA",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 44,
+  "officeName": "Shajapur",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 84,
+  "officeName": "O&M Shajapur",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 132,
+  "officeName": "HT-O&M Shajapur",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 85,
+  "officeName": "O&M Sujalpur",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 133,
+  "officeName": "HT-O&M Sujalpur",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 45,
+  "officeName": "Ujjain",
+  "hierarchyLevel": "Circle"
+}
+Empty officeCode: {
+  "organisationLookupId": 86,
+  "officeName": "O&M Bad Nagar",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 126,
+  "officeName": "HT-O&M Bad Nagar",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 87,
+  "officeName": "O&M MahidPur",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 130,
+  "officeName": "HT-O&M MahidPur",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 88,
+  "officeName": "O&M Nagda",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 131,
+  "officeName": "HT-O&M Nagda",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 89,
+  "officeName": "O&M Tarana",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 135,
+  "officeName": "HT-O&M Tarana",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 90,
+  "officeName": "O&M Ujjain",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 136,
+  "officeName": "HT-O&M Ujjain",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 91,
+  "officeName": "UJJAIN  EAST CITY",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 142,
+  "officeName": "HT-UJJAIN  EAST CITY",
+  "hierarchyLevel": "Zone"
+}
+Empty officeCode: {
+  "organisationLookupId": 92,
+  "officeName": "UJJAIN  WEST CITY",
+  "hierarchyLevel": "Division"
+}
+Empty officeCode: {
+  "organisationLookupId": 143,
+  "officeName": "HT-UJJAIN  WEST CITY",
+  "hierarchyLevel": "Zone"
+}
+[PASS] Production Coverage — Organisation Hierarchy — 10/10 checks, 3294ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Response Contract — PASS
+  6. Items — PASS
+  7. Fields — PASS
+  8. Duplicate IDs — PASS
+  9. Expected Levels — PASS
+  10. Org DTR Uniqueness — PASS
+
+==================================
+API : Production Coverage — DTR Page 1
+DNS : 2 ms
+Connection : 216.8 ms
+Server Processing : 933.2 ms
+Download : 100 ms
+Total : 1252 ms
+===================================
+
+[FAIL] Production Coverage — DTR Page 1 — 12/13 checks, 1252ms
+  1. Status — PASS
+  2. Content — PASS
+  3. Response Time — PASS
+  4. Security — PASS
+  5. Response Contract — PASS
+  6. DTR — PASS
+  7. Pagination — PASS
+  8. Pagination Consistency — PASS
+  9. Consumers — PASS
+  10. Consumer Field Coverage — PASS
+  11. Meter Field Coverage — PASS
+  12. Duplicate Consumer — PASS
+  13. Consumer Meter Uniqueness — FAIL
+     expect(received).toEqual(expected) // deep equality
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Production-Coverage-DTR-Page-1-2026-09-15T13-36-03-208Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Production-Coverage-DTR-Page-1-2026-09-15T13-36-03-208Z.triage.json [heuristic] contract_mismatch/medium

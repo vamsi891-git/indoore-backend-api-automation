@@ -1,0 +1,18 @@
+
+==================================
+API : DTR consumption list — page 2 still shows a valid list
+DNS : 1.78 ms
+Connection : 216.57 ms
+Server Processing : 565.6500000000001 ms
+Download : 100 ms
+Total : 884 ms
+===================================
+
+[PASS] DTR consumption list — page 2 still shows a valid list — 7/7 checks, 884ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Consumption Details Scenario — PASS

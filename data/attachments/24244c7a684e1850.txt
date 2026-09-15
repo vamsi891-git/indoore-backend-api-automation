@@ -1,0 +1,25 @@
+
+==================================
+API : Transformer load — asking for one transformer at a time still returns a row
+DNS : 2.57 ms
+Connection : 214.06 ms
+Server Processing : 2.3700000000000045 ms
+Download : 100 ms
+Total : 319 ms
+===================================
+
+[PASS] Transformer load — asking for one transformer at a time still returns a row — 14/14 checks, 319ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Zod Response Schema — PASS
+  6. Columns — PASS
+  7. Pagination — PASS
+  8. Rows — PASS
+  9. Unique meters — PASS
+  10. Shared feeder allowed — PASS
+  11. MSN matches serial — PASS
+  12. Hourly values — PASS
+  13. Hourly totals — PASS
+  14. No Data Scenario — PASS

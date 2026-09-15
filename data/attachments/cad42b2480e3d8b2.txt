@@ -1,0 +1,5 @@
+[PASS] LF Analysis first/last uniqueness (LF < 5% Last Three month) — 4/4 checks, 230ms
+  1. Unfiltered page 1 uniqueness — PASS
+  2. Unfiltered last page 1500 uniqueness — PASS
+  3. Non-domestic page 1 uniqueness — PASS
+  4. Non-domestic last page 1500 uniqueness — PASS

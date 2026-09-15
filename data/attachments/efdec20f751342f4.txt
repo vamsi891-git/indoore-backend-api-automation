@@ -1,0 +1,18 @@
+
+==================================
+API : DTR voltage unbalance list — page 2 still shows a valid list
+DNS : 2.84 ms
+Connection : 214.96 ms
+Server Processing : -81.80000000000001 ms
+Download : 100 ms
+Total : 236 ms
+===================================
+
+[PASS] DTR voltage unbalance list — page 2 still shows a valid list — 7/7 checks, 236ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Voltage Unbalance Details Scenario — PASS

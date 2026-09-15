@@ -1,0 +1,72 @@
+
+==================================
+API : Event detail — page 2 has more unique meter-event rows
+DNS : 2.17 ms
+Connection : 215.1 ms
+Server Processing : 1372.73 ms
+Download : 100 ms
+Total : 1690 ms
+===================================
+
+{
+  "msg": "event_detail_live_response",
+  "query": {
+    "fromDate": "2025-10-01",
+    "toDate": "2025-10-30",
+    "page": 2,
+    "limit": 10
+  },
+  "queryString": "fromDate=2025-10-01&toDate=2025-10-30&page=2&limit=10",
+  "pagination": {
+    "page": 2,
+    "limit": 10,
+    "total": 114119,
+    "totalPages": 11412,
+    "totalIsExact": true,
+    "hasMore": true
+  },
+  "columnKeys": [
+    "division",
+    "zone",
+    "feeder",
+    "dtr",
+    "name",
+    "address",
+    "ivrsNumber",
+    "tariff",
+    "msn",
+    "phase",
+    "eventClassificationName",
+    "eventName",
+    "eventCount",
+    "durationHhMm"
+  ],
+  "rowCount": 10,
+  "sampleRow": {
+    "id": "row-72616-554",
+    "meterLookupId": 72616,
+    "division": "WEST",
+    "zone": "Kalani Nagar",
+    "feeder": "B.S.F.(CHQ)",
+    "dtr": "WI3510",
+    "name": "ATC TELECOM INFRASTRUCTURE LTD",
+    "address": "17KALANI NAGAR17  KALANI NAGAR -.",
+    "ivrsNumber": "N3474015931",
+    "tariff": "LV2.2",
+    "msn": "19249317",
+    "phase": "3PH WC",
+    "eventClassificationName": "Current",
+    "eventId": 554,
+    "eventName": "Current unbalance",
+    "eventCount": 15,
+    "durationHhMm": "2611:58"
+  }
+}
+[PASS] Event detail — page 2 has more unique meter-event rows — 7/7 checks, 1690ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Event Detail Scenario — PASS

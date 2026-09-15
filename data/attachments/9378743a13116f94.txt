@@ -1,0 +1,23 @@
+
+==================================
+API : Can this meter serial be added? — a serial that already exists is rejected
+DNS : 5.02 ms
+Connection : 214.39 ms
+Server Processing : -84.41 ms
+Download : 100 ms
+Total : 235 ms
+===================================
+
+[PASS] Can this meter serial be added? — a serial that already exists is rejected — 12/12 checks, 235ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Required Fields — PASS
+  6. Zod Response Schema — PASS
+  7. Response — PASS
+  8. Root Structure — PASS
+  9. Reason Type — PASS
+  10. Message Type — PASS
+  11. Valid Reason Consistency — PASS
+  12. Scenario Outcome — PASS

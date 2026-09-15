@@ -1,0 +1,22 @@
+{
+  "triage": {
+    "title": "Energy Audit Hourly Loss Report (dtr) — Summary Row Count",
+    "severity": "medium",
+    "classification": "contract_mismatch",
+    "likelyOwner": "backend",
+    "confidence": 0.55,
+    "summary": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m",
+    "nextSteps": [
+      "Expected behavior: Hourly loss grid with H1..H24 buckets, total = sum(hours), pagination; empty dataset returns total=0.",
+      "Diff actual JSON fields against mapper/validator expectations.",
+      "Confirm fixture month/year/IDs still exist in this environment.",
+      "Share this defect report with the API owner for the module."
+    ],
+    "tags": [
+      "contract",
+      "ENERGY-AUDITS",
+      "Summary Row Count"
+    ]
+  },
+  "source": "heuristic"
+}

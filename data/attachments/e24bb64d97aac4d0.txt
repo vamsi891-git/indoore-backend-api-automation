@@ -1,0 +1,18 @@
+
+==================================
+API : Master data change history — oldest changes appear first
+DNS : 68.45 ms
+Connection : 214.54 ms
+Server Processing : 796.01 ms
+Download : 100 ms
+Total : 1179 ms
+===================================
+
+[PASS] Master data change history — oldest changes appear first — 7/7 checks, 1179ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Zod Response Schema — PASS
+  6. Response Envelope — PASS
+  7. Live Validations — PASS

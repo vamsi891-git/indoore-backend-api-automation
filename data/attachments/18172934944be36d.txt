@@ -1,0 +1,18 @@
+
+==================================
+API : Energy flow chart — daily view for the consumer
+DNS : 2.02 ms
+Connection : 214.48 ms
+Server Processing : -86.5 ms
+Download : 100 ms
+Total : 230 ms
+===================================
+
+[PASS] Energy flow chart — daily view for the consumer — 7/7 checks, 230ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Chart Labels — PASS
+  7. Energy Flow Scenario — PASS

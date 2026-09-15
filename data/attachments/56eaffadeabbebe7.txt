@@ -1,0 +1,37 @@
+
+==================================
+API : Validate pagination — page 2
+DNS : 2.36 ms
+Connection : 214.5 ms
+Server Processing : 872.1400000000001 ms
+Download : 100 ms
+Total : 1189 ms
+===================================
+
+[PASS] Validate pagination — page 2 — 26/26 checks, 1189ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Required Fields — PASS
+  6. Response — PASS
+  7. Logs Exist — PASS
+  8. Pagination — PASS
+  9. Query Params — PASS
+  10. Audit Log Fields — PASS
+  11. UUID Fields — PASS
+  12. Emails — PASS
+  13. Roles — PASS
+  14. Full Names — PASS
+  15. Actions — PASS
+  16. IP Addresses — PASS
+  17. Details — PASS
+  18. Created At — PASS
+  19. Unique IDs — PASS
+  20. Next Cursor — PASS
+  21. Action Filter Options — PASS
+  22. Log Actions In Filter Options — PASS
+  23. Display Labels — PASS
+  24. Actor Label Matches Name — PASS
+  25. No Data Scenario — PASS
+  26. Descending Sort — PASS

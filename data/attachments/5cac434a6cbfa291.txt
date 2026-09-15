@@ -1,0 +1,6 @@
+[PASS] How many events by urgency — consumer and DTR stay within all meters — 5/5 checks, 234ms
+  1. All meters status — PASS
+  2. Consumer status — PASS
+  3. DTR status — PASS
+  4. Consumer counts do not exceed all meters — PASS
+  5. DTR counts do not exceed all meters — PASS

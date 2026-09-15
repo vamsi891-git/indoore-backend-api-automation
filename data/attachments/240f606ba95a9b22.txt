@@ -1,0 +1,47 @@
+
+==================================
+API : Commands Billing — Init Job
+DNS : 1.91 ms
+Connection : 215.79 ms
+Server Processing : 1037.3 ms
+Download : 100 ms
+Total : 1355 ms
+===================================
+
+BACKEND FINDING: HES E2E completion deferred (callback pending / HES load) — job=1789482106220750 waited=90000ms reason=stuck_no_progress hesJobStatus=RUNNING meterStatus=IN_PROGRESS. Set HES_E2E_REQUIRE_COMPLETION=true to fail instead of accepting async IN_PROGRESS.
+
+==================================
+API : Commands Billing — Query Meter Job
+DNS : 2.1 ms
+Connection : 214.45 ms
+Server Processing : 12831.449999999999 ms
+Download : 100 ms
+Total : 13148 ms
+===================================
+
+[PASS] Commands Billing E2E — 25/25 checks, 14503ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Init Success Response — PASS
+  6. Init Summary Counts — PASS
+  7. Init Successful Meters — PASS
+  8. Init Rejected Meters — PASS
+  9. Init HES Callback Configured — PASS
+  10. Init Meter Results — PASS
+  11. Init IN_PROGRESS Status — PASS
+  12. Init Message — PASS
+  13. Init Full Contract — PASS
+  14. Job Name Captured — PASS
+  15. Status — PASS
+  16. Content Type — PASS
+  17. Response Time — PASS
+  18. Sensitive Data — PASS
+  19. Query Success Response — PASS
+  20. Query Job Name Echo — PASS
+  21. Query Sync Flags — PASS
+  22. Query HES Status Code — PASS
+  23. Query Expected Meter Present — PASS
+  24. Query Async Job Still Pending — PASS
+  25. Query Summary Counts (async) — PASS

@@ -1,0 +1,24 @@
+
+==================================
+API : Transformer load — first page shows load as a percent of the transformer size
+DNS : 2 ms
+Connection : 214.24 ms
+Server Processing : -3.240000000000009 ms
+Download : 100 ms
+Total : 313 ms
+===================================
+
+[PASS] Transformer load — first page shows load as a percent of the transformer size — 13/13 checks, 313ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Zod Response Schema — PASS
+  6. Columns — PASS
+  7. Pagination — PASS
+  8. Rows — PASS
+  9. Unique meters — PASS
+  10. Shared feeder allowed — PASS
+  11. MSN matches serial — PASS
+  12. Hourly values — PASS
+  13. No Data Scenario — PASS

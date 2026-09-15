@@ -1,0 +1,18 @@
+
+==================================
+API : Consumers by meter phase — three-phase whole-current meters
+DNS : 2.4 ms
+Connection : 214.51 ms
+Server Processing : 1159.09 ms
+Download : 100 ms
+Total : 1476 ms
+===================================
+
+[PASS] Consumers by meter phase — three-phase whole-current meters — 7/7 checks, 1476ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Phase Distribution Scenario — PASS

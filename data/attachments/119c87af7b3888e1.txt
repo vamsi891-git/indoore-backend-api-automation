@@ -1,0 +1,14 @@
+
+==================================
+API : DTR percentage-loading-details UNAUTHORIZED
+DNS : 2.07 ms
+Connection : 214.67 ms
+Server Processing : 572.26 ms
+Download : 100 ms
+Total : 889 ms
+===================================
+
+[PASS] DTR Percentage Loading Details — UNAUTHORIZED — 3/3 checks, 889ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

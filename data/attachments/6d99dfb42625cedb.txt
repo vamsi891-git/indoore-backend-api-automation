@@ -1,0 +1,18 @@
+
+==================================
+API : Consumer report LS — without total still shows columns
+DNS : 4.04 ms
+Connection : 214.1 ms
+Server Processing : -17.140000000000015 ms
+Download : 100 ms
+Total : 301 ms
+===================================
+
+[PASS] Consumer report LS — without total still shows columns — 7/7 checks, 301ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Consumer Report Scenario — PASS

@@ -1,0 +1,16 @@
+
+==================================
+API : Communication consumers — missing month is rejected
+DNS : 1.82 ms
+Connection : 214.59 ms
+Server Processing : -83.41 ms
+Download : 100 ms
+Total : 233 ms
+===================================
+
+[PASS] Communication consumers — missing month is rejected — 5/5 checks, 233ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

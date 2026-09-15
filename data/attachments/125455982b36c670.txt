@@ -1,0 +1,53 @@
+
+==================================
+API : Event report — 1 Oct 2025 first page shows columns and event totals
+DNS : 1.66 ms
+Connection : 214.27 ms
+Server Processing : 58.069999999999965 ms
+Download : 100 ms
+Total : 374 ms
+===================================
+
+{
+  "msg": "event_report_live_response",
+  "query": {
+    "fromDate": "2025-10-01",
+    "toDate": "2025-10-01",
+    "page": 1,
+    "limit": 10
+  },
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 19,
+    "totalPages": 2,
+    "totalIsExact": true,
+    "hasMore": true
+  },
+  "columnKeys": [
+    "circle",
+    "eventName",
+    "meterCount",
+    "eventCount",
+    "durationHhMm"
+  ],
+  "rowCount": 10,
+  "sampleRow": {
+    "id": "row-1-528-Earth_loading",
+    "slNo": 1,
+    "circle": "ALL",
+    "eventId": 528,
+    "eventName": "Earth loading",
+    "meterCount": 2287,
+    "eventCount": 10344,
+    "durationHhMm": "42946:11"
+  }
+}
+[PASS] Event report — 1 Oct 2025 first page shows columns and event totals — 7/7 checks, 374ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Event Report Scenario — PASS

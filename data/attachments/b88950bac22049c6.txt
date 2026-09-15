@@ -1,0 +1,17 @@
+
+==================================
+API : Profile Image Upload URL
+DNS : 2.06 ms
+Connection : 214.46 ms
+Server Processing : -57.52000000000001 ms
+Download : 100 ms
+Total : 259 ms
+===================================
+
+[PASS] Profile Image Upload URL — 6/6 checks, 259ms
+  1. Upload URL Status Code — PASS
+  2. Upload URL Content Type — PASS
+  3. Upload URL Response Time — PASS
+  4. Upload URL Sensitive Data — PASS
+  5. Validate Root Response — PASS
+  6. Validate Upload URL Payload — PASS

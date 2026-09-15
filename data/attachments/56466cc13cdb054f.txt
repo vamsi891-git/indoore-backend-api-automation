@@ -1,0 +1,23 @@
+
+==================================
+API : Nearby accounts — very close match range can return none
+DNS : 2.04 ms
+Connection : 214.66 ms
+Server Processing : 413.30000000000007 ms
+Download : 100 ms
+Total : 730 ms
+===================================
+
+[PASS] Nearby accounts — very close match range can return none — 12/12 checks, 730ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Required Fields — PASS
+  6. Response — PASS
+  7. Root Structure — PASS
+  8. Numeric Suffix Type — PASS
+  9. Max Distance Type — PASS
+  10. Nearest Account IDs Shape — PASS
+  11. No Duplicate Account IDs — PASS
+  12. Scenario Outcome — PASS

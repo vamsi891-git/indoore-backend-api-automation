@@ -1,0 +1,20 @@
+
+==================================
+API : DTR search — a page past the last page shows no records
+DNS : 113.85 ms
+Connection : 214.79 ms
+Server Processing : 765.3600000000001 ms
+Download : 100 ms
+Total : 1194 ms
+===================================
+
+[PASS] DTR search — a page past the last page shows no records — 9/9 checks, 1194ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Envelope — PASS
+  6. Response — PASS
+  7. Columns — PASS
+  8. Pagination — PASS
+  9. Empty Page — PASS

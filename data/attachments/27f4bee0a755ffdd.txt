@@ -1,0 +1,16 @@
+
+==================================
+API : Event restoration — missing toDate is rejected
+DNS : 1.75 ms
+Connection : 214.22 ms
+Server Processing : -79.97 ms
+Download : 100 ms
+Total : 236 ms
+===================================
+
+[PASS] Event restoration — missing toDate is rejected — 5/5 checks, 236ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

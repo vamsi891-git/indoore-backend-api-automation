@@ -1,0 +1,22 @@
+Device limit reached (6 sessions). Closing all listed sessions.
+Login attempt 1/7 failed (retriable): Login failed with status 429 - Too many requests, please try again later.
+Login retry 2/7 after 5000ms
+Login attempt 2/7 failed (retriable): Login failed with status 429 - Too many requests, please try again later.
+Login retry 3/7 after 10000ms
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+[FAIL] Meter Replacement Progress API — Trailing Slash — 0/4 checks, 26461ms
+  1. Status Code — FAIL
+     Expected status 200 but received 401
+  2. Success Envelope — FAIL
+     expect(received).toBeTruthy()
+  3. Weekly Bucket Count — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  4. Monthly Bucket Count — FAIL
+     expect(received).toBe(expected) // Object.is equality
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Replacement-Progress-API-Trailing-Slash-2026-09-15T17-13-59-410Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Replacement-Progress-API-Trailing-Slash-2026-09-15T17-13-59-410Z.triage.json [heuristic] contract_mismatch/medium

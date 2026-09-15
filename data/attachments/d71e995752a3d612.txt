@@ -1,0 +1,28 @@
+
+==================================
+API : Meter communication — a page past the last page shows no records
+DNS : 67.84 ms
+Connection : 214.8 ms
+Server Processing : 1082.3600000000001 ms
+Download : 100 ms
+Total : 1465 ms
+===================================
+
+[PASS] Meter communication — a page past the last page shows no records — 17/17 checks, 1465ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Zod Response Schema — PASS
+  6. Response — PASS
+  7. Summary Counts — PASS
+  8. Columns — PASS
+  9. Items — PASS
+  10. Fields — PASS
+  11. Pagination — PASS
+  12. Query Params — PASS
+  13. Sl No Sequence — PASS
+  14. Unique Meter Serials On Page — PASS
+  15. Page Status Within Summary — PASS
+  16. Row Keys Match Columns — PASS
+  17. Communicating Timestamp Rule — PASS

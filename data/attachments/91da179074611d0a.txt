@@ -1,0 +1,18 @@
+
+==================================
+API : Event list — search filter is accepted
+DNS : 2.33 ms
+Connection : 214.58 ms
+Server Processing : 99.09 ms
+Download : 100 ms
+Total : 416 ms
+===================================
+
+[PASS] Event list — search filter is accepted — 7/7 checks, 416ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Serial Numbers — PASS
+  7. Event Log List Scenario — PASS

@@ -1,0 +1,16 @@
+
+==================================
+API : Event detail — invalid fromDate is rejected
+DNS : 2.57 ms
+Connection : 214.24 ms
+Server Processing : -82.81 ms
+Download : 100 ms
+Total : 234 ms
+===================================
+
+[PASS] Event detail — invalid fromDate is rejected — 5/5 checks, 234ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

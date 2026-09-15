@@ -1,0 +1,7 @@
+[PASS] Commands History — Last Page — 6/6 checks, 430ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Response — PASS
+  6. Last Page Pagination — PASS

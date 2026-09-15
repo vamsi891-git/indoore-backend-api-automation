@@ -1,0 +1,16 @@
+
+==================================
+API : Technical summary — month 13 is rejected
+DNS : 2.1 ms
+Connection : 215.57 ms
+Server Processing : -85.66999999999999 ms
+Download : 100 ms
+Total : 232 ms
+===================================
+
+[PASS] Technical summary — month 13 is rejected — 5/5 checks, 232ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

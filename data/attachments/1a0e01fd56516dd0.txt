@@ -1,0 +1,184 @@
+
+==================================
+API : Single Wire Operation report — first page shows columns and meters
+DNS : 2.06 ms
+Connection : 214.12 ms
+Server Processing : -69.18 ms
+Download : 100 ms
+Total : 247 ms
+===================================
+
+[PASS] Single Wire Operation report — first page shows columns and meters — 173/173 checks, 247ms
+  1. Status Code Validation — PASS
+  2. Content Type Validation — PASS
+  3. Response Time Validation — PASS
+  4. Sensitive Data Validation — PASS
+  5. Success Validation — PASS
+  6. Response Structure Validation — PASS
+  7. Analysis Type Validation — PASS
+  8. Month Validation — PASS
+  9. Year Validation — PASS
+  10. Zone column header — PASS
+  11. Duration column headers — PASS
+  12. Pagination Validation — PASS
+  13. Pagination Consistency Validation — PASS
+  14. Cross Field Validation — PASS
+  15. Row 1 Structure Validation — PASS
+  16. Row 1 Type Validation — PASS
+  17. Row 1 Null Validation — PASS
+  18. Row 1 Undefined Validation — PASS
+  19. Row 1 Empty Validation — PASS
+  20. Row 1 NaN Validation — PASS
+  21. Row 2 Structure Validation — PASS
+  22. Row 2 Type Validation — PASS
+  23. Row 2 Null Validation — PASS
+  24. Row 2 Undefined Validation — PASS
+  25. Row 2 Empty Validation — PASS
+  26. Row 2 NaN Validation — PASS
+  27. Row 3 Structure Validation — PASS
+  28. Row 3 Type Validation — PASS
+  29. Row 3 Null Validation — PASS
+  30. Row 3 Undefined Validation — PASS
+  31. Row 3 Empty Validation — PASS
+  32. Row 3 NaN Validation — PASS
+  33. Row 4 Structure Validation — PASS
+  34. Row 4 Type Validation — PASS
+  35. Row 4 Null Validation — PASS
+  36. Row 4 Undefined Validation — PASS
+  37. Row 4 Empty Validation — PASS
+  38. Row 4 NaN Validation — PASS
+  39. Row 5 Structure Validation — PASS
+  40. Row 5 Type Validation — PASS
+  41. Row 5 Null Validation — PASS
+  42. Row 5 Undefined Validation — PASS
+  43. Row 5 Empty Validation — PASS
+  44. Row 5 NaN Validation — PASS
+  45. Row 6 Structure Validation — PASS
+  46. Row 6 Type Validation — PASS
+  47. Row 6 Null Validation — PASS
+  48. Row 6 Undefined Validation — PASS
+  49. Row 6 Empty Validation — PASS
+  50. Row 6 NaN Validation — PASS
+  51. Row 7 Structure Validation — PASS
+  52. Row 7 Type Validation — PASS
+  53. Row 7 Null Validation — PASS
+  54. Row 7 Undefined Validation — PASS
+  55. Row 7 Empty Validation — PASS
+  56. Row 7 NaN Validation — PASS
+  57. Row 8 Structure Validation — PASS
+  58. Row 8 Type Validation — PASS
+  59. Row 8 Null Validation — PASS
+  60. Row 8 Undefined Validation — PASS
+  61. Row 8 Empty Validation — PASS
+  62. Row 8 NaN Validation — PASS
+  63. Row 9 Structure Validation — PASS
+  64. Row 9 Type Validation — PASS
+  65. Row 9 Null Validation — PASS
+  66. Row 9 Undefined Validation — PASS
+  67. Row 9 Empty Validation — PASS
+  68. Row 9 NaN Validation — PASS
+  69. Row 10 Structure Validation — PASS
+  70. Row 10 Type Validation — PASS
+  71. Row 10 Null Validation — PASS
+  72. Row 10 Undefined Validation — PASS
+  73. Row 10 Empty Validation — PASS
+  74. Row 10 NaN Validation — PASS
+  75. Row 11 Structure Validation — PASS
+  76. Row 11 Type Validation — PASS
+  77. Row 11 Null Validation — PASS
+  78. Row 11 Undefined Validation — PASS
+  79. Row 11 Empty Validation — PASS
+  80. Row 11 NaN Validation — PASS
+  81. Row 12 Structure Validation — PASS
+  82. Row 12 Type Validation — PASS
+  83. Row 12 Null Validation — PASS
+  84. Row 12 Undefined Validation — PASS
+  85. Row 12 Empty Validation — PASS
+  86. Row 12 NaN Validation — PASS
+  87. Row 13 Structure Validation — PASS
+  88. Row 13 Type Validation — PASS
+  89. Row 13 Null Validation — PASS
+  90. Row 13 Undefined Validation — PASS
+  91. Row 13 Empty Validation — PASS
+  92. Row 13 NaN Validation — PASS
+  93. Row 14 Structure Validation — PASS
+  94. Row 14 Type Validation — PASS
+  95. Row 14 Null Validation — PASS
+  96. Row 14 Undefined Validation — PASS
+  97. Row 14 Empty Validation — PASS
+  98. Row 14 NaN Validation — PASS
+  99. Row 15 Structure Validation — PASS
+  100. Row 15 Type Validation — PASS
+  101. Row 15 Null Validation — PASS
+  102. Row 15 Undefined Validation — PASS
+  103. Row 15 Empty Validation — PASS
+  104. Row 15 NaN Validation — PASS
+  105. Row 16 Structure Validation — PASS
+  106. Row 16 Type Validation — PASS
+  107. Row 16 Null Validation — PASS
+  108. Row 16 Undefined Validation — PASS
+  109. Row 16 Empty Validation — PASS
+  110. Row 16 NaN Validation — PASS
+  111. Row 17 Structure Validation — PASS
+  112. Row 17 Type Validation — PASS
+  113. Row 17 Null Validation — PASS
+  114. Row 17 Undefined Validation — PASS
+  115. Row 17 Empty Validation — PASS
+  116. Row 17 NaN Validation — PASS
+  117. Row 18 Structure Validation — PASS
+  118. Row 18 Type Validation — PASS
+  119. Row 18 Null Validation — PASS
+  120. Row 18 Undefined Validation — PASS
+  121. Row 18 Empty Validation — PASS
+  122. Row 18 NaN Validation — PASS
+  123. Row 19 Structure Validation — PASS
+  124. Row 19 Type Validation — PASS
+  125. Row 19 Null Validation — PASS
+  126. Row 19 Undefined Validation — PASS
+  127. Row 19 Empty Validation — PASS
+  128. Row 19 NaN Validation — PASS
+  129. Row 20 Structure Validation — PASS
+  130. Row 20 Type Validation — PASS
+  131. Row 20 Null Validation — PASS
+  132. Row 20 Undefined Validation — PASS
+  133. Row 20 Empty Validation — PASS
+  134. Row 20 NaN Validation — PASS
+  135. Row 21 Structure Validation — PASS
+  136. Row 21 Type Validation — PASS
+  137. Row 21 Null Validation — PASS
+  138. Row 21 Undefined Validation — PASS
+  139. Row 21 Empty Validation — PASS
+  140. Row 21 NaN Validation — PASS
+  141. Row 22 Structure Validation — PASS
+  142. Row 22 Type Validation — PASS
+  143. Row 22 Null Validation — PASS
+  144. Row 22 Undefined Validation — PASS
+  145. Row 22 Empty Validation — PASS
+  146. Row 22 NaN Validation — PASS
+  147. Row 23 Structure Validation — PASS
+  148. Row 23 Type Validation — PASS
+  149. Row 23 Null Validation — PASS
+  150. Row 23 Undefined Validation — PASS
+  151. Row 23 Empty Validation — PASS
+  152. Row 23 NaN Validation — PASS
+  153. Row 24 Structure Validation — PASS
+  154. Row 24 Type Validation — PASS
+  155. Row 24 Null Validation — PASS
+  156. Row 24 Undefined Validation — PASS
+  157. Row 24 Empty Validation — PASS
+  158. Row 24 NaN Validation — PASS
+  159. Row 25 Structure Validation — PASS
+  160. Row 25 Type Validation — PASS
+  161. Row 25 Null Validation — PASS
+  162. Row 25 Undefined Validation — PASS
+  163. Row 25 Empty Validation — PASS
+  164. Row 25 NaN Validation — PASS
+  165. Row 26 Structure Validation — PASS
+  166. Row 26 Type Validation — PASS
+  167. Row 26 Null Validation — PASS
+  168. Row 26 Undefined Validation — PASS
+  169. Row 26 Empty Validation — PASS
+  170. Row 26 NaN Validation — PASS
+  171. Duplicate meter contract — PASS
+  172. Duration Type Validation — PASS
+  173. Duration >= 12 Validation — PASS

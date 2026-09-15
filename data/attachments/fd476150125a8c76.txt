@@ -1,0 +1,18 @@
+
+==================================
+API : Consumption chart — last few hours
+DNS : 2.34 ms
+Connection : 214.98 ms
+Server Processing : -74.32 ms
+Download : 100 ms
+Total : 243 ms
+===================================
+
+[PASS] Consumption chart — last few hours — 7/7 checks, 243ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Chart Labels — PASS
+  7. Energy Consumption Graph Scenario — PASS

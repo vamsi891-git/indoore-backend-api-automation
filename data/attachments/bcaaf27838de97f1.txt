@@ -1,0 +1,16 @@
+
+==================================
+API : DTR statistic cards — a blank transformer code is not allowed
+DNS : 2.05 ms
+Connection : 215.23 ms
+Server Processing : -78.28 ms
+Download : 100 ms
+Total : 239 ms
+===================================
+
+[PASS] DTR statistic cards — a blank transformer code is not allowed — 5/5 checks, 239ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Blank DTR Code Validation Error — PASS

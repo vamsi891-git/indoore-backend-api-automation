@@ -1,0 +1,8 @@
+[PASS] Consumption Compare Last Month first/last uniqueness — 7/7 checks, 231ms
+  1. Unfiltered page 1 uniqueness — PASS
+  2. Unfiltered last page 271 uniqueness — PASS
+  3. Domestic page 1 uniqueness — PASS
+  4. Domestic last page 271 uniqueness — PASS
+  5. Non-domestic page 1 uniqueness — PASS
+  6. Non-domestic last page 271 uniqueness — PASS
+  7. Domestic last-page meters equal non-domestic last-page meters — PASS

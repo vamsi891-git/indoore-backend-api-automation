@@ -1,0 +1,17 @@
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+[PASS] Consumer Detail — Boundary IDs — 4/4 checks, 0ms
+  1. Status (9007199254740991) — PASS
+  2. Handled (9007199254740991) — PASS
+  3. Status (-9007199254740991) — PASS
+  4. Handled (-9007199254740991) — PASS

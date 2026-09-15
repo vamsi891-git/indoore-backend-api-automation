@@ -1,0 +1,80 @@
+
+==================================
+API : Min-max voltage — Oct 2025 min R first page shows columns and meters
+DNS : 2.08 ms
+Connection : 216.17 ms
+Server Processing : 174.75 ms
+Download : 100 ms
+Total : 493 ms
+===================================
+
+{
+  "msg": "min_max_voltage_live_response",
+  "scenario": "dev_live_primary",
+  "query": {
+    "meterPhaseTblRefId": 3,
+    "month": 10,
+    "year": 2025,
+    "voltageType": "min",
+    "phase": "R",
+    "page": 1,
+    "limit": 10,
+    "includeTotal": true
+  },
+  "queryString": "meterPhaseTblRefId=3&month=10&year=2025&voltageType=min&phase=R&page=1&limit=10&includeTotal=true",
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 10,
+    "totalPages": 1,
+    "totalIsExact": true,
+    "hasMore": false,
+    "nextCursor": null
+  },
+  "columnKeys": [
+    "slNo",
+    "circle",
+    "division",
+    "zone",
+    "subStation",
+    "feeder",
+    "dtr",
+    "sanctionedLoadKw",
+    "name",
+    "address",
+    "ivrsNumber",
+    "category",
+    "meterSerialNumber",
+    "phase",
+    "voltage",
+    "meterReadingDateTime"
+  ],
+  "rowCount": 10,
+  "sampleRow": {
+    "id": "row-1-22253936",
+    "slNo": 1,
+    "circle": "Indore city circle",
+    "division": "CENTRAL",
+    "zone": "RajMohalla",
+    "subStation": "JINCY",
+    "feeder": "GOVT. PREES(CHQ)",
+    "dtr": "25CW10",
+    "sanctionedLoadKw": "80",
+    "name": "ASSISTANT ENGINEER LOK SWASTH YANTHIKI VIBHAG MEKENICAL UPKHAND INDORE",
+    "address": "..REGIONAL PRESS MALHAR GANJ ...",
+    "ivrsNumber": "N3004023055",
+    "category": "LV2.2",
+    "meterSerialNumber": "22253936",
+    "phase": "3PH 4CT",
+    "voltage": "217.300",
+    "meterReadingDateTime": "14-10-2025 11:45"
+  }
+}
+[PASS] Min-max voltage — Oct 2025 min R first page shows columns and meters — 7/7 checks, 493ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Min-Max Voltage Scenario — PASS

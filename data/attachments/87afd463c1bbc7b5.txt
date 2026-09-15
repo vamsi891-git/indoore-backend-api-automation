@@ -1,0 +1,6 @@
+[PASS] Pattern — low 3m — 5/5 checks, 0ms
+  1. Status 200 — PASS
+  2. Grid columns — PASS
+  3. Pattern — PASS
+  4. Business rules — PASS
+  5. Duplicate contract — PASS

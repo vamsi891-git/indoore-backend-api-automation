@@ -1,0 +1,94 @@
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+
+==================================
+API : Meter Replacement Meter Validation API
+DNS : 101.37 ms
+Connection : 214.73 ms
+Server Processing : 5941.900000000001 ms
+Download : 100 ms
+Total : 6358 ms
+===================================
+
+[FAIL] Meter Replacement Meter Validation API — 33/54 checks, 6358ms
+  1. Status Code — FAIL
+     Expected status 200 but received 401
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Root Fields — FAIL
+     Missing or undefined field: data
+  6. Required Data Fields — FAIL
+     Cannot read properties of undefined (reading 'valid')
+  7. Success — FAIL
+     expect(received).toBeTruthy()
+  8. Root Structure — PASS
+  9. Required Fields — PASS
+  10. Valid Flag — PASS
+  11. Message — FAIL
+     expect(received).toBeGreaterThan(expected)
+  12. Message Trim — PASS
+  13. Meter Lookup Id — FAIL
+     expect(received).toBeGreaterThan(expected)
+  14. Meter Serial — FAIL
+     expect(received).toBeGreaterThan(expected)
+  15. Meter Serial Trim — PASS
+  16. Meter Serial Length — FAIL
+     expect(received).toBeGreaterThan(expected)
+  17. No Null Values — PASS
+  18. No Undefined Values — PASS
+  19. Lookup Id Range — PASS
+  20. Lookup Id Positive — FAIL
+     expect(received).toBeGreaterThan(expected)
+  21. Message Length — FAIL
+     expect(received).toBeGreaterThan(expected)
+  22. Message Characters — PASS
+  23. Meter Serial Characters — PASS
+  24. String Fields — PASS
+  25. Numeric Fields — PASS
+  26. Boolean Field — PASS
+  27. Response Integrity — FAIL
+     expect(received).toBeTruthy()
+  28. Meter Identity — FAIL
+     expect(received).toBeGreaterThan(expected)
+  29. Object Size — PASS
+  30. No Extra Fields — PASS
+  31. Business Rules — PASS
+  32. Valid Meter Rule — PASS
+  33. Invalid Meter Rule — FAIL
+     expect(received).toBeGreaterThan(expected)
+  34. Eligible Meter Message — PASS
+  35. Ineligible Meter Message — FAIL
+     expect(received).toBeGreaterThan(expected)
+  36. Meter Lookup Relationship — FAIL
+     expect(received).toBeGreaterThan(expected)
+  37. Message Consistency — PASS
+  38. Serial Consistency — PASS
+  39. Meter Serial Numeric — FAIL
+     expect(received).toBeTruthy()
+  40. Lookup Id Consistency — PASS
+  41. Valid Flag Consistency — PASS
+  42. Message Not Empty — FAIL
+     expect(received).toBeGreaterThan(expected)
+  43. Meter Serial Not Empty — FAIL
+     expect(received).toBeGreaterThan(expected)
+  44. Meter Lookup Exists — FAIL
+     expect(received).toBeGreaterThan(expected)
+  45. No Whitespace Serial — PASS
+  46. No Whitespace Message — PASS
+  47. Meter Lookup Safe Range — PASS
+  48. Serial Length — FAIL
+     expect(received).toBeGreaterThan(expected)
+  49. Message Safe Length — PASS
+  50. Response Object Integrity — PASS
+  51. Response Object Defined — PASS
+  52. Meter Lookup Not Zero — FAIL
+     expect(received).not.toBe(expected) // Object.is equality
+  53. Meter Serial Format — PASS
+  54. Backend Business Rule — PASS
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Replacement-Meter-Validation-API-2026-09-15T17-11-11-230Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Replacement-Meter-Validation-API-2026-09-15T17-11-11-230Z.triage.json [heuristic] contract_mismatch/medium

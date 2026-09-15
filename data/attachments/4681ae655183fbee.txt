@@ -1,0 +1,17 @@
+[PASS] How meters are talking — live view still opens — 16/16 checks, 3813ms
+  1. Status — PASS
+  2. Content — PASS
+  3. Performance — PASS
+  4. Sensitive Data — PASS
+  5. Response — PASS
+  6. Date range — PASS
+  7. Talking vs not talking adds up — PASS
+  8. Category list — PASS
+  9. Expected category names — PASS
+  10. No duplicate category names — PASS
+  11. Meter type list — PASS
+  12. Expected meter type names — PASS
+  13. No duplicate meter type names — PASS
+  14. Daily trend — PASS
+  15. No duplicate trend dates — PASS
+  16. One trend point for every day in the range — PASS

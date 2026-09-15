@@ -1,0 +1,7 @@
+[FAIL] Missing organisationLookupId returns empty success grid (not 4xx) — 0/2 checks, 0ms
+  1. Expected status — FAIL
+     Expected one of 200 but got 404
+  2. Empty success grid — FAIL
+     expect(received).toBe(expected) // Object.is equality
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Missing-organisationLookupId-returns-empty-success-grid-not-4xx--2026-09-15T17-40-35-203Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Missing-organisationLookupId-returns-empty-success-grid-not-4xx--2026-09-15T17-40-35-203Z.triage.json [heuristic] contract_mismatch/medium

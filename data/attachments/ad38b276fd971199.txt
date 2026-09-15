@@ -1,0 +1,16 @@
+
+==================================
+API : Event report — limit 0 is rejected (limit must be at least 1)
+DNS : 6.34 ms
+Connection : 216.68 ms
+Server Processing : -88.02000000000001 ms
+Download : 100 ms
+Total : 235 ms
+===================================
+
+[PASS] Event report — limit 0 is rejected (limit must be at least 1) — 5/5 checks, 235ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

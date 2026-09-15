@@ -1,0 +1,31 @@
+
+==================================
+API : Consumer list — live-meter filter shows live meters only
+DNS : 2.61 ms
+Connection : 214.4 ms
+Server Processing : 7508.990000000001 ms
+Download : 100 ms
+Total : 7826 ms
+===================================
+
+[PASS] Consumer list — live-meter filter shows live meters only — 20/20 checks, 7826ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Zod Response Schema — PASS
+  6. Response — PASS
+  7. Columns — PASS
+  8. Items Exist — PASS
+  9. Fields — PASS
+  10. Pagination — PASS
+  11. Query Params — PASS
+  12. Sl No Sequence — PASS
+  13. Row Keys Match Columns — PASS
+  14. ID Matches Consumer CID — PASS
+  15. Unique Meter Lookup IDs — PASS
+  16. Unique Meter Serials — PASS
+  17. Unique Consumer CIDs — PASS
+  18. IVRS Consistency — PASS
+  19. Meter Phases — PASS
+  20. Hierarchy Fields — PASS

@@ -1,0 +1,15 @@
+
+==================================
+API : Monthly billing — page numbering must start at 1
+DNS : 2.09 ms
+Connection : 214.34 ms
+Server Processing : -86.43 ms
+Download : 100 ms
+Total : 230 ms
+===================================
+
+[PASS] Monthly billing — page numbering must start at 1 — 4/4 checks, 230ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS

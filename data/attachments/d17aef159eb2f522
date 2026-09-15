@@ -1,0 +1,227 @@
+# API defect report (for backend developer)
+
+> Automation failed on a **business/API contract** check. This usually indicates a backend, SQL, or response-mapping issue — not a test-script typo.
+
+## At a glance
+
+| Field | Value |
+|-------|-------|
+| **API** | Commands Metering Mode E2E |
+| **Test** | Validate POST /commands/metering-mode → query-meter-job — metering_mode_get E2E |
+| **Endpoint** | POST → GET https://api.mdm.mppkvvcl.bestinfra.app/commands/metering-mode |
+| **Base URL** | https://api.mdm.mppkvvcl.bestinfra.app |
+| **Response time** | 12212 ms |
+| **HTTP status** | 200 |
+| **Failed checks** | 1 / 34 |
+| **First failure** | Query Metering Mode HES Response — All Fields |
+| **Run at** | 2026-09-15T14:28:58.445Z |
+
+## AI / heuristic triage
+
+| Field | Value |
+|-------|-------|
+| **Suggested title** | Commands Metering Mode E2E — Query Metering Mode HES Response — All Fields |
+| **Severity** | medium |
+| **Classification** | contract_mismatch |
+| **Likely owner** | backend |
+| **Confidence** | 0.55 |
+| **Source** | heuristic |
+
+[2mexpect([22m[31mreceived[39m[2m).[22mtoBeNull[2m()[22m
+
+### Recommended next steps
+
+1. Expected behavior: POST metering_mode_get returns jobName; GET query-meter-job returns FINISHED with GET_CONFIG/SUCCESS and hesResponse (meterId, status, failureStep, progress null, response null).
+2. Diff actual JSON fields against mapper/validator expectations.
+3. Confirm fixture month/year/IDs still exist in this environment.
+4. Share this defect report with the API owner for the module.
+
+**Tags:** contract, HES-COMMANDS, Query Metering Mode HES Response — All Fields
+
+
+## Failure detail
+
+```
+[2mexpect([22m[31mreceived[39m[2m).[22mtoBeNull[2m()[22m
+
+Received: [31m[{"active": true, "meteringMode": "IMPORT", "type": "METERING_MODE"}][39m
+```
+
+## Expected behavior (from backend / contract)
+
+POST metering_mode_get returns jobName; GET query-meter-job returns FINISHED with GET_CONFIG/SUCCESS and hesResponse (meterId, status, failureStep, progress null, response null).
+
+
+## Request sent by automation
+
+```json
+{
+  "body": {
+    "type": "metering_mode_get",
+    "meters": "99751580"
+  },
+  "jobName": "1789482455880612",
+  "pollAttempts": 23,
+  "completed": true
+}
+```
+
+## API response (excerpt)
+
+```json
+{
+  "init": {
+    "success": true,
+    "data": {
+      "summary": {
+        "requested": 1,
+        "duplicatesRemoved": 0,
+        "successful": 1,
+        "failed": 0,
+        "rejectedOutOfScope": 0,
+        "rejectedUnknown": 0,
+        "batchesProcessed": 1
+      },
+      "successfulMeters": [
+        "99751580"
+      ],
+      "rejectedMeters": [],
+      "meterResults": [
+        {
+          "meterId": "99751580",
+          "status": "IN_PROGRESS",
+          "jobName": "1789482455880612",
+          "hesStatusCode": 200
+        }
+      ],
+      "hesCallbackConfigured": true,
+      "commandExecutionTimeMs": null,
+      "meterResponseTimeMs": null,
+      "note": "Final completion status will be delivered via HES callback."
+    },
+    "message": "Get Metering Mode job initiated successfully. HES callback is configured; final completion status will be delivered asynchronously."
+  },
+  "query": {
+    "success": true,
+    "data": {
+      "jobName": "1789482455880612",
+      "synced": true,
+      "autoSynced": false,
+      "hesJobStatus": "FINISHED",
+      "hesStatusCode": 200,
+      "summary": {
+        "requested": 1,
+        "successful": 1,
+        "failed": 0,
+        "inProgress": 0,
+        "rejected": 0
+      },
+      "meterResults": [
+        {
+          "meterId": "99751580",
+          "action": "GET_CONFIG",
+          "status": "SUCCESS",
+          "hesStatusCode": 200,
+          "hesResponse": {
+            "meterId": "99751580",
+            "status": "SUCCESS",
+            "failureStep": "0",
+            "progress": null,
+            "response": [
+              {
+                "type": "METERING_MODE",
+                "active": true,
+                "meteringMode": "IMPORT"
+              }
+            ],
+            "__mdmsMeta": {
+              "startedAt": "2026-09-15T14:27:35.884Z",
+              "completedAt": "2026-09-15T14:28:55.471Z",
+              "executionDurationMs": 79587,
+              "publicRequestId": "6781590451",
+              "commandApiType": "metering_mode_get",
+              "executionDeadlineAt": "2026-09-15T14:37:35.884Z",
+              "leaseOwner": null,
+              "leaseExpiresAt": null,
+              "retryAt": null
+            }
+          },
+          "reason": null,
+          "message": "Get Metering Mode completed successfully.",
+          "note": null,
+          "meterResponse": "Metering Mode: Import",
+          "meterResponseRows": [
+            {
+              "label": "Metering Mode",
+              "value": "Import"
+            }
+          ]
+        }
+      ],
+      "reason": null,
+      "message": "Get Metering Mode completed successfully.",
+      "note": null,
+      "meterResponse": "Metering Mode: Import",
+      "meterResponseRows": [
+        {
+          "label": "Metering Mode",
+          "value": "Import"
+        }
+      ]
+    },
+    "message": "Job status fetched successfully."
+  }
+}
+```
+
+## All failed validations
+
+1. **Query Metering Mode HES Response — All Fields** — [2mexpect([22m[31mreceived[39m[2m).[22mtoBeNull[2m()[22m
+
+Received: [31m[{"active": true, "meteringMode": "IMPORT", "type": "METERING_MODE"}][39m
+
+## Passed checks before failure
+
+- Status
+- Content Type
+- Response Time
+- Sensitive Data
+- Init Response Envelope
+- Init Success Response
+- Init Summary Counts
+- Init Successful Meters
+- Init Rejected Meters
+- Init HES Callback Configured
+- Init Note
+- Init Meter Results
+- Init IN_PROGRESS Status
+- Init Message
+- Init Full Contract
+- Job Name Captured
+- Status
+- Content Type
+- Response Time
+- Sensitive Data
+- Query Success Response
+- Query Job Name Echo
+- Query Sync Flags
+- Query HES Status Code
+- Query Expected Meter Present
+- Query Response Envelope
+- Query Finished Message
+- Query HES Job Status FINISHED
+- Query Summary Counts
+- Query Summary vs Meter Results
+- Query Status Summary Alignment
+- Query All Meter Results
+- Query Full Contract
+
+## Suggested steps for developer
+
+1. Reproduce with the same query params (Postman/curl) against `https://api.mdm.mppkvvcl.bestinfra.apphttps://api.mdm.mppkvvcl.bestinfra.app/commands/metering-mode`.
+2. Compare response with the **Expected behavior** / **AI triage** sections above.
+3. Trace the repository/service method for this report and confirm SQL filters + DTO field names.
+4. Fix backend logic or API serialization; re-run: `npx playwright test --grep "Commands Metering Mode E2E"`.
+
+---
+*Generated by Indoore API automation — share this file in Jira/Azure DevOps/GitHub issue.*

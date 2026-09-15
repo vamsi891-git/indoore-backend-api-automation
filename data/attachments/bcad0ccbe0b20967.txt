@@ -1,0 +1,16 @@
+
+==================================
+API : Event detail — missing fromDate is rejected
+DNS : 1.93 ms
+Connection : 214.27 ms
+Server Processing : -84.20000000000002 ms
+Download : 100 ms
+Total : 232 ms
+===================================
+
+[PASS] Event detail — missing fromDate is rejected — 5/5 checks, 232ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

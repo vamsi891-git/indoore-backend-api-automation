@@ -1,0 +1,5 @@
+[PASS] Pattern — zero 1m page 2 — 4/4 checks, 0ms
+  1. Status 200 — PASS
+  2. Pagination page 2 — PASS
+  3. kWh is zero — PASS
+  4. Duplicate contract — PASS

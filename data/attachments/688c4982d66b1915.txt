@@ -1,0 +1,52 @@
+
+======== MD SANCTION LOAD VIOLATION UNFILTERED — PAGINATION COUNTS ========
+connectionCategory : (all)
+page / pageSize    : 1 / 10
+pagination.total   : 57572
+pagination.totalPages : 5758
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+
+======== MD SANCTION LOAD VIOLATION DOMESTIC — PAGINATION COUNTS ========
+connectionCategory : domestic
+page / pageSize    : 1 / 10
+pagination.total   : 46620
+pagination.totalPages : 4662
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+
+======== MD SANCTION LOAD VIOLATION NON-DOMESTIC — PAGINATION COUNTS ========
+connectionCategory : non-domestic
+page / pageSize    : 1 / 10
+pagination.total   : 10952
+pagination.totalPages : 1096
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+
+======== CONNECTION CATEGORY SPLIT ========
+unfiltered total     : 57572
+domestic total       : 46620
+non-domestic total   : 10952
+domestic + non-dom   : 57572
+uncategorized (gap)  : 0
+partition check      : PASS (sum ≤ all)
+==============================================
+
+[PASS] MD Analysis API (split Sanction Load Violation) — 8/8 checks, 975ms
+  1. All three category requests return 200 — PASS
+  2. Unfiltered pagination counts — PASS
+  3. Domestic pagination counts — PASS
+  4. Non-domestic pagination counts — PASS
+  5. Domestic + non-domestic = unfiltered total — PASS
+  6. Unfiltered page uniqueness — PASS
+  7. Domestic page uniqueness — PASS
+  8. Non-domestic page uniqueness — PASS

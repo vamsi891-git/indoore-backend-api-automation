@@ -1,0 +1,13 @@
+
+==================================
+API : Can this meter be given to a consumer? — empty serial is rejected
+DNS : 2.06 ms
+Connection : 214.07 ms
+Server Processing : -88.13 ms
+Download : 100 ms
+Total : 228 ms
+===================================
+
+[PASS] Can this meter be given to a consumer? — empty serial is rejected — 2/2 checks, 228ms
+  1. Status Validation — PASS
+  2. Validation Error — PASS

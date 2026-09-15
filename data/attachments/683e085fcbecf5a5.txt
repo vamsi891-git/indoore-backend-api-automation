@@ -1,0 +1,113 @@
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Login attempt 1/7 failed (retriable): 2FA verification failed with status 429 - {}
+Login retry 2/7 after 5000ms
+Login attempt 2/7 failed (retriable): Login failed with status 429 - Too many requests, please try again later.
+Login retry 3/7 after 10000ms
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+BACKEND FINDING: Rate limit hit — 429 on attempt 1, waiting 11000ms
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+[FAIL] Submission Detail — Invalid IDs — 11/22 checks, 0ms
+  1. Status (0) — FAIL
+     expect(received).toContain(expected) // indexOf
+  2. Error (0) — PASS
+  3. Status (-1) — FAIL
+     expect(received).toContain(expected) // indexOf
+  4. Error (-1) — PASS
+  5. Status (10.5) — FAIL
+     expect(received).toContain(expected) // indexOf
+  6. Error (10.5) — PASS
+  7. Status (ABC) — FAIL
+     expect(received).toContain(expected) // indexOf
+  8. Error (ABC) — PASS
+  9. Status (123ABC) — FAIL
+     expect(received).toContain(expected) // indexOf
+  10. Error (123ABC) — PASS
+  11. Status (@#$%^) — FAIL
+     expect(received).toContain(expected) // indexOf
+  12. Error (@#$%^) — PASS
+  13. Status (' OR 1=1 --) — FAIL
+     expect(received).toContain(expected) // indexOf
+  14. Error (' OR 1=1 --) — PASS
+  15. Status (<script>alert('x) — FAIL
+     expect(received).toContain(expected) // indexOf
+  16. Error (<script>alert('x) — PASS
+  17. Status (తెలుగు) — FAIL
+     expect(received).toContain(expected) // indexOf
+  18. Error (తెలుగు) — PASS
+  19. Status (😀😀😀) — FAIL
+     expect(received).toContain(expected) // indexOf
+  20. Error (😀😀😀) — PASS
+  21. Status (     ) — FAIL
+     expect(received).toContain(expected) // indexOf
+  22. Error (     ) — PASS
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Submission-Detail-Invalid-IDs-2026-09-15T17-18-16-817Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Submission-Detail-Invalid-IDs-2026-09-15T17-18-16-817Z.triage.json [heuristic] contract_mismatch/medium

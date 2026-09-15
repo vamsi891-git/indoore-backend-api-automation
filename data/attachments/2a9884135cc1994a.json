@@ -1,0 +1,22 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumers/{ref}/real-time-power",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "B-Phase",
+    "R-Phase",
+    "Y-Phase"
+  ],
+  "itemKeys": [
+    "current",
+    "currentUnit",
+    "powerFactor",
+    "powerFactorUnit",
+    "voltage",
+    "voltageUnit"
+  ],
+  "hasColumnsGrid": false
+}

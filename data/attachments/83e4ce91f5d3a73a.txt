@@ -1,0 +1,17 @@
+
+==================================
+API : DTR profile — extra filters that nobody uses are ignored
+DNS : 86.73 ms
+Connection : 215.63 ms
+Server Processing : -172.36 ms
+Download : 100 ms
+Total : 230 ms
+===================================
+
+[PASS] DTR profile — extra filters that nobody uses are ignored — 6/6 checks, 230ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. DTR Profile Scenario — PASS

@@ -1,0 +1,4 @@
+[PASS] Commands Meter Lookup — Unknown Serial — 3/3 checks, 1117ms
+  1. Status (not found) — PASS
+  2. Content Type — PASS
+  3. Error Response — PASS

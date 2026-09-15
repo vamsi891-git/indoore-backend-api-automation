@@ -1,0 +1,18 @@
+
+==================================
+API : Consumers by meter make — page 2 still shows a valid list
+DNS : 3.39 ms
+Connection : 217.79 ms
+Server Processing : 1253.82 ms
+Download : 100 ms
+Total : 1575 ms
+===================================
+
+[PASS] Consumers by meter make — page 2 still shows a valid list — 7/7 checks, 1575ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. OEM Distribution Scenario — PASS

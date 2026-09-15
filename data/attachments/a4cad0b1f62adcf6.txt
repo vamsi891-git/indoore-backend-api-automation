@@ -1,0 +1,8 @@
+[PASS] Daily talking chart — consumer and DTR stay within all meters — 7/7 checks, 238ms
+  1. All meters status — PASS
+  2. Consumer status — PASS
+  3. DTR status — PASS
+  4. Same dates for all and consumer — PASS
+  5. Same dates for all and DTR — PASS
+  6. Consumer counts do not exceed all meters — PASS
+  7. DTR counts do not exceed all meters — PASS

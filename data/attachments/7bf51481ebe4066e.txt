@@ -1,0 +1,117 @@
+Contract snapshot mismatch — 38 difference(s):
+
+  - $.columns[0]
+      expected: {"key":"circle","header":"Circle"}
+
+  - $.columns[1]
+      expected: {"key":"division","header":"Division"}
+
+  - $.columns[2]
+      expected: {"key":"zone","header":"Zone"}
+
+  - $.columns[3]
+      expected: {"key":"year","header":"Year"}
+
+  - $.columns[4]
+      expected: {"key":"month","header":"Month"}
+
+  - $.columns[5]
+      expected: {"key":"consumerName","header":"Name"}
+
+  - $.columns[6]
+      expected: {"key":"address","header":"Address"}
+
+  - $.columns[7]
+      expected: {"key":"msn","header":"MSN"}
+
+  - $.columns[8]
+      expected: {"key":"category","header":"Category"}
+
+  - $.columns[9]
+      expected: {"key":"phase","header":"Phase"}
+
+  - $.columns[10]
+      expected: {"key":"ivrsNo","header":"IVRS No"}
+
+  - $.columns[11]
+      expected: {"key":"remarks","header":"Remarks"}
+
+  - $.columns[12]
+      expected: {"key":"event","header":"Event"}
+
+  - $.columns[13]
+      expected: {"key":"amountBilled","header":"Amount Billed (In Rs)"}
+
+  - $.columns[14]
+      expected: {"key":"amountRealisation","header":"Amount Realisation (In Rs)"}
+
+  - $.columns[15]
+      expected: {"key":"p4Number","header":"P4 Number"}
+
+  - $.columns[16]
+      expected: {"key":"p4Date","header":"P4 Date"}
+
+  - $.columns[17]
+      expected: {"key":"entryDateTime","header":"Entry Date Time"}
+
+  - $.columns[18]
+      expected: {"key":"status","header":"Status"}
+
+  - $.rowFieldKeys[0]
+      expected: "address"
+
+  - $.rowFieldKeys[1]
+      expected: "amountBilled"
+
+  - $.rowFieldKeys[2]
+      expected: "amountRealisation"
+
+  - $.rowFieldKeys[3]
+      expected: "category"
+
+  - $.rowFieldKeys[4]
+      expected: "circle"
+
+  - $.rowFieldKeys[5]
+      expected: "consumerName"
+
+  - $.rowFieldKeys[6]
+      expected: "division"
+
+  - $.rowFieldKeys[7]
+      expected: "entryDateTime"
+
+  - $.rowFieldKeys[8]
+      expected: "event"
+
+  - $.rowFieldKeys[9]
+      expected: "ivrsNo"
+
+  - $.rowFieldKeys[10]
+      expected: "month"
+
+  - $.rowFieldKeys[11]
+      expected: "msn"
+
+  - $.rowFieldKeys[12]
+      expected: "p4Date"
+
+  - $.rowFieldKeys[13]
+      expected: "p4Number"
+
+  - $.rowFieldKeys[14]
+      expected: "phase"
+
+  - $.rowFieldKeys[15]
+      expected: "remarks"
+
+  - $.rowFieldKeys[16]
+      expected: "status"
+
+  - $.rowFieldKeys[17]
+      expected: "year"
+
+  - $.rowFieldKeys[18]
+      expected: "zone"
+
+If this change is intentional, re-run with UPDATE_CONTRACT_SNAPSHOTS=true to accept the new contract.

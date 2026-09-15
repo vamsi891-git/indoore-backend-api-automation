@@ -1,0 +1,15 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/utils/event-priorities",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "items"
+  ],
+  "itemKeys": [
+    "priorityTblRefId"
+  ],
+  "hasColumnsGrid": false
+}

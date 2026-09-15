@@ -1,0 +1,14 @@
+[PASS] MD Analysis API (MD > CD Last Three Month) — 13/13 checks, 1196ms
+  1. Status Code Validation — PASS
+  2. Content Type Validation — PASS
+  3. Response Time Validation — PASS
+  4. Sensitive Data Validation — PASS
+  5. Response Validation — PASS
+  6. Grid Columns — PASS
+  7. Query Params Validation — PASS
+  8. Report Type Validation — PASS
+  9. Mandatory Fields Validation — PASS
+  10. MD Business Rules Validation — PASS
+  11. Duplicate MD Record Validation — PASS
+  12. Pagination Validation — PASS
+  13. Total Count Validation — PASS

@@ -1,0 +1,4 @@
+[Technical Analysis] HTTP 503 on attempt 1/5, retrying in 5000ms
+[Technical Analysis] HTTP 503 on attempt 2/5, retrying in 5000ms
+[Technical Analysis] HTTP 503 on attempt 3/5, retrying in 5000ms
+[Technical Analysis] HTTP 503 on attempt 4/5, retrying in 5000ms

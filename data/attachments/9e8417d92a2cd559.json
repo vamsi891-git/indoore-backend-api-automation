@@ -1,0 +1,47 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/master-data/audit-logs",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "actionFilterOptions",
+    "columns",
+    "limit",
+    "logs",
+    "nextCursor",
+    "page",
+    "total",
+    "totalPages"
+  ],
+  "itemKeys": [
+    "Action",
+    "Details",
+    "IP",
+    "Role",
+    "Time",
+    "User",
+    "action",
+    "actionLabel",
+    "actorEmail",
+    "actorFullName",
+    "actorId",
+    "actorLabel",
+    "actorRoleName",
+    "createdAt",
+    "details",
+    "detailsLabel",
+    "detailsLines",
+    "id",
+    "ipAddress",
+    "ipAddressLabel",
+    "roleLabel",
+    "targetEmail",
+    "targetFullName",
+    "targetId",
+    "targetRoleName",
+    "userId"
+  ],
+  "hasColumnsGrid": false
+}

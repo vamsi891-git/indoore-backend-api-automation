@@ -1,0 +1,20 @@
+
+======== PF NON-DOMESTIC — PAGINATION COUNTS ========
+connectionCategory : non-domestic
+page / pageSize    : 1 / 10
+pagination.total   : 3924
+pagination.totalPages : 393
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+[PASS] Power Factor API (non-domestic) — 8/8 checks, 1937ms
+  1. Status Code Validation — PASS
+  2. Response has rows — PASS
+  3. Pagination Validation — PASS
+  4. Total Count Validation (records vs total) — PASS
+  5. PF Below Threshold — PASS
+  6. PF<.8 threshold echo — PASS
+  7. Unique meterLookupId / ivrsNumber / msn — PASS
+  8. No duplicate meters on page — PASS

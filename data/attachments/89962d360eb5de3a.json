@@ -1,0 +1,22 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/feeder/{feederCode}/electrical-parameters",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "B-Phase",
+    "R-Phase",
+    "Y-Phase",
+    "lastCommunication",
+    "meterSerialNumber"
+  ],
+  "itemKeys": [
+    "current",
+    "currentUnit",
+    "voltage",
+    "voltageUnit"
+  ],
+  "hasColumnsGrid": false
+}

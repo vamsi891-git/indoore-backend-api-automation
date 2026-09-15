@@ -1,0 +1,17 @@
+
+==================================
+API : DTR statistic cards — a second transformer still shows cards
+DNS : 87.73 ms
+Connection : 215.68 ms
+Server Processing : -73.41000000000003 ms
+Download : 100 ms
+Total : 330 ms
+===================================
+
+[PASS] DTR statistic cards — a second transformer still shows cards — 6/6 checks, 330ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. DTR Statistics Scenario — PASS

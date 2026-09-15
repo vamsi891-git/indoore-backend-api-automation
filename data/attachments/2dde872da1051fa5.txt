@@ -1,0 +1,16 @@
+
+==================================
+API : Event report — invalid toDate is rejected
+DNS : 3.38 ms
+Connection : 214.11 ms
+Server Processing : -83.49000000000001 ms
+Download : 100 ms
+Total : 234 ms
+===================================
+
+[PASS] Event report — invalid toDate is rejected — 5/5 checks, 234ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

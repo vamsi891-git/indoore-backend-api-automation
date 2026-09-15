@@ -1,0 +1,124 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/reports/communication/dtrs",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "billingCount",
+    "billingMappingStatus",
+    "circle",
+    "division",
+    "dpCount",
+    "dtrCapacity",
+    "dtrCode",
+    "dtrName",
+    "dtrNetworkLookupId",
+    "eventCount",
+    "feederCode",
+    "feederName",
+    "id",
+    "ipCount",
+    "latitude",
+    "longitude",
+    "lsCount",
+    "meterLookupId",
+    "meterMake",
+    "meterSerialNumber",
+    "mf",
+    "newDtrCode",
+    "serviceDate",
+    "slNo",
+    "subStation",
+    "zone"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "slNo",
+      "header": "Sl.No."
+    },
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "subStation",
+      "header": "Sub Station"
+    },
+    {
+      "key": "feederName",
+      "header": "Feeder Name"
+    },
+    {
+      "key": "dtrName",
+      "header": "DTR Name"
+    },
+    {
+      "key": "feederCode",
+      "header": "Feeder Code"
+    },
+    {
+      "key": "dtrCode",
+      "header": "DTR Code"
+    },
+    {
+      "key": "newDtrCode",
+      "header": "New DTR Code"
+    },
+    {
+      "key": "dtrCapacity",
+      "header": "DTR Capacity"
+    },
+    {
+      "key": "meterSerialNumber",
+      "header": "Meter SL No"
+    },
+    {
+      "key": "meterMake",
+      "header": "Meter Make"
+    },
+    {
+      "key": "mf",
+      "header": "MF"
+    },
+    {
+      "key": "latitude",
+      "header": "Latitude"
+    },
+    {
+      "key": "longitude",
+      "header": "Longitude"
+    },
+    {
+      "key": "serviceDate",
+      "header": "ServiceDate"
+    },
+    {
+      "key": "ipCount",
+      "header": "IP Count"
+    },
+    {
+      "key": "dpCount",
+      "header": "DP Count"
+    },
+    {
+      "key": "lsCount",
+      "header": "LS Count"
+    }
+  ]
+}

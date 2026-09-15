@@ -1,0 +1,35 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumption/report",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "items",
+    "limit",
+    "page",
+    "total",
+    "totalPages"
+  ],
+  "itemKeys": [
+    "division",
+    "dtr",
+    "feeder",
+    "fr",
+    "ir",
+    "ivrsNumber",
+    "kwh",
+    "maxDate",
+    "mf",
+    "minDate",
+    "msn",
+    "name",
+    "phase",
+    "serviceDate",
+    "slNo",
+    "subStation",
+    "zone"
+  ],
+  "hasColumnsGrid": false
+}

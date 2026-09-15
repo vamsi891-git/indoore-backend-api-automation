@@ -1,0 +1,14 @@
+
+==================================
+API : Connect and disconnect by month UNAUTHORIZED
+DNS : 1.8 ms
+Connection : 214.25 ms
+Server Processing : -95.05000000000001 ms
+Download : 100 ms
+Total : 221 ms
+===================================
+
+[PASS] Connect and disconnect by month — UNAUTHORIZED — 3/3 checks, 221ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

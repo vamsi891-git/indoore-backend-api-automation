@@ -1,0 +1,16 @@
+
+==================================
+API : DTR energy over time — unknown transformer is not shown
+DNS : 1.87 ms
+Connection : 215.31 ms
+Server Processing : 850.8200000000002 ms
+Download : 100 ms
+Total : 1168 ms
+===================================
+
+[PASS] DTR energy over time — unknown transformer is not shown — 5/5 checks, 1168ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Not Found Error — PASS

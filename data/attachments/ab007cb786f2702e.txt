@@ -1,0 +1,37 @@
+
+==================================
+API : Mobile Notification Send API
+DNS : 70.62 ms
+Connection : 214.85 ms
+Server Processing : 430.53 ms
+Download : 100 ms
+Total : 816 ms
+===================================
+
+[FAIL] Mobile Notification Send API — 4/14 checks, 816ms
+  1. Status Code — FAIL
+     Expected status 200 but received 404
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success — FAIL
+     expect(received).toBeTruthy()
+  6. Message — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  7. Structure — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  8. Request Echo — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  9. Notification Type — FAIL
+     expect(received).toContain(expected) // indexOf
+  10. Recipient Counts — FAIL
+     expect(received).toBeGreaterThanOrEqual(expected)
+  11. Invalid Mobiles — PASS
+  12. Dispatch Status — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  13. Dispatch Mode — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  14. Failed Batches — FAIL
+     expect(received).toBeGreaterThanOrEqual(expected)
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Mobile-Notification-Send-API-2026-09-15T17-31-59-366Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Mobile-Notification-Send-API-2026-09-15T17-31-59-366Z.triage.json [heuristic] contract_mismatch/medium

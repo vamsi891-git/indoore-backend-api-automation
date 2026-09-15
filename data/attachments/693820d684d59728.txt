@@ -1,0 +1,74 @@
+
+--------------------------------------------------
+API RESPONSE
+--------------------------------------------------
+API    : Commands Search Meters — Pagination
+Status : 200
+Request:
+{
+  "itemCount": 5,
+  "itemStart": 6
+}
+Body:
+{
+  "success": true,
+  "data": [
+    {
+      "meterId": "40000002",
+      "nodeId": "00-1b-c5-0c-60-5a-c9-4c",
+      "vendor": "Shete Advanced Technologies Pvt Ltd",
+      "firmwareVersion": "02301001",
+      "hardwareVersion": "Single phase a.c. static direct connected watt-hour smart",
+      "createTime": "2026-08-07T23:49:30+05:30",
+      "updateTime": "2026-08-24T12:30:34+05:30"
+    },
+    {
+      "meterId": "19272930",
+      "nodeId": "00-1b-c5-0c-60-04-2f-60",
+      "vendor": "LARSEN AND TOUBRO LIMITED",
+      "firmwareVersion": "8PB10.60",
+      "hardwareVersion": "3P-4W LTCT smart meter",
+      "createTime": "2026-08-10T12:45:51+05:30",
+      "updateTime": "2026-09-15T19:46:06+05:30"
+    },
+    {
+      "meterId": "00250709",
+      "nodeId": "00-1b-c5-0c-60-55-12-3f",
+      "vendor": "LINKWELL TELESYSTEMS PVT.LTD.HYD",
+      "firmwareVersion": "SM12-SV02.01-AV01.04",
+      "hardwareVersion": "Single phase a.c. static direct connected watt-hour smart",
+      "createTime": "2026-08-10T12:46:03+05:30",
+      "updateTime": "2026-09-15T19:49:32+05:30"
+    },
+    {
+      "meterId": "99751580",
+      "nodeId": "00-1b-c5-0c-60-0b-9d-62",
+      "vendor": "Schneider Electric India Private Limited",
+      "firmwareVersion": "TE00.00",
+      "hardwareVersion": "Single phase a.c. static direct connected watt-hour smart",
+      "createTime": "2026-08-10T12:46:04+05:30",
+      "updateTime": "2026-09-15T19:48:57+05:30"
+    },
+    {
+      "meterId": "85092812",
+      "nodeId": null,
+      "vendor": "LARSEN AND TOUBRO LIMITED",
+      "firmwareVersion": "TE00.00",
+      "hardwareVersion": "Single phase a.c. static direct connected watt-hour smart",
+      "createTime": "2026-08-10T12:46:12+05:30",
+      "updateTime": "2026-09-09T17:19:45+05:30"
+    }
+  ]
+}
+--------------------------------------------------
+
+[FAIL] Commands Search Meters — Pagination — 5/6 checks, 1977ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Response — PASS
+  6. Paginated Meter Window — FAIL
+     expect(received).toEqual(expected) // deep equality
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Commands-Search-Meters-Pagination-2026-09-15T14-29-47-895Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Commands-Search-Meters-Pagination-2026-09-15T14-29-47-895Z.triage.json [heuristic] contract_mismatch/medium

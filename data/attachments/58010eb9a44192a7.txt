@@ -1,0 +1,13 @@
+
+==================================
+API : Can this meter be given to a consumer? — serial number is required
+DNS : 1.93 ms
+Connection : 214.61 ms
+Server Processing : -75.54000000000002 ms
+Download : 100 ms
+Total : 241 ms
+===================================
+
+[PASS] Can this meter be given to a consumer? — serial number is required — 2/2 checks, 241ms
+  1. Status Validation — PASS
+  2. Validation Error — PASS

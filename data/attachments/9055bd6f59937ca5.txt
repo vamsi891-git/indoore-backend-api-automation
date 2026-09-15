@@ -1,0 +1,16 @@
+
+==================================
+API : Min-max voltage — missing year is rejected
+DNS : 2 ms
+Connection : 213.76 ms
+Server Processing : -82.75999999999999 ms
+Download : 100 ms
+Total : 233 ms
+===================================
+
+[PASS] Min-max voltage — missing year is rejected — 5/5 checks, 233ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

@@ -1,0 +1,34 @@
+
+==================================
+API : Feeder voltage and current — red, yellow, and blue phases (blank is OK if no meter)
+DNS : 2.24 ms
+Connection : 215.6 ms
+Server Processing : 981.1600000000001 ms
+Download : 100 ms
+Total : 1299 ms
+===================================
+
+[PASS] Feeder voltage and current — red, yellow, and blue phases (blank is OK if no meter) — 23/23 checks, 1299ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Zod Response Schema — PASS
+  6. Field Validation — PASS
+  7. R Phase Structure Validation — PASS
+  8. R Phase Unit Validation — PASS
+  9. R Phase Type Validation — PASS
+  10. R Phase Value Validation — PASS
+  11. R Phase NaN Validation — PASS
+  12. Y Phase Structure Validation — PASS
+  13. Y Phase Unit Validation — PASS
+  14. Y Phase Type Validation — PASS
+  15. Y Phase Value Validation — PASS
+  16. Y Phase NaN Validation — PASS
+  17. B Phase Structure Validation — PASS
+  18. B Phase Unit Validation — PASS
+  19. B Phase Type Validation — PASS
+  20. B Phase Value Validation — PASS
+  21. B Phase NaN Validation — PASS
+  22. Last Communication Validation — PASS
+  23. Empty Meter Logic Validation — PASS

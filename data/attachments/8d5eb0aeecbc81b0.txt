@@ -1,0 +1,14 @@
+
+==================================
+API : DTR consumption-details UNAUTHORIZED
+DNS : 2.11 ms
+Connection : 214.56 ms
+Server Processing : -92.67000000000002 ms
+Download : 100 ms
+Total : 224 ms
+===================================
+
+[PASS] DTR Consumption Details — UNAUTHORIZED — 3/3 checks, 224ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

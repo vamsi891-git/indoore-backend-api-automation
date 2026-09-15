@@ -1,0 +1,18 @@
+
+==================================
+API : Consumers by meter phase — three-phase CT meters
+DNS : 4.34 ms
+Connection : 216.66 ms
+Server Processing : 1354 ms
+Download : 100 ms
+Total : 1675 ms
+===================================
+
+[PASS] Consumers by meter phase — three-phase CT meters — 7/7 checks, 1675ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Phase Distribution Scenario — PASS

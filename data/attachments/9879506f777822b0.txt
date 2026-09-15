@@ -1,0 +1,28 @@
+
+--------------------------------------------------
+API RESPONSE
+--------------------------------------------------
+API    : Energy Audit Loss Analysis
+Status : 500
+Request:
+{
+  "report-type": "billing",
+  "month": 12,
+  "year": 2025,
+  "fromDate": "2025-12-20",
+  "toDate": "2025-12-20",
+  "page": 1,
+  "limit": 30,
+  "networkType": "feeder",
+  "networkLookupId": 4
+}
+Body:
+{
+  "success": false,
+  "error": {
+    "code": "INTERNAL_ERROR",
+    "message": "An unexpected error occurred"
+  }
+}
+--------------------------------------------------
+

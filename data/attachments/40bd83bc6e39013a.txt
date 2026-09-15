@@ -1,0 +1,80 @@
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Login attempt 1/7 failed (retriable): Login failed with status 429 - Too many requests, please try again later.
+Login retry 2/7 after 5000ms
+Login attempt 2/7 failed (retriable): Login failed with status 429 - Too many requests, please try again later.
+Login retry 3/7 after 10000ms
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+[FAIL] Consumer Search — Not Found / Injection — 8/16 checks, 0ms
+  1. Status (9999999999999999) — FAIL
+     expect(received).toContain(expected) // indexOf
+  2. Success false (9999999999999999) — PASS
+  3. Status (UNKNOWN_CONSUMER) — FAIL
+     expect(received).toContain(expected) // indexOf
+  4. Success false (UNKNOWN_CONSUMER) — PASS
+  5. Status (!@#$%^&*()) — FAIL
+     expect(received).toContain(expected) // indexOf
+  6. Success false (!@#$%^&*()) — PASS
+  7. Status (1' OR '1'='1') — FAIL
+     expect(received).toContain(expected) // indexOf
+  8. Success false (1' OR '1'='1') — PASS
+  9. Status (<script>alert('X) — FAIL
+     expect(received).toContain(expected) // indexOf
+  10. Success false (<script>alert('X) — PASS
+  11. Status (अंगराज़ी) — FAIL
+     expect(received).toContain(expected) // indexOf
+  12. Success false (अंगराज़ी) — PASS
+  13. Status (🌟🚀🎉) — FAIL
+     expect(received).toContain(expected) // indexOf
+  14. Success false (🌟🚀🎉) — PASS
+  15. Status (aaaaaaaaaaaaaaaa) — FAIL
+     expect(received).toContain(expected) // indexOf
+  16. Success false (aaaaaaaaaaaaaaaa) — PASS
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Consumer-Search-Not-Found-Injection-2026-09-15T16-59-29-362Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Consumer-Search-Not-Found-Injection-2026-09-15T16-59-29-362Z.triage.json [heuristic] contract_mismatch/medium

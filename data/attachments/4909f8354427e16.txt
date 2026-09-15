@@ -1,0 +1,11 @@
+[PASS] Talking vs not talking overview — live=1 still opens — 10/10 checks, 610ms
+  1. Status — PASS
+  2. Content — PASS
+  3. Performance — PASS
+  4. Sensitive Data — PASS
+  5. Response — PASS
+  6. Date range — PASS
+  7. Talking vs not talking adds up — PASS
+  8. Meter type list — PASS
+  9. Expected meter type names — PASS
+  10. No duplicate meter type names — PASS

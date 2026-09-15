@@ -1,0 +1,17 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/feeder/{feederCode}/alerts",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "page",
+    "pageSize",
+    "rows",
+    "totalCount",
+    "totalPages"
+  ],
+  "itemKeys": [],
+  "hasColumnsGrid": false
+}

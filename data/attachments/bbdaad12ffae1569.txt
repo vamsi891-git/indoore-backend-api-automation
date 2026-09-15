@@ -1,0 +1,19 @@
+
+======== MD SANCTION LOAD VIOLATION / NON-DOMESTIC — PAGINATION COUNTS ========
+connectionCategory : non-domestic
+page / pageSize    : 1 / 10
+pagination.total   : 10952
+pagination.totalPages : 1096
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+[PASS] MD Analysis API (Sanction Load Violation / non-domestic) — 7/7 checks, 5019ms
+  1. Status Code Validation — PASS
+  2. Response has rows — PASS
+  3. Grid Columns — PASS
+  4. Pagination Validation — PASS
+  5. Total Count Validation (records vs total) — PASS
+  6. MD Business Rules — PASS
+  7. Duplicate contract — PASS

@@ -1,0 +1,17 @@
+
+==================================
+API : DTR energy over time — week by week, each week listed once
+DNS : 1.96 ms
+Connection : 214.49 ms
+Server Processing : 46.55000000000001 ms
+Download : 100 ms
+Total : 363 ms
+===================================
+
+[PASS] DTR energy over time — week by week, each week listed once — 6/6 checks, 363ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. DTR Daily Threshold Chart Scenario — PASS

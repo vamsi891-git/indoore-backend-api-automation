@@ -1,0 +1,7 @@
+[PASS] Day-night — Night Zero Consumption — 6/6 checks, 0ms
+  1. Status 200 — PASS
+  2. Empty grid allowed — PASS
+  3. Grid columns — PASS
+  4. Pagination — PASS
+  5. Business rules — PASS
+  6. Duplicate contract — PASS

@@ -1,0 +1,14 @@
+
+==================================
+API : Consumer phase-distribution UNAUTHORIZED
+DNS : 1.95 ms
+Connection : 214.62 ms
+Server Processing : -94.57 ms
+Download : 100 ms
+Total : 222 ms
+===================================
+
+[PASS] Consumer Phase Distribution — UNAUTHORIZED — 3/3 checks, 222ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

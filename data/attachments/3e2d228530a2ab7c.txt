@@ -1,0 +1,22 @@
+
+==================================
+API : Can this meter be put on a DTR? — an unknown serial is reported as not found
+DNS : 2.05 ms
+Connection : 214.56 ms
+Server Processing : -53.610000000000014 ms
+Download : 100 ms
+Total : 263 ms
+===================================
+
+[PASS] Can this meter be put on a DTR? — an unknown serial is reported as not found — 11/11 checks, 263ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Required Fields — PASS
+  6. Response — PASS
+  7. Root Structure — PASS
+  8. Reason Type — PASS
+  9. Meter Exists Type — PASS
+  10. Invalid Scenario Rules — PASS
+  11. Scenario Outcome — PASS

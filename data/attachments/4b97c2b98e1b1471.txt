@@ -1,0 +1,18 @@
+
+==================================
+API : Consumer report LS — showing 1 per page returns at most 1 record
+DNS : 6.24 ms
+Connection : 215.63 ms
+Server Processing : -9.870000000000005 ms
+Download : 100 ms
+Total : 312 ms
+===================================
+
+[PASS] Consumer report LS — showing 1 per page returns at most 1 record — 7/7 checks, 312ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Consumer Report Scenario — PASS

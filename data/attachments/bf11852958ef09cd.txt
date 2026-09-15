@@ -1,0 +1,14 @@
+
+==================================
+API : Feeder alerts ACCESS_TOKEN_INVALID
+DNS : 1.92 ms
+Connection : 221.62 ms
+Server Processing : -101.53999999999999 ms
+Download : 100 ms
+Total : 222 ms
+===================================
+
+[PASS] Feeder alerts — ACCESS_TOKEN_INVALID — 3/3 checks, 222ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

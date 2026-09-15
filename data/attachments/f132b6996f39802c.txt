@@ -1,0 +1,19 @@
+[PASS] How meters are talking — unknown meter kind is treated as all — 18/18 checks, 228ms
+  1. Status — PASS
+  2. Content — PASS
+  3. Performance — PASS
+  4. Sensitive Data — PASS
+  5. Response — PASS
+  6. Date range — PASS
+  7. Talking vs not talking adds up — PASS
+  8. Category list — PASS
+  9. Expected category names — PASS
+  10. No duplicate category names — PASS
+  11. Category counts match talking meters — PASS
+  12. Meter type list — PASS
+  13. Expected meter type names — PASS
+  14. No duplicate meter type names — PASS
+  15. Meter type counts match talking meters — PASS
+  16. Daily trend — PASS
+  17. No duplicate trend dates — PASS
+  18. One trend point for every day in the range — PASS

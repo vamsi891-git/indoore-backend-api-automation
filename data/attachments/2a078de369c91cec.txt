@@ -1,0 +1,18 @@
+
+==================================
+API : Event list — unknown meter is empty or not found
+DNS : 2.03 ms
+Connection : 214.16 ms
+Server Processing : -14.18999999999997 ms
+Download : 100 ms
+Total : 302 ms
+===================================
+
+[PASS] Event list — unknown meter is empty or not found — 7/7 checks, 302ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Serial Numbers — PASS
+  7. Event Log List Scenario — PASS

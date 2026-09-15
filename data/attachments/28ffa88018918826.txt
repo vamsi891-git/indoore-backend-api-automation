@@ -1,0 +1,14 @@
+
+==================================
+API : DTR load-unbalance UNAUTHORIZED
+DNS : 86.56 ms
+Connection : 214.39 ms
+Server Processing : -179.95 ms
+Download : 100 ms
+Total : 221 ms
+===================================
+
+[PASS] DTR Load Unbalance — UNAUTHORIZED — 3/3 checks, 221ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

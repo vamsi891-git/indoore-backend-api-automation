@@ -1,0 +1,28 @@
+
+======== NIGHT ZERO CONSUMPTION DOMESTIC (FILTER IGNORED) — PAGINATION COUNTS ========
+connectionCategory : domestic
+page / pageSize    : 1 / 10
+pagination.total   : 1130
+pagination.totalPages : 113
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+
+======== NIGHT ZERO CONSUMPTION NON-DOMESTIC (FILTER IGNORED) — PAGINATION COUNTS ========
+connectionCategory : non-domestic
+page / pageSize    : 1 / 10
+pagination.total   : 1130
+pagination.totalPages : 113
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+[PASS] Day Night API (Night Zero Consumption connectionCategory ignored) — 5/5 checks, 6665ms
+  1. Both requests return 200 — PASS
+  2. Domestic pagination.total equals non-domestic total — PASS
+  3. Domestic page uniqueness — PASS
+  4. Non-domestic page uniqueness — PASS
+  5. Domestic page-1 meters equal non-domestic page-1 meters — PASS

@@ -1,0 +1,18 @@
+
+==================================
+API : DTR voltage unbalance list — severely unbalanced DTRs
+DNS : 2.28 ms
+Connection : 214.49 ms
+Server Processing : -73.77000000000001 ms
+Download : 100 ms
+Total : 243 ms
+===================================
+
+[PASS] DTR voltage unbalance list — severely unbalanced DTRs — 7/7 checks, 243ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Voltage Unbalance Details Scenario — PASS

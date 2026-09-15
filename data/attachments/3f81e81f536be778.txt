@@ -1,0 +1,65 @@
+
+==================================
+API : Overview — KPI cards show (zeros still count as available)
+DNS : 2.49 ms
+Connection : 213.94 ms
+Server Processing : 846.5699999999999 ms
+Download : 100 ms
+Total : 1163 ms
+===================================
+
+{
+  "msg": "reports_overview_live_response",
+  "scenario": "dev_live",
+  "query": {},
+  "kpis": {
+    "successful": {
+      "currentValue": 102,
+      "previousValue": 0,
+      "percentageChange": 0,
+      "trendDirection": "up",
+      "comparisonAvailable": false,
+      "available": true
+    },
+    "scheduled": {
+      "currentValue": 0,
+      "previousValue": 0,
+      "percentageChange": 0,
+      "trendDirection": "flat",
+      "comparisonAvailable": true,
+      "available": true
+    },
+    "downloads": {
+      "currentValue": 102,
+      "previousValue": 0,
+      "percentageChange": 0,
+      "trendDirection": "up",
+      "comparisonAvailable": false,
+      "available": true
+    },
+    "failed": {
+      "currentValue": 0,
+      "previousValue": 0,
+      "percentageChange": 0,
+      "trendDirection": "flat",
+      "comparisonAvailable": true,
+      "available": true
+    }
+  },
+  "currentPeriod": {
+    "from": "2026-08-16T17:39:21.540Z",
+    "to": "2026-09-15T17:39:21.540Z"
+  },
+  "comparisonPeriod": {
+    "from": "2026-07-17T17:39:21.540Z",
+    "to": "2026-08-16T17:39:21.540Z"
+  }
+}
+[PASS] Overview — KPI cards show (zeros still count as available) — 7/7 checks, 1163ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Overview Scenario — PASS

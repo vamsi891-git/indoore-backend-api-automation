@@ -1,0 +1,15 @@
+
+==================================
+API : Transformer sizes — leaving out the start date is rejected
+DNS : 4.38 ms
+Connection : 214.17 ms
+Server Processing : -84.54999999999998 ms
+Download : 100 ms
+Total : 234 ms
+===================================
+
+[PASS] Transformer sizes — leaving out the start date is rejected — 4/4 checks, 234ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS

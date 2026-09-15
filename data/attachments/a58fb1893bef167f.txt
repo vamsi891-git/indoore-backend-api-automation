@@ -1,0 +1,23 @@
+
+==================================
+API : Ip=0 & In!=0 report — first page shows columns and meters
+DNS : 85.47 ms
+Connection : 214.57 ms
+Server Processing : 8486.960000000001 ms
+Download : 100 ms
+Total : 8887 ms
+===================================
+
+BACKEND FINDING: Ip=0 & In!=0 report — first page shows columns and meters — 503 {"success":false,"error":{"code":"ZERO_BAND_FACTS_NOT_READY","message":"Report is temporarily unavailable while reporting data is being updated."}}
+[FAIL] Ip=0 & In!=0 report — first page shows columns and meters — 3/6 checks, 8887ms
+  1. Status Code Validation — FAIL
+     Expected status 200 but received 503
+  2. Content Type Validation — PASS
+  3. Response Time Validation — PASS
+  4. Sensitive Data Validation — PASS
+  5. Success Validation — FAIL
+     expect(received).toBeTruthy()
+  6. Error Envelope — FAIL
+     expect(received).toBe(expected) // Object.is equality
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Ip-0-In-0-report-first-page-shows-columns-and-meters-2026-09-15T17-46-18-512Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Ip-0-In-0-report-first-page-shows-columns-and-meters-2026-09-15T17-46-18-512Z.triage.json [heuristic] contract_mismatch/medium

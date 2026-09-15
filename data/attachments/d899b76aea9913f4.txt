@@ -1,0 +1,7 @@
+[PASS] DTR Detail — Invalid Pagination — 6/6 checks, 0ms
+  1. Status (page=0&limit=20) — PASS
+  2. Error envelope (page=0&limit=20) — PASS
+  3. Status (page=1&limit=0) — PASS
+  4. Error envelope (page=1&limit=0) — PASS
+  5. Status (page=-1&limit=20) — PASS
+  6. Error envelope (page=-1&limit=20) — PASS

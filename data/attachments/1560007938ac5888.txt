@@ -1,0 +1,4 @@
+[PASS] Commands Meter Alarms — Invalid Count — 3/3 checks, 228ms
+  1. Status (bad request) — PASS
+  2. Content Type — PASS
+  3. Error Response — PASS

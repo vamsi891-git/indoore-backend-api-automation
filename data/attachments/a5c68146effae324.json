@@ -1,0 +1,28 @@
+{
+  "reportFile": "/home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Commands-Search-Meters-2026-09-15T14-29-43-327Z.md",
+  "triageFile": "/home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Commands-Search-Meters-2026-09-15T14-29-43-327Z.triage.json",
+  "triage": {
+    "triage": {
+      "title": "Commands Search Meters — Expected First Page Meter IDs",
+      "severity": "medium",
+      "classification": "contract_mismatch",
+      "likelyOwner": "backend",
+      "confidence": 0.55,
+      "summary": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m",
+      "nextSteps": [
+        "Expected behavior: Returns itemCount meters from itemStart with meterId, nullable nodeId, vendor, firmware/hardware version, createTime, updateTime.",
+        "Diff actual JSON fields against mapper/validator expectations.",
+        "Confirm fixture month/year/IDs still exist in this environment.",
+        "Share this defect report with the API owner for the module."
+      ],
+      "tags": [
+        "contract",
+        "HES-COMMANDS",
+        "Expected First Page Meter IDs"
+      ]
+    },
+    "source": "heuristic"
+  },
+  "hint": "Share developer-defect-report.md with the backend team",
+  "llmEnabled": false
+}

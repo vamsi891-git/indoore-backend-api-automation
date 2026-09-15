@@ -1,0 +1,19 @@
+
+==================================
+API : Min-max voltage count — a month with no readings still returns 200
+DNS : 3.93 ms
+Connection : 217.49 ms
+Server Processing : 878.5799999999999 ms
+Download : 100 ms
+Total : 1200 ms
+===================================
+
+[PASS] Min-max voltage count — a month with no readings still returns 200 — 8/8 checks, 1200ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Count Keys — PASS
+  8. Min-Max Voltage Count Scenario — PASS

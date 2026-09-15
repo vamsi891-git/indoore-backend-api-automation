@@ -1,0 +1,4 @@
+[PASS] Compare — default type — 3/3 checks, 0ms
+  1. Status 200 — PASS
+  2. Success — PASS
+  3. Duplicate contract — PASS

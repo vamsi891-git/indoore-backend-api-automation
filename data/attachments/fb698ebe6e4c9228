@@ -1,0 +1,167 @@
+# API defect report (for backend developer)
+
+> Automation failed on a **business/API contract** check. This usually indicates a backend, SQL, or response-mapping issue — not a test-script typo.
+
+## At a glance
+
+| Field | Value |
+|-------|-------|
+| **API** | Commands Search Meters — Pagination |
+| **Test** | Validate POST /commands/search-meters — paginated itemStart |
+| **Endpoint** | POST https://api.mdm.mppkvvcl.bestinfra.app/commands/search-meters |
+| **Base URL** | https://api.mdm.mppkvvcl.bestinfra.app |
+| **Response time** | 815 ms |
+| **HTTP status** | 200 |
+| **Failed checks** | 1 / 6 |
+| **First failure** | Paginated Meter Window |
+| **Run at** | 2026-09-15T14:29:44.966Z |
+
+## AI / heuristic triage
+
+| Field | Value |
+|-------|-------|
+| **Suggested title** | Commands Search Meters — Pagination — Paginated Meter Window |
+| **Severity** | medium |
+| **Classification** | contract_mismatch |
+| **Likely owner** | backend |
+| **Confidence** | 0.55 |
+| **Source** | heuristic |
+
+[2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+### Recommended next steps
+
+1. Expected behavior: itemStart + itemCount window returns sequential HES meter metadata rows.
+2. Diff actual JSON fields against mapper/validator expectations.
+3. Confirm fixture month/year/IDs still exist in this environment.
+4. Share this defect report with the API owner for the module.
+
+**Tags:** contract, HES-COMMANDS, Paginated Meter Window
+
+
+## Failure detail
+
+```
+[2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+[32m- Expected  - 4[39m
+[31m+ Received  + 4[39m
+
+[2m  Array [[22m
+[32m-   "95610000975",[39m
+[2m    "40000002",[22m
+[32m-   "60000001",[39m
+[32m-   "@123456",[39m
+[32m-   "@281120",[39m
+[31m+   "19272930",[39m
+[31m+   "00250709",[39m
+[31m+   "99751580",[39m
+[31m+   "85092812",[39m
+[2m  ][22m
+```
+
+## Expected behavior (from backend / contract)
+
+itemStart + itemCount window returns sequential HES meter metadata rows.
+
+
+## Request sent by automation
+
+```json
+{
+  "itemCount": 5,
+  "itemStart": 6
+}
+```
+
+## API response (excerpt)
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "meterId": "40000002",
+      "nodeId": "00-1b-c5-0c-60-5a-c9-4c",
+      "vendor": "Shete Advanced Technologies Pvt Ltd",
+      "firmwareVersion": "02301001",
+      "hardwareVersion": "Single phase a.c. static direct connected watt-hour smart",
+      "createTime": "2026-08-07T23:49:30+05:30",
+      "updateTime": "2026-08-24T12:30:34+05:30"
+    },
+    {
+      "meterId": "19272930",
+      "nodeId": "00-1b-c5-0c-60-04-2f-60",
+      "vendor": "LARSEN AND TOUBRO LIMITED",
+      "firmwareVersion": "8PB10.60",
+      "hardwareVersion": "3P-4W LTCT smart meter",
+      "createTime": "2026-08-10T12:45:51+05:30",
+      "updateTime": "2026-09-15T19:46:06+05:30"
+    },
+    {
+      "meterId": "00250709",
+      "nodeId": "00-1b-c5-0c-60-55-12-3f",
+      "vendor": "LINKWELL TELESYSTEMS PVT.LTD.HYD",
+      "firmwareVersion": "SM12-SV02.01-AV01.04",
+      "hardwareVersion": "Single phase a.c. static direct connected watt-hour smart",
+      "createTime": "2026-08-10T12:46:03+05:30",
+      "updateTime": "2026-09-15T19:49:32+05:30"
+    },
+    {
+      "meterId": "99751580",
+      "nodeId": "00-1b-c5-0c-60-0b-9d-62",
+      "vendor": "Schneider Electric India Private Limited",
+      "firmwareVersion": "TE00.00",
+      "hardwareVersion": "Single phase a.c. static direct connected watt-hour smart",
+      "createTime": "2026-08-10T12:46:04+05:30",
+      "updateTime": "2026-09-15T19:48:57+05:30"
+    },
+    {
+      "meterId": "85092812",
+      "nodeId": null,
+      "vendor": "LARSEN AND TOUBRO LIMITED",
+      "firmwareVersion": "TE00.00",
+      "hardwareVersion": "Single phase a.c. static direct connected watt-hour smart",
+      "createTime": "2026-08-10T12:46:12+05:30",
+      "updateTime": "2026-09-09T17:19:45+05:30"
+    }
+  ]
+}
+```
+
+## All failed validations
+
+1. **Paginated Meter Window** — [2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+[32m- Expected  - 4[39m
+[31m+ Received  + 4[39m
+
+[2m  Array [[22m
+[32m-   "95610000975",[39m
+[2m    "40000002",[22m
+[32m-   "60000001",[39m
+[32m-   "@123456",[39m
+[32m-   "@281120",[39m
+[31m+   "19272930",[39m
+[31m+   "00250709",[39m
+[31m+   "99751580",[39m
+[31m+   "85092812",[39m
+[2m  ][22m
+
+## Passed checks before failure
+
+- Status
+- Content Type
+- Response Time
+- Sensitive Data
+- Success Response
+
+## Suggested steps for developer
+
+1. Reproduce with the same query params (Postman/curl) against `https://api.mdm.mppkvvcl.bestinfra.apphttps://api.mdm.mppkvvcl.bestinfra.app/commands/search-meters`.
+2. Compare response with the **Expected behavior** / **AI triage** sections above.
+3. Trace the repository/service method for this report and confirm SQL filters + DTO field names.
+4. Fix backend logic or API serialization; re-run: `npx playwright test --grep "Commands Search Meters — Pagination"`.
+
+---
+*Generated by Indoore API automation — share this file in Jira/Azure DevOps/GitHub issue.*

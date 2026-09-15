@@ -1,0 +1,41 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumers/{ref}/communication-status",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "canPing",
+    "communicationState",
+    "delaySeconds",
+    "intervalMinutes",
+    "isDelayed",
+    "isSeverelyDelayed",
+    "lastCommunicationAt",
+    "meterId",
+    "nextExpectedIntervalAt",
+    "receivedIntervals",
+    "receivedPercentage",
+    "selectedDate",
+    "signalState",
+    "totalIntervalsPerDay"
+  ],
+  "itemKeys": [
+    "canPing",
+    "communicationState",
+    "delaySeconds",
+    "intervalMinutes",
+    "isDelayed",
+    "isSeverelyDelayed",
+    "lastCommunicationAt",
+    "meterId",
+    "nextExpectedIntervalAt",
+    "receivedIntervals",
+    "receivedPercentage",
+    "selectedDate",
+    "signalState",
+    "totalIntervalsPerDay"
+  ],
+  "hasColumnsGrid": false
+}

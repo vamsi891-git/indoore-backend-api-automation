@@ -1,0 +1,14 @@
+
+==================================
+API : Feeder profile ACCESS_TOKEN_INVALID
+DNS : 2.05 ms
+Connection : 214.36 ms
+Server Processing : -91.41000000000003 ms
+Download : 100 ms
+Total : 225 ms
+===================================
+
+[PASS] Feeder profile — ACCESS_TOKEN_INVALID — 3/3 checks, 225ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

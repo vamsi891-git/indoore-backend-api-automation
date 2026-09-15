@@ -1,0 +1,18 @@
+
+==================================
+API : Dashboard overview — counts and cards load
+DNS : 2.35 ms
+Connection : 214.34 ms
+Server Processing : 2469.31 ms
+Download : 100 ms
+Total : 2786 ms
+===================================
+
+[PASS] Dashboard overview — counts and cards load — 7/7 checks, 2786ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Dashboard Metrics Scenario — PASS

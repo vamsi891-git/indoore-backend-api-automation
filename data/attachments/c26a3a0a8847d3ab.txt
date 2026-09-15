@@ -1,0 +1,22 @@
+
+==================================
+API : connection statuses — ids and names are unique
+DNS : 108.85 ms
+Connection : 214.55 ms
+Server Processing : -177.4 ms
+Download : 100 ms
+Total : 246 ms
+===================================
+
+[PASS] connection statuses — ids and names are unique — 11/11 checks, 246ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Envelope — PASS
+  6. Response — PASS
+  7. Items — PASS
+  8. Fields — PASS
+  9. Duplicate IDs — PASS
+  10. Duplicate Names — PASS
+  11. Ascending Order — PASS

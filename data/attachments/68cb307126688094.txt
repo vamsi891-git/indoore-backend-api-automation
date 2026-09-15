@@ -1,0 +1,279 @@
+Contract snapshot mismatch — 70 difference(s):
+
+  ~ $.columns[0].header
+      expected: "Circle"
+      actual:   "Year"
+
+  ~ $.columns[0].key
+      expected: "circle"
+      actual:   "year"
+
+  ~ $.columns[1].header
+      expected: "Division"
+      actual:   "Month"
+
+  ~ $.columns[1].key
+      expected: "division"
+      actual:   "month"
+
+  ~ $.columns[2].header
+      expected: "Zone"
+      actual:   "Circle"
+
+  ~ $.columns[2].key
+      expected: "zone"
+      actual:   "circle"
+
+  ~ $.columns[3].header
+      expected: "Sub Station"
+      actual:   "Division"
+
+  ~ $.columns[3].key
+      expected: "subStation"
+      actual:   "division"
+
+  ~ $.columns[4].header
+      expected: "Feeder"
+      actual:   "Zone"
+
+  ~ $.columns[4].key
+      expected: "feeder"
+      actual:   "zone"
+
+  ~ $.columns[5].header
+      expected: "DTR"
+      actual:   "Substation"
+
+  ~ $.columns[5].key
+      expected: "dtr"
+      actual:   "subStation"
+
+  ~ $.columns[6].header
+      expected: "Name"
+      actual:   "Feeder"
+
+  ~ $.columns[6].key
+      expected: "name"
+      actual:   "feeder"
+
+  ~ $.columns[7].header
+      expected: "Address"
+      actual:   "DTR"
+
+  ~ $.columns[7].key
+      expected: "address"
+      actual:   "dtr"
+
+  ~ $.columns[8].header
+      expected: "IVRS No."
+      actual:   "Consumer Name"
+
+  ~ $.columns[8].key
+      expected: "ivrsNo"
+      actual:   "name"
+
+  ~ $.columns[9].header
+      expected: "Meter Serial No."
+      actual:   "Address"
+
+  ~ $.columns[9].key
+      expected: "meterSerialNo"
+      actual:   "address"
+
+  ~ $.columns[10].header
+      expected: "Event Name"
+      actual:   "IVRS No."
+
+  ~ $.columns[10].key
+      expected: "eventName"
+      actual:   "ivrsNo"
+
+  ~ $.columns[11].header
+      expected: "Occurence Time"
+      actual:   "Meter Serial No."
+
+  ~ $.columns[11].key
+      expected: "occurrenceTime"
+      actual:   "meterSerialNo"
+
+  ~ $.columns[12].header
+      expected: "Restoration Time"
+      actual:   "Event Name"
+
+  ~ $.columns[12].key
+      expected: "restorationTime"
+      actual:   "eventName"
+
+  ~ $.columns[13].header
+      expected: "Remarks"
+      actual:   "Occurrence Time"
+
+  ~ $.columns[13].key
+      expected: "remarks"
+      actual:   "occurrenceTime"
+
+  ~ $.columns[14].header
+      expected: "Amount Billed"
+      actual:   "Restoration Time"
+
+  ~ $.columns[14].key
+      expected: "amountBilled"
+      actual:   "restorationTime"
+
+  ~ $.columns[15].header
+      expected: "Amount Realised"
+      actual:   "Remarks"
+
+  ~ $.columns[15].key
+      expected: "amountRealised"
+      actual:   "remarks"
+
+  ~ $.columns[16].header
+      expected: "Field Officer Remarks"
+      actual:   "Source Remarks"
+
+  ~ $.columns[16].key
+      expected: "fieldOfficerRemarks"
+      actual:   "sourceRemarks"
+
+  ~ $.columns[17].header
+      expected: "Field Officer Name"
+      actual:   "Amount Billed"
+
+  ~ $.columns[17].key
+      expected: "fieldOfficerName"
+      actual:   "amountBilled"
+
+  ~ $.columns[18].header
+      expected: "Field Officer Designation"
+      actual:   "Amount Realised"
+
+  ~ $.columns[18].key
+      expected: "fieldOfficerDesignation"
+      actual:   "amountRealised"
+
+  ~ $.columns[19].header
+      expected: "MR/Transaction No."
+      actual:   "Field Officer Remarks"
+
+  ~ $.columns[19].key
+      expected: "mrTransactionNo"
+      actual:   "fieldOfficerRemarks"
+
+  ~ $.columns[20].header
+      expected: "P4 No."
+      actual:   "MR/Transaction No."
+
+  ~ $.columns[20].key
+      expected: "p4No"
+      actual:   "mrTransactionNo"
+
+  ~ $.columns[21].header
+      expected: "P4 Date"
+      actual:   "P4 No."
+
+  ~ $.columns[21].key
+      expected: "p4Date"
+      actual:   "p4No"
+
+  ~ $.columns[22].header
+      expected: "Inspection Date"
+      actual:   "P4 Date"
+
+  ~ $.columns[22].key
+      expected: "inspectionDate"
+      actual:   "p4Date"
+
+  ~ $.columns[23].header
+      expected: "Entry Date"
+      actual:   "Inspection Date"
+
+  ~ $.columns[23].key
+      expected: "entryDate"
+      actual:   "inspectionDate"
+
+  ~ $.columns[24].header
+      expected: "Month"
+      actual:   "Action Status"
+
+  ~ $.columns[24].key
+      expected: "month"
+      actual:   "actionStatus"
+
+  ~ $.columns[25].header
+      expected: "Year"
+      actual:   "Entered By"
+
+  ~ $.columns[25].key
+      expected: "year"
+      actual:   "enteredByName"
+
+  + $.columns[26]
+      actual:   {"key":"entryDate","header":"Entry Date"}
+
+  + $.columns[27]
+      actual:   {"key":"updatedOn","header":"Updated On"}
+
+  ~ $.rowFieldKeys[0]
+      expected: "address"
+      actual:   "actionStatus"
+
+  ~ $.rowFieldKeys[1]
+      expected: "amountBilled"
+      actual:   "address"
+
+  ~ $.rowFieldKeys[2]
+      expected: "amountRealised"
+      actual:   "amountBilled"
+
+  ~ $.rowFieldKeys[3]
+      expected: "circle"
+      actual:   "amountRealised"
+
+  ~ $.rowFieldKeys[4]
+      expected: "division"
+      actual:   "circle"
+
+  ~ $.rowFieldKeys[5]
+      expected: "dtr"
+      actual:   "division"
+
+  ~ $.rowFieldKeys[6]
+      expected: "entryDate"
+      actual:   "dtr"
+
+  ~ $.rowFieldKeys[7]
+      expected: "eventName"
+      actual:   "enteredByName"
+
+  ~ $.rowFieldKeys[8]
+      expected: "feeder"
+      actual:   "entryDate"
+
+  ~ $.rowFieldKeys[9]
+      expected: "fieldOfficerDesignation"
+      actual:   "eventName"
+
+  ~ $.rowFieldKeys[10]
+      expected: "fieldOfficerName"
+      actual:   "feeder"
+
+  ~ $.rowFieldKeys[23]
+      expected: "subStation"
+      actual:   "sourceRemarks"
+
+  ~ $.rowFieldKeys[24]
+      expected: "year"
+      actual:   "subStation"
+
+  ~ $.rowFieldKeys[25]
+      expected: "zone"
+      actual:   "updatedOn"
+
+  + $.rowFieldKeys[26]
+      actual:   "year"
+
+  + $.rowFieldKeys[27]
+      actual:   "zone"
+
+If this change is intentional, re-run with UPDATE_CONTRACT_SNAPSHOTS=true to accept the new contract.

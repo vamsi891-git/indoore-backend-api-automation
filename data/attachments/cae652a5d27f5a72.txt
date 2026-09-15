@@ -1,0 +1,14 @@
+
+==================================
+API : Consumer oem-distribution ACCESS_TOKEN_INVALID
+DNS : 1.74 ms
+Connection : 216.47 ms
+Server Processing : -96.21000000000001 ms
+Download : 100 ms
+Total : 222 ms
+===================================
+
+[PASS] Consumer OEM Distribution — ACCESS_TOKEN_INVALID — 3/3 checks, 222ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

@@ -1,0 +1,9 @@
+[PASS] Meter Replacement Progress API — Disallowed Methods — 8/8 checks, 0ms
+  1. POST status — PASS
+  2. POST not success chart — PASS
+  3. PUT status — PASS
+  4. PUT not success chart — PASS
+  5. PATCH status — PASS
+  6. PATCH not success chart — PASS
+  7. DELETE status — PASS
+  8. DELETE not success chart — PASS

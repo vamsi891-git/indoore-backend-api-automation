@@ -1,0 +1,7 @@
+[FAIL] IND-REV-ABE-IVRS-NEG-001 — Unknown IVRS returns not found — 2/3 checks, 0ms
+  1. Expected status — PASS
+  2. Rejected with error envelope — FAIL
+     expect(received).toContain(expected) // indexOf
+  3. ErrorResponseSchema — PASS
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/IND-REV-ABE-IVRS-NEG-001-Unknown-IVRS-returns-not-found-2026-09-15T17-39-54-654Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/IND-REV-ABE-IVRS-NEG-001-Unknown-IVRS-returns-not-found-2026-09-15T17-39-54-654Z.triage.json [heuristic] contract_mismatch/medium

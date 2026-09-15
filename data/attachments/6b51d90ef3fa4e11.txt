@@ -1,0 +1,515 @@
+
+--------------------------------------------------
+API RESPONSE
+--------------------------------------------------
+API    : Energy Audit Hourly Loss Report (dtr)
+Status : 200
+Request:
+{
+  "hierarchyType": "dtr",
+  "networkLookupId": 5,
+  "fromDate": "2025-12-20",
+  "toDate": "2025-12-20",
+  "page": 1,
+  "limit": 10
+}
+Body:
+{
+  "success": true,
+  "data": {
+    "columns": [
+      {
+        "key": "rowKind",
+        "header": "Row Kind"
+      },
+      {
+        "key": "circle",
+        "header": "Circle"
+      },
+      {
+        "key": "division",
+        "header": "Division"
+      },
+      {
+        "key": "zone",
+        "header": "Zone"
+      },
+      {
+        "key": "substation",
+        "header": "Substation"
+      },
+      {
+        "key": "feeder",
+        "header": "Feeder"
+      },
+      {
+        "key": "dtrName",
+        "header": "DTR Name"
+      },
+      {
+        "key": "dtrMeterSerialNumber",
+        "header": "DTR Meter Serial"
+      },
+      {
+        "key": "consumerName",
+        "header": "Consumer Name"
+      },
+      {
+        "key": "meterSerialNumber",
+        "header": "Meter Serial Number"
+      },
+      {
+        "key": "mf",
+        "header": "MF"
+      },
+      {
+        "key": "H1",
+        "header": "H1"
+      },
+      {
+        "key": "H2",
+        "header": "H2"
+      },
+      {
+        "key": "H3",
+        "header": "H3"
+      },
+      {
+        "key": "H4",
+        "header": "H4"
+      },
+      {
+        "key": "H5",
+        "header": "H5"
+      },
+      {
+        "key": "H6",
+        "header": "H6"
+      },
+      {
+        "key": "H7",
+        "header": "H7"
+      },
+      {
+        "key": "H8",
+        "header": "H8"
+      },
+      {
+        "key": "H9",
+        "header": "H9"
+      },
+      {
+        "key": "H10",
+        "header": "H10"
+      },
+      {
+        "key": "H11",
+        "header": "H11"
+      },
+      {
+        "key": "H12",
+        "header": "H12"
+      },
+      {
+        "key": "H13",
+        "header": "H13"
+      },
+      {
+        "key": "H14",
+        "header": "H14"
+      },
+      {
+        "key": "H15",
+        "header": "H15"
+      },
+      {
+        "key": "H16",
+        "header": "H16"
+      },
+      {
+        "key": "H17",
+        "header": "H17"
+      },
+      {
+        "key": "H18",
+        "header": "H18"
+      },
+      {
+        "key": "H19",
+        "header": "H19"
+      },
+      {
+        "key": "H20",
+        "header": "H20"
+      },
+      {
+        "key": "H21",
+        "header": "H21"
+      },
+      {
+        "key": "H22",
+        "header": "H22"
+      },
+      {
+        "key": "H23",
+        "header": "H23"
+      },
+      {
+        "key": "H24",
+        "header": "H24"
+      },
+      {
+        "key": "total",
+        "header": "Total"
+      }
+    ],
+    "rows": [
+      {
+        "id": "summary-dtr-108401",
+        "rowKind": "dtrConsumption",
+        "consumerName": "DTR Consumption",
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "substation": "PragatiNagar",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "dtrName": "RJ662",
+        "dtrMeterSerialNumber": "19271632",
+        "meterSerialNumber": null,
+        "mf": 40,
+        "total": 0,
+        "H1": 0,
+        "H2": 0,
+        "H3": 0,
+        "H4": 0,
+        "H5": 0,
+        "H6": 0,
+        "H7": 0,
+        "H8": 0,
+        "H9": 0,
+        "H10": 0,
+        "H11": 0,
+        "H12": 0,
+        "H13": 0,
+        "H14": 0,
+        "H15": 0,
+        "H16": 0,
+        "H17": 0,
+        "H18": 0,
+        "H19": 0,
+        "H20": 0,
+        "H21": 0,
+        "H22": 0,
+        "H23": 0,
+        "H24": 0
+      },
+      {
+        "id": "summary-consumer-108401",
+        "rowKind": "consumerConsumption",
+        "consumerName": "Consumer Consumption",
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "substation": "PragatiNagar",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "dtrName": "RJ662",
+        "dtrMeterSerialNumber": "19271632",
+        "meterSerialNumber": null,
+        "mf": 40,
+        "total": 0,
+        "H1": 0,
+        "H2": 0,
+        "H3": 0,
+        "H4": 0,
+        "H5": 0,
+        "H6": 0,
+        "H7": 0,
+        "H8": 0,
+        "H9": 0,
+        "H10": 0,
+        "H11": 0,
+        "H12": 0,
+        "H13": 0,
+        "H14": 0,
+        "H15": 0,
+        "H16": 0,
+        "H17": 0,
+        "H18": 0,
+        "H19": 0,
+        "H20": 0,
+        "H21": 0,
+        "H22": 0,
+        "H23": 0,
+        "H24": 0
+      },
+      {
+        "id": "summary-loss-108401",
+        "rowKind": "lossPercentage",
+        "consumerName": "Loss Percentage",
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "substation": "PragatiNagar",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "dtrName": "RJ662",
+        "dtrMeterSerialNumber": "19271632",
+        "meterSerialNumber": null,
+        "mf": 40,
+        "total": 0,
+        "H1": 0,
+        "H2": 0,
+        "H3": 0,
+        "H4": 0,
+        "H5": 0,
+        "H6": 0,
+        "H7": 0,
+        "H8": 0,
+        "H9": 0,
+        "H10": 0,
+        "H11": 0,
+        "H12": 0,
+        "H13": 0,
+        "H14": 0,
+        "H15": 0,
+        "H16": 0,
+        "H17": 0,
+        "H18": 0,
+        "H19": 0,
+        "H20": 0,
+        "H21": 0,
+        "H22": 0,
+        "H23": 0,
+        "H24": 0
+      },
+      {
+        "id": "meter-14080744",
+        "rowKind": "consumer",
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "substation": "PragatiNagar",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "dtrName": "RJ662",
+        "dtrMeterSerialNumber": "19271632",
+        "meterSerialNumber": "14080744",
+        "mf": 1,
+        "consumerName": "JITENDRA KUMAR SAINI",
+        "total": 0,
+        "H1": 0,
+        "H2": 0,
+        "H3": 0,
+        "H4": 0,
+        "H5": 0,
+        "H6": 0,
+        "H7": 0,
+        "H8": 0,
+        "H9": 0,
+        "H10": 0,
+        "H11": 0,
+        "H12": 0,
+        "H13": 0,
+        "H14": 0,
+        "H15": 0,
+        "H16": 0,
+        "H17": 0,
+        "H18": 0,
+        "H19": 0,
+        "H20": 0,
+        "H21": 0,
+        "H22": 0,
+        "H23": 0,
+        "H24": 0
+      },
+      {
+        "id": "meter-85085131",
+        "rowKind": "consumer",
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "substation": "PragatiNagar",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "dtrName": "RJ662",
+        "dtrMeterSerialNumber": "19271632",
+        "meterSerialNumber": "85085131",
+        "mf": 1,
+        "consumerName": "SUDARSHANA VYAS",
+        "total": 0,
+        "H1": 0,
+        "H2": 0,
+        "H3": 0,
+        "H4": 0,
+        "H5": 0,
+        "H6": 0,
+        "H7": 0,
+        "H8": 0,
+        "H9": 0,
+        "H10": 0,
+        "H11": 0,
+        "H12": 0,
+        "H13": 0,
+        "H14": 0,
+        "H15": 0,
+        "H16": 0,
+        "H17": 0,
+        "H18": 0,
+        "H19": 0,
+        "H20": 0,
+        "H21": 0,
+        "H22": 0,
+        "H23": 0,
+        "H24": 0
+      },
+      {
+        "id": "meter-266502",
+        "rowKind": "consumer",
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "substation": "PragatiNagar",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "dtrName": "RJ662",
+        "dtrMeterSerialNumber": "19271632",
+        "meterSerialNumber": "266502",
+        "mf": 1,
+        "consumerName": "TUSHAR JAY PREKASH PATHAK",
+        "total": 0,
+        "H1": 0,
+        "H2": 0,
+        "H3": 0,
+        "H4": 0,
+        "H5": 0,
+        "H6": 0,
+        "H7": 0,
+        "H8": 0,
+        "H9": 0,
+        "H10": 0,
+        "H11": 0,
+        "H12": 0,
+        "H13": 0,
+        "H14": 0,
+        "H15": 0,
+        "H16": 0,
+        "H17": 0,
+        "H18": 0,
+        "H19": 0,
+        "H20": 0,
+        "H21": 0,
+        "H22": 0,
+        "H23": 0,
+        "H24": 0
+      },
+      {
+        "id": "meter-266689",
+        "rowKind": "consumer",
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "substation": "PragatiNagar",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "dtrName": "RJ662",
+        "dtrMeterSerialNumber": "19271632",
+        "meterSerialNumber": "266689",
+        "mf": 1,
+        "consumerName": "KAILASH KHANDARE",
+        "total": 0,
+        "H1": 0,
+        "H2": 0,
+        "H3": 0,
+        "H4": 0,
+        "H5": 0,
+        "H6": 0,
+        "H7": 0,
+        "H8": 0,
+        "H9": 0,
+        "H10": 0,
+        "H11": 0,
+        "H12": 0,
+        "H13": 0,
+        "H14": 0,
+        "H15": 0,
+        "H16": 0,
+        "H17": 0,
+        "H18": 0,
+        "H19": 0,
+        "H20": 0,
+        "H21": 0,
+        "H22": 0,
+        "H23": 0,
+        "H24": 0
+      },
+      {
+        "id": "meter-264553",
+        "rowKind": "consumer",
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "substation": "PragatiNagar",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "dtrName": "RJ662",
+        "dtrMeterSerialNumber": "19271632",
+        "meterSerialNumber": "264553",
+        "mf": 1,
+        "consumerName": "KALYAN BABU BAADALE",
+        "total": 0,
+        "H1": 0,
+        "H2": 0,
+        "H3": 0,
+        "H4": 0,
+        "H5": 0,
+        "H6": 0,
+        "H7": 0,
+        "H8": 0,
+        "H9": 0,
+        "H10": 0,
+        "H11": 0,
+        "H12": 0,
+        "H13": 0,
+        "H14": 0,
+        "H15": 0,
+        "H16": 0,
+        "H17": 0,
+        "H18": 0,
+        "H19": 0,
+        "H20": 0,
+        "H21": 0,
+        "H22": 0,
+        "H23": 0,
+        "H24": 0
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 8,
+      "totalPages": 1
+    }
+  }
+}
+--------------------------------------------------
+
+[FAIL] Energy Audit Hourly Loss Report (dtr) — 21/22 checks, 1235ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Response Contract — PASS
+  6. Columns Contract — PASS
+  7. Pagination — PASS
+  8. Total Count — PASS
+  9. Rows Exist — PASS
+  10. Row Kinds — PASS
+  11. Summary Row Kinds — PASS
+  12. Summary Row IDs — PASS
+  13. Summary Row Count — FAIL
+     expect(received).toBeGreaterThanOrEqual(expected)
+  14. Shared Summary Context — PASS
+  15. Summary Hierarchy Fields — PASS
+  16. Field Types — PASS
+  17. Mandatory Fields — PASS
+  18. Non-Negative Hourly Metrics — PASS
+  19. Total Equals Hourly Sum — PASS
+  20. Summary Loss Math — PASS
+  21. Duplicate Consumer Meters — PASS
+  22. Cross Field Logic — PASS
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Energy-Audit-Hourly-Loss-Report-dtr--2026-09-15T14-20-04-708Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Energy-Audit-Hourly-Loss-Report-dtr--2026-09-15T14-20-04-708Z.triage.json [heuristic] contract_mismatch/medium

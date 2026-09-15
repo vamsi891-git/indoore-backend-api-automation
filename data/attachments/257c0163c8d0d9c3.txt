@@ -1,0 +1,18 @@
+
+==================================
+API : Consumers by meter make — Linkwell meters
+DNS : 85.12 ms
+Connection : 214.54 ms
+Server Processing : 1168.3400000000001 ms
+Download : 100 ms
+Total : 1568 ms
+===================================
+
+[PASS] Consumers by meter make — Linkwell meters — 7/7 checks, 1568ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. OEM Distribution Scenario — PASS

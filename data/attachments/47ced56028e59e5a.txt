@@ -1,0 +1,16 @@
+
+==================================
+API : Current without voltage — missing month is rejected
+DNS : 129.1 ms
+Connection : 214.4 ms
+Server Processing : -211.5 ms
+Download : 100 ms
+Total : 232 ms
+===================================
+
+[PASS] Current without voltage — missing month is rejected — 5/5 checks, 232ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

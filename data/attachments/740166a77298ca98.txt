@@ -1,0 +1,30 @@
+
+======== 100 UNIT KWH FROM LAST THREE MONTHS CONTINUOUS DOMESTIC (FILTER IGNORED) — PAGINATION COUNTS ========
+connectionCategory : domestic
+page / pageSize    : 1 / 10
+pagination.total   : 7669
+pagination.totalPages : 767
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+
+======== 100 UNIT KWH FROM LAST THREE MONTHS CONTINUOUS NON-DOMESTIC (FILTER IGNORED) — PAGINATION COUNTS ========
+connectionCategory : non-domestic
+page / pageSize    : 1 / 10
+pagination.total   : 7669
+pagination.totalPages : 767
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+[PASS] Consumption Pattern API (100 unit kwh from Last Three months continuous connectionCategory ignored) — 7/7 checks, 236ms
+  1. Both requests return 200 — PASS
+  2. Domestic pagination.total equals non-domestic total — PASS
+  3. Domestic page uniqueness — PASS
+  4. Non-domestic page uniqueness — PASS
+  5. Domestic page business rules — PASS
+  6. Non-domestic page business rules — PASS
+  7. Domestic page-1 meters equal non-domestic page-1 meters — PASS

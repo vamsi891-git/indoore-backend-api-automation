@@ -1,0 +1,18 @@
+
+==================================
+API : Event list — opens using the account number
+DNS : 2.05 ms
+Connection : 214.05 ms
+Server Processing : 762.9000000000001 ms
+Download : 100 ms
+Total : 1079 ms
+===================================
+
+[PASS] Event list — opens using the account number — 7/7 checks, 1079ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Serial Numbers — PASS
+  7. Event Log List Scenario — PASS

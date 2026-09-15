@@ -1,0 +1,18 @@
+
+==================================
+API : DTR power on/off chart — yearly view loads
+DNS : 1.91 ms
+Connection : 214.52 ms
+Server Processing : 7168.57 ms
+Download : 100 ms
+Total : 7485 ms
+===================================
+
+[PASS] DTR power on/off chart — yearly view loads — 7/7 checks, 7485ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Power Status Scenario — PASS

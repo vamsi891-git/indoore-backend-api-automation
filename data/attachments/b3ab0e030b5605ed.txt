@@ -1,0 +1,15 @@
+
+==================================
+API : Day-by-day billing — page numbering must start at 1
+DNS : 2.59 ms
+Connection : 214.3 ms
+Server Processing : 899.1100000000001 ms
+Download : 100 ms
+Total : 1216 ms
+===================================
+
+[PASS] Day-by-day billing — page numbering must start at 1 — 4/4 checks, 1216ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS

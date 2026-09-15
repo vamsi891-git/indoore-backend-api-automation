@@ -1,0 +1,18 @@
+
+==================================
+API : DTR billing — a far page is empty or still consistent
+DNS : 105.54 ms
+Connection : 214.19 ms
+Server Processing : -121.73000000000002 ms
+Download : 100 ms
+Total : 298 ms
+===================================
+
+[PASS] DTR billing — a far page is empty or still consistent — 7/7 checks, 298ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Billing Scenario — PASS

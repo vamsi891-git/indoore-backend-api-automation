@@ -1,0 +1,2 @@
+[PASS] Sample power now — meter data unavailable message — 1/1 checks, 0ms
+  1. Meter Data Unavailable Error — PASS

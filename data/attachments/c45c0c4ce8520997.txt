@@ -1,0 +1,14 @@
+
+==================================
+API : Feeder voltage and current UNAUTHORIZED
+DNS : 108.49 ms
+Connection : 214.52 ms
+Server Processing : -201.01 ms
+Download : 100 ms
+Total : 222 ms
+===================================
+
+[PASS] Feeder voltage and current — UNAUTHORIZED — 3/3 checks, 222ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

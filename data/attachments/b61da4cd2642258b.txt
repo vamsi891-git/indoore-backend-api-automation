@@ -1,0 +1,7 @@
+[FAIL] Meter Replacement Progress API — Invalid Auth — 2/3 checks, 0ms
+  1. Unauthorized (Bearer invalid.token) — FAIL
+     expect(received).toContain(expected) // indexOf
+  2. Unauthorized (not-a-bearer-token) — PASS
+  3. Unauthorized (Bearer ) — PASS
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Replacement-Progress-API-Invalid-Auth-2026-09-15T17-14-11-928Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Replacement-Progress-API-Invalid-Auth-2026-09-15T17-14-11-928Z.triage.json [heuristic] contract_mismatch/medium

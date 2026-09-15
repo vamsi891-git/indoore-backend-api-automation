@@ -1,0 +1,96 @@
+
+==================================
+API : Get Modules
+DNS : 112.27 ms
+Connection : 214.71 ms
+Server Processing : 20.02000000000001 ms
+Download : 100 ms
+Total : 447 ms
+===================================
+
+
+==================================
+API : Create Module
+DNS : 106.54 ms
+Connection : 214.65 ms
+Server Processing : -180.19000000000003 ms
+Download : 100 ms
+Total : 241 ms
+===================================
+
+
+==================================
+API : Update Module
+DNS : 110.92 ms
+Connection : 214.16 ms
+Server Processing : -172.08 ms
+Download : 100 ms
+Total : 253 ms
+===================================
+
+
+==================================
+API : Create Permission
+DNS : 70.5 ms
+Connection : 214.68 ms
+Server Processing : -119.18 ms
+Download : 100 ms
+Total : 266 ms
+===================================
+
+
+==================================
+API : Update Permission
+DNS : 107.03 ms
+Connection : 214.34 ms
+Server Processing : -167.37 ms
+Download : 100 ms
+Total : 254 ms
+===================================
+
+[PASS] Module Permission CRUD Flow — 45/45 checks, 2405ms
+  1. Get Modules Status Code — PASS
+  2. Get Modules Content Type — PASS
+  3. Get Modules Response Time — PASS
+  4. Get Modules Sensitive Data — PASS
+  5. Validate Root Response — PASS
+  6. Validate Modules Exist — PASS
+  7. Validate Module Structure — PASS
+  8. Validate Module isEnabled — PASS
+  9. Validate Module Business Rules — PASS
+  10. Validate Duplicate Modules — PASS
+  11. Validate Module Sorting — PASS
+  12. Validate Permission Structure — PASS
+  13. Validate Permission Business Rules — PASS
+  14. Validate Duplicate Permissions — PASS
+  15. Validate Permission Sorting — PASS
+  16. Validate Parent Child Relation — PASS
+  17. Validate Permission Pattern — PASS
+  18. Validate Null Values — PASS
+  19. Validate NaN Values — PASS
+  20. Create Module Status Code — PASS
+  21. Create Module Content Type — PASS
+  22. Create Module Response Time — PASS
+  23. Validate Created Module — PASS
+  24. Update Module Status Code — PASS
+  25. Update Module Content Type — PASS
+  26. Validate Updated Module — PASS
+  27. Create Permission Status Code — PASS
+  28. Create Permission Content Type — PASS
+  29. Validate Created Permission — PASS
+  30. Update Permission Status Code — PASS
+  31. Update Permission Content Type — PASS
+  32. Validate Updated Permission — PASS
+  33. Verify Modules Status Code — PASS
+  34. Validate Module Exists After Update — PASS
+  35. Validate Updated Module Key — PASS
+  36. Validate Updated Module Name — PASS
+  37. Validate Permission Exists — PASS
+  38. Validate Updated Permission Key — PASS
+  39. Validate Updated Permission Name — PASS
+  40. Validate Updated Permission Description — PASS
+  41. Delete Permission Status — PASS
+  42. Validate Permission Deleted — PASS
+  43. Delete Module Status — PASS
+  44. Verify Module Delete Status — PASS
+  45. Validate Module Deleted — PASS

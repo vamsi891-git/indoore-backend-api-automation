@@ -1,0 +1,16 @@
+
+==================================
+API : Power quality — blank consumer number is rejected
+DNS : 2.21 ms
+Connection : 214.11 ms
+Server Processing : -83.32000000000002 ms
+Download : 100 ms
+Total : 233 ms
+===================================
+
+[PASS] Power quality — blank consumer number is rejected — 5/5 checks, 233ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Blank Ref Validation Error — PASS

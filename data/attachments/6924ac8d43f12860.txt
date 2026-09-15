@@ -1,0 +1,14 @@
+
+==================================
+API : Consumer category-distribution UNAUTHORIZED
+DNS : 3.6 ms
+Connection : 214.1 ms
+Server Processing : -94.69999999999999 ms
+Download : 100 ms
+Total : 223 ms
+===================================
+
+[PASS] Consumer Category Distribution — UNAUTHORIZED — 3/3 checks, 223ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

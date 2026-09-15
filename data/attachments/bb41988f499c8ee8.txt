@@ -1,0 +1,19 @@
+
+======== MD MD > CD LAST THREE MONTH / DOMESTIC — PAGINATION COUNTS ========
+connectionCategory : domestic
+page / pageSize    : 1 / 10
+pagination.total   : 47116
+pagination.totalPages : 4712
+page records       : 10
+expected records   : 10
+records vs total   : MATCH
+========================================================
+
+[PASS] MD Analysis API (MD > CD Last Three Month / domestic) — 7/7 checks, 6993ms
+  1. Status Code Validation — PASS
+  2. Response has rows — PASS
+  3. Grid Columns — PASS
+  4. Pagination Validation — PASS
+  5. Total Count Validation (records vs total) — PASS
+  6. MD Business Rules — PASS
+  7. Duplicate contract — PASS

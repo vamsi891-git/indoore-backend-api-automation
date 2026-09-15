@@ -1,0 +1,18 @@
+
+==================================
+API : DTR events — search box text is accepted
+DNS : 2.11 ms
+Connection : 215.67 ms
+Server Processing : 116.22 ms
+Download : 100 ms
+Total : 434 ms
+===================================
+
+[PASS] DTR events — search box text is accepted — 7/7 checks, 434ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Events Scenario — PASS

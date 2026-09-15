@@ -1,0 +1,24 @@
+
+==================================
+API : Get Users
+DNS : 2.44 ms
+Connection : 214.52 ms
+Server Processing : 654.04 ms
+Download : 100 ms
+Total : 971 ms
+===================================
+
+[FAIL] Get Users — 9/10 checks, 971ms
+  1. Get Users Status Code — PASS
+  2. Get Users Content Type — PASS
+  3. Get Users Response Time — PASS
+  4. Get Users Sensitive Data — PASS
+  5. Validate Root Response — PASS
+  6. Validate Pagination — PASS
+  7. Validate Users Exist — PASS
+  8. Validate User Structure — PASS
+  9. Validate Duplicate Users — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  10. Validate Status Rules — PASS
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Get-Users-2026-09-15T17-46-28-855Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Get-Users-2026-09-15T17-46-28-855Z.triage.json [heuristic] contract_mismatch/medium

@@ -1,0 +1,17 @@
+
+==================================
+API : Power quality — extra unused options are ignored
+DNS : 1.83 ms
+Connection : 215.48 ms
+Server Processing : -88.31 ms
+Download : 100 ms
+Total : 229 ms
+===================================
+
+[PASS] Power quality — extra unused options are ignored — 6/6 checks, 229ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Power Quality Scenario — PASS

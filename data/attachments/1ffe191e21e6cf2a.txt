@@ -1,0 +1,6 @@
+Contract snapshot mismatch — 1 difference(s):
+
+  + $.itemKeys[40]
+      actual:   "uniqueId"
+
+If this change is intentional, re-run with UPDATE_CONTRACT_SNAPSHOTS=true to accept the new contract.

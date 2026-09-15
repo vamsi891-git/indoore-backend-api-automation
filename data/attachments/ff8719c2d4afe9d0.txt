@@ -1,0 +1,19 @@
+
+==================================
+API : Master data change history — filter shows only meter-created changes
+DNS : 109.68 ms
+Connection : 214.44 ms
+Server Processing : 1058.8799999999999 ms
+Download : 100 ms
+Total : 1483 ms
+===================================
+
+[PASS] Master data change history — filter shows only meter-created changes — 8/8 checks, 1483ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Zod Response Schema — PASS
+  6. Response Envelope — PASS
+  7. Live Validations — PASS
+  8. Exact Action Filter — PASS

@@ -1,0 +1,86 @@
+
+==================================
+API : Current without voltage — Oct 2025 phase Y first page shows columns and readings
+DNS : 2.42 ms
+Connection : 215.42 ms
+Server Processing : 748.16 ms
+Download : 100 ms
+Total : 1066 ms
+===================================
+
+{
+  "msg": "current_without_voltage_live_response",
+  "scenario": "dev_live_phase_y",
+  "query": {
+    "phase": "Y",
+    "month": 10,
+    "year": 2025,
+    "page": 1,
+    "limit": 10,
+    "includeTotal": false
+  },
+  "queryString": "phase=Y&month=10&year=2025&page=1&limit=10&includeTotal=false",
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": null,
+    "totalPages": null,
+    "totalIsExact": false,
+    "hasMore": true,
+    "nextCursor": "2025-10-31 18:00:00.000|77838"
+  },
+  "columnKeys": [
+    "slNo",
+    "circle",
+    "division",
+    "zone",
+    "subStation",
+    "feeder",
+    "dtr",
+    "sanctionedLoadKw",
+    "name",
+    "address",
+    "ivrsNumber",
+    "category",
+    "meterSerialNumber",
+    "phase",
+    "rCurrent",
+    "rnVoltage",
+    "nightKwh",
+    "dayKwh",
+    "meterReadingDateTime"
+  ],
+  "currentHeader": "Y Current",
+  "voltageHeader": "YN Voltage",
+  "rowCount": 10,
+  "sampleRow": {
+    "id": "row-1-22254023",
+    "slNo": 1,
+    "circle": "Indore city circle",
+    "division": "WEST",
+    "zone": "GPH",
+    "subStation": "Citi Control Room",
+    "feeder": "SHIV VILLAS PALA.(CHQ)",
+    "dtr": "SBC0000174",
+    "sanctionedLoadKw": "9",
+    "name": "MADHUKAR ANANT JOSHI",
+    "address": "..73 RAM BAG MAIN ROAD INDORE ...",
+    "ivrsNumber": "N3477014680",
+    "category": "LV1.2",
+    "meterSerialNumber": "22254023",
+    "phase": "3PH WC",
+    "rCurrent": "0.030",
+    "rnVoltage": "0.000",
+    "nightKwh": "0.000",
+    "dayKwh": "0.001",
+    "meterReadingDateTime": "31-10-2025 21:00"
+  }
+}
+[PASS] Current without voltage — Oct 2025 phase Y first page shows columns and readings — 7/7 checks, 1066ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Current Without Voltage Scenario — PASS

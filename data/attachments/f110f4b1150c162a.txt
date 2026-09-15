@@ -1,0 +1,16 @@
+
+==================================
+API : DTR event detail — fromDate after toDate is rejected
+DNS : 2.19 ms
+Connection : 215.3 ms
+Server Processing : -79.49000000000001 ms
+Download : 100 ms
+Total : 238 ms
+===================================
+
+[PASS] DTR event detail — fromDate after toDate is rejected — 5/5 checks, 238ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

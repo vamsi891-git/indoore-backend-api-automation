@@ -1,0 +1,14 @@
+
+==================================
+API : Organisation search — a negative limit is rejected
+DNS : 1.88 ms
+Connection : 246.01 ms
+Server Processing : -115.88999999999999 ms
+Download : 100 ms
+Total : 232 ms
+===================================
+
+[PASS] Organisation search — a negative limit is rejected — 3/3 checks, 232ms
+  1. Status Validation — PASS
+  2. Response Time — PASS
+  3. Validation Error — PASS

@@ -1,0 +1,13 @@
+Contract snapshot mismatch — 3 difference(s):
+
+  ~ $.dataKeys[3]
+      expected: "user"
+      actual:   "tokenScopeStale"
+
+  + $.dataKeys[4]
+      actual:   "user"
+
+  + $.itemKeys[40]
+      actual:   "uniqueId"
+
+If this change is intentional, re-run with UPDATE_CONTRACT_SNAPSHOTS=true to accept the new contract.

@@ -1,0 +1,18 @@
+
+==================================
+API : DTR load unbalance list — page 2 still shows a valid list
+DNS : 111.64 ms
+Connection : 216.56 ms
+Server Processing : -198.2 ms
+Download : 100 ms
+Total : 230 ms
+===================================
+
+[PASS] DTR load unbalance list — page 2 still shows a valid list — 7/7 checks, 230ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Load Unbalance Details Scenario — PASS

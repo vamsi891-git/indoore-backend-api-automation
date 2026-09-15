@@ -1,0 +1,4 @@
+[PASS] By IVRS — Disallowed Methods — 3/3 checks, 0ms
+  1. POST rejected — PASS
+  2. PUT rejected — PASS
+  3. DELETE rejected — PASS

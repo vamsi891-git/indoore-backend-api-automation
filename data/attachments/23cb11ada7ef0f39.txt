@@ -1,0 +1,75 @@
+
+==================================
+API : Event restoration — page 2 continues serial numbers without duplicates
+DNS : 2.18 ms
+Connection : 214.12 ms
+Server Processing : 170.7 ms
+Download : 100 ms
+Total : 487 ms
+===================================
+
+{
+  "msg": "event_restoration_live_response",
+  "scenario": "dev_live_page2",
+  "query": {
+    "fromDate": "2025-10-01",
+    "toDate": "2025-10-30",
+    "page": 2,
+    "limit": 10
+  },
+  "queryString": "fromDate=2025-10-01&toDate=2025-10-30&page=2&limit=10",
+  "pagination": {
+    "page": 2,
+    "limit": 10,
+    "total": 58342,
+    "totalPages": 5835,
+    "totalIsExact": true,
+    "hasMore": true
+  },
+  "columnKeys": [
+    "slNo",
+    "circle",
+    "division",
+    "zone",
+    "subStation",
+    "feeder",
+    "dtr",
+    "name",
+    "address",
+    "ivrsNumber",
+    "tariff",
+    "msn",
+    "phase",
+    "eventClassificationName",
+    "eventName",
+    "occurrenceTime"
+  ],
+  "rowCount": 10,
+  "sampleRow": {
+    "id": "row-11-85084432",
+    "slNo": 11,
+    "circle": "Indore city circle",
+    "division": "CENTRAL",
+    "zone": "RajMohalla",
+    "subStation": "Raj Mohalla",
+    "feeder": "AIR(CHQ)",
+    "dtr": "RZ817",
+    "name": "KISHANRAO SHANKARRAO",
+    "address": "12/7 D MOG LINE ..12/7 D MOG LINE ..12/7 D MOG LINE ..",
+    "ivrsNumber": "N3004015448",
+    "tariff": "LV1.2",
+    "msn": "85084432",
+    "phase": "1 PH",
+    "eventClassificationName": "Transaction",
+    "eventName": "Real time clock, date and time",
+    "occurrenceTime": "31-10-2025 05:18"
+  }
+}
+[PASS] Event restoration — page 2 continues serial numbers without duplicates — 7/7 checks, 487ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Event Restoration Scenario — PASS

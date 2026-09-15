@@ -1,0 +1,22 @@
+
+==================================
+API : Commands History — Page 1
+DNS : 109.18 ms
+Connection : 216.66 ms
+Server Processing : 35.16 ms
+Download : 100 ms
+Total : 461 ms
+===================================
+
+[PASS] Commands History — Page 1 — 11/11 checks, 461ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Response — PASS
+  6. Requested Time DESC — PASS
+  7. Unique Row Keys (requestId + meter) — PASS
+  8. Bulk Job Row Consistency — PASS
+  9. Pagination Field Types — PASS
+  10. Total Records — PASS
+  11. Full API Contract — PASS

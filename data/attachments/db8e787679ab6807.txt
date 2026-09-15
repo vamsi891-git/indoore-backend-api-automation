@@ -1,0 +1,21 @@
+
+=== Commands Load Curtailment — Invalid Type — POST init response ===
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "type: Invalid enum value. Expected 'load_curtailment_get' | 'load_curtailment_set', received 'invalid_load_curtailment_type'",
+    "details": {
+      "formErrors": [],
+      "fieldErrors": {
+        "type": [
+          "Invalid enum value. Expected 'load_curtailment_get' | 'load_curtailment_set', received 'invalid_load_curtailment_type'"
+        ]
+      }
+    }
+  }
+}
+[PASS] Commands Load Curtailment — Invalid Type — 3/3 checks, 229ms
+  1. Status (validation error) — PASS
+  2. Content Type — PASS
+  3. Error Response — PASS

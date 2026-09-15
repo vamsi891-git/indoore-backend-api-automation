@@ -1,0 +1,32 @@
+
+==================================
+API : Last three months — first page lists each consumer (month energy may be empty)
+DNS : 146.25 ms
+Connection : 214.3 ms
+Server Processing : -15.550000000000011 ms
+Download : 100 ms
+Total : 445 ms
+===================================
+
+[PASS] Last three months — first page lists each consumer (month energy may be empty) — 21/21 checks, 445ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Data Present When 200 — PASS
+  7. Zod Response Schema — PASS
+  8. Success — PASS
+  9. Table Validation — PASS
+  10. Last Three Title — PASS
+  11. Last Three Columns — PASS
+  12. Pagination Validation — PASS
+  13. Rows Within Limit — PASS
+  14. SLNO Validation — PASS
+  15. Required Fields — PASS
+  16. Unique consumers — PASS
+  17. Shared feeder allowed — PASS
+  18. Phase Validation — PASS
+  19. Sanction Load Validation — PASS
+  20. Last Three Months Validation — PASS
+  21. NaN Validation — PASS

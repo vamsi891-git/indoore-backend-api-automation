@@ -1,0 +1,12 @@
+
+==================================
+API : Can this meter serial be added? — an empty serial is rejected
+DNS : 2.03 ms
+Connection : 214.66 ms
+Server Processing : -82.69 ms
+Download : 100 ms
+Total : 234 ms
+===================================
+
+[PASS] Can this meter serial be added? — an empty serial is rejected — 1/1 checks, 234ms
+  1. Validation Error Envelope — PASS

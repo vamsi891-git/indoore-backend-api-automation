@@ -1,0 +1,23 @@
+
+==================================
+API : This month bill
+DNS : 107.44 ms
+Connection : 214.45 ms
+Server Processing : -117.88999999999999 ms
+Download : 100 ms
+Total : 304 ms
+===================================
+
+[PASS] This month bill — 12/12 checks, 304ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Monthly Consumption — PASS
+  7. Daily Consumption — PASS
+  8. Outstanding Validation — PASS
+  9. Bill Status — PASS
+  10. Fallback Logic — PASS
+  11. Trend Validation — PASS
+  12. Business Rules — PASS

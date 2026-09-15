@@ -1,0 +1,18 @@
+
+==================================
+API : DTR loading list — under-utilized DTRs
+DNS : 2.54 ms
+Connection : 216.51 ms
+Server Processing : 606.95 ms
+Download : 100 ms
+Total : 926 ms
+===================================
+
+[PASS] DTR loading list — under-utilized DTRs — 7/7 checks, 926ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Percentage Loading Details Scenario — PASS

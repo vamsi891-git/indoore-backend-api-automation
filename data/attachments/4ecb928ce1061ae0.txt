@@ -1,0 +1,22 @@
+
+==================================
+API : event classifications — list shows ids and names
+DNS : 2.48 ms
+Connection : 214.46 ms
+Server Processing : -77.94 ms
+Download : 100 ms
+Total : 239 ms
+===================================
+
+[PASS] event classifications — list shows ids and names — 11/11 checks, 239ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Envelope — PASS
+  6. Response — PASS
+  7. Items — PASS
+  8. Fields — PASS
+  9. Duplicate IDs — PASS
+  10. Duplicate Names — PASS
+  11. Expected Values — PASS

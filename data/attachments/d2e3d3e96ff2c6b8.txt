@@ -1,0 +1,17 @@
+
+==================================
+API : DTR profile — name, meter, feeder, and location load, each field once
+DNS : 1.84 ms
+Connection : 215.69 ms
+Server Processing : 181.47000000000003 ms
+Download : 100 ms
+Total : 499 ms
+===================================
+
+[PASS] DTR profile — name, meter, feeder, and location load, each field once — 6/6 checks, 499ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. DTR Profile Scenario — PASS

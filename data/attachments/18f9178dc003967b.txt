@@ -1,0 +1,18 @@
+
+==================================
+API : Live load — opens using the meter
+DNS : 2.14 ms
+Connection : 214.02 ms
+Server Processing : 184.84000000000003 ms
+Download : 100 ms
+Total : 501 ms
+===================================
+
+[PASS] Live load — opens using the meter — 7/7 checks, 501ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Metric Titles — PASS
+  7. Live Load Profile Scenario — PASS

@@ -1,0 +1,64 @@
+
+==================================
+API : Consumer report DP — first page shows columns and daily readings
+DNS : 2.19 ms
+Connection : 214.81 ms
+Server Processing : 800 ms
+Download : 100 ms
+Total : 1117 ms
+===================================
+
+{
+  "msg": "consumer_report_live_response",
+  "scenario": "dev_live_dp",
+  "query": {
+    "fromDate": "2025-10-01",
+    "toDate": "2025-10-30",
+    "meterSerialNumber": "14080783",
+    "report-type": "dp",
+    "page": 1,
+    "limit": 10,
+    "includeTotal": true
+  },
+  "queryString": "fromDate=2025-10-01&toDate=2025-10-30&meterSerialNumber=14080783&report-type=dp&page=1&limit=10&includeTotal=true",
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 30,
+    "totalPages": 3,
+    "totalIsExact": true,
+    "hasMore": true
+  },
+  "columnKeys": [
+    "slNo",
+    "name",
+    "address",
+    "ivrsNumber",
+    "msn",
+    "dateTime",
+    "kWh",
+    "kVAh",
+    "mf"
+  ],
+  "rowCount": 10,
+  "sampleRow": {
+    "id": "row-1-14080783",
+    "slNo": 1,
+    "name": "SHAILJA KARKARE",
+    "address": "25/1/2/4 HRS HERITEJRETI MUNDI F.NO. 401INDORE",
+    "ivrsNumber": "N3008001961",
+    "msn": "14080783",
+    "dateTime": "2025-10-01 00:00:00",
+    "kWh": "1773.00",
+    "kVAh": "1889.35",
+    "mf": "1"
+  }
+}
+[PASS] Consumer report DP — first page shows columns and daily readings — 7/7 checks, 1117ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Consumer Report Scenario — PASS

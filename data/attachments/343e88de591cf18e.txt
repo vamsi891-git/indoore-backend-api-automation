@@ -1,0 +1,16 @@
+
+==================================
+API : Min-max voltage — page 0 is rejected (page must start at 1)
+DNS : 2.68 ms
+Connection : 214.88 ms
+Server Processing : -81.56 ms
+Download : 100 ms
+Total : 236 ms
+===================================
+
+[PASS] Min-max voltage — page 0 is rejected (page must start at 1) — 5/5 checks, 236ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

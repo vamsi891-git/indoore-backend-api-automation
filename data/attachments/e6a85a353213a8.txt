@@ -1,0 +1,7 @@
+[PASS] Urgency list — a blank urgency level still shows the comparison — 6/6 checks, 236ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No duplicate priority numbers — PASS

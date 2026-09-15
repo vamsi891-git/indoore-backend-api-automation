@@ -1,0 +1,16 @@
+
+==================================
+API : Consumption chart — invalid time range is rejected
+DNS : 9.95 ms
+Connection : 214.06 ms
+Server Processing : -92.00999999999999 ms
+Download : 100 ms
+Total : 232 ms
+===================================
+
+[PASS] Consumption chart — invalid time range is rejected — 5/5 checks, 232ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Invalid Period Validation Error — PASS

@@ -1,0 +1,18 @@
+
+==================================
+API : Billing history — opens using the account number
+DNS : 116.33 ms
+Connection : 214.29 ms
+Server Processing : -194.62 ms
+Download : 100 ms
+Total : 236 ms
+===================================
+
+[PASS] Billing history — opens using the account number — 7/7 checks, 236ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Period Labels — PASS
+  7. Billing History Scenario — PASS

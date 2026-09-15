@@ -1,0 +1,286 @@
+
+==================================
+API : Commercial Summary API
+DNS : 101.55 ms
+Connection : 214.59 ms
+Server Processing : 6767.86 ms
+Download : 100 ms
+Total : 7184 ms
+===================================
+
+[PASS] Commercial Summary API — 275/275 checks, 7184ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Data Payload — PASS
+  6. Required Fields — PASS
+  7. Success — PASS
+  8. Root Structure — PASS
+  9. Month — PASS
+  10. Year — PASS
+  11. Query Echo — PASS
+  12. Reports Exist — PASS
+  13. Report Count — PASS
+  14. Duplicate Analysis Types — PASS
+  15. Expected Analysis Types — PASS
+  16. Reports Order — PASS
+  17. Report Groups — PASS
+  18. Commercial Category — PASS
+  19. Unavailable reports — PASS
+  20. Aggregate Totals — PASS
+  21. Likely Data Presence — PASS
+  22. Business Rules — PASS
+  23. zero_consumption_1m Required Fields — PASS
+  24. zero_consumption_1m Field Whitelist — PASS
+  25. zero_consumption_1m Structure — PASS
+  26. zero_consumption_1m Integer Counts — PASS
+  27. zero_consumption_1m Counts — PASS
+  28. zero_consumption_1m Zero Count Logic — PASS
+  29. zero_consumption_1m Report Name — PASS
+  30. zero_consumption_1m No NaN — PASS
+  31. zero_consumption_1m No Nullish Counts — PASS
+  32. zero_consumption_1m Availability — PASS
+  33. zero_consumption_1m Dom/Non-Dom Split — PASS
+  34. zero_consumption_3m Required Fields — PASS
+  35. zero_consumption_3m Field Whitelist — PASS
+  36. zero_consumption_3m Structure — PASS
+  37. zero_consumption_3m Integer Counts — PASS
+  38. zero_consumption_3m Counts — PASS
+  39. zero_consumption_3m Zero Count Logic — PASS
+  40. zero_consumption_3m Report Name — PASS
+  41. zero_consumption_3m No NaN — PASS
+  42. zero_consumption_3m No Nullish Counts — PASS
+  43. zero_consumption_3m Availability — PASS
+  44. zero_consumption_3m Dom/Non-Dom Split — PASS
+  45. zero_consumption_6m Required Fields — PASS
+  46. zero_consumption_6m Field Whitelist — PASS
+  47. zero_consumption_6m Structure — PASS
+  48. zero_consumption_6m Integer Counts — PASS
+  49. zero_consumption_6m Counts — PASS
+  50. zero_consumption_6m Zero Count Logic — PASS
+  51. zero_consumption_6m Report Name — PASS
+  52. zero_consumption_6m No NaN — PASS
+  53. zero_consumption_6m No Nullish Counts — PASS
+  54. zero_consumption_6m Availability — PASS
+  55. zero_consumption_6m Dom/Non-Dom Split — PASS
+  56. zero_consumption_9m Required Fields — PASS
+  57. zero_consumption_9m Field Whitelist — PASS
+  58. zero_consumption_9m Structure — PASS
+  59. zero_consumption_9m Integer Counts — PASS
+  60. zero_consumption_9m Counts — PASS
+  61. zero_consumption_9m Zero Count Logic — PASS
+  62. zero_consumption_9m Report Name — PASS
+  63. zero_consumption_9m No NaN — PASS
+  64. zero_consumption_9m No Nullish Counts — PASS
+  65. zero_consumption_9m Availability — PASS
+  66. zero_consumption_9m Dom/Non-Dom Split — PASS
+  67. zero_consumption_12m Required Fields — PASS
+  68. zero_consumption_12m Field Whitelist — PASS
+  69. zero_consumption_12m Structure — PASS
+  70. zero_consumption_12m Integer Counts — PASS
+  71. zero_consumption_12m Counts — PASS
+  72. zero_consumption_12m Zero Count Logic — PASS
+  73. zero_consumption_12m Report Name — PASS
+  74. zero_consumption_12m No NaN — PASS
+  75. zero_consumption_12m No Nullish Counts — PASS
+  76. zero_consumption_12m Availability — PASS
+  77. zero_consumption_12m Dom/Non-Dom Split — PASS
+  78. zero_consumption_gt_12m Required Fields — PASS
+  79. zero_consumption_gt_12m Field Whitelist — PASS
+  80. zero_consumption_gt_12m Structure — PASS
+  81. zero_consumption_gt_12m Integer Counts — PASS
+  82. zero_consumption_gt_12m Counts — PASS
+  83. zero_consumption_gt_12m Zero Count Logic — PASS
+  84. zero_consumption_gt_12m Report Name — PASS
+  85. zero_consumption_gt_12m No NaN — PASS
+  86. zero_consumption_gt_12m No Nullish Counts — PASS
+  87. zero_consumption_gt_12m Availability — PASS
+  88. zero_consumption_gt_12m Dom/Non-Dom Split — PASS
+  89. low_consumption_100_units_3m Required Fields — PASS
+  90. low_consumption_100_units_3m Field Whitelist — PASS
+  91. low_consumption_100_units_3m Structure — PASS
+  92. low_consumption_100_units_3m Integer Counts — PASS
+  93. low_consumption_100_units_3m Counts — PASS
+  94. low_consumption_100_units_3m Zero Count Logic — PASS
+  95. low_consumption_100_units_3m Report Name — PASS
+  96. low_consumption_100_units_3m No NaN — PASS
+  97. low_consumption_100_units_3m No Nullish Counts — PASS
+  98. low_consumption_100_units_3m Availability — PASS
+  99. low_consumption_100_units_3m Dom/Non-Dom Split — PASS
+  100. low_consumption_100_units_6m Required Fields — PASS
+  101. low_consumption_100_units_6m Field Whitelist — PASS
+  102. low_consumption_100_units_6m Structure — PASS
+  103. low_consumption_100_units_6m Integer Counts — PASS
+  104. low_consumption_100_units_6m Counts — PASS
+  105. low_consumption_100_units_6m Zero Count Logic — PASS
+  106. low_consumption_100_units_6m Report Name — PASS
+  107. low_consumption_100_units_6m No NaN — PASS
+  108. low_consumption_100_units_6m No Nullish Counts — PASS
+  109. low_consumption_100_units_6m Availability — PASS
+  110. low_consumption_100_units_6m Dom/Non-Dom Split — PASS
+  111. low_consumption_100_units_9m Required Fields — PASS
+  112. low_consumption_100_units_9m Field Whitelist — PASS
+  113. low_consumption_100_units_9m Structure — PASS
+  114. low_consumption_100_units_9m Integer Counts — PASS
+  115. low_consumption_100_units_9m Counts — PASS
+  116. low_consumption_100_units_9m Zero Count Logic — PASS
+  117. low_consumption_100_units_9m Report Name — PASS
+  118. low_consumption_100_units_9m No NaN — PASS
+  119. low_consumption_100_units_9m No Nullish Counts — PASS
+  120. low_consumption_100_units_9m Availability — PASS
+  121. low_consumption_100_units_9m Dom/Non-Dom Split — PASS
+  122. pf_violation Required Fields — PASS
+  123. pf_violation Field Whitelist — PASS
+  124. pf_violation Structure — PASS
+  125. pf_violation Integer Counts — PASS
+  126. pf_violation Counts — PASS
+  127. pf_violation Zero Count Logic — PASS
+  128. pf_violation Report Name — PASS
+  129. pf_violation No NaN — PASS
+  130. pf_violation No Nullish Counts — PASS
+  131. pf_violation Availability — PASS
+  132. pf_violation Dom/Non-Dom Split — PASS
+  133. md_gt_cd_last_three_months Required Fields — PASS
+  134. md_gt_cd_last_three_months Field Whitelist — PASS
+  135. md_gt_cd_last_three_months Structure — PASS
+  136. md_gt_cd_last_three_months Integer Counts — PASS
+  137. md_gt_cd_last_three_months Counts — PASS
+  138. md_gt_cd_last_three_months Zero Count Logic — PASS
+  139. md_gt_cd_last_three_months Report Name — PASS
+  140. md_gt_cd_last_three_months No NaN — PASS
+  141. md_gt_cd_last_three_months No Nullish Counts — PASS
+  142. md_gt_cd_last_three_months Availability — PASS
+  143. md_gt_cd_last_three_months Dom/Non-Dom Split — PASS
+  144. sanction_load_violation Required Fields — PASS
+  145. sanction_load_violation Field Whitelist — PASS
+  146. sanction_load_violation Structure — PASS
+  147. sanction_load_violation Integer Counts — PASS
+  148. sanction_load_violation Counts — PASS
+  149. sanction_load_violation Zero Count Logic — PASS
+  150. sanction_load_violation Report Name — PASS
+  151. sanction_load_violation No NaN — PASS
+  152. sanction_load_violation No Nullish Counts — PASS
+  153. sanction_load_violation Availability — PASS
+  154. sanction_load_violation Dom/Non-Dom Split — PASS
+  155. lf_lt_5 Required Fields — PASS
+  156. lf_lt_5 Field Whitelist — PASS
+  157. lf_lt_5 Structure — PASS
+  158. lf_lt_5 Integer Counts — PASS
+  159. lf_lt_5 Counts — PASS
+  160. lf_lt_5 Zero Count Logic — PASS
+  161. lf_lt_5 Report Name — PASS
+  162. lf_lt_5 No NaN — PASS
+  163. lf_lt_5 No Nullish Counts — PASS
+  164. lf_lt_5 Availability — PASS
+  165. lf_lt_5 Dom/Non-Dom Split — PASS
+  166. lf_gt_100 Required Fields — PASS
+  167. lf_gt_100 Field Whitelist — PASS
+  168. lf_gt_100 Structure — PASS
+  169. lf_gt_100 Integer Counts — PASS
+  170. lf_gt_100 Counts — PASS
+  171. lf_gt_100 Zero Count Logic — PASS
+  172. lf_gt_100 Report Name — PASS
+  173. lf_gt_100 No NaN — PASS
+  174. lf_gt_100 No Nullish Counts — PASS
+  175. lf_gt_100 Availability — PASS
+  176. lf_gt_100 Dom/Non-Dom Split — PASS
+  177. lf_lt_5_last_3m Required Fields — PASS
+  178. lf_lt_5_last_3m Field Whitelist — PASS
+  179. lf_lt_5_last_3m Structure — PASS
+  180. lf_lt_5_last_3m Integer Counts — PASS
+  181. lf_lt_5_last_3m Counts — PASS
+  182. lf_lt_5_last_3m Zero Count Logic — PASS
+  183. lf_lt_5_last_3m Report Name — PASS
+  184. lf_lt_5_last_3m No NaN — PASS
+  185. lf_lt_5_last_3m No Nullish Counts — PASS
+  186. lf_lt_5_last_3m Availability — PASS
+  187. lf_lt_5_last_3m Dom/Non-Dom Split — PASS
+  188. lf_lt_5_last_6m Required Fields — PASS
+  189. lf_lt_5_last_6m Field Whitelist — PASS
+  190. lf_lt_5_last_6m Structure — PASS
+  191. lf_lt_5_last_6m Integer Counts — PASS
+  192. lf_lt_5_last_6m Counts — PASS
+  193. lf_lt_5_last_6m Zero Count Logic — PASS
+  194. lf_lt_5_last_6m Report Name — PASS
+  195. lf_lt_5_last_6m No NaN — PASS
+  196. lf_lt_5_last_6m No Nullish Counts — PASS
+  197. lf_lt_5_last_6m Availability — PASS
+  198. lf_lt_5_last_6m Dom/Non-Dom Split — PASS
+  199. consumption_compare_prev_month Required Fields — PASS
+  200. consumption_compare_prev_month Field Whitelist — PASS
+  201. consumption_compare_prev_month Structure — PASS
+  202. consumption_compare_prev_month Integer Counts — PASS
+  203. consumption_compare_prev_month Counts — PASS
+  204. consumption_compare_prev_month Zero Count Logic — PASS
+  205. consumption_compare_prev_month Report Name — PASS
+  206. consumption_compare_prev_month No NaN — PASS
+  207. consumption_compare_prev_month No Nullish Counts — PASS
+  208. consumption_compare_prev_month Availability — PASS
+  209. consumption_compare_prev_month Dom/Non-Dom Split — PASS
+  210. consumption_compare_same_month_last_year Required Fields — PASS
+  211. consumption_compare_same_month_last_year Field Whitelist — PASS
+  212. consumption_compare_same_month_last_year Structure — PASS
+  213. consumption_compare_same_month_last_year Integer Counts — PASS
+  214. consumption_compare_same_month_last_year Counts — PASS
+  215. consumption_compare_same_month_last_year Zero Count Logic — PASS
+  216. consumption_compare_same_month_last_year Report Name — PASS
+  217. consumption_compare_same_month_last_year No NaN — PASS
+  218. consumption_compare_same_month_last_year No Nullish Counts — PASS
+  219. consumption_compare_same_month_last_year Availability — PASS
+  220. consumption_compare_same_month_last_year Dom/Non-Dom Split — PASS
+  221. abnormal_high Required Fields — PASS
+  222. abnormal_high Field Whitelist — PASS
+  223. abnormal_high Structure — PASS
+  224. abnormal_high Integer Counts — PASS
+  225. abnormal_high Counts — PASS
+  226. abnormal_high Zero Count Logic — PASS
+  227. abnormal_high Report Name — PASS
+  228. abnormal_high No NaN — PASS
+  229. abnormal_high No Nullish Counts — PASS
+  230. abnormal_high Availability — PASS
+  231. abnormal_high Dom/Non-Dom Split — PASS
+  232. abnormal_low Required Fields — PASS
+  233. abnormal_low Field Whitelist — PASS
+  234. abnormal_low Structure — PASS
+  235. abnormal_low Integer Counts — PASS
+  236. abnormal_low Counts — PASS
+  237. abnormal_low Zero Count Logic — PASS
+  238. abnormal_low Report Name — PASS
+  239. abnormal_low No NaN — PASS
+  240. abnormal_low No Nullish Counts — PASS
+  241. abnormal_low Availability — PASS
+  242. abnormal_low Dom/Non-Dom Split — PASS
+  243. improper_md Required Fields — PASS
+  244. improper_md Field Whitelist — PASS
+  245. improper_md Structure — PASS
+  246. improper_md Integer Counts — PASS
+  247. improper_md Counts — PASS
+  248. improper_md Zero Count Logic — PASS
+  249. improper_md Report Name — PASS
+  250. improper_md No NaN — PASS
+  251. improper_md No Nullish Counts — PASS
+  252. improper_md Availability — PASS
+  253. improper_md Dom/Non-Dom Split — PASS
+  254. night_zero_consumption Required Fields — PASS
+  255. night_zero_consumption Field Whitelist — PASS
+  256. night_zero_consumption Structure — PASS
+  257. night_zero_consumption Integer Counts — PASS
+  258. night_zero_consumption Counts — PASS
+  259. night_zero_consumption Zero Count Logic — PASS
+  260. night_zero_consumption Report Name — PASS
+  261. night_zero_consumption No NaN — PASS
+  262. night_zero_consumption No Nullish Counts — PASS
+  263. night_zero_consumption Availability — PASS
+  264. night_zero_consumption Dom/Non-Dom Split — PASS
+  265. night_lte_threshold Required Fields — PASS
+  266. night_lte_threshold Field Whitelist — PASS
+  267. night_lte_threshold Structure — PASS
+  268. night_lte_threshold Integer Counts — PASS
+  269. night_lte_threshold Counts — PASS
+  270. night_lte_threshold Zero Count Logic — PASS
+  271. night_lte_threshold Report Name — PASS
+  272. night_lte_threshold No NaN — PASS
+  273. night_lte_threshold No Nullish Counts — PASS
+  274. night_lte_threshold Availability — PASS
+  275. night_lte_threshold Dom/Non-Dom Split — PASS

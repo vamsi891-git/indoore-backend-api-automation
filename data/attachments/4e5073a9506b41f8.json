@@ -1,0 +1,146 @@
+{
+  "columns": [
+    {
+      "key": "year",
+      "header": "Year"
+    },
+    {
+      "key": "month",
+      "header": "Month"
+    },
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "subStation",
+      "header": "Substation"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtr",
+      "header": "DTR"
+    },
+    {
+      "key": "name",
+      "header": "Consumer Name"
+    },
+    {
+      "key": "address",
+      "header": "Address"
+    },
+    {
+      "key": "ivrsNo",
+      "header": "IVRS No."
+    },
+    {
+      "key": "meterSerialNo",
+      "header": "Meter Serial No."
+    },
+    {
+      "key": "eventName",
+      "header": "Event Name"
+    },
+    {
+      "key": "occurrenceTime",
+      "header": "Occurrence Time"
+    },
+    {
+      "key": "restorationTime",
+      "header": "Restoration Time"
+    },
+    {
+      "key": "remarks",
+      "header": "Remarks"
+    },
+    {
+      "key": "sourceRemarks",
+      "header": "Source Remarks"
+    },
+    {
+      "key": "amountBilled",
+      "header": "Amount Billed"
+    },
+    {
+      "key": "amountRealised",
+      "header": "Amount Realised"
+    },
+    {
+      "key": "fieldOfficerRemarks",
+      "header": "Field Officer Remarks"
+    },
+    {
+      "key": "mrTransactionNo",
+      "header": "MR/Transaction No."
+    },
+    {
+      "key": "p4No",
+      "header": "P4 No."
+    },
+    {
+      "key": "p4Date",
+      "header": "P4 Date"
+    },
+    {
+      "key": "inspectionDate",
+      "header": "Inspection Date"
+    },
+    {
+      "key": "actionStatus",
+      "header": "Action Status"
+    },
+    {
+      "key": "enteredByName",
+      "header": "Entered By"
+    },
+    {
+      "key": "entryDate",
+      "header": "Entry Date"
+    },
+    {
+      "key": "updatedOn",
+      "header": "Updated On"
+    }
+  ],
+  "rowFieldKeys": [
+    "actionStatus",
+    "address",
+    "amountBilled",
+    "amountRealised",
+    "circle",
+    "division",
+    "dtr",
+    "enteredByName",
+    "entryDate",
+    "eventName",
+    "feeder",
+    "fieldOfficerRemarks",
+    "inspectionDate",
+    "ivrsNo",
+    "meterSerialNo",
+    "month",
+    "mrTransactionNo",
+    "name",
+    "occurrenceTime",
+    "p4Date",
+    "p4No",
+    "remarks",
+    "restorationTime",
+    "sourceRemarks",
+    "subStation",
+    "updatedOn",
+    "year",
+    "zone"
+  ]
+}

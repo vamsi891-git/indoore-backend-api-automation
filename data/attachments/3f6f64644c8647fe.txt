@@ -1,0 +1,16 @@
+
+==================================
+API : Min-max voltage — invalid phase is rejected
+DNS : 2.2 ms
+Connection : 213.93 ms
+Server Processing : -88.13 ms
+Download : 100 ms
+Total : 228 ms
+===================================
+
+[PASS] Min-max voltage — invalid phase is rejected — 5/5 checks, 228ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

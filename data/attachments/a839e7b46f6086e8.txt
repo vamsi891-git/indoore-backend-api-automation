@@ -1,0 +1,23 @@
+
+==================================
+API : Can this meter be given to a consumer? — a different office is still handled safely
+DNS : 1.95 ms
+Connection : 214.19 ms
+Server Processing : -82.13999999999999 ms
+Download : 100 ms
+Total : 234 ms
+===================================
+
+[PASS] Can this meter be given to a consumer? — a different office is still handled safely — 12/12 checks, 234ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Required Fields — PASS
+  6. Response — PASS
+  7. Root Structure — PASS
+  8. Meter Exists Type — PASS
+  9. Reason Type — PASS
+  10. Valid Reason Consistency — PASS
+  11. Invalid Scenario Rules — PASS
+  12. Scenario Outcome — PASS

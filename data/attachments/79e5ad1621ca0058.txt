@@ -1,0 +1,17 @@
+
+==================================
+API : Live load — unknown consumer is not found
+DNS : 2.64 ms
+Connection : 214.02 ms
+Server Processing : -82.66 ms
+Download : 100 ms
+Total : 234 ms
+===================================
+
+[PASS] Live load — unknown consumer is not found — 6/6 checks, 234ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Live Load Profile Scenario — PASS

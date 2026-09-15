@@ -1,0 +1,46 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/reports/event-report",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "circle",
+    "durationHhMm",
+    "eventCount",
+    "eventId",
+    "eventName",
+    "id",
+    "meterCount",
+    "slNo"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "eventName",
+      "header": "Event Name"
+    },
+    {
+      "key": "meterCount",
+      "header": "Meter Count"
+    },
+    {
+      "key": "eventCount",
+      "header": "Event Count"
+    },
+    {
+      "key": "durationHhMm",
+      "header": "Duration (HH:MM)"
+    }
+  ]
+}

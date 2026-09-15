@@ -1,0 +1,4 @@
+[PASS] Commands Search Meters — Invalid Item Count — 3/3 checks, 1380ms
+  1. Status (bad request) — PASS
+  2. Content Type — PASS
+  3. Error Response — PASS

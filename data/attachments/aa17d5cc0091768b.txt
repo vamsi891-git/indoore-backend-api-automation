@@ -1,0 +1,14 @@
+
+==================================
+API : DTR power-status-details UNAUTHORIZED
+DNS : 1.96 ms
+Connection : 214.01 ms
+Server Processing : -88.97 ms
+Download : 100 ms
+Total : 227 ms
+===================================
+
+[PASS] DTR Power Status Details — UNAUTHORIZED — 3/3 checks, 227ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

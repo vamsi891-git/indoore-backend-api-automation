@@ -1,0 +1,96 @@
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+BACKEND FINDING: Rate limit hit — 429 on attempt 1, waiting 8000ms
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+[FAIL] Consumer Detail — Invalid IDs — 10/20 checks, 0ms
+  1. Status (0) — FAIL
+     expect(received).toContain(expected) // indexOf
+  2. Error (0) — PASS
+  3. Status (-1) — FAIL
+     expect(received).toContain(expected) // indexOf
+  4. Error (-1) — PASS
+  5. Status (55.5) — FAIL
+     expect(received).toContain(expected) // indexOf
+  6. Error (55.5) — PASS
+  7. Status (ABC) — FAIL
+     expect(received).toContain(expected) // indexOf
+  8. Error (ABC) — PASS
+  9. Status (@#$%) — FAIL
+     expect(received).toContain(expected) // indexOf
+  10. Error (@#$%) — PASS
+  11. Status (' OR 1=1 --) — FAIL
+     expect(received).toContain(expected) // indexOf
+  12. Error (' OR 1=1 --) — PASS
+  13. Status (<script>alert('x) — FAIL
+     expect(received).toContain(expected) // indexOf
+  14. Error (<script>alert('x) — PASS
+  15. Status (తెలుగు) — FAIL
+     expect(received).toContain(expected) // indexOf
+  16. Error (తెలుగు) — PASS
+  17. Status (😀😀😀) — FAIL
+     expect(received).toContain(expected) // indexOf
+  18. Error (😀😀😀) — PASS
+  19. Status (   ) — FAIL
+     expect(received).toContain(expected) // indexOf
+  20. Error (   ) — PASS
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Consumer-Detail-Invalid-IDs-2026-09-15T16-55-06-257Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Consumer-Detail-Invalid-IDs-2026-09-15T16-55-06-257Z.triage.json [heuristic] contract_mismatch/medium

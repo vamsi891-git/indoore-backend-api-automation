@@ -1,0 +1,78 @@
+
+==================================
+API : DTR event detail — 1–30 Oct 2025 first page shows columns and events
+DNS : 2.21 ms
+Connection : 215.51 ms
+Server Processing : 321.28 ms
+Download : 100 ms
+Total : 639 ms
+===================================
+
+{
+  "msg": "dtr_event_detail_live_response",
+  "scenario": "dev_live_primary",
+  "query": {
+    "fromDate": "2025-10-01",
+    "toDate": "2025-10-30",
+    "page": 1,
+    "limit": 10
+  },
+  "queryString": "fromDate=2025-10-01&toDate=2025-10-30&page=1&limit=10",
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 18888,
+    "totalPages": 1889,
+    "totalIsExact": true,
+    "hasMore": true
+  },
+  "columnKeys": [
+    "slNo",
+    "circle",
+    "division",
+    "zone",
+    "subStation",
+    "feeder",
+    "dtr",
+    "dtrType",
+    "dtrRating",
+    "msn",
+    "logDate",
+    "eventClassificationName",
+    "eventName",
+    "priority",
+    "eventCount",
+    "durationHhMm"
+  ],
+  "rowCount": 10,
+  "sampleRow": {
+    "id": "row-1-19271510-110783-551",
+    "slNo": 1,
+    "circle": "Indore city circle",
+    "division": "WEST",
+    "zone": "GPH",
+    "subStation": "Tejaji Nagar",
+    "feeder": "SHIV DHAM(FS-DLF)",
+    "dtr": "83SU3",
+    "dtrType": "",
+    "dtrRating": 200,
+    "msn": "19271510",
+    "logDate": "2025-10-30",
+    "eventClassificationName": "Current",
+    "eventName": "Phase R - Current reverse",
+    "priority": "Priority4",
+    "eventCount": 6,
+    "durationHhMm": "1:06:00",
+    "dtrNetworkLookupId": 245,
+    "meterLookupId": 110783,
+    "eventId": 551
+  }
+}
+[PASS] DTR event detail — 1–30 Oct 2025 first page shows columns and events — 7/7 checks, 639ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Event Detail Scenario — PASS

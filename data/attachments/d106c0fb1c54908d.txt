@@ -1,0 +1,26 @@
+
+==================================
+API : CT Open report — empty list is valid
+DNS : 1.86 ms
+Connection : 214.26 ms
+Server Processing : 710.8800000000001 ms
+Download : 100 ms
+Total : 1027 ms
+===================================
+
+[PASS] CT Open report — empty list is valid — 15/15 checks, 1027ms
+  1. Status Code Validation — PASS
+  2. Content Type Validation — PASS
+  3. Response Time Validation — PASS
+  4. Sensitive Data Validation — PASS
+  5. Success Validation — PASS
+  6. Response Structure Validation — PASS
+  7. Analysis Type Validation — PASS
+  8. Month Validation — PASS
+  9. Year Validation — PASS
+  10. Zone column header — PASS
+  11. Duration column headers — PASS
+  12. Pagination Validation — PASS
+  13. Pagination Consistency Validation — PASS
+  14. Cross Field Validation — PASS
+  15. No Data Validation — PASS

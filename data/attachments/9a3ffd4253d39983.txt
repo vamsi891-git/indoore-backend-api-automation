@@ -1,0 +1,3 @@
+BACKEND FINDING: Commands Meter Location — Invalid Latitude — 500 {"success":false,"error":{"code":"HES_ERROR","message":"Failed to set meter location on HES","details":"<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\"><soap:Body><soap:Fault><faultcode>soap:Server</faultcode><faultstring>Latitude value is out of range: -90..90</faultstring><detail><ns2:NodeFault xmlns:ns2=\"http://ws.terminal.service.connode.com/\"><message>Latitude value is out of range: -90..90</message></ns2:NodeFault></detail></soap:Fault></soap:Body></soap:Envelope>\n"}}
+[PASS] Commands Meter Location — Invalid Latitude — 1/1 checks, 346ms
+  1. Error Response (500 backend defect) — PASS

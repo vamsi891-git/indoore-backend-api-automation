@@ -1,0 +1,18 @@
+
+==================================
+API : Consumer profile — details open with no extra filters
+DNS : 1.91 ms
+Connection : 214.4 ms
+Server Processing : -48.31000000000003 ms
+Download : 100 ms
+Total : 268 ms
+===================================
+
+[PASS] Consumer profile — details open with no extra filters — 7/7 checks, 268ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Identity Fields — PASS
+  7. Profile Scenario — PASS

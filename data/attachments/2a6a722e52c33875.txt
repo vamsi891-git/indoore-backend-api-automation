@@ -1,0 +1,96 @@
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+
+==================================
+API : Meter Replacement Progress API
+DNS : 72.75 ms
+Connection : 214.76 ms
+Server Processing : 6631.49 ms
+Download : 100 ms
+Total : 7019 ms
+===================================
+
+[FAIL] Meter Replacement Progress API — 47/62 checks, 7019ms
+  1. Status Code — FAIL
+     Expected status 200 but received 401
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Root Fields — FAIL
+     Missing or undefined field: data
+  6. Required Data Fields — FAIL
+     Cannot read properties of undefined (reading 'weekly')
+  7. Success — FAIL
+     expect(received).toBeTruthy()
+  8. Root Structure — PASS
+  9. Required Chart Roots — PASS
+  10. Weekly Object — PASS
+  11. Monthly Object — PASS
+  12. Weekly Required Fields — PASS
+  13. Monthly Required Fields — PASS
+  14. Weekly Types — PASS
+  15. Monthly Types — PASS
+  16. Charts Are Plain Objects — PASS
+  17. Weekly Bucket Count — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  18. Monthly Bucket Count — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  19. Weekly Labels — FAIL
+     expect(received).toEqual(expected) // deep equality
+  20. Monthly Labels — FAIL
+     expect(received).toEqual(expected) // deep equality
+  21. Weekly Ordered Labels — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  22. Monthly Ordered Labels — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  23. Weekly Label Format — PASS
+  24. Monthly Label Format — PASS
+  25. Weekly Labels Are Strings — PASS
+  26. Monthly Labels Are Strings — PASS
+  27. Weekly Labels Trimmed — PASS
+  28. Monthly Labels Trimmed — PASS
+  29. Weekly Labels Not Empty — FAIL
+     expect(received).toBeGreaterThan(expected)
+  30. Monthly Labels Not Empty — FAIL
+     expect(received).toBeGreaterThan(expected)
+  31. Weekly Unique Labels — PASS
+  32. Monthly Unique Labels — PASS
+  33. No Extra Weekly Label — PASS
+  34. No Extra Monthly Label — PASS
+  35. Weekly Values Are Numbers — PASS
+  36. Monthly Values Are Numbers — PASS
+  37. Weekly Values Are Integers — PASS
+  38. Monthly Values Are Integers — PASS
+  39. Weekly Values Non Negative — PASS
+  40. Monthly Values Non Negative — PASS
+  41. Weekly Values Safe Integer — PASS
+  42. Monthly Values Safe Integer — PASS
+  43. Weekly Values Not Null — PASS
+  44. Monthly Values Not Null — PASS
+  45. Weekly Length Parity — PASS
+  46. Monthly Length Parity — PASS
+  47. Weekly Values Count Match — PASS
+  48. Monthly Values Count Match — PASS
+  49. Weekly Chart Object Size — PASS
+  50. Monthly Chart Object Size — PASS
+  51. Weekly No Extra Fields — PASS
+  52. Monthly No Extra Fields — PASS
+  53. Root Object Size — PASS
+  54. No Extra Root Fields — PASS
+  55. No Null Critical Fields — PASS
+  56. No Undefined Critical Fields — PASS
+  57. Response Integrity — FAIL
+     expect(received).toBeGreaterThan(expected)
+  58. Weekly Monthly Independence — FAIL
+     expect(received).not.toEqual(expected) // deep equality
+  59. Zero Progress Scenario — PASS
+  60. Weekly Sum Non Negative — PASS
+  61. Monthly Sum Non Negative — PASS
+  62. Business Rules — FAIL
+     expect(received).toBe(expected) // Object.is equality
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Replacement-Progress-API-2026-09-15T17-14-37-764Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Replacement-Progress-API-2026-09-15T17-14-37-764Z.triage.json [heuristic] contract_mismatch/medium

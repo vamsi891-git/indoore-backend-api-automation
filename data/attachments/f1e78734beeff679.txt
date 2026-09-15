@@ -1,0 +1,3 @@
+[PASS] IND-RPT-ATZ-NEG-003 — NoSQL-style injection in year — 2/2 checks, 0ms
+  1. Expected status — PASS
+  2. ErrorResponseSchema — PASS

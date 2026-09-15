@@ -1,0 +1,5 @@
+[PASS] EENLTMT Aberration Entry — Disallowed Methods — 4/4 checks, 0ms
+  1. POST rejected — PASS
+  2. PUT rejected — PASS
+  3. PATCH rejected — PASS
+  4. DELETE rejected — PASS

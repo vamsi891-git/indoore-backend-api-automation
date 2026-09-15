@@ -1,0 +1,16 @@
+
+==================================
+API : Communication consumers — missing date for day is rejected
+DNS : 2.04 ms
+Connection : 214.35 ms
+Server Processing : 832.61 ms
+Download : 100 ms
+Total : 1149 ms
+===================================
+
+[PASS] Communication consumers — missing date for day is rejected — 5/5 checks, 1149ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

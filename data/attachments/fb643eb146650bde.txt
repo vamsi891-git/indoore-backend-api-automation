@@ -1,0 +1,14 @@
+
+==================================
+API : Network search — a negative limit is rejected
+DNS : 1.89 ms
+Connection : 214.4 ms
+Server Processing : -83.28999999999999 ms
+Download : 100 ms
+Total : 233 ms
+===================================
+
+[PASS] Network search — a negative limit is rejected — 3/3 checks, 233ms
+  1. Status Validation — PASS
+  2. Response Time — PASS
+  3. Validation Error — PASS

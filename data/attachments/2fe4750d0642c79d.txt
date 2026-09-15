@@ -1,0 +1,26 @@
+
+--------------------------------------------------
+API RESPONSE
+--------------------------------------------------
+API    : LF Analysis uniqueness (LF < 5% Last Three month)
+Status : 200
+Request:
+{
+  "month": 10,
+  "year": 2025,
+  "type": "LF < 5% Last Three month",
+  "page": 1,
+  "pageSize": 500
+}
+Body:
+{
+  "total": 14993,
+  "collected": 14993
+}
+--------------------------------------------------
+
+[FAIL] LF Analysis uniqueness (LF < 5% Last Three month) — 0/1 checks, 4732ms
+  1. LF < 5% Last Three month collected uniqueness — FAIL
+     Duplicate LF Analysis msn=97790242 dtr=rj6612 with same value=3.05
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/LF-Analysis-uniqueness-LF-5-Last-Three-month--2026-09-15T14-07-25-508Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/LF-Analysis-uniqueness-LF-5-Last-Three-month--2026-09-15T14-07-25-508Z.triage.json [heuristic] contract_mismatch/medium

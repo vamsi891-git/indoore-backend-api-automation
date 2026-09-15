@@ -1,0 +1,50 @@
+
+==================================
+API : Commands Profile Config — Init Job
+DNS : 26.66 ms
+Connection : 215.31 ms
+Server Processing : 52.02999999999997 ms
+Download : 100 ms
+Total : 394 ms
+===================================
+
+
+==================================
+API : Commands Profile Config — Query Meter Job
+DNS : 84.33 ms
+Connection : 214.54 ms
+Server Processing : -31.869999999999976 ms
+Download : 100 ms
+Total : 367 ms
+===================================
+
+[PASS] Commands Profile Config E2E — 29/29 checks, 761ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Init Success Response — PASS
+  6. Init Summary Counts — PASS
+  7. Init Successful Meters — PASS
+  8. Init Rejected Meters — PASS
+  9. Init HES Callback Configured — PASS
+  10. Init Meter Results — PASS
+  11. Init IN_PROGRESS Status — PASS
+  12. Init Message — PASS
+  13. Init Full Contract — PASS
+  14. Job Name Captured — PASS
+  15. Status — PASS
+  16. Content Type — PASS
+  17. Response Time — PASS
+  18. Sensitive Data — PASS
+  19. Query Success Response — PASS
+  20. Query Job Name Echo — PASS
+  21. Query Sync Flags — PASS
+  22. Query HES Status Code — PASS
+  23. Query Expected Meter Present — PASS
+  24. Query Finished Message — PASS
+  25. Query HES Job Status FINISHED — PASS
+  26. Query Summary Counts — PASS
+  27. Query All Meter Results — PASS
+  28. Query Profile Capture Period HES Response — PASS
+  29. Query Full Contract — PASS

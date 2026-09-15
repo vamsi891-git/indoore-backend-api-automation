@@ -1,0 +1,23 @@
+
+==================================
+API : consumer categories — ids and names are unique
+DNS : 1.96 ms
+Connection : 214.64 ms
+Server Processing : -81.6 ms
+Download : 100 ms
+Total : 235 ms
+===================================
+
+[PASS] consumer categories — ids and names are unique — 12/12 checks, 235ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Envelope — PASS
+  6. Response — PASS
+  7. Items — PASS
+  8. Fields — PASS
+  9. Duplicate IDs — PASS
+  10. Duplicate Names — PASS
+  11. Duplicate Short Names — PASS
+  12. Ascending Order — PASS

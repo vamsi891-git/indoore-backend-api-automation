@@ -1,0 +1,51 @@
+Contract snapshot mismatch — 16 difference(s):
+
+  - $.columns[0]
+      expected: {"key":"circle","header":"Circle"}
+
+  - $.columns[1]
+      expected: {"key":"month","header":"Month"}
+
+  - $.columns[2]
+      expected: {"key":"year","header":"Year"}
+
+  - $.columns[3]
+      expected: {"key":"noOfCases","header":"No Of Cases"}
+
+  - $.columns[4]
+      expected: {"key":"totalCasesAttended","header":"Total Cases Attended"}
+
+  - $.columns[5]
+      expected: {"key":"pending","header":"Pending"}
+
+  - $.columns[6]
+      expected: {"key":"amountBilled","header":"Amount Billed (In Rs.)"}
+
+  - $.columns[7]
+      expected: {"key":"amountRealisation","header":"Amount Realisation (In Rs.)"}
+
+  - $.rowFieldKeys[0]
+      expected: "amountBilled"
+
+  - $.rowFieldKeys[1]
+      expected: "amountRealisation"
+
+  - $.rowFieldKeys[2]
+      expected: "circle"
+
+  - $.rowFieldKeys[3]
+      expected: "month"
+
+  - $.rowFieldKeys[4]
+      expected: "noOfCases"
+
+  - $.rowFieldKeys[5]
+      expected: "pending"
+
+  - $.rowFieldKeys[6]
+      expected: "totalCasesAttended"
+
+  - $.rowFieldKeys[7]
+      expected: "year"
+
+If this change is intentional, re-run with UPDATE_CONTRACT_SNAPSHOTS=true to accept the new contract.

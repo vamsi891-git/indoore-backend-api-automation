@@ -1,0 +1,23 @@
+
+==================================
+API : Technical summary — alternate period still opens
+DNS : 2.36 ms
+Connection : 214.03 ms
+Server Processing : 625.61 ms
+Download : 100 ms
+Total : 942 ms
+===================================
+
+[PASS] Technical summary — alternate period still opens — 12/12 checks, 942ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Data Payload — PASS
+  6. Month Validation — PASS
+  7. Year Validation — PASS
+  8. Query Echo — PASS
+  9. Reports Validation — PASS
+  10. Duplicate Analysis Validation — PASS
+  11. Technical Category Validation — PASS
+  12. YNR Category Validation — PASS

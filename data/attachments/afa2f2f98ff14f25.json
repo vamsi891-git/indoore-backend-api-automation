@@ -1,0 +1,103 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumption/pattern-consumption",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "table"
+  ],
+  "itemKeys": [
+    "address",
+    "categoryName",
+    "circle",
+    "consumerConnectionTblRefId",
+    "currentMonthKwh",
+    "division",
+    "dtr",
+    "feeder",
+    "ivrsNumber",
+    "lastMonthKwh",
+    "lastYearSameMonthKwh",
+    "meterMake",
+    "meterSerialNo",
+    "name",
+    "phase",
+    "sanctionLoadKw",
+    "slNo",
+    "subStation",
+    "zone"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "subStation",
+      "header": "Sub Station"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtr",
+      "header": "DTR"
+    },
+    {
+      "key": "name",
+      "header": "Consumer Name"
+    },
+    {
+      "key": "address",
+      "header": "Address"
+    },
+    {
+      "key": "ivrsNumber",
+      "header": "Service No"
+    },
+    {
+      "key": "categoryName",
+      "header": "Category Name"
+    },
+    {
+      "key": "meterSerialNo",
+      "header": "Meter Serial No"
+    },
+    {
+      "key": "meterMake",
+      "header": "Meter Make"
+    },
+    {
+      "key": "phase",
+      "header": "Phase"
+    },
+    {
+      "key": "sanctionLoadKw",
+      "header": "Sanction Load"
+    },
+    {
+      "key": "currentMonthKwh",
+      "header": "Current Month (kWh)"
+    },
+    {
+      "key": "lastMonthKwh",
+      "header": "Last Month (kWh)"
+    },
+    {
+      "key": "lastYearSameMonthKwh",
+      "header": "Last Year Same Month (kWh)"
+    }
+  ]
+}

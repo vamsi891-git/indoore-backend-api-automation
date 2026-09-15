@@ -1,0 +1,23 @@
+
+==================================
+API : Nearby accounts — list size can be limited
+DNS : 2.2 ms
+Connection : 214.49 ms
+Server Processing : 1432.31 ms
+Download : 100 ms
+Total : 1749 ms
+===================================
+
+[PASS] Nearby accounts — list size can be limited — 12/12 checks, 1749ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Required Fields — PASS
+  6. Response — PASS
+  7. Root Structure — PASS
+  8. Numeric Suffix Type — PASS
+  9. Max Distance Type — PASS
+  10. Nearest Account IDs Shape — PASS
+  11. No Duplicate Account IDs — PASS
+  12. Scenario Outcome — PASS

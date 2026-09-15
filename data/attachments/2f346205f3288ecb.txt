@@ -1,0 +1,18 @@
+
+==================================
+API : Consumers by meter make — L&T meters
+DNS : 1.98 ms
+Connection : 214.56 ms
+Server Processing : 1439.46 ms
+Download : 100 ms
+Total : 1756 ms
+===================================
+
+[PASS] Consumers by meter make — L&T meters — 7/7 checks, 1756ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. OEM Distribution Scenario — PASS

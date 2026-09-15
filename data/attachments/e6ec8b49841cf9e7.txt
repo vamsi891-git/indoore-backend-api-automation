@@ -1,0 +1,12 @@
+
+==================================
+API : Can this meter serial be added? — a serial that is only spaces is rejected
+DNS : 2.22 ms
+Connection : 214.26 ms
+Server Processing : -85.47999999999999 ms
+Download : 100 ms
+Total : 231 ms
+===================================
+
+[PASS] Can this meter serial be added? — a serial that is only spaces is rejected — 1/1 checks, 231ms
+  1. Validation Error Envelope — PASS

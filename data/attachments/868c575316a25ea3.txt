@@ -1,0 +1,18 @@
+
+==================================
+API : Consumers by connection status — temporarily disconnected consumers
+DNS : 109.97 ms
+Connection : 216.51 ms
+Server Processing : 1075.52 ms
+Download : 100 ms
+Total : 1502 ms
+===================================
+
+[PASS] Consumers by connection status — temporarily disconnected consumers — 7/7 checks, 1502ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Connection Status Scenario — PASS

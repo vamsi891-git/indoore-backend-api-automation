@@ -1,0 +1,25 @@
+
+==================================
+API : Commands Meter Samples
+DNS : 2.12 ms
+Connection : 214.57 ms
+Server Processing : 245.31 ms
+Download : 100 ms
+Total : 562 ms
+===================================
+
+[PASS] Commands Meter Samples — 14/14 checks, 562ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Response — PASS
+  6. Sample Count — PASS
+  7. Meter Sample ID Sequence — PASS
+  8. Unique Meter Sample IDs — PASS
+  9. Sequence Numbers Within Device — PASS
+  10. Sample Time Within Device — PASS
+  11. All Sample Rows — PASS
+  12. Profile OBIS Consistent — PASS
+  13. Device Group Consistency — PASS
+  14. Full API Contract — PASS

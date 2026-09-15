@@ -1,0 +1,23 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/dashboard/dtr/summary",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "activeAlerts",
+    "dtrsOff",
+    "dtrsOn",
+    "period",
+    "totalDtrs"
+  ],
+  "itemKeys": [
+    "activeAlerts",
+    "dtrsOff",
+    "dtrsOn",
+    "period",
+    "totalDtrs"
+  ],
+  "hasColumnsGrid": false
+}

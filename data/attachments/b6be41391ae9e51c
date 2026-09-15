@@ -1,0 +1,217 @@
+# API defect report (for backend developer)
+
+> Automation failed on a **business/API contract** check. This usually indicates a backend, SQL, or response-mapping issue — not a test-script typo.
+
+## At a glance
+
+| Field | Value |
+|-------|-------|
+| **API** | Energy Audit Loss Analysis (dtr/billing) |
+| **Test** | Validate BILLING loss analysis |
+| **Endpoint** | GET https://api.mdm.mppkvvcl.bestinfra.app/energy-audit/loss-analysis?report-type=billing&month=12&year=2025&fromDate=2025-12-20&toDate=2025-12-20&page=1&limit=30&networkType=dtr&networkLookupId=5 |
+| **Base URL** | https://api.mdm.mppkvvcl.bestinfra.app |
+| **Response time** | 2385 ms |
+| **HTTP status** | 200 |
+| **Failed checks** | 1 / 19 |
+| **First failure** | Columns Contract |
+| **Run at** | 2026-09-15T14:20:12.319Z |
+
+## AI / heuristic triage
+
+| Field | Value |
+|-------|-------|
+| **Suggested title** | Energy Audit Loss Analysis (dtr/billing) — Columns Contract |
+| **Severity** | medium |
+| **Classification** | contract_mismatch |
+| **Likely owner** | backend |
+| **Confidence** | 0.55 |
+| **Source** | heuristic |
+
+[2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+### Recommended next steps
+
+1. Expected behavior: Grid loss analysis: inputUnits, totalSoldUnits, lossKwh, billingEfficiencyPct, lossPct with pagination.
+2. Diff actual JSON fields against mapper/validator expectations.
+3. Confirm fixture month/year/IDs still exist in this environment.
+4. Share this defect report with the API owner for the module.
+
+**Tags:** contract, ENERGY-AUDITS, Columns Contract
+
+
+## Failure detail
+
+```
+[2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+[32m- Expected  - 1[39m
+[31m+ Received  + 0[39m
+
+[33m@@ -1,7 +1,6 @@[39m
+[2m  Array [[22m
+[32m-   "slNo",[39m
+[2m    "circle",[22m
+[2m    "division",[22m
+[2m    "zone",[22m
+[2m    "feeder",[22m
+[2m    "dtrName",[22m
+```
+
+## Expected behavior (from backend / contract)
+
+Grid loss analysis: inputUnits, totalSoldUnits, lossKwh, billingEfficiencyPct, lossPct with pagination.
+
+
+## Request sent by automation
+
+```json
+{
+  "report-type": "billing",
+  "month": 12,
+  "year": 2025,
+  "fromDate": "2025-12-20",
+  "toDate": "2025-12-20",
+  "page": 1,
+  "limit": 30,
+  "networkType": "dtr",
+  "networkLookupId": 5
+}
+```
+
+## API response (excerpt)
+
+```json
+{
+  "success": true,
+  "data": {
+    "columns": [
+      {
+        "key": "circle",
+        "header": "CIRCLE"
+      },
+      {
+        "key": "division",
+        "header": "DIVISION"
+      },
+      {
+        "key": "zone",
+        "header": "ZONE"
+      },
+      {
+        "key": "feeder",
+        "header": "FEEDER"
+      },
+      {
+        "key": "dtrName",
+        "header": "DTR NAME"
+      },
+      {
+        "key": "mf",
+        "header": "MF"
+      },
+      {
+        "key": "meterSerialNumber",
+        "header": "Meter_Serial_Number"
+      },
+      {
+        "key": "inputUnits",
+        "header": "Input Units"
+      },
+      {
+        "key": "consumerCount",
+        "header": "Consumer Count"
+      },
+      {
+        "key": "totalSoldUnits",
+        "header": "Total Sold Units"
+      },
+      {
+        "key": "lossKwh",
+        "header": "Loss in KWH"
+      },
+      {
+        "key": "billingEfficiencyPct",
+        "header": "% Billing efficiency"
+      },
+      {
+        "key": "lossPct",
+        "header": "Loss %"
+      }
+    ],
+    "rows": [
+      {
+        "id": "meter-19271632",
+        "slNo": 1,
+        "dtrCode": "RJ662",
+        "dtrName": "RJ662",
+        "dtrRating": null,
+        "meterSerialNumber": "19271632",
+        "inputUnits": 0,
+        "totalSoldUnits": 0,
+        "lossKwh": 0,
+        "billingEfficiencyPct": 0,
+        "lossPct": 0,
+        "consumerCount": 5,
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "mf": "40"
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 30,
+      "total": 1,
+      "totalPages": 1
+    }
+  }
+}
+```
+
+## All failed validations
+
+1. **Columns Contract** — [2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+[32m- Expected  - 1[39m
+[31m+ Received  + 0[39m
+
+[33m@@ -1,7 +1,6 @@[39m
+[2m  Array [[22m
+[32m-   "slNo",[39m
+[2m    "circle",[22m
+[2m    "division",[22m
+[2m    "zone",[22m
+[2m    "feeder",[22m
+[2m    "dtrName",[22m
+
+## Passed checks before failure
+
+- Status
+- Content Type
+- Response Time
+- Sensitive Data
+- Response Contract
+- Pagination
+- Total Count
+- Rows Exist
+- SL No Sequence
+- Mandatory Fields
+- Field Types
+- Non-Negative Metrics
+- Row ID Format
+- Duplicate IDs
+- Duplicate Meter Serials
+- Duplicate DTR Names
+- Loss Calculations
+- Cross Field Logic
+
+## Suggested steps for developer
+
+1. Reproduce with the same query params (Postman/curl) against `https://api.mdm.mppkvvcl.bestinfra.apphttps://api.mdm.mppkvvcl.bestinfra.app/energy-audit/loss-analysis?report-type=billing&month=12&year=2025&fromDate=2025-12-20&toDate=2025-12-20&page=1&limit=30&networkType=dtr&networkLookupId=5`.
+2. Compare response with the **Expected behavior** / **AI triage** sections above.
+3. Trace the repository/service method for this report and confirm SQL filters + DTO field names.
+4. Fix backend logic or API serialization; re-run: `npx playwright test --grep "Energy Audit Loss Analysis (dtr/billing)"`.
+
+---
+*Generated by Indoore API automation — share this file in Jira/Azure DevOps/GitHub issue.*

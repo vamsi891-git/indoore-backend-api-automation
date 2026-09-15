@@ -1,0 +1,18 @@
+
+==================================
+API : Billing history — unknown meter is empty or not found
+DNS : 4.57 ms
+Connection : 214.69 ms
+Server Processing : -87.25999999999999 ms
+Download : 100 ms
+Total : 232 ms
+===================================
+
+[PASS] Billing history — unknown meter is empty or not found — 7/7 checks, 232ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Period Labels — PASS
+  7. Billing History Scenario — PASS

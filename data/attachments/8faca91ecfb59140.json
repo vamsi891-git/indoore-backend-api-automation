@@ -1,0 +1,23 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumers/{ref}/billing-history",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "items",
+    "page",
+    "pageSize",
+    "total",
+    "totalPages"
+  ],
+  "itemKeys": [
+    "items",
+    "page",
+    "pageSize",
+    "total",
+    "totalPages"
+  ],
+  "hasColumnsGrid": false
+}

@@ -1,0 +1,14 @@
+
+==================================
+API : DTR power-status-details ACCESS_TOKEN_INVALID
+DNS : 1.72 ms
+Connection : 216.43 ms
+Server Processing : -93.15 ms
+Download : 100 ms
+Total : 225 ms
+===================================
+
+[PASS] DTR Power Status Details — ACCESS_TOKEN_INVALID — 3/3 checks, 225ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

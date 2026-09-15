@@ -1,0 +1,13 @@
+
+==================================
+API : Billing cycles — missing route returns 404
+DNS : 2 ms
+Connection : 214.14 ms
+Server Processing : -93.13999999999999 ms
+Download : 100 ms
+Total : 223 ms
+===================================
+
+[PASS] Billing cycles — missing route returns 404 — 2/2 checks, 223ms
+  1. Status Validation — PASS
+  2. Response Time — PASS

@@ -1,0 +1,3 @@
+[PASS] Create Module — Duplicate Key — 2/2 checks, 1415ms
+  1. First create succeeds — PASS
+  2. Duplicate key rejected — PASS

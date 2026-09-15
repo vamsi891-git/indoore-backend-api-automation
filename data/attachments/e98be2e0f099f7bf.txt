@@ -1,0 +1,23 @@
+
+==================================
+API : Organisation search — default limit returns records
+DNS : 2.48 ms
+Connection : 214.44 ms
+Server Processing : -74.91999999999999 ms
+Download : 100 ms
+Total : 242 ms
+===================================
+
+Duplicate organization names allowed: [ 'Barwani' ]
+[PASS] Organisation search — default limit returns records — 11/11 checks, 242ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Envelope — PASS
+  6. Response — PASS
+  7. Items — PASS
+  8. Fields — PASS
+  9. Duplicate IDs — PASS
+  10. Backend Rules — PASS
+  11. Code Format — PASS

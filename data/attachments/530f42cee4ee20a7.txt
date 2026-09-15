@@ -1,0 +1,187 @@
+
+==================================
+API : Commands Payment — Init Job
+DNS : 77.49 ms
+Connection : 215.72 ms
+Server Processing : 604.79 ms
+Download : 100 ms
+Total : 998 ms
+===================================
+
+
+=== Commands Payment — payment_get — POST init response ===
+{
+  "success": true,
+  "data": {
+    "summary": {
+      "requested": 1,
+      "duplicatesRemoved": 0,
+      "successful": 1,
+      "failed": 0,
+      "rejectedOutOfScope": 0,
+      "rejectedUnknown": 0,
+      "batchesProcessed": 1
+    },
+    "successfulMeters": [
+      "99751580"
+    ],
+    "rejectedMeters": [],
+    "meterResults": [
+      {
+        "meterId": "99751580",
+        "status": "IN_PROGRESS",
+        "jobName": "1789482539900703",
+        "hesStatusCode": 200
+      }
+    ],
+    "hesCallbackConfigured": true,
+    "commandExecutionTimeMs": null,
+    "meterResponseTimeMs": null,
+    "note": "Final completion status will be delivered via HES callback."
+  },
+  "message": "Get Payment Details job initiated successfully. HES callback is configured; final completion status will be delivered asynchronously."
+}
+
+--- poll: jobName=1789482539900703, attempts=1 ---
+
+=== Commands Payment — payment_get — GET query-meter-job response ===
+{
+  "success": true,
+  "data": {
+    "jobName": "1789482539900703",
+    "synced": true,
+    "autoSynced": true,
+    "hesJobStatus": "FINISHED",
+    "hesStatusCode": 200,
+    "summary": {
+      "requested": 1,
+      "successful": 1,
+      "failed": 0,
+      "inProgress": 0,
+      "rejected": 0
+    },
+    "meterResults": [
+      {
+        "meterId": "99751580",
+        "action": "GET_CONFIG",
+        "status": "SUCCESS",
+        "hesStatusCode": 200,
+        "hesResponse": {
+          "meterId": "99751580",
+          "status": "SUCCESS",
+          "failureStep": "0",
+          "progress": null,
+          "response": [
+            {
+              "type": "PAYMENT",
+              "active": true,
+              "token": {
+                "amount": 0,
+                "time": "1970-01-01T05:29:59+05:30",
+                "amountAtLastRecharge": 0
+              },
+              "balance": {
+                "amount": 0,
+                "time": "1970-01-01T05:29:59+05:30"
+              },
+              "mode": "PREPAID"
+            }
+          ],
+          "__mdmsMeta": {
+            "startedAt": "2026-09-15T14:28:59.902Z",
+            "completedAt": "2026-09-15T14:29:04.472Z",
+            "executionDurationMs": 4570,
+            "publicRequestId": "4024472951",
+            "commandApiType": "payment_get",
+            "executionDeadlineAt": "2026-09-15T14:38:59.902Z",
+            "leaseOwner": null,
+            "leaseExpiresAt": null,
+            "retryAt": null
+          }
+        },
+        "reason": null,
+        "message": "Get Payment Details completed successfully.",
+        "note": null,
+        "meterResponse": "Mode: Prepaid; Balance: 0; Token Amount: 0",
+        "meterResponseRows": [
+          {
+            "label": "Mode",
+            "value": "Prepaid"
+          },
+          {
+            "label": "Balance",
+            "value": "0"
+          },
+          {
+            "label": "Token Amount",
+            "value": "0"
+          }
+        ]
+      }
+    ],
+    "reason": null,
+    "message": "Get Payment Details completed successfully.",
+    "note": null,
+    "meterResponse": "Mode: Prepaid; Balance: 0; Token Amount: 0",
+    "meterResponseRows": [
+      {
+        "label": "Mode",
+        "value": "Prepaid"
+      },
+      {
+        "label": "Balance",
+        "value": "0"
+      },
+      {
+        "label": "Token Amount",
+        "value": "0"
+      }
+    ]
+  },
+  "message": "Job finished on HES; meter results synced from meterStatusForJob."
+}
+
+==================================
+API : Commands Payment — Query Meter Job
+DNS : 109.74 ms
+Connection : 214.55 ms
+Server Processing : 793.71 ms
+Download : 100 ms
+Total : 1218 ms
+===================================
+
+[PASS] Commands Payment E2E — payment_get — 34/34 checks, 2216ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Init Response Envelope — PASS
+  6. Init Success Response — PASS
+  7. Init Summary Counts — PASS
+  8. Init Successful Meters — PASS
+  9. Init Rejected Meters — PASS
+  10. Init HES Callback Configured — PASS
+  11. Init Note — PASS
+  12. Init Meter Results — PASS
+  13. Init IN_PROGRESS Status — PASS
+  14. Init Message — PASS
+  15. Init Full Contract — PASS
+  16. Job Name Captured — PASS
+  17. Status — PASS
+  18. Content Type — PASS
+  19. Response Time — PASS
+  20. Sensitive Data — PASS
+  21. Query Success Response — PASS
+  22. Query Job Name Echo — PASS
+  23. Query Sync Flags — PASS
+  24. Query HES Status Code — PASS
+  25. Query Expected Meter Present — PASS
+  26. Query Response Envelope — PASS
+  27. Query Finished Message — PASS
+  28. Query HES Job Status FINISHED — PASS
+  29. Query Summary Counts — PASS
+  30. Query Summary vs Meter Results — PASS
+  31. Query Status Summary Alignment — PASS
+  32. Query All Meter Results — PASS
+  33. Query Payment HES Response — All Fields — PASS
+  34. Query Full Contract — PASS

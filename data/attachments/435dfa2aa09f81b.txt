@@ -1,0 +1,17 @@
+
+==================================
+API : Event summary — unknown meter is empty or not found
+DNS : 2.35 ms
+Connection : 214.51 ms
+Server Processing : -83.85999999999999 ms
+Download : 100 ms
+Total : 233 ms
+===================================
+
+[PASS] Event summary — unknown meter is empty or not found — 6/6 checks, 233ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Event Log Cards Scenario — PASS

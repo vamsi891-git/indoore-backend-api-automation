@@ -1,0 +1,28 @@
+{
+  "reportFile": "/home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Commands-Search-Meters-Pagination-2026-09-15T14-29-47-895Z.md",
+  "triageFile": "/home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Commands-Search-Meters-Pagination-2026-09-15T14-29-47-895Z.triage.json",
+  "triage": {
+    "triage": {
+      "title": "Commands Search Meters — Pagination — Paginated Meter Window",
+      "severity": "medium",
+      "classification": "contract_mismatch",
+      "likelyOwner": "backend",
+      "confidence": 0.55,
+      "summary": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m",
+      "nextSteps": [
+        "Expected behavior: itemStart + itemCount window returns sequential HES meter metadata rows.",
+        "Diff actual JSON fields against mapper/validator expectations.",
+        "Confirm fixture month/year/IDs still exist in this environment.",
+        "Share this defect report with the API owner for the module."
+      ],
+      "tags": [
+        "contract",
+        "HES-COMMANDS",
+        "Paginated Meter Window"
+      ]
+    },
+    "source": "heuristic"
+  },
+  "hint": "Share developer-defect-report.md with the backend team",
+  "llmEnabled": false
+}

@@ -1,0 +1,36 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/dashboard/overall-metrics",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "atrAmountChart",
+    "avgImprovement",
+    "benefitsAtrCasesDonut",
+    "benefitsAtrCasesPeriod",
+    "billingAvailability",
+    "billingEfficiency",
+    "billingEfficiencyChart",
+    "billingEfficiencyDonut",
+    "defaultLineData",
+    "disconnectionData",
+    "disconnectionSummary",
+    "expectedRoi",
+    "incentivePf",
+    "installationSummary",
+    "lineChartData",
+    "loadEnhanced",
+    "penaltyPf",
+    "revenueGainedRpu",
+    "subsidySave",
+    "totalImprovement"
+  ],
+  "itemKeys": [
+    "label",
+    "percent",
+    "value"
+  ],
+  "hasColumnsGrid": false
+}

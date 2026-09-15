@@ -1,0 +1,2 @@
+[PASS] Consumption Compare Last Month uniqueness across all pages — 1/1 checks, 11296ms
+  1. Collected uniqueness — PASS

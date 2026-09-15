@@ -1,0 +1,8 @@
+[PASS] Commands History — Command Type — 7/7 checks, 308ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Response — PASS
+  6. Rows Exist — PASS
+  7. Command Type Filter — PASS

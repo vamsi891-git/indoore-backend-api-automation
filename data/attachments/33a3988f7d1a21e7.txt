@@ -1,0 +1,28 @@
+
+==================================
+API : DTR list — search finds the DTR name or meter serial
+DNS : 1.97 ms
+Connection : 218.17 ms
+Server Processing : -40.140000000000015 ms
+Download : 100 ms
+Total : 280 ms
+===================================
+
+[PASS] DTR list — search finds the DTR name or meter serial — 17/17 checks, 280ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Zod Response Schema — PASS
+  6. Response — PASS
+  7. Columns — PASS
+  8. Items — PASS
+  9. Fields — PASS
+  10. Pagination — PASS
+  11. Query Params — PASS
+  12. Sl No Sequence — PASS
+  13. Row Keys Match Columns — PASS
+  14. Unique Meter Serials — PASS
+  15. Ascending DTR Order — PASS
+  16. Coordinates — PASS
+  17. Search Results — PASS

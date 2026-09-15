@@ -1,0 +1,4 @@
+[PASS] IND-RPT-ATZ-NEG-004 — page=0 is rejected — 3/3 checks, 0ms
+  1. Expected status — PASS
+  2. Rejected with error envelope — PASS
+  3. ErrorResponseSchema — PASS

@@ -1,0 +1,16 @@
+
+==================================
+API : DTR profile — a blank transformer code is not allowed
+DNS : 87.55 ms
+Connection : 215.09 ms
+Server Processing : 735.36 ms
+Download : 100 ms
+Total : 1138 ms
+===================================
+
+[PASS] DTR profile — a blank transformer code is not allowed — 5/5 checks, 1138ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Blank DTR Code Validation Error — PASS

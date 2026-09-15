@@ -1,0 +1,16 @@
+
+==================================
+API : Communication consumers — fromDate after toDate is rejected
+DNS : 2.35 ms
+Connection : 214.03 ms
+Server Processing : 843.6200000000001 ms
+Download : 100 ms
+Total : 1160 ms
+===================================
+
+[PASS] Communication consumers — fromDate after toDate is rejected — 5/5 checks, 1160ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

@@ -1,0 +1,136 @@
+{
+  "warnings": [
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    },
+    {
+      "code": "EMPTY_MSN",
+      "message": "report row msn is empty",
+      "field": "msn"
+    }
+  ],
+  "counts": {
+    "emptyIvrs": 0,
+    "emptyMsn": 25,
+    "emptyAnalysisType": 0,
+    "duplicateMsn": 0,
+    "duplicateIvrs": 0
+  }
+}

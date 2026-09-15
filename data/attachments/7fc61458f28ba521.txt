@@ -1,0 +1,36 @@
+
+==================================
+API : Monthly net meter — first page lists each consumer (import, export, and net may be empty)
+DNS : 112 ms
+Connection : 214.49 ms
+Server Processing : -197.49 ms
+Download : 100 ms
+Total : 229 ms
+===================================
+
+[PASS] Monthly net meter — first page lists each consumer (import, export, and net may be empty) — 25/25 checks, 229ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Data Present When 200 — PASS
+  7. Zod Response Schema — PASS
+  8. Success — PASS
+  9. Root Structure — PASS
+  10. Query Echo — PASS
+  11. Pagination Bounds — PASS
+  12. Pagination Math — PASS
+  13. Items Present When Total Positive — PASS
+  14. Business Rules — PASS
+  15. Required Item Fields — PASS
+  16. Item Structure — PASS
+  17. Serial Sequence — PASS
+  18. Unique consumers — PASS
+  19. Shared feeder allowed — PASS
+  20. Import/Export Non-Negative — PASS
+  21. Net KWH Logic — PASS
+  22. Net KVAH Logic — PASS
+  23. Null Handling — PASS
+  24. Round5 Precision — PASS
+  25. NaN Validation — PASS

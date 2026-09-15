@@ -1,0 +1,27 @@
+
+======== IMPROPER MD DOMESTIC (FILTER IGNORED) — PAGINATION COUNTS ========
+connectionCategory : domestic
+page / pageSize    : 1 / 10
+pagination.total   : 4
+pagination.totalPages : 1
+page records       : 4
+expected records   : 4
+records vs total   : MATCH
+========================================================
+
+
+======== IMPROPER MD NON-DOMESTIC (FILTER IGNORED) — PAGINATION COUNTS ========
+connectionCategory : non-domestic
+page / pageSize    : 1 / 10
+pagination.total   : 4
+pagination.totalPages : 1
+page records       : 4
+expected records   : 4
+records vs total   : MATCH
+========================================================
+
+[PASS] MD Analysis API (Improper MD connectionCategory ignored) — 4/4 checks, 738ms
+  1. Both requests return 200 — PASS
+  2. Domestic pagination.total equals non-domestic total — PASS
+  3. Improper MD duplicate contract — PASS
+  4. Improper MD non-domestic duplicate contract — PASS

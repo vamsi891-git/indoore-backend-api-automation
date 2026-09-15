@@ -1,0 +1,18 @@
+
+==================================
+API : DTR summary cards — extra unused filters are ignored
+DNS : 2.08 ms
+Connection : 214.82 ms
+Server Processing : -79.9 ms
+Download : 100 ms
+Total : 237 ms
+===================================
+
+[PASS] DTR summary cards — extra unused filters are ignored — 7/7 checks, 237ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Summary Scenario — PASS

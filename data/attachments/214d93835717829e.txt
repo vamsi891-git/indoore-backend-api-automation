@@ -1,0 +1,27 @@
+
+==================================
+API : DTR list — first page shows columns, records, and page numbers
+DNS : 4.07 ms
+Connection : 214.41 ms
+Server Processing : -47.47999999999999 ms
+Download : 100 ms
+Total : 271 ms
+===================================
+
+[PASS] DTR list — first page shows columns, records, and page numbers — 16/16 checks, 271ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Zod Response Schema — PASS
+  6. Response — PASS
+  7. Columns — PASS
+  8. Items — PASS
+  9. Fields — PASS
+  10. Pagination — PASS
+  11. Query Params — PASS
+  12. Sl No Sequence — PASS
+  13. Row Keys Match Columns — PASS
+  14. Unique Meter Serials — PASS
+  15. Ascending DTR Order — PASS
+  16. Coordinates — PASS

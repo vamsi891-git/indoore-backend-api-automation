@@ -1,0 +1,16 @@
+
+==================================
+API : Technical summary — month zero is rejected
+DNS : 2.35 ms
+Connection : 214.79 ms
+Server Processing : -89.13999999999999 ms
+Download : 100 ms
+Total : 228 ms
+===================================
+
+[PASS] Technical summary — month zero is rejected — 5/5 checks, 228ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

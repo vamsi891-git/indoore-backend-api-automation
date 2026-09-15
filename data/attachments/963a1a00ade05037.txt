@@ -1,0 +1,64 @@
+
+==================================
+API : Voltage Missing report — first page shows columns and meters
+DNS : 2.39 ms
+Connection : 214.39 ms
+Server Processing : 732.2199999999999 ms
+Download : 100 ms
+Total : 1049 ms
+===================================
+
+[PASS] Voltage Missing report — first page shows columns and meters — 53/53 checks, 1049ms
+  1. Status Code Validation — PASS
+  2. Content Type Validation — PASS
+  3. Response Time Validation — PASS
+  4. Sensitive Data Validation — PASS
+  5. Success Validation — PASS
+  6. Response Structure Validation — PASS
+  7. Analysis Type Validation — PASS
+  8. Month Validation — PASS
+  9. Year Validation — PASS
+  10. Zone column header — PASS
+  11. Duration column headers — PASS
+  12. Pagination Validation — PASS
+  13. Pagination Consistency Validation — PASS
+  14. Cross Field Validation — PASS
+  15. Row 1 Structure Validation — PASS
+  16. Row 1 Type Validation — PASS
+  17. Row 1 Null Validation — PASS
+  18. Row 1 Undefined Validation — PASS
+  19. Row 1 Empty Validation — PASS
+  20. Row 1 NaN Validation — PASS
+  21. Row 2 Structure Validation — PASS
+  22. Row 2 Type Validation — PASS
+  23. Row 2 Null Validation — PASS
+  24. Row 2 Undefined Validation — PASS
+  25. Row 2 Empty Validation — PASS
+  26. Row 2 NaN Validation — PASS
+  27. Row 3 Structure Validation — PASS
+  28. Row 3 Type Validation — PASS
+  29. Row 3 Null Validation — PASS
+  30. Row 3 Undefined Validation — PASS
+  31. Row 3 Empty Validation — PASS
+  32. Row 3 NaN Validation — PASS
+  33. Row 4 Structure Validation — PASS
+  34. Row 4 Type Validation — PASS
+  35. Row 4 Null Validation — PASS
+  36. Row 4 Undefined Validation — PASS
+  37. Row 4 Empty Validation — PASS
+  38. Row 4 NaN Validation — PASS
+  39. Row 5 Structure Validation — PASS
+  40. Row 5 Type Validation — PASS
+  41. Row 5 Null Validation — PASS
+  42. Row 5 Undefined Validation — PASS
+  43. Row 5 Empty Validation — PASS
+  44. Row 5 NaN Validation — PASS
+  45. Row 6 Structure Validation — PASS
+  46. Row 6 Type Validation — PASS
+  47. Row 6 Null Validation — PASS
+  48. Row 6 Undefined Validation — PASS
+  49. Row 6 Empty Validation — PASS
+  50. Row 6 NaN Validation — PASS
+  51. Duplicate meter contract — PASS
+  52. Duration Type Validation — PASS
+  53. Duration > 100 Validation — PASS

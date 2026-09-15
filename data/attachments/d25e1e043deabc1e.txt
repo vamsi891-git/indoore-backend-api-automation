@@ -1,0 +1,18 @@
+
+==================================
+API : DTR events — first page of alarms, each row number only once
+DNS : 2.37 ms
+Connection : 215.68 ms
+Server Processing : 986.95 ms
+Download : 100 ms
+Total : 1305 ms
+===================================
+
+[PASS] DTR events — first page of alarms, each row number only once — 7/7 checks, 1305ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Events Scenario — PASS

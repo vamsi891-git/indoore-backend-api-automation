@@ -1,0 +1,28 @@
+{
+  "reportFile": "/home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Commands-Metering-Mode-E2E-2026-09-15T14-28-58-444Z.md",
+  "triageFile": "/home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Commands-Metering-Mode-E2E-2026-09-15T14-28-58-444Z.triage.json",
+  "triage": {
+    "triage": {
+      "title": "Commands Metering Mode E2E — Query Metering Mode HES Response — All Fields",
+      "severity": "medium",
+      "classification": "contract_mismatch",
+      "likelyOwner": "backend",
+      "confidence": 0.55,
+      "summary": "\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeNull\u001b[2m()\u001b[22m",
+      "nextSteps": [
+        "Expected behavior: POST metering_mode_get returns jobName; GET query-meter-job returns FINISHED with GET_CONFIG/SUCCESS and hesResponse (meterId, status, failureStep, progress null, response null).",
+        "Diff actual JSON fields against mapper/validator expectations.",
+        "Confirm fixture month/year/IDs still exist in this environment.",
+        "Share this defect report with the API owner for the module."
+      ],
+      "tags": [
+        "contract",
+        "HES-COMMANDS",
+        "Query Metering Mode HES Response — All Fields"
+      ]
+    },
+    "source": "heuristic"
+  },
+  "hint": "Share developer-defect-report.md with the backend team",
+  "llmEnabled": false
+}

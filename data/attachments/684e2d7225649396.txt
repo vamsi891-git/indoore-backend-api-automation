@@ -1,0 +1,18 @@
+
+==================================
+API : Revenue subsidy (power factor) — report opens for the selected period
+DNS : 2.2 ms
+Connection : 215.54 ms
+Server Processing : -76.73999999999998 ms
+Download : 100 ms
+Total : 241 ms
+===================================
+
+[PASS] Revenue subsidy (power factor) — report opens for the selected period — 7/7 checks, 241ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Revenue Subsidy PF Scenario — PASS

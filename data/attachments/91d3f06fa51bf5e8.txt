@@ -1,0 +1,5 @@
+[PASS] Compare — Page 2 — 4/4 checks, 0ms
+  1. Status 200 — PASS
+  2. Pagination — PASS
+  3. Business rules — PASS
+  4. Duplicate contract — PASS

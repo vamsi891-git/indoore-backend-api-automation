@@ -1,0 +1,4 @@
+[PASS] Daily consumption — leftover unused filters are ignored — 3/3 checks, 0ms
+  1. Status 200 — PASS
+  2. Unique consumers — PASS
+  3. Shared feeder allowed — PASS

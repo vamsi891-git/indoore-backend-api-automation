@@ -1,0 +1,13 @@
+
+==================================
+API : Main-sub meters — missing route returns 404
+DNS : 2.29 ms
+Connection : 215.02 ms
+Server Processing : -95.31 ms
+Download : 100 ms
+Total : 222 ms
+===================================
+
+[PASS] Main-sub meters — missing route returns 404 — 2/2 checks, 222ms
+  1. Status Validation — PASS
+  2. Response Time — PASS

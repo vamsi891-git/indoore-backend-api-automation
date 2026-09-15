@@ -1,0 +1,17 @@
+
+==================================
+API : DTR statistic cards — load, energy, consumers, and status
+DNS : 70.97 ms
+Connection : 215.79 ms
+Server Processing : 79.23999999999998 ms
+Download : 100 ms
+Total : 466 ms
+===================================
+
+[PASS] DTR statistic cards — load, energy, consumers, and status — 6/6 checks, 466ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. DTR Statistics Scenario — PASS

@@ -1,0 +1,18 @@
+
+==================================
+API : Consumer report — invalid report type still returns the LS grid
+DNS : 2.1 ms
+Connection : 215.29 ms
+Server Processing : -19.390000000000015 ms
+Download : 100 ms
+Total : 298 ms
+===================================
+
+[PASS] Consumer report — invalid report type still returns the LS grid — 7/7 checks, 298ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Consumer Report Scenario — PASS

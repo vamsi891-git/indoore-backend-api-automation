@@ -1,0 +1,39 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/consumers/{ref}/event-log/list",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "page",
+    "pageSize",
+    "rows",
+    "totalCount",
+    "totalPages"
+  ],
+  "itemKeys": [
+    "Event",
+    "description",
+    "duration",
+    "durationSeconds",
+    "eventAtIso",
+    "eventCategory",
+    "eventCode",
+    "eventName",
+    "eventTblRefId",
+    "id",
+    "meterNo",
+    "meterSerialNumber",
+    "occurDateTime",
+    "phase",
+    "restorationState",
+    "restoreDateTime",
+    "restoredAtIso",
+    "serialNo",
+    "severity",
+    "source",
+    "status"
+  ],
+  "hasColumnsGrid": false
+}

@@ -1,0 +1,4 @@
+[PASS] Commands Meter Info — Unknown Serial — 3/3 checks, 325ms
+  1. Status (not found) — PASS
+  2. Content Type — PASS
+  3. Error Response — PASS

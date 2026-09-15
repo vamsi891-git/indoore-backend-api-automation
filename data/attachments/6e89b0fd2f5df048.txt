@@ -1,0 +1,26 @@
+
+==================================
+API : Commands Meter Lookup
+DNS : 69.99 ms
+Connection : 215.87 ms
+Server Processing : -21.860000000000014 ms
+Download : 100 ms
+Total : 364 ms
+===================================
+
+[PASS] Commands Meter Lookup — 15/15 checks, 364ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Response — PASS
+  6. Meter Lookup ID — PASS
+  7. Meter Serial Number — PASS
+  8. Consumer Name — PASS
+  9. Phase — PASS
+  10. IVRS Number — PASS
+  11. Nullable Fields Trimmed — PASS
+  12. Feeder — PASS
+  13. DTR — PASS
+  14. Network Hierarchy — PASS
+  15. Full API Contract — PASS

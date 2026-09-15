@@ -1,0 +1,59 @@
+
+==================================
+API : Consumer report LS — first page shows columns and intervals
+DNS : 2.25 ms
+Connection : 214.15 ms
+Server Processing : 2604.6 ms
+Download : 100 ms
+Total : 2921 ms
+===================================
+
+{
+  "msg": "consumer_report_live_response",
+  "scenario": "dev_live_ls",
+  "query": {
+    "fromDate": "2025-10-01",
+    "toDate": "2025-10-30",
+    "meterSerialNumber": "14080783",
+    "report-type": "ls",
+    "page": 1,
+    "limit": 10,
+    "includeTotal": true
+  },
+  "queryString": "fromDate=2025-10-01&toDate=2025-10-30&meterSerialNumber=14080783&report-type=ls&page=1&limit=10&includeTotal=true",
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 2877,
+    "totalPages": 288,
+    "totalIsExact": true,
+    "hasMore": true
+  },
+  "columnKeys": [
+    "slNo",
+    "dateTime",
+    "voltage",
+    "current",
+    "kWh",
+    "kVAh"
+  ],
+  "rowCount": 10,
+  "sampleRow": {
+    "id": "row-1",
+    "slNo": 1,
+    "dateTime": "2025-10-01 00:00",
+    "voltage": "250.100",
+    "current": "0.090",
+    "kWh": "0.00",
+    "kVAh": "0.00",
+    "phases": null
+  }
+}
+[PASS] Consumer report LS — first page shows columns and intervals — 7/7 checks, 2921ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Consumer Report Scenario — PASS

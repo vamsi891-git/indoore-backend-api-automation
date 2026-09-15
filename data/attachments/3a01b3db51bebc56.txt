@@ -1,0 +1,10 @@
+[PASS] Urgency level 6 events — dtrs is treated as DTR meters — 9/9 checks, 231ms
+  1. Status — PASS
+  2. Content — PASS
+  3. Performance — PASS
+  4. Sensitive Data — PASS
+  5. Response — PASS
+  6. Urgency chart — PASS
+  7. No duplicate phase labels — PASS
+  8. No duplicate trend series names — PASS
+  9. No duplicate trend point keys — PASS

@@ -1,0 +1,14 @@
+
+==================================
+API : DTR voltage-unbalance-details ACCESS_TOKEN_INVALID
+DNS : 1.78 ms
+Connection : 214.02 ms
+Server Processing : -90.80000000000001 ms
+Download : 100 ms
+Total : 225 ms
+===================================
+
+[PASS] DTR Voltage Unbalance Details — ACCESS_TOKEN_INVALID — 3/3 checks, 225ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

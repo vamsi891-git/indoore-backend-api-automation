@@ -1,0 +1,17 @@
+
+==================================
+API : DTR statistic cards — extra filters that nobody uses are ignored
+DNS : 107.18 ms
+Connection : 214.03 ms
+Server Processing : -183.21 ms
+Download : 100 ms
+Total : 238 ms
+===================================
+
+[PASS] DTR statistic cards — extra filters that nobody uses are ignored — 6/6 checks, 238ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. DTR Statistics Scenario — PASS

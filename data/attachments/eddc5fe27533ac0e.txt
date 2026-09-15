@@ -1,0 +1,3 @@
+[PASS] DTR Detail — Invalid ID — 2/2 checks, 0ms
+  1. Status (client error) — PASS
+  2. Error envelope — PASS

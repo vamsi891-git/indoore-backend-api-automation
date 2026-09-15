@@ -1,0 +1,31 @@
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+[FAIL] Meter Validation — Empty/Missing — 0/5 checks, 0ms
+  1. Empty status — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  2. Empty error — FAIL
+     expect(received).toContain(expected) // indexOf
+  3. Missing status — FAIL
+     expect(received).toBe(expected) // Object.is equality
+  4. Missing error — FAIL
+     expect(received).toContain(expected) // indexOf
+  5. Whitespace status — FAIL
+     expect(received).toContain(expected) // indexOf
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Validation-Empty-Missing-2026-09-15T17-09-16-810Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Validation-Empty-Missing-2026-09-15T17-09-16-810Z.triage.json [heuristic] contract_mismatch/medium

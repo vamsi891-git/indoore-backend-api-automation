@@ -1,0 +1,16 @@
+[PASS] Monthly billing — a meter with no consumer name, zero PF, or a placeholder MD date is still valid — 15/15 checks, 0ms
+  1. Required Fields — PASS
+  2. Columns — PASS
+  3. Grid meta — PASS
+  4. Billing Items — PASS
+  5. Sparse hierarchy — PASS
+  6. Power Factor — PASS
+  7. Energy Calculation — PASS
+  8. KVAH Calculation — PASS
+  9. Electrical Business Rules — PASS
+  10. Export Energy — PASS
+  11. MD occurrence time — PASS
+  12. Billing Month Year — PASS
+  13. Unique readings — PASS
+  14. Shared keys allowed — PASS
+  15. NaN — PASS

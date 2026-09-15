@@ -1,0 +1,12 @@
+
+==================================
+API : Auth CSRF Preflight
+DNS : 1.83 ms
+Connection : 215.19 ms
+Server Processing : 752.98 ms
+Download : 100 ms
+Total : 1070 ms
+===================================
+
+[PASS] Auth Login API — 1/1 checks, 1070ms
+  1. Preflight Response Time — PASS

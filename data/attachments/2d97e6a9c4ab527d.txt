@@ -1,0 +1,14 @@
+
+==================================
+API : Revenue subsidy PF ACCESS_TOKEN_INVALID
+DNS : 1.9 ms
+Connection : 215.7 ms
+Server Processing : -93.6 ms
+Download : 100 ms
+Total : 224 ms
+===================================
+
+[PASS] Revenue subsidy PF cannot open with an invalid login token — 3/3 checks, 224ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

@@ -1,0 +1,7 @@
+[PASS] LF — lt 5 last 3m — 6/6 checks, 0ms
+  1. Status 200 — PASS
+  2. Query echo — PASS
+  3. Grid columns — PASS
+  4. LF threshold — PASS
+  5. LF<5% echoes 5 — PASS
+  6. Duplicate LF — PASS

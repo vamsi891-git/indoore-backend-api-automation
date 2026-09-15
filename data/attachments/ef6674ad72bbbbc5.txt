@@ -1,0 +1,12 @@
+[PASS] Day-by-day billing — two meters on the same feeder can share a DTR, and a no-usage day is allowed — 11/11 checks, 0ms
+  1. Required Fields — PASS
+  2. Columns — PASS
+  3. Has more — PASS
+  4. Meter details — PASS
+  5. Consumer — PASS
+  6. Daily kWh — PASS
+  7. Daily reading trend — PASS
+  8. Days in month — PASS
+  9. Unique readings — PASS
+  10. Shared keys allowed — PASS
+  11. Null-safe hierarchy — PASS

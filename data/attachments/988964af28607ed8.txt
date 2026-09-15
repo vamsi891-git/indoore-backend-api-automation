@@ -1,0 +1,14 @@
+
+==================================
+API : Consumer connection-status UNAUTHORIZED
+DNS : 79.69 ms
+Connection : 214.45 ms
+Server Processing : -171.14 ms
+Download : 100 ms
+Total : 223 ms
+===================================
+
+[PASS] Consumer Connection Status — UNAUTHORIZED — 3/3 checks, 223ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

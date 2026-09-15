@@ -1,0 +1,16 @@
+
+==================================
+API : DTR energy over time — DAILY in capital letters still works or is rejected
+DNS : 2.11 ms
+Connection : 215.69 ms
+Server Processing : -74.80000000000001 ms
+Download : 100 ms
+Total : 243 ms
+===================================
+
+[PASS] DTR energy over time — DAILY in capital letters still works or is rejected — 5/5 checks, 243ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Invalid Period Error — PASS

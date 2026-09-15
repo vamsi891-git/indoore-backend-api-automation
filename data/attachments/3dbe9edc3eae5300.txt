@@ -1,0 +1,89 @@
+
+==================================
+API : Communication DTRs — range first page shows columns and DTRs
+DNS : 4.88 ms
+Connection : 214.31 ms
+Server Processing : 184.81 ms
+Download : 100 ms
+Total : 504 ms
+===================================
+
+{
+  "msg": "communication_dtrs_live_response",
+  "scenario": "dev_live_range",
+  "query": {
+    "periodType": "range",
+    "page": 1,
+    "limit": 50,
+    "fromDate": "2025-10-01",
+    "toDate": "2025-10-30"
+  },
+  "queryString": "periodType=range&page=1&limit=50&fromDate=2025-10-01&toDate=2025-10-30",
+  "pagination": {
+    "page": 1,
+    "limit": 50,
+    "total": 1070,
+    "totalPages": 22,
+    "totalIsExact": true,
+    "hasMore": true
+  },
+  "columnKeys": [
+    "slNo",
+    "circle",
+    "division",
+    "zone",
+    "subStation",
+    "feederName",
+    "dtrName",
+    "feederCode",
+    "dtrCode",
+    "newDtrCode",
+    "dtrCapacity",
+    "meterSerialNumber",
+    "meterMake",
+    "mf",
+    "latitude",
+    "longitude",
+    "serviceDate",
+    "ipCount",
+    "dpCount",
+    "lsCount"
+  ],
+  "rowCount": 50,
+  "sampleRow": {
+    "id": "row-1-19271632-19",
+    "slNo": 1,
+    "dtrNetworkLookupId": 19,
+    "meterLookupId": 108401,
+    "circle": "Indore city circle",
+    "division": "CENTRAL",
+    "zone": "Hawabangla",
+    "subStation": "PragatiNagar",
+    "feederName": "Parmanu Nagar",
+    "dtrName": "RJ662",
+    "feederCode": "F3",
+    "dtrCode": "RJ662",
+    "newDtrCode": "HBZ0000109",
+    "dtrCapacity": "100",
+    "meterSerialNumber": "19271632",
+    "meterMake": "L&T",
+    "mf": "40",
+    "latitude": "22.672940",
+    "longitude": "75.824139",
+    "serviceDate": "2019-12-17 14:27:41.44",
+    "ipCount": 0,
+    "dpCount": 0,
+    "lsCount": 0,
+    "billingCount": 1,
+    "billingMappingStatus": "OK",
+    "eventCount": 0
+  }
+}
+[PASS] Communication DTRs — range first page shows columns and DTRs — 7/7 checks, 504ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Communication DTRs Scenario — PASS

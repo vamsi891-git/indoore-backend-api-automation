@@ -1,0 +1,85 @@
+
+==================================
+API : DTR billing — 1–30 Oct 2025 first page (null total is valid)
+DNS : 71.66 ms
+Connection : 214.58 ms
+Server Processing : -29.23999999999998 ms
+Download : 100 ms
+Total : 357 ms
+===================================
+
+{
+  "msg": "dtr_billing_live_response",
+  "scenario": "dev_live_without_total",
+  "query": {
+    "fromDate": "2025-10-01",
+    "toDate": "2025-10-30",
+    "page": 1,
+    "limit": 10,
+    "includeTotal": false
+  },
+  "queryString": "fromDate=2025-10-01&toDate=2025-10-30&page=1&limit=10&includeTotal=false",
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": null,
+    "totalPages": null,
+    "totalIsExact": false,
+    "hasMore": true
+  },
+  "columnKeys": [
+    "slNo",
+    "circle",
+    "division",
+    "zone",
+    "subStation",
+    "feeder",
+    "dtr",
+    "dtrRating",
+    "meterSerialNumber",
+    "meterTime",
+    "billingDate",
+    "kwhImp",
+    "kwhExp",
+    "kvahImp",
+    "kvahExp",
+    "kwImp",
+    "kwDateTime",
+    "kvaImp",
+    "kvaDateTime",
+    "mf"
+  ],
+  "rowCount": 10,
+  "note": "includeTotal=false: null total with rows is valid",
+  "sampleRow": {
+    "id": "row-1-19270969",
+    "slNo": 1,
+    "circle": "Indore city circle",
+    "division": "WEST",
+    "zone": "GPH",
+    "subStation": "NIRANJANPURMLZ",
+    "feeder": "E.W.S.(CHQ)",
+    "dtr": "ML8120",
+    "dtrRating": "200",
+    "meterSerialNumber": "19270969",
+    "meterTime": "01-10-2025 00:00",
+    "billingDate": "01-10-2025 00:00",
+    "kwhImp": "10.12",
+    "kwhExp": "0.00",
+    "kvahImp": "10.25",
+    "kvahExp": "0.00",
+    "kwImp": "0.0005",
+    "kwDateTime": "24-09-2025 07:25",
+    "kvaImp": "0.0005",
+    "kvaDateTime": null,
+    "mf": "80"
+  }
+}
+[PASS] DTR billing — 1–30 Oct 2025 first page (null total is valid) — 7/7 checks, 357ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Billing Scenario — PASS

@@ -1,0 +1,8 @@
+[PASS] Transformer sizes — October 2025 sample matches the live layout — 7/7 checks, 0ms
+  1. Zod Response Schema — PASS
+  2. Required Fields — PASS
+  3. Items — PASS
+  4. Fields — PASS
+  5. Unique ids — PASS
+  6. Unique values — PASS
+  7. Ascending order — PASS

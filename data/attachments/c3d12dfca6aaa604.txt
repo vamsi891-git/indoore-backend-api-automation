@@ -1,0 +1,18 @@
+
+==================================
+API : Consumers by category — residential connections
+DNS : 80.22 ms
+Connection : 214.54 ms
+Server Processing : 2097.2400000000002 ms
+Download : 100 ms
+Total : 2492 ms
+===================================
+
+[PASS] Consumers by category — residential connections — 7/7 checks, 2492ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Category Distribution Scenario — PASS

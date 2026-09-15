@@ -1,0 +1,18 @@
+
+==================================
+API : Consumers by meter phase — high-tension meters
+DNS : 2.5 ms
+Connection : 214.55 ms
+Server Processing : 1223.95 ms
+Download : 100 ms
+Total : 1541 ms
+===================================
+
+[PASS] Consumers by meter phase — high-tension meters — 7/7 checks, 1541ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Phase Distribution Scenario — PASS

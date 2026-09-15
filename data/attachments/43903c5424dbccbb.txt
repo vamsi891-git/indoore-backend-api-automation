@@ -1,0 +1,14 @@
+
+==================================
+API : DTR communication-details ACCESS_TOKEN_INVALID
+DNS : 1.82 ms
+Connection : 215.55 ms
+Server Processing : -92.37 ms
+Download : 100 ms
+Total : 225 ms
+===================================
+
+[PASS] DTR Communication Details — ACCESS_TOKEN_INVALID — 3/3 checks, 225ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

@@ -1,0 +1,19 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/utils/events",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "items"
+  ],
+  "itemKeys": [
+    "code",
+    "description",
+    "eventReferenceTable",
+    "id",
+    "name"
+  ],
+  "hasColumnsGrid": false
+}

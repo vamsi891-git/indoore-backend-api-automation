@@ -1,0 +1,14 @@
+
+==================================
+API : Feeder profile UNAUTHORIZED
+DNS : 2.31 ms
+Connection : 215.73 ms
+Server Processing : -96.03999999999999 ms
+Download : 100 ms
+Total : 222 ms
+===================================
+
+[PASS] Feeder profile — UNAUTHORIZED — 3/3 checks, 222ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

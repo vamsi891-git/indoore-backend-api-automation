@@ -1,0 +1,23 @@
+
+==================================
+API : Commands Meter Alarms
+DNS : 104.55 ms
+Connection : 216.14 ms
+Server Processing : 867.3100000000001 ms
+Download : 100 ms
+Total : 1288 ms
+===================================
+
+[PASS] Commands Meter Alarms — 12/12 checks, 1288ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Response — PASS
+  6. Alarm Count — PASS
+  7. Meter Alarm ID Sequence — PASS
+  8. Unique Meter Alarm IDs — PASS
+  9. All Alarm Rows — PASS
+  10. Sequence Numbers Consecutive Same Meter — PASS
+  11. Alarm Time Consecutive Same Meter — PASS
+  12. Full API Contract — PASS

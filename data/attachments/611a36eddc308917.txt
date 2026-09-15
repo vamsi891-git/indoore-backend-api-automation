@@ -1,0 +1,39 @@
+
+==================================
+API : Daily consumption — first page lists each consumer (readings may be empty)
+DNS : 108.99 ms
+Connection : 214.52 ms
+Server Processing : -193.51 ms
+Download : 100 ms
+Total : 230 ms
+===================================
+
+[PASS] Daily consumption — first page lists each consumer (readings may be empty) — 28/28 checks, 230ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Data Present When 200 — PASS
+  7. Zod Response Schema — PASS
+  8. Mapped Required Fields — PASS
+  9. Success — PASS
+  10. Root Structure — PASS
+  11. Query Echo — PASS
+  12. Pagination Bounds — PASS
+  13. Pagination Math — PASS
+  14. Items Present When Total Positive — PASS
+  15. Business Rules — PASS
+  16. Item Required Fields — PASS
+  17. Item Structure — PASS
+  18. Serial Sequence — PASS
+  19. Unique consumers — PASS
+  20. Shared feeder allowed — PASS
+  21. Reading Date Format — PASS
+  22. Null Reading Bundle — PASS
+  23. kWh Derivation — PASS
+  24. Round5 Precision — PASS
+  25. Non Negative Readings — PASS
+  26. Reading Dates When Present — PASS
+  27. MSN When Present — PASS
+  28. No NaN — PASS

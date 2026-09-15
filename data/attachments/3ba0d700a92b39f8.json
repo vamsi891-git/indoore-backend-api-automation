@@ -1,0 +1,32 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/asset-management/organisation-hierarchy",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "hierarchy"
+  ],
+  "nodeKeys": [
+    "children",
+    "dtrs",
+    "hierarchyLevel",
+    "officeCode",
+    "officeName",
+    "organisationLookupId"
+  ],
+  "dtrKeys": [
+    "consumerCount",
+    "dtrCode",
+    "dtrMeter",
+    "dtrName",
+    "networkLookupId"
+  ],
+  "dtrMeterKeys": [
+    "latitude",
+    "longitude",
+    "meterLookupId",
+    "meterSerialNumber"
+  ]
+}

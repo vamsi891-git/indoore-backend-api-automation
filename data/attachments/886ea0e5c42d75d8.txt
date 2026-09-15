@@ -1,0 +1,12 @@
+[PASS] DTR talking to the system — 11/11 checks, 228ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Response Validation — PASS
+  6. Period — PASS
+  7. Point Count — PASS
+  8. Points Validation — PASS
+  9. Unique Labels — PASS
+  10. Totals Validation — PASS
+  11. Communication Status — PASS

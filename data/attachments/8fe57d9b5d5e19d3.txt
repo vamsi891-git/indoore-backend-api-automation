@@ -1,0 +1,6 @@
+[PASS] User Status Toggle — 5/5 checks, 1421ms
+  1. Suspend Status Code — PASS
+  2. Validate Suspended Status — PASS
+  3. Restore Active Status Code — PASS
+  4. Validate Restored Active Status — PASS
+  5. Verify Status Persisted — PASS

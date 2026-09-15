@@ -1,0 +1,14 @@
+
+==================================
+API : Connect and disconnect by month ACCESS_TOKEN_INVALID
+DNS : 1.97 ms
+Connection : 215.03 ms
+Server Processing : -94 ms
+Download : 100 ms
+Total : 223 ms
+===================================
+
+[PASS] Connect and disconnect by month — ACCESS_TOKEN_INVALID — 3/3 checks, 223ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

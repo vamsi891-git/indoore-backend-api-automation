@@ -1,0 +1,14 @@
+
+==================================
+API : Dashboard metrics ACCESS_TOKEN_INVALID
+DNS : 2.32 ms
+Connection : 214.43 ms
+Server Processing : -92.75 ms
+Download : 100 ms
+Total : 224 ms
+===================================
+
+[PASS] Dashboard Metrics — ACCESS_TOKEN_INVALID — 3/3 checks, 224ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

@@ -1,0 +1,91 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/reports/event-detail",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "address",
+    "division",
+    "dtr",
+    "durationHhMm",
+    "eventClassificationName",
+    "eventCount",
+    "eventId",
+    "eventName",
+    "feeder",
+    "id",
+    "ivrsNumber",
+    "meterLookupId",
+    "msn",
+    "name",
+    "phase",
+    "tariff",
+    "zone"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtr",
+      "header": "DTR"
+    },
+    {
+      "key": "name",
+      "header": "Consumer Name"
+    },
+    {
+      "key": "address",
+      "header": "Address"
+    },
+    {
+      "key": "ivrsNumber",
+      "header": "IVRS Number"
+    },
+    {
+      "key": "tariff",
+      "header": "Tariff"
+    },
+    {
+      "key": "msn",
+      "header": "MSN"
+    },
+    {
+      "key": "phase",
+      "header": "Phase"
+    },
+    {
+      "key": "eventClassificationName",
+      "header": "EventClassification_Name"
+    },
+    {
+      "key": "eventName",
+      "header": "Event_Name"
+    },
+    {
+      "key": "eventCount",
+      "header": "EventCount"
+    },
+    {
+      "key": "durationHhMm",
+      "header": "Duration"
+    }
+  ]
+}

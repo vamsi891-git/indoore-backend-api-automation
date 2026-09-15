@@ -1,0 +1,5 @@
+[FAIL] Aberrations — Missing Auth — 0/1 checks, 0ms
+  1. Unauthorized — FAIL
+     expect(received).toBe(expected) // Object.is equality
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Aberrations-Missing-Auth-2026-09-15T17-40-27-810Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Aberrations-Missing-Auth-2026-09-15T17-40-27-810Z.triage.json [heuristic] contract_mismatch/medium

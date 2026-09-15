@@ -1,0 +1,18 @@
+
+==================================
+API : Event report — showing 1 per page returns at most 1 record
+DNS : 6.19 ms
+Connection : 214.98 ms
+Server Processing : 50.83000000000001 ms
+Download : 100 ms
+Total : 372 ms
+===================================
+
+[PASS] Event report — showing 1 per page returns at most 1 record — 7/7 checks, 372ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. Event Report Scenario — PASS

@@ -1,0 +1,422 @@
+# API defect report (for backend developer)
+
+> Automation failed on a **business/API contract** check. This usually indicates a backend, SQL, or response-mapping issue — not a test-script typo.
+
+## At a glance
+
+| Field | Value |
+|-------|-------|
+| **API** | Energy Audit Hourly Loss Report (dtr) |
+| **Test** | Validate dtr hourly loss report |
+| **Endpoint** | GET https://api.mdm.mppkvvcl.bestinfra.app/energy-audit/hourly-loss-report?hierarchyType=dtr&networkLookupId=5&fromDate=2025-12-20&toDate=2025-12-20&page=1&limit=10 |
+| **Base URL** | https://api.mdm.mppkvvcl.bestinfra.app |
+| **Response time** | 1616 ms |
+| **HTTP status** | 200 |
+| **Failed checks** | 1 / 22 |
+| **First failure** | Summary Row Count |
+| **Run at** | 2026-09-15T14:20:07.580Z |
+
+## AI / heuristic triage
+
+| Field | Value |
+|-------|-------|
+| **Suggested title** | Energy Audit Hourly Loss Report (dtr) — Summary Row Count |
+| **Severity** | medium |
+| **Classification** | contract_mismatch |
+| **Likely owner** | backend |
+| **Confidence** | 0.55 |
+| **Source** | heuristic |
+
+[2mexpect([22m[31mreceived[39m[2m).[22mtoBeGreaterThanOrEqual[2m([22m[32mexpected[39m[2m)[22m
+
+### Recommended next steps
+
+1. Expected behavior: Hourly loss grid with H1..H24 buckets, total = sum(hours), pagination; empty dataset returns total=0.
+2. Diff actual JSON fields against mapper/validator expectations.
+3. Confirm fixture month/year/IDs still exist in this environment.
+4. Share this defect report with the API owner for the module.
+
+**Tags:** contract, ENERGY-AUDITS, Summary Row Count
+
+
+## Failure detail
+
+```
+[2mexpect([22m[31mreceived[39m[2m).[22mtoBeGreaterThanOrEqual[2m([22m[32mexpected[39m[2m)[22m
+
+Expected: >= [32m24[39m
+Received:    [31m8[39m
+```
+
+## Expected behavior (from backend / contract)
+
+Hourly loss grid with H1..H24 buckets, total = sum(hours), pagination; empty dataset returns total=0.
+
+
+## Request sent by automation
+
+```json
+{
+  "hierarchyType": "dtr",
+  "networkLookupId": 5,
+  "fromDate": "2025-12-20",
+  "toDate": "2025-12-20",
+  "page": 1,
+  "limit": 10
+}
+```
+
+## API response (excerpt)
+
+```json
+{
+  "success": true,
+  "data": {
+    "columns": [
+      {
+        "key": "rowKind",
+        "header": "Row Kind"
+      },
+      {
+        "key": "circle",
+        "header": "Circle"
+      },
+      {
+        "key": "division",
+        "header": "Division"
+      },
+      {
+        "key": "zone",
+        "header": "Zone"
+      },
+      {
+        "key": "substation",
+        "header": "Substation"
+      },
+      {
+        "key": "feeder",
+        "header": "Feeder"
+      },
+      {
+        "key": "dtrName",
+        "header": "DTR Name"
+      },
+      {
+        "key": "dtrMeterSerialNumber",
+        "header": "DTR Meter Serial"
+      },
+      {
+        "key": "consumerName",
+        "header": "Consumer Name"
+      },
+      {
+        "key": "meterSerialNumber",
+        "header": "Meter Serial Number"
+      },
+      {
+        "key": "mf",
+        "header": "MF"
+      },
+      {
+        "key": "H1",
+        "header": "H1"
+      },
+      {
+        "key": "H2",
+        "header": "H2"
+      },
+      {
+        "key": "H3",
+        "header": "H3"
+      },
+      {
+        "key": "H4",
+        "header": "H4"
+      },
+      {
+        "key": "H5",
+        "header": "H5"
+      },
+      {
+        "key": "H6",
+        "header": "H6"
+      },
+      {
+        "key": "H7",
+        "header": "H7"
+      },
+      {
+        "key": "H8",
+        "header": "H8"
+      },
+      {
+        "key": "H9",
+        "header": "H9"
+      },
+      {
+        "key": "H10",
+        "header": "H10"
+      },
+      {
+        "key": "H11",
+        "header": "H11"
+      },
+      {
+        "key": "H12",
+        "header": "H12"
+      },
+      {
+        "key": "H13",
+        "header": "H13"
+      },
+      {
+        "key": "H14",
+        "header": "H14"
+      },
+      {
+        "key": "H15",
+        "header": "H15"
+      },
+      {
+        "key": "H16",
+        "header": "H16"
+      },
+      {
+        "key": "H17",
+        "header": "H17"
+      },
+      {
+        "key": "H18",
+        "header": "H18"
+      },
+      {
+        "key": "H19",
+        "header": "H19"
+      },
+      {
+        "key": "H20",
+        "header": "H20"
+      },
+      {
+        "key": "H21",
+        "header": "H21"
+      },
+      {
+        "key": "H22",
+        "header": "H22"
+      },
+      {
+        "key": "H23",
+        "header": "H23"
+      },
+      {
+        "key": "H24",
+        "header": "H24"
+      },
+      {
+        "key": "total",
+        "header": "Total"
+      }
+    ],
+    "rows": [
+      {
+        "id": "summary-dtr-108401",
+        "rowKind": "dtrConsumption",
+        "consumerName": "DTR Consumption",
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "substation": "PragatiNagar",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "dtrName": "RJ662",
+        "dtrMeterSerialNumber": "19271632",
+        "meterSerialNumber": null,
+        "mf": 40,
+        "total": 0,
+        "H1": 0,
+        "H2": 0,
+        "H3": 0,
+        "H4": 0,
+        "H5": 0,
+        "H6": 0,
+        "H7": 0,
+        "H8": 0,
+        "H9": 0,
+        "H10": 0,
+        "H11": 0,
+        "H12": 0,
+        "H13": 0,
+        "H14": 0,
+        "H15": 0,
+        "H16": 0,
+        "H17": 0,
+        "H18": 0,
+        "H19": 0,
+        "H20": 0,
+        "H21": 0,
+        "H22": 0,
+        "H23": 0,
+        "H24": 0
+      },
+      {
+        "id": "summary-consumer-108401",
+        "rowKind": "consumerConsumption",
+        "consumerName": "Consumer Consumption",
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "substation": "PragatiNagar",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "dtrName": "RJ662",
+        "dtrMeterSerialNumber": "19271632",
+        "meterSerialNumber": null,
+        "mf": 40,
+        "total": 0,
+        "H1": 0,
+        "H2": 0,
+        "H3": 0,
+        "H4": 0,
+        "H5": 0,
+        "H6": 0,
+        "H7": 0,
+        "H8": 0,
+        "H9": 0,
+        "H10": 0,
+        "H11": 0,
+        "H12": 0,
+        "H13": 0,
+        "H14": 0,
+        "H15": 0,
+        "H16": 0,
+        "H17": 0,
+        "H18": 0,
+        "H19": 0,
+        "H20": 0,
+        "H21": 0,
+        "H22": 0,
+        "H23": 0,
+        "H24": 0
+      },
+      {
+        "id": "summary-loss-108401",
+        "rowKind": "lossPercentage",
+        "consumerName": "Loss Percentage",
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "substation": "PragatiNagar",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "dtrName": "RJ662",
+        "dtrMeterSerialNumber": "19271632",
+        "meterSerialNumber": null,
+        "mf": 40,
+        "total": 0,
+        "H1": 0,
+        "H2": 0,
+        "H3": 0,
+        "H4": 0,
+        "H5": 0,
+        "H6": 0,
+        "H7": 0,
+        "H8": 0,
+        "H9": 0,
+        "H10": 0,
+        "H11": 0,
+        "H12": 0,
+        "H13": 0,
+        "H14": 0,
+        "H15": 0,
+        "H16": 0,
+        "H17": 0,
+        "H18": 0,
+        "H19": 0,
+        "H20": 0,
+        "H21": 0,
+        "H22": 0,
+        "H23": 0,
+        "H24": 0
+      },
+      {
+        "id": "meter-14080744",
+        "rowKind": "consumer",
+        "circle": "Indore city circle",
+        "division": "CENTRAL",
+        "zone": "Hawabangla",
+        "substation": "PragatiNagar",
+        "feeder": "PARMANU NAGAR(CHQ)",
+        "dtrName": "RJ662",
+        "dtrMeterSerialNumber": "19271632",
+        "meterSerialNumber": "14080744",
+        "mf": 1,
+        "consumerName": "JITENDRA KUMAR SAINI",
+        "total": 0,
+        "H1": 0,
+        "H2": 0,
+        "H3": 0,
+        "H4": 0,
+        "H5": 0,
+        "H6": 0,
+        "H7": 0,
+        "H8": 0,
+        "H9": 0,
+        "H10": 0,
+        "H11": 0,
+        "H12": 0,
+        "H13": 0,
+        "H14": 0,
+        "H15": 0,
+        "H16": 0,
+        "H17": 0,
+        "H18": 0,
+        "H19": 0,
+        "H20": 0,
+        "H21": 0,
+        "H22": 0,
+        "H23": 0,
+        "H24": 0
+      },
+      {
+   
+... (truncated)
+```
+
+## All failed validations
+
+1. **Summary Row Count** — [2mexpect([22m[31mreceived[39m[2m).[22mtoBeGreaterThanOrEqual[2m([22m[32mexpected[39m[2m)[22m
+
+Expected: >= [32m24[39m
+Received:    [31m8[39m
+
+## Passed checks before failure
+
+- Status
+- Content Type
+- Response Time
+- Sensitive Data
+- Response Contract
+- Columns Contract
+- Pagination
+- Total Count
+- Rows Exist
+- Row Kinds
+- Summary Row Kinds
+- Summary Row IDs
+- Shared Summary Context
+- Summary Hierarchy Fields
+- Field Types
+- Mandatory Fields
+- Non-Negative Hourly Metrics
+- Total Equals Hourly Sum
+- Summary Loss Math
+- Duplicate Consumer Meters
+- Cross Field Logic
+
+## Suggested steps for developer
+
+1. Reproduce with the same query params (Postman/curl) against `https://api.mdm.mppkvvcl.bestinfra.apphttps://api.mdm.mppkvvcl.bestinfra.app/energy-audit/hourly-loss-report?hierarchyType=dtr&networkLookupId=5&fromDate=2025-12-20&toDate=2025-12-20&page=1&limit=10`.
+2. Compare response with the **Expected behavior** / **AI triage** sections above.
+3. Trace the repository/service method for this report and confirm SQL filters + DTO field names.
+4. Fix backend logic or API serialization; re-run: `npx playwright test --grep "Energy Audit Hourly Loss Report (dtr)"`.
+
+---
+*Generated by Indoore API automation — share this file in Jira/Azure DevOps/GitHub issue.*

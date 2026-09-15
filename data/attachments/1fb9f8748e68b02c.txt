@@ -1,0 +1,20 @@
+
+==================================
+API : Connect and disconnect by month — last six months, each month listed once
+DNS : 2.17 ms
+Connection : 214.09 ms
+Server Processing : 1038.74 ms
+Download : 100 ms
+Total : 1355 ms
+===================================
+
+[PASS] Connect and disconnect by month — last six months, each month listed once — 9/9 checks, 1355ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Data Present When 200 — PASS
+  7. Zod Response Schema — PASS
+  8. Success — PASS
+  9. Six unique months — PASS

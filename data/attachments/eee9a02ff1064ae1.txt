@@ -1,0 +1,151 @@
+
+==================================
+API : Commands Load Curtailment — Init Job
+DNS : 80.27 ms
+Connection : 214.14 ms
+Server Processing : -71.40999999999997 ms
+Download : 100 ms
+Total : 323 ms
+===================================
+
+BACKEND FINDING: HES E2E completion deferred (callback pending / HES load) — job=1789482303104593 waited=90000ms reason=stuck_no_progress hesJobStatus=RUNNING meterStatus=IN_PROGRESS. Set HES_E2E_REQUIRE_COMPLETION=true to fail instead of accepting async IN_PROGRESS.
+
+=== Commands Load Curtailment — POST init response ===
+{
+  "success": true,
+  "data": {
+    "summary": {
+      "requested": 1,
+      "duplicatesRemoved": 0,
+      "successful": 1,
+      "failed": 0,
+      "rejectedOutOfScope": 0,
+      "rejectedUnknown": 0,
+      "batchesProcessed": 1
+    },
+    "successfulMeters": [
+      "99751580"
+    ],
+    "rejectedMeters": [],
+    "meterResults": [
+      {
+        "meterId": "99751580",
+        "status": "IN_PROGRESS",
+        "jobName": "1789482303104593",
+        "hesStatusCode": 200
+      }
+    ],
+    "hesCallbackConfigured": true,
+    "commandExecutionTimeMs": null,
+    "meterResponseTimeMs": null,
+    "note": "Final completion status will be delivered via HES callback."
+  },
+  "message": "Get Load Curtailment job initiated successfully. HES callback is configured; final completion status will be delivered asynchronously."
+}
+
+=== Commands Load Curtailment — GET query-meter-job response ===
+{
+  "success": true,
+  "data": {
+    "jobName": "1789482303104593",
+    "synced": true,
+    "autoSynced": false,
+    "hesJobStatus": "RUNNING",
+    "hesStatusCode": 200,
+    "summary": {
+      "requested": 1,
+      "successful": 0,
+      "failed": 0,
+      "inProgress": 1,
+      "rejected": 0
+    },
+    "meterResults": [
+      {
+        "meterId": "99751580",
+        "action": "GET_CONFIG",
+        "status": "IN_PROGRESS",
+        "hesStatusCode": 200,
+        "hesResponse": {
+          "jobName": "1789482303104593",
+          "meterGroup": "meter_#1789482303104593",
+          "scheduledTime": null,
+          "timeoutTime": "2026-09-15T20:05:03+05:30",
+          "createTime": "2026-09-15T19:55:03+05:30",
+          "updateTime": "2026-09-15T19:55:04+05:30",
+          "status": "RUNNING",
+          "jobType": "METER_COMMAND_GET",
+          "jobConfiguration": {
+            "commands": [
+              {
+                "type": "LOAD_CURTAILMENT",
+                "active": true
+              }
+            ]
+          },
+          "totalProcessedDevices": 0,
+          "totalSuccessfulDevices": 0,
+          "totalFailedDevices": 0,
+          "totalCancelledDevices": 0,
+          "__mdmsMeta": {
+            "startedAt": "2026-09-15T14:25:03.108Z",
+            "completedAt": null,
+            "executionDurationMs": null,
+            "publicRequestId": "4858607304",
+            "commandApiType": "load_curtailment_get",
+            "executionDeadlineAt": "2026-09-15T14:35:03.108Z",
+            "leaseOwner": null,
+            "leaseExpiresAt": null,
+            "retryAt": null
+          }
+        },
+        "reason": null,
+        "message": "Get Load Curtailment job submitted — waiting for HES to complete.",
+        "note": "Final completion status will be delivered via HES callback.",
+        "meterResponse": null,
+        "meterResponseRows": []
+      }
+    ],
+    "reason": null,
+    "message": "Get Load Curtailment job submitted — waiting for HES to complete.",
+    "note": "Final completion status will be delivered via HES callback.",
+    "meterResponse": null,
+    "meterResponseRows": []
+  },
+  "message": "Job status fetched successfully."
+}
+
+==================================
+API : Commands Load Curtailment — Query Meter Job
+DNS : 118.41 ms
+Connection : 214.44 ms
+Server Processing : 12535.15 ms
+Download : 100 ms
+Total : 12968 ms
+===================================
+
+[PASS] Commands Load Curtailment E2E — 25/25 checks, 13291ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Init Success Response — PASS
+  6. Init Summary Counts — PASS
+  7. Init Successful Meters — PASS
+  8. Init Rejected Meters — PASS
+  9. Init HES Callback Configured — PASS
+  10. Init Meter Results — PASS
+  11. Init IN_PROGRESS Status — PASS
+  12. Init Message — PASS
+  13. Init Full Contract — PASS
+  14. Job Name Captured — PASS
+  15. Status — PASS
+  16. Content Type — PASS
+  17. Response Time — PASS
+  18. Sensitive Data — PASS
+  19. Query Success Response — PASS
+  20. Query Job Name Echo — PASS
+  21. Query Sync Flags — PASS
+  22. Query HES Status Code — PASS
+  23. Query Expected Meter Present — PASS
+  24. Query Async Job Still Pending — PASS
+  25. Query Summary Counts (async) — PASS

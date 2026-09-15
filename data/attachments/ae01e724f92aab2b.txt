@@ -1,0 +1,30 @@
+
+==================================
+API : Transformer sizes — October 2025 lists each size once, smallest first
+DNS : 2.02 ms
+Connection : 214.55 ms
+Server Processing : 304.43 ms
+Download : 100 ms
+Total : 621 ms
+===================================
+
+{
+  "msg": "dtr_load_rating_options_live_response",
+  "query": {
+    "fromDate": "2025-10-01",
+    "toDate": "2025-10-30"
+  },
+  "itemCount": 8,
+  "note": "live rating lists are not pinned"
+}
+[PASS] Transformer sizes — October 2025 lists each size once, smallest first — 10/10 checks, 621ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Zod Response Schema — PASS
+  6. Items — PASS
+  7. Fields — PASS
+  8. Unique ids — PASS
+  9. Unique values — PASS
+  10. Ascending order — PASS

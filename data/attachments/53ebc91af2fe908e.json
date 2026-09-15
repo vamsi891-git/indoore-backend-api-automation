@@ -1,0 +1,27 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/mis-dashboard/event-data/priority-wise",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "active",
+    "currentDate",
+    "previousDate",
+    "priorities",
+    "resolve",
+    "totalEventsCurrentDay",
+    "totalEventsPreviousDay"
+  ],
+  "itemKeys": [
+    "active",
+    "currentDate",
+    "previousDate",
+    "priorities",
+    "resolve",
+    "totalEventsCurrentDay",
+    "totalEventsPreviousDay"
+  ],
+  "hasColumnsGrid": false
+}

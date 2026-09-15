@@ -1,0 +1,15 @@
+
+==================================
+API : Transformer load — an unknown report type is rejected
+DNS : 2.2 ms
+Connection : 214.46 ms
+Server Processing : -81.66 ms
+Download : 100 ms
+Total : 235 ms
+===================================
+
+[PASS] Transformer load — an unknown report type is rejected — 4/4 checks, 235ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS

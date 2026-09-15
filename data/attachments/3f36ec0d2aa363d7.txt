@@ -1,0 +1,16 @@
+
+==================================
+API : Communication consumers — invalid period type is rejected
+DNS : 2.15 ms
+Connection : 214.16 ms
+Server Processing : 531.69 ms
+Download : 100 ms
+Total : 848 ms
+===================================
+
+[PASS] Communication consumers — invalid period type is rejected — 5/5 checks, 848ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

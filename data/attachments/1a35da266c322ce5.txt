@@ -1,0 +1,6 @@
+[PASS] Current problems — a blank time range is rejected — 5/5 checks, 229ms
+  1. Status — PASS
+  2. Content — PASS
+  3. Performance — PASS
+  4. Sensitive Data — PASS
+  5. Error code — PASS

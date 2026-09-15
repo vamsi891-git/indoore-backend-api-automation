@@ -1,0 +1,16 @@
+
+==================================
+API : Bill status — invalid year is rejected
+DNS : 1.72 ms
+Connection : 214.7 ms
+Server Processing : -87.41999999999999 ms
+Download : 100 ms
+Total : 229 ms
+===================================
+
+[PASS] Bill status — invalid year is rejected — 5/5 checks, 229ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

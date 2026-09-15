@@ -1,0 +1,102 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/reports/dtr-event-detail",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "circle",
+    "division",
+    "dtr",
+    "dtrNetworkLookupId",
+    "dtrRating",
+    "dtrType",
+    "durationHhMm",
+    "eventClassificationName",
+    "eventCount",
+    "eventId",
+    "eventName",
+    "feeder",
+    "id",
+    "logDate",
+    "meterLookupId",
+    "msn",
+    "priority",
+    "slNo",
+    "subStation",
+    "zone"
+  ],
+  "hasColumnsGrid": true,
+  "columns": [
+    {
+      "key": "slNo",
+      "header": "S No."
+    },
+    {
+      "key": "circle",
+      "header": "Circle"
+    },
+    {
+      "key": "division",
+      "header": "Division"
+    },
+    {
+      "key": "zone",
+      "header": "Zone"
+    },
+    {
+      "key": "subStation",
+      "header": "Substation"
+    },
+    {
+      "key": "feeder",
+      "header": "Feeder"
+    },
+    {
+      "key": "dtr",
+      "header": "DTR"
+    },
+    {
+      "key": "dtrType",
+      "header": "DTR Type"
+    },
+    {
+      "key": "dtrRating",
+      "header": "DTR Rating"
+    },
+    {
+      "key": "msn",
+      "header": "MSN"
+    },
+    {
+      "key": "logDate",
+      "header": "Log Date"
+    },
+    {
+      "key": "eventClassificationName",
+      "header": "Event Classification"
+    },
+    {
+      "key": "eventName",
+      "header": "Event Name"
+    },
+    {
+      "key": "priority",
+      "header": "Priority"
+    },
+    {
+      "key": "eventCount",
+      "header": "Event Count"
+    },
+    {
+      "key": "durationHhMm",
+      "header": "Duration (DD:HH:MM)"
+    }
+  ]
+}

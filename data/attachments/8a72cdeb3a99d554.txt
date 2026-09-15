@@ -1,0 +1,3 @@
+[PASS] Sample power now — reactive power from kW and kVA — 2/2 checks, 0ms
+  1. Required Fields — PASS
+  2. Contract Scenario — PASS

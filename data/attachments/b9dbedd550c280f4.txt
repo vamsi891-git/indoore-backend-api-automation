@@ -1,0 +1,122 @@
+Device limit reached (6 sessions). Closing all listed sessions.
+Login attempt 1/7 failed (retriable): Login failed with status 429 - Too many requests, please try again later.
+Login retry 2/7 after 5000ms
+Login attempt 2/7 failed (retriable): Login failed with status 429 - Too many requests, please try again later.
+Login retry 3/7 after 10000ms
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Login attempt 1/7 failed (retriable): 2FA verification failed with status 429 - {}
+Login retry 2/7 after 5000ms
+Login attempt 2/7 failed (retriable): Login failed with status 429 - Too many requests, please try again later.
+Login retry 3/7 after 10000ms
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+Device limit reached (6 sessions). Closing all listed sessions.
+Device slot freed. Completing 2FA next.
+[FAIL] Meter Validation — Invalid Serials — 0/22 checks, 0ms
+  1. Status (999999999999) — FAIL
+     Expected status 200 but received 401
+  2. Invalid (999999999999) — FAIL
+     expect(received).toBeTruthy()
+  3. Status (ABCDEFGH) — FAIL
+     Expected status 200 but received 401
+  4. Invalid (ABCDEFGH) — FAIL
+     expect(received).toBeTruthy()
+  5. Status (ABC12345) — FAIL
+     Expected status 200 but received 401
+  6. Invalid (ABC12345) — FAIL
+     expect(received).toBeTruthy()
+  7. Status (@#$%^&*) — FAIL
+     Expected status 200 but received 401
+  8. Invalid (@#$%^&*) — FAIL
+     expect(received).toBeTruthy()
+  9. Status (' OR 1=1 --) — FAIL
+     Expected status 200 but received 401
+  10. Invalid (' OR 1=1 --) — FAIL
+     expect(received).toBeTruthy()
+  11. Status (<script>aler) — FAIL
+     Expected status 200 but received 401
+  12. Invalid (<script>aler) — FAIL
+     expect(received).toBeTruthy()
+  13. Status (తెలుగు) — FAIL
+     Expected status 200 but received 401
+  14. Invalid (తెలుగు) — FAIL
+     expect(received).toBeTruthy()
+  15. Status (😀😀😀) — FAIL
+     Expected status 200 but received 401
+  16. Invalid (😀😀😀) — FAIL
+     expect(received).toBeTruthy()
+  17. Status (123456789012) — FAIL
+     Expected status 200 but received 401
+  18. Invalid (123456789012) — FAIL
+     expect(received).toBeTruthy()
+  19. Status (1) — FAIL
+     Expected status 200 but received 401
+  20. Invalid (1) — FAIL
+     expect(received).toBeTruthy()
+  21. Status (0) — FAIL
+     Expected status 200 but received 401
+  22. Invalid (0) — FAIL
+     expect(received).toBeTruthy()
+Defect report: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Validation-Invalid-Serials-2026-09-15T17-08-54-797Z.md
+Defect triage: /home/runner/work/indoore-backend-api-automation/indoore-backend-api-automation/reports/defects/Meter-Validation-Invalid-Serials-2026-09-15T17-08-54-797Z.triage.json [heuristic] contract_mismatch/medium

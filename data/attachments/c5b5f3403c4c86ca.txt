@@ -1,0 +1,16 @@
+
+==================================
+API : Meter communication — invalid date is rejected
+DNS : 2.89 ms
+Connection : 214.64 ms
+Server Processing : -85.52999999999997 ms
+Download : 100 ms
+Total : 232 ms
+===================================
+
+[PASS] Meter communication — invalid date is rejected — 5/5 checks, 232ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Invalid Date Validation Error — PASS

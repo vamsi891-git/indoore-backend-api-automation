@@ -1,0 +1,100 @@
+
+==================================
+API : DTR data — Oct 2025 IP first page shows columns and readings
+DNS : 2.97 ms
+Connection : 215.13 ms
+Server Processing : 31.899999999999977 ms
+Download : 100 ms
+Total : 350 ms
+===================================
+
+{
+  "msg": "dtr_data_live_response",
+  "scenario": "dev_live_primary",
+  "query": {
+    "fromDate": "2025-10-01",
+    "toDate": "2025-10-30",
+    "reportType": "ip",
+    "page": 1,
+    "limit": 10,
+    "includeTotal": false
+  },
+  "queryString": "fromDate=2025-10-01&toDate=2025-10-30&reportType=ip&page=1&limit=10&includeTotal=false",
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": null,
+    "totalPages": null,
+    "totalIsExact": false,
+    "hasMore": true
+  },
+  "columnKeys": [
+    "slNo",
+    "circle",
+    "division",
+    "zone",
+    "subStation",
+    "feeder",
+    "dtr",
+    "meterSerialNumber",
+    "meterTime",
+    "mf",
+    "vlR",
+    "vlY",
+    "vlB",
+    "ir",
+    "iy",
+    "ib",
+    "rPf",
+    "yPf",
+    "bPf",
+    "avgPf",
+    "kW",
+    "kWh",
+    "kVA",
+    "kVAh",
+    "kVAR",
+    "freq"
+  ],
+  "rowCount": 10,
+  "note": "includeTotal=false: null total with rows is valid",
+  "sampleRow": {
+    "id": "row-1-19271025-78645",
+    "slNo": 1,
+    "circle": "Indore city circle",
+    "division": "CENTRAL",
+    "zone": "Hawabangla",
+    "subStation": "PragatiNagar",
+    "feeder": "PARMANU NAGAR(CHQ)",
+    "dtr": "RJ668",
+    "meterSerialNumber": "19271025",
+    "meterTime": "01-10-2025 00:00",
+    "mf": "40",
+    "meterLookupId": 78645,
+    "dataSource": "TP",
+    "vlR": "249.730",
+    "vlY": "248.780",
+    "vlB": "249.600",
+    "ir": "30.360",
+    "iy": "21.240",
+    "ib": "26.880",
+    "rPf": "-0.996",
+    "yPf": "-0.985",
+    "bPf": "-0.995",
+    "avgPf": "-0.993",
+    "kW": "19.280",
+    "kWh": "1002134.400",
+    "kVA": "19.400",
+    "kVAh": "1003412.800",
+    "kVAR": "-2.200",
+    "freq": "50.020"
+  }
+}
+[PASS] DTR data — Oct 2025 IP first page shows columns and readings — 7/7 checks, 350ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Data Scenario — PASS

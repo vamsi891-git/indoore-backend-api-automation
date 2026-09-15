@@ -1,0 +1,583 @@
+# API defect report (for backend developer)
+
+> Automation failed on a **business/API contract** check. This usually indicates a backend, SQL, or response-mapping issue — not a test-script typo.
+
+## At a glance
+
+| Field | Value |
+|-------|-------|
+| **API** | Technical summary — October 2025 cards show counts |
+| **Test** | Technical summary — October 2025 cards show counts |
+| **Endpoint** | GET /indore/analysis/technical/summary |
+| **Base URL** | https://api.mdm.mppkvvcl.bestinfra.app |
+| **Response time** | 237 ms |
+| **HTTP status** | 200 |
+| **Failed checks** | 2 / 278 |
+| **First failure** | Report card count |
+| **Run at** | 2026-09-15T17:42:03.686Z |
+
+## AI / heuristic triage
+
+| Field | Value |
+|-------|-------|
+| **Suggested title** | Technical summary — October 2025 cards show counts — Report card count |
+| **Severity** | medium |
+| **Classification** | contract_mismatch |
+| **Likely owner** | backend |
+| **Confidence** | 0.55 |
+| **Source** | heuristic |
+
+[2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+### Recommended next steps
+
+1. Expected behavior: HTTP 200 with month/year echo and technical/YNR report aggregate counts
+2. Diff actual JSON fields against mapper/validator expectations.
+3. Confirm fixture month/year/IDs still exist in this environment.
+4. Share this defect report with the API owner for the module.
+
+**Tags:** contract, TECHNICAL-ANALYSIS, Report card count
+
+
+## Failure detail
+
+```
+[2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+Expected: [32m26[39m
+Received: [31m24[39m
+```
+
+## Expected behavior (from backend / contract)
+
+HTTP 200 with month/year echo and technical/YNR report aggregate counts
+
+
+## Request sent by automation
+
+```json
+{
+  "month": 10,
+  "year": 2025
+}
+```
+
+## API response (excerpt)
+
+```json
+{
+  "success": true,
+  "data": {
+    "month": 10,
+    "year": 2025,
+    "reports": [
+      {
+        "analysisType": "power_failure",
+        "reportName": "Power Failure",
+        "category": "technical",
+        "totalCount": 300,
+        "domesticCount": 168,
+        "nonDomesticCount": 132
+      },
+      {
+        "analysisType": "voltage_missing",
+        "reportName": "Voltage Missing",
+        "category": "technical",
+        "totalCount": 6,
+        "domesticCount": 2,
+        "nonDomesticCount": 4
+      },
+      {
+        "analysisType": "voltage_unbalance",
+        "reportName": "Voltage Unbalance",
+        "category": "technical",
+        "totalCount": 15,
+        "domesticCount": 3,
+        "nonDomesticCount": 12
+      },
+      {
+        "analysisType": "low_voltage",
+        "reportName": "Low Voltage in any Phase",
+        "category": "technical",
+        "totalCount": 90,
+        "domesticCount": 69,
+        "nonDomesticCount": 21
+      },
+      {
+        "analysisType": "over_voltage",
+        "reportName": "Over Voltage in any phase",
+        "category": "technical",
+        "totalCount": 24,
+        "domesticCount": 10,
+        "nonDomesticCount": 14
+      },
+      {
+        "analysisType": "single_wire_operation",
+        "reportName": "Single Wire Operation",
+        "category": "technical",
+        "totalCount": 26,
+        "domesticCount": 17,
+        "nonDomesticCount": 9
+      },
+      {
+        "analysisType": "neutral_disturbance",
+        "reportName": "Neutral Disturbance",
+        "category": "technical",
+        "totalCount": 92,
+        "domesticCount": 67,
+        "nonDomesticCount": 25
+      },
+      {
+        "analysisType": "current_without_voltage",
+        "reportName": "Current Without Voltage",
+        "category": "technical",
+        "totalCount": 5,
+        "domesticCount": 0,
+        "nonDomesticCount": 5
+      },
+      {
+        "analysisType": "ct_open",
+        "reportName": "CT Open",
+        "category": "technical",
+        "totalCount": 0,
+        "domesticCount": 0,
+        "nonDomesticCount": 0
+      },
+      {
+        "analysisType": "current_bypass",
+        "reportName": "Current Bypass",
+        "category": "technical",
+        "totalCount": 331,
+        "domesticCount": 165,
+        "nonDomesticCount": 166
+      },
+      {
+        "analysisType": "current_unbalance",
+        "reportName": "Current Unbalance",
+        "category": "technical",
+        "totalCount": 465,
+        "domesticCount": 334,
+        "nonDomesticCount": 131
+      },
+      {
+        "analysisType": "earth_loading",
+        "reportName": "Earth Loading",
+        "category": "technical",
+        "totalCount": 4996,
+        "domesticCount": 4515,
+        "nonDomesticCount": 481
+      },
+      {
+        "analysisType": "low_power_factor",
+        "reportName": "Low Power Factor",
+        "category": "technical",
+        "totalCount": 320,
+        "domesticCount": 125,
+        "nonDomesticCount": 195
+      },
+      {
+        "analysisType": "phase_neutral_mismatch",
+        "reportName": "Ip!=In (Phase current is not equal to neutral current)",
+        "category": "technical",
+        "totalCount": 4346,
+        "domesticCount": 3755,
+        "nonDomesticCount": 590
+      },
+      {
+        "analysisType": "magnet_event",
+        "reportName": "Magnet Event",
+        "category": "technical",
+        "totalCount": 0,
+        "domesticCount": 0,
+        "nonDomesticCount": 0
+      },
+      {
+        "analysisType": "cover_open",
+        "reportName": "Cover Open",
+        "category": "technical",
+        "totalCount": 2,
+        "domesticCount": 1,
+        "nonDomesticCount": 1
+      },
+      {
+        "analysisType": "ynr_over_voltage",
+        "reportName": "Over Voltage in any phase",
+        "category": "ynr",
+        "totalCount": 0,
+        "domesticCount": 0,
+        "nonDomesticCount": 0
+      },
+      {
+        "analysisType": "ynr_neutral_disturbance",
+        "reportName": "Neutral Disturbance",
+        "category": "ynr",
+        "totalCount": 4,
+        "domesticCount": 2,
+        "nonDomesticCount": 2
+      },
+      {
+        "analysisType": "ynr_ct_open_unbalance",
+        "reportName": "CT Open/Unbalance in any phase",
+        "category": "ynr",
+        "totalCount": 0,
+        "domesticCount": 0,
+        "nonDomesticCount": 0
+      },
+      {
+        "analysisType": "ynr_ct_bypass",
+        "reportName": "CT Bypass",
+        "category": "ynr",
+        "totalCount": 6,
+        "domesticCount": 3,
+        "nonDomesticCount": 3
+      },
+      {
+        "analysisType": "ynr_earth_loading",
+        "reportName": "Earth Loading",
+        "category": "ynr",
+        "totalCount": 510,
+        "domesticCount": 336,
+        "nonDomesticCount": 174
+      },
+      {
+        "analysisType": "ynr_low_power_factor",
+        "reportName": "Low Power Factor",
+        "category": "ynr",
+        "totalCount": 6,
+        "domesticCount": 1,
+        "nonDomesticCount": 5
+      },
+      {
+        "analysisType": "ynr_magnet_event",
+        "reportName": "Magnet Event",
+        "category": "ynr",
+        "totalCount": 0,
+        "domesticCount": 0,
+        "nonDomesticCount": 0
+      },
+      {
+        "analysisType": "ynr_cover_open",
+        "reportName": "Cover Open",
+        "category": "ynr",
+        "totalCount": 0,
+        "domesticCount": 0,
+        "nonDomesticCount": 0
+      }
+    ]
+  }
+}
+```
+
+## All failed validations
+
+1. **Report card count** — [2mexpect([22m[31mreceived[39m[2m).[22mtoBe[2m([22m[32mexpected[39m[2m) // Object.is equality[22m
+
+Expected: [32m26[39m
+Received: [31m24[39m
+2. **Expected Analysis Types** — [2mexpect([22m[31mreceived[39m[2m).[22mtoEqual[2m([22m[32mexpected[39m[2m) // deep equality[22m
+
+[32m- Expected  - 2[39m
+[31m+ Received  + 0[39m
+
+[33m@@ -11,12 +11,10 @@[39m
+[2m    "current_bypass",[22m
+[2m    "current_unbalance",[22m
+[2m    "earth_loading",[22m
+[2m    "low_power_factor",[22m
+[2m    "phase_neutral_mismatch",[22m
+[32m-   "phase_zero_neutral_nonzero",[39m
+[32m-   "phase_nonzero_neutral_zero",[39m
+[2m    "magnet_event",[22m
+[2m    "cover_open",[22m
+[2m    "ynr_over_voltage",[22m
+[2m    "ynr_neutral_disturbance",[22m
+[2m    "ynr_ct_open_unbalance",[22m
+
+## Passed checks before failure
+
+- Status Code
+- Content Type
+- Response Time
+- Sensitive Data
+- Data Payload
+- Month Validation
+- Year Validation
+- Query Echo
+- Reports Validation
+- Duplicate Analysis Validation
+- Technical Category Validation
+- YNR Category Validation
+- power_failure Field Validation
+- power_failure Type Validation
+- power_failure Count Validation
+- power_failure household + non-household split
+- power_failure report name
+- power_failure empty vs live card
+- power_failure NaN Validation
+- power_failure Category Validation
+- power_failure Business Rule Validation
+- power_failure Zero Count Validation
+- power_failure Empty String Validation
+- voltage_missing Field Validation
+- voltage_missing Type Validation
+- voltage_missing Count Validation
+- voltage_missing household + non-household split
+- voltage_missing report name
+- voltage_missing empty vs live card
+- voltage_missing NaN Validation
+- voltage_missing Category Validation
+- voltage_missing Business Rule Validation
+- voltage_missing Zero Count Validation
+- voltage_missing Empty String Validation
+- voltage_unbalance Field Validation
+- voltage_unbalance Type Validation
+- voltage_unbalance Count Validation
+- voltage_unbalance household + non-household split
+- voltage_unbalance report name
+- voltage_unbalance empty vs live card
+- voltage_unbalance NaN Validation
+- voltage_unbalance Category Validation
+- voltage_unbalance Business Rule Validation
+- voltage_unbalance Zero Count Validation
+- voltage_unbalance Empty String Validation
+- low_voltage Field Validation
+- low_voltage Type Validation
+- low_voltage Count Validation
+- low_voltage household + non-household split
+- low_voltage report name
+- low_voltage empty vs live card
+- low_voltage NaN Validation
+- low_voltage Category Validation
+- low_voltage Business Rule Validation
+- low_voltage Zero Count Validation
+- low_voltage Empty String Validation
+- over_voltage Field Validation
+- over_voltage Type Validation
+- over_voltage Count Validation
+- over_voltage household + non-household split
+- over_voltage report name
+- over_voltage empty vs live card
+- over_voltage NaN Validation
+- over_voltage Category Validation
+- over_voltage Business Rule Validation
+- over_voltage Zero Count Validation
+- over_voltage Empty String Validation
+- single_wire_operation Field Validation
+- single_wire_operation Type Validation
+- single_wire_operation Count Validation
+- single_wire_operation household + non-household split
+- single_wire_operation report name
+- single_wire_operation empty vs live card
+- single_wire_operation NaN Validation
+- single_wire_operation Category Validation
+- single_wire_operation Business Rule Validation
+- single_wire_operation Zero Count Validation
+- single_wire_operation Empty String Validation
+- neutral_disturbance Field Validation
+- neutral_disturbance Type Validation
+- neutral_disturbance Count Validation
+- neutral_disturbance household + non-household split
+- neutral_disturbance report name
+- neutral_disturbance empty vs live card
+- neutral_disturbance NaN Validation
+- neutral_disturbance Category Validation
+- neutral_disturbance Business Rule Validation
+- neutral_disturbance Zero Count Validation
+- neutral_disturbance Empty String Validation
+- current_without_voltage Field Validation
+- current_without_voltage Type Validation
+- current_without_voltage Count Validation
+- current_without_voltage household + non-household split
+- current_without_voltage report name
+- current_without_voltage empty vs live card
+- current_without_voltage NaN Validation
+- current_without_voltage Category Validation
+- current_without_voltage Business Rule Validation
+- current_without_voltage Zero Count Validation
+- current_without_voltage Empty String Validation
+- ct_open Field Validation
+- ct_open Type Validation
+- ct_open Count Validation
+- ct_open household + non-household split
+- ct_open report name
+- ct_open empty vs live card
+- ct_open NaN Validation
+- ct_open Category Validation
+- ct_open Business Rule Validation
+- ct_open Zero Count Validation
+- ct_open Empty String Validation
+- current_bypass Field Validation
+- current_bypass Type Validation
+- current_bypass Count Validation
+- current_bypass household + non-household split
+- current_bypass report name
+- current_bypass empty vs live card
+- current_bypass NaN Validation
+- current_bypass Category Validation
+- current_bypass Business Rule Validation
+- current_bypass Zero Count Validation
+- current_bypass Empty String Validation
+- current_unbalance Field Validation
+- current_unbalance Type Validation
+- current_unbalance Count Validation
+- current_unbalance household + non-household split
+- current_unbalance report name
+- current_unbalance empty vs live card
+- current_unbalance NaN Validation
+- current_unbalance Category Validation
+- current_unbalance Business Rule Validation
+- current_unbalance Zero Count Validation
+- current_unbalance Empty String Validation
+- earth_loading Field Validation
+- earth_loading Type Validation
+- earth_loading Count Validation
+- earth_loading household + non-household split
+- earth_loading report name
+- earth_loading empty vs live card
+- earth_loading NaN Validation
+- earth_loading Category Validation
+- earth_loading Business Rule Validation
+- earth_loading Zero Count Validation
+- earth_loading Empty String Validation
+- low_power_factor Field Validation
+- low_power_factor Type Validation
+- low_power_factor Count Validation
+- low_power_factor household + non-household split
+- low_power_factor report name
+- low_power_factor empty vs live card
+- low_power_factor NaN Validation
+- low_power_factor Category Validation
+- low_power_factor Business Rule Validation
+- low_power_factor Zero Count Validation
+- low_power_factor Empty String Validation
+- phase_neutral_mismatch Field Validation
+- phase_neutral_mismatch Type Validation
+- phase_neutral_mismatch Count Validation
+- phase_neutral_mismatch household + non-household split
+- phase_neutral_mismatch report name
+- phase_neutral_mismatch empty vs live card
+- phase_neutral_mismatch NaN Validation
+- phase_neutral_mismatch Category Validation
+- phase_neutral_mismatch Business Rule Validation
+- phase_neutral_mismatch Zero Count Validation
+- phase_neutral_mismatch Empty String Validation
+- magnet_event Field Validation
+- magnet_event Type Validation
+- magnet_event Count Validation
+- magnet_event household + non-household split
+- magnet_event report name
+- magnet_event empty vs live card
+- magnet_event NaN Validation
+- magnet_event Category Validation
+- magnet_event Business Rule Validation
+- magnet_event Zero Count Validation
+- magnet_event Empty String Validation
+- cover_open Field Validation
+- cover_open Type Validation
+- cover_open Count Validation
+- cover_open household + non-household split
+- cover_open report name
+- cover_open empty vs live card
+- cover_open NaN Validation
+- cover_open Category Validation
+- cover_open Business Rule Validation
+- cover_open Zero Count Validation
+- cover_open Empty String Validation
+- ynr_over_voltage Field Validation
+- ynr_over_voltage Type Validation
+- ynr_over_voltage Count Validation
+- ynr_over_voltage household + non-household split
+- ynr_over_voltage report name
+- ynr_over_voltage empty vs live card
+- ynr_over_voltage NaN Validation
+- ynr_over_voltage Category Validation
+- ynr_over_voltage Business Rule Validation
+- ynr_over_voltage Zero Count Validation
+- ynr_over_voltage Empty String Validation
+- ynr_neutral_disturbance Field Validation
+- ynr_neutral_disturbance Type Validation
+- ynr_neutral_disturbance Count Validation
+- ynr_neutral_disturbance household + non-household split
+- ynr_neutral_disturbance report name
+- ynr_neutral_disturbance empty vs live card
+- ynr_neutral_disturbance NaN Validation
+- ynr_neutral_disturbance Category Validation
+- ynr_neutral_disturbance Business Rule Validation
+- ynr_neutral_disturbance Zero Count Validation
+- ynr_neutral_disturbance Empty String Validation
+- ynr_ct_open_unbalance Field Validation
+- ynr_ct_open_unbalance Type Validation
+- ynr_ct_open_unbalance Count Validation
+- ynr_ct_open_unbalance household + non-household split
+- ynr_ct_open_unbalance report name
+- ynr_ct_open_unbalance empty vs live card
+- ynr_ct_open_unbalance NaN Validation
+- ynr_ct_open_unbalance Category Validation
+- ynr_ct_open_unbalance Business Rule Validation
+- ynr_ct_open_unbalance Zero Count Validation
+- ynr_ct_open_unbalance Empty String Validation
+- ynr_ct_bypass Field Validation
+- ynr_ct_bypass Type Validation
+- ynr_ct_bypass Count Validation
+- ynr_ct_bypass household + non-household split
+- ynr_ct_bypass report name
+- ynr_ct_bypass empty vs live card
+- ynr_ct_bypass NaN Validation
+- ynr_ct_bypass Category Validation
+- ynr_ct_bypass Business Rule Validation
+- ynr_ct_bypass Zero Count Validation
+- ynr_ct_bypass Empty String Validation
+- ynr_earth_loading Field Validation
+- ynr_earth_loading Type Validation
+- ynr_earth_loading Count Validation
+- ynr_earth_loading household + non-household split
+- ynr_earth_loading report name
+- ynr_earth_loading empty vs live card
+- ynr_earth_loading NaN Validation
+- ynr_earth_loading Category Validation
+- ynr_earth_loading Business Rule Validation
+- ynr_earth_loading Zero Count Validation
+- ynr_earth_loading Empty String Validation
+- ynr_low_power_factor Field Validation
+- ynr_low_power_factor Type Validation
+- ynr_low_power_factor Count Validation
+- ynr_low_power_factor household + non-household split
+- ynr_low_power_factor report name
+- ynr_low_power_factor empty vs live card
+- ynr_low_power_factor NaN Validation
+- ynr_low_power_factor Category Validation
+- ynr_low_power_factor Business Rule Validation
+- ynr_low_power_factor Zero Count Validation
+- ynr_low_power_factor Empty String Validation
+- ynr_magnet_event Field Validation
+- ynr_magnet_event Type Validation
+- ynr_magnet_event Count Validation
+- ynr_magnet_event household + non-household split
+- ynr_magnet_event report name
+- ynr_magnet_event empty vs live card
+- ynr_magnet_event NaN Validation
+- ynr_magnet_event Category Validation
+- ynr_magnet_event Business Rule Validation
+- ynr_magnet_event Zero Count Validation
+- ynr_magnet_event Empty String Validation
+- ynr_cover_open Field Validation
+- ynr_cover_open Type Validation
+- ynr_cover_open Count Validation
+- ynr_cover_open household + non-household split
+- ynr_cover_open report name
+- ynr_cover_open empty vs live card
+- ynr_cover_open NaN Validation
+- ynr_cover_open Category Validation
+- ynr_cover_open Business Rule Validation
+- ynr_cover_open Zero Count Validation
+- ynr_cover_open Empty String Validation
+
+## Suggested steps for developer
+
+1. Reproduce with the same query params (Postman/curl) against `https://api.mdm.mppkvvcl.bestinfra.app/indore/analysis/technical/summary`.
+2. Compare response with the **Expected behavior** / **AI triage** sections above.
+3. Trace the repository/service method for this report and confirm SQL filters + DTO field names.
+4. Fix backend logic or API serialization; re-run: `npx playwright test --grep "Technical summary — October 2025 cards show counts"`.
+
+---
+*Generated by Indoore API automation — share this file in Jira/Azure DevOps/GitHub issue.*

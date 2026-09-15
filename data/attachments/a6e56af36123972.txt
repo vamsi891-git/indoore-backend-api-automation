@@ -1,0 +1,28 @@
+
+==================================
+API : Substation list — first page shows columns, records, and page numbers
+DNS : 1.94 ms
+Connection : 214.38 ms
+Server Processing : 1780.6799999999998 ms
+Download : 100 ms
+Total : 2097 ms
+===================================
+
+[PASS] Substation list — first page shows columns, records, and page numbers — 17/17 checks, 2097ms
+  1. Status Validation — PASS
+  2. Content Validation — PASS
+  3. Response Time — PASS
+  4. Security Validation — PASS
+  5. Zod Response Schema — PASS
+  6. Response — PASS
+  7. Columns — PASS
+  8. Items — PASS
+  9. Fields — PASS
+  10. Pagination — PASS
+  11. Query Params — PASS
+  12. Sl No Sequence — PASS
+  13. Row Keys Match Columns — PASS
+  14. Hierarchy Fields — PASS
+  15. Consumer DTR Relation — PASS
+  16. Unique Substation Names — PASS
+  17. Ascending Substation Order — PASS

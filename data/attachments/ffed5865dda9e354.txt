@@ -1,0 +1,6 @@
+[PASS] Delete User Device — 5/5 checks, 591ms
+  1. Get Devices Status Code — PASS
+  2. Validate Device Groups — PASS
+  3. Delete Device Status Code — PASS
+  4. Validate Deleted Device Response — PASS
+  5. Verify Device Removed From Catalog — PASS

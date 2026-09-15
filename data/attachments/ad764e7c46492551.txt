@@ -1,0 +1,15 @@
+
+==================================
+API : Monthly billing — asking for more than 5000 rows per page is rejected
+DNS : 2.7 ms
+Connection : 215 ms
+Server Processing : -86.69999999999999 ms
+Download : 100 ms
+Total : 231 ms
+===================================
+
+[PASS] Monthly billing — asking for more than 5000 rows per page is rejected — 4/4 checks, 231ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS

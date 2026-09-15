@@ -1,0 +1,13 @@
+
+==================================
+API : Can this meter be given to a consumer? — invalid office number is rejected
+DNS : 2.18 ms
+Connection : 215.2 ms
+Server Processing : -84.38 ms
+Download : 100 ms
+Total : 233 ms
+===================================
+
+[PASS] Can this meter be given to a consumer? — invalid office number is rejected — 2/2 checks, 233ms
+  1. Status Validation — PASS
+  2. Validation Error — PASS

@@ -1,0 +1,18 @@
+
+==================================
+API : Consumer profile — details open using the meter
+DNS : 2.07 ms
+Connection : 214.06 ms
+Server Processing : 187.87 ms
+Download : 100 ms
+Total : 504 ms
+===================================
+
+[PASS] Consumer profile — details open using the meter — 7/7 checks, 504ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Identity Fields — PASS
+  7. Profile Scenario — PASS

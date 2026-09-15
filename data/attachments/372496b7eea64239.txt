@@ -1,0 +1,29 @@
+
+==================================
+API : Monthly consumption — first page lists each consumer (energy may be empty)
+DNS : 87.8 ms
+Connection : 214.73 ms
+Server Processing : -164.53 ms
+Download : 100 ms
+Total : 238 ms
+===================================
+
+[PASS] Monthly consumption — first page lists each consumer (energy may be empty) — 18/18 checks, 238ms
+  1. Status — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Zod Response Schema — PASS
+  7. Success — PASS
+  8. Root Structure — PASS
+  9. Query Echo — PASS
+  10. Pagination Bounds — PASS
+  11. Pagination Math — PASS
+  12. Item Required Fields — PASS
+  13. Serial Sequence — PASS
+  14. Unique consumers — PASS
+  15. Shared feeder allowed — PASS
+  16. Energy Fields — PASS
+  17. Null Energy Bundle — PASS
+  18. No NaN — PASS

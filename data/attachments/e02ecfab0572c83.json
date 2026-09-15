@@ -1,0 +1,19 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/dtr/{dtrCode}/profile",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "hierarchy",
+    "latestActivities",
+    "profileInformation"
+  ],
+  "itemKeys": [
+    "hierarchy",
+    "latestActivities",
+    "profileInformation"
+  ],
+  "hasColumnsGrid": false
+}

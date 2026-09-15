@@ -1,0 +1,53 @@
+
+==================================
+API : Monthly billing — October 2025 first page lists meters and column headings
+DNS : 2.47 ms
+Connection : 216.87 ms
+Server Processing : 296.65999999999997 ms
+Download : 100 ms
+Total : 616 ms
+===================================
+
+{
+  "msg": "billing_data_live_response",
+  "query": {
+    "month": 10,
+    "year": 2025,
+    "page": 1,
+    "limit": 10,
+    "includeTotal": true
+  },
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 106653,
+    "totalPages": 10666
+  },
+  "rowCount": 10,
+  "note": "live totals are not pinned",
+  "sampleMeter": "85087252"
+}
+[PASS] Monthly billing — October 2025 first page lists meters and column headings — 23/23 checks, 616ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Zod Response Schema — PASS
+  6. Columns — PASS
+  7. Billing Data Exists — PASS
+  8. Pagination — PASS
+  9. Grid meta — PASS
+  10. Billing Items — PASS
+  11. Sparse hierarchy — PASS
+  12. Power Factor — PASS
+  13. Energy Calculation — PASS
+  14. KVAH Calculation — PASS
+  15. Electrical Business Rules — PASS
+  16. Export Energy — PASS
+  17. MD occurrence time — PASS
+  18. Billing Month Year — PASS
+  19. Unique readings — PASS
+  20. Shared keys allowed — PASS
+  21. NaN — PASS
+  22. Page serials — PASS
+  23. No Data Scenario — PASS

@@ -1,0 +1,22 @@
+
+==================================
+API : event priorities — list shows ids and names
+DNS : 81.32 ms
+Connection : 214.62 ms
+Server Processing : -129.94 ms
+Download : 100 ms
+Total : 266 ms
+===================================
+
+[PASS] event priorities — list shows ids and names — 11/11 checks, 266ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Success Envelope — PASS
+  6. Response — PASS
+  7. Items — PASS
+  8. Fields — PASS
+  9. Duplicate Priorities — PASS
+  10. Ascending Order — PASS
+  11. Expected Values — PASS

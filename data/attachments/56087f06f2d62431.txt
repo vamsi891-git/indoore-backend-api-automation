@@ -1,0 +1,6 @@
+[PASS] MD — Improper MD — 5/5 checks, 0ms
+  1. Status 200 — PASS
+  2. Grid columns — PASS
+  3. Report type — PASS
+  4. Business rules — PASS
+  5. Duplicate contract — PASS

@@ -1,0 +1,15 @@
+
+==================================
+API : Day-by-day billing — month 13 is rejected (month must be January to December)
+DNS : 2.5 ms
+Connection : 214.29 ms
+Server Processing : -81.78999999999999 ms
+Download : 100 ms
+Total : 235 ms
+===================================
+
+[PASS] Day-by-day billing — month 13 is rejected (month must be January to December) — 4/4 checks, 235ms
+  1. Status Code — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS

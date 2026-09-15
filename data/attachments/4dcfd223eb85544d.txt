@@ -1,0 +1,18 @@
+
+==================================
+API : Billing history — last 12 months of bills
+DNS : 2.13 ms
+Connection : 214.2 ms
+Server Processing : 899.6699999999998 ms
+Download : 100 ms
+Total : 1216 ms
+===================================
+
+[PASS] Billing history — last 12 months of bills — 7/7 checks, 1216ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. No Duplicate Period Labels — PASS
+  7. Billing History Scenario — PASS

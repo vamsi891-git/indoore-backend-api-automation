@@ -1,0 +1,13 @@
+
+==================================
+API : Nearby accounts — account number is required
+DNS : 1.99 ms
+Connection : 214.09 ms
+Server Processing : -85.08000000000001 ms
+Download : 100 ms
+Total : 231 ms
+===================================
+
+[PASS] Nearby accounts — account number is required — 2/2 checks, 231ms
+  1. Status Validation — PASS
+  2. Validation Error — PASS

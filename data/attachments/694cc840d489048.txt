@@ -1,0 +1,16 @@
+
+==================================
+API : Event report — fromDate after toDate is rejected
+DNS : 2.37 ms
+Connection : 214.26 ms
+Server Processing : -83.63 ms
+Download : 100 ms
+Total : 233 ms
+===================================
+
+[PASS] Event report — fromDate after toDate is rejected — 5/5 checks, 233ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Validation Error — PASS

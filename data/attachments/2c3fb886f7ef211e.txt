@@ -1,0 +1,4 @@
+[PASS] Commands Demand Config — Invalid Type — 3/3 checks, 231ms
+  1. Status (validation error) — PASS
+  2. Content Type — PASS
+  3. Error Response — PASS

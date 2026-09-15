@@ -1,0 +1,9 @@
+[PASS] Urgency today versus yesterday — all meters — 8/8 checks, 265ms
+  1. Status — PASS
+  2. Content — PASS
+  3. Performance — PASS
+  4. Sensitive Data — PASS
+  5. Response — PASS
+  6. Urgency comparison — PASS
+  7. No duplicate urgency numbers — PASS
+  8. No duplicate urgency names — PASS

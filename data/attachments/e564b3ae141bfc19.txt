@@ -1,0 +1,17 @@
+
+==================================
+API : DTR communication list — old communicating status is rejected
+DNS : 2.13 ms
+Connection : 214.55 ms
+Server Processing : 689.3199999999999 ms
+Download : 100 ms
+Total : 1006 ms
+===================================
+
+[PASS] DTR communication list — old communicating status is rejected — 6/6 checks, 1006ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Legacy Status Validation — PASS

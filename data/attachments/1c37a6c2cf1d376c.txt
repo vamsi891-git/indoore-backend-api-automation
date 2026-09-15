@@ -1,0 +1,3 @@
+[PASS] Sample feeders — last communication can be empty — 2/2 checks, 0ms
+  1. Required Fields — PASS
+  2. Contract Scenario — PASS

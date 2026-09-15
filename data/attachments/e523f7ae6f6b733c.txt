@@ -1,0 +1,14 @@
+
+==================================
+API : Dashboard metrics UNAUTHORIZED
+DNS : 2.58 ms
+Connection : 214.6 ms
+Server Processing : 866.82 ms
+Download : 100 ms
+Total : 1184 ms
+===================================
+
+[PASS] Dashboard Metrics — UNAUTHORIZED — 3/3 checks, 1184ms
+  1. Status (auth negative) — PASS
+  2. Content Type — PASS
+  3. Auth Error Envelope — PASS

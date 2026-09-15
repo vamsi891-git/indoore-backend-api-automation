@@ -1,0 +1,18 @@
+
+==================================
+API : DTR communication list — page 2 still shows a valid list
+DNS : 1.91 ms
+Connection : 214.22 ms
+Server Processing : 605.87 ms
+Download : 100 ms
+Total : 922 ms
+===================================
+
+[PASS] DTR communication list — page 2 still shows a valid list — 7/7 checks, 922ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Response Envelope — PASS
+  7. DTR Communication Details Scenario — PASS

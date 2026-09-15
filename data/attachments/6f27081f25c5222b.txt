@@ -1,0 +1,17 @@
+
+==================================
+API : Live voltage and current — unknown meter is empty or not found
+DNS : 2.3 ms
+Connection : 214.55 ms
+Server Processing : -86.85000000000002 ms
+Download : 100 ms
+Total : 230 ms
+===================================
+
+[PASS] Live voltage and current — unknown meter is empty or not found — 6/6 checks, 230ms
+  1. Status Validation — PASS
+  2. Content Type — PASS
+  3. Response Time — PASS
+  4. Sensitive Data — PASS
+  5. Required Fields — PASS
+  6. Real Time Power Scenario — PASS
