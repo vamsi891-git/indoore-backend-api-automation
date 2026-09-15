@@ -19,7 +19,7 @@ import {
 } from "../Mapper/energyflow.mapper";
 import { EnergyFlowValidator } from "../Validator/energyflow.validator";
 
-test.describe("Energy Flow API", () => {
+test.describe("Energy flow chart", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
@@ -146,6 +146,9 @@ test.describe("Energy Flow API", () => {
         );
 
         const mapped = EnergyFlowMapper.map(responseBody);
+        validation.execute("No Duplicate Chart Labels", () =>
+          validator.validateUniquePointLabels(mapped.points),
+        );
         validation.execute("Energy Flow Scenario", () =>
           validator.validateScenario(mapped, testCase.scenario, expectedPeriod),
         );

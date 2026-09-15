@@ -7,7 +7,7 @@ import { ConsumerProfileApi } from "../Api/consumerprofile.api";
 import {consumerProfileMaxResponseTimeMs,consumerProfileTestCases,resolveConsumerProfileQuery,resolveConsumerProfileRef,} from "../Data/consumerprofile.data";
 import {ConsumerProfileMapper,type ConsumerProfileErrorResponse,} from "../Mapper/consumerprofile.mapper";
 import { ConsumerProfileValidator } from "../Validator/consumerprofile.validator";
-test.describe("Consumer Profile API", () => {
+test.describe("Consumer profile", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
   for (const testCase of consumerProfileTestCases) {
@@ -68,6 +68,9 @@ test.describe("Consumer Profile API", () => {
         );
 
         const mapped = ConsumerProfileMapper.map(responseBody);
+        validation.execute("No Duplicate Identity Fields", () =>
+          validator.validateIdentityFieldsUnique(mapped),
+        );
         const identityOptions =
           testCase.scenario === "profile_found" ||
           testCase.scenario === "profile_no_query"

@@ -439,10 +439,9 @@ export class AuthApi {
           }
         })();
         throw new Error(
-          `TWO_FACTOR_SECRET_UNAVAILABLE on ${host}: password login worked, but the API cannot decrypt this user's stored 2FA secret. ` +
-            "TOTP_SECRET only generates the 6-digit code; it cannot fix a missing secret on the server. " +
-            "On https://mdm.mppkvvcl.bestinfra.app turn 2FA off for the CI user, or re-enroll 2FA there and put the new base32 secret in GitHub secret TOTP_SECRET. " +
-            "A local/.env TOTP_SECRET from another environment will not work if live never stored that enrollment.",
+          host === "localhost" || host === "127.0.0.1"
+            ? `TWO_FACTOR_SECRET_UNAVAILABLE on ${host}: this local user has 2FA on, but the local API cannot decrypt the stored secret. Disable 2FA for this account in the local DB, or re-enroll 2FA on localhost and put that new base32 secret in TOTP_SECRET. Do not use a live-dashboard TOTP_SECRET against localhost.`
+            : `TWO_FACTOR_SECRET_UNAVAILABLE on ${host}: password login worked, but the API cannot decrypt this user's stored 2FA secret. TOTP_SECRET only generates the 6-digit code. Re-enroll 2FA on that environment and put the new base32 secret in TOTP_SECRET, or turn 2FA off for the test user.`,
         );
       }
     }
@@ -620,15 +619,10 @@ export class AuthApi {
 
       let nextBody = loginBody.data as TwoFactorBody;
       const headers = loginResponse.headers();
-      let hitDeviceLimit = false;
 
       for (let step = 0; step < 8; step += 1) {
         if (nextBody?.accessToken) {
-          const login = await this.toLoginResponse(apiContext, { data: nextBody });
-          if (hitDeviceLimit) {
-            await this.revokeOtherSessions(apiContext, login);
-          }
-          return login;
+          return this.toLoginResponse(apiContext, { data: nextBody });
         }
 
         if (nextBody?.requires2FA) {
@@ -637,7 +631,6 @@ export class AuthApi {
         }
 
         if (nextBody?.requiresDeviceSelection) {
-          hitDeviceLimit = true;
           nextBody = await this.completeDeviceSelection(
             apiContext,
             nextBody as DeviceSelectionBody,

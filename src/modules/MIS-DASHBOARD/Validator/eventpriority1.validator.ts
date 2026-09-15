@@ -33,6 +33,16 @@ export class EventPriorityValidator {
         const labels =data.records.map(x => x.label);
         expect(new Set(labels).size).toBe(labels.length);
     }
+    validateUniqueTrendSeriesNames(data: EventPriorityData) {
+        const names = data.trend.map((series) => series.name);
+        expect(new Set(names).size).toBe(names.length);
+    }
+    validateUniqueTrendPointKeys(data: EventPriorityData) {
+        for (const series of data.trend) {
+            const keys = series.data.map((point) => point.key);
+            expect(new Set(keys).size).toBe(keys.length);
+        }
+    }
     validatePercentages(data: EventPriorityData) {
         for (const row of data.records) {
             const expected = data.totalCount === 0 ? 0 : ( row.count / data.totalCount ) * 100;

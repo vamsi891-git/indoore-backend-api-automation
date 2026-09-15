@@ -67,64 +67,64 @@ export function resolveNearestAccountIdsQuery(
 export const nearestAccountIdsTestCases: NearestAccountIdsTestCase[] = [
   {
     testName:
-      "Validate GET /indore/consumers/nearest-account-ids — nearest account IDs within max distance",
+      "Nearby accounts — similar account numbers are listed",
     scenario: "nearest_found",
     tags: ["@smoke", "@consumer", "@nearest-account-ids"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/nearest-account-ids — default limit returns up to 10 IDs",
+      "Nearby accounts — default list shows up to 10 accounts",
     scenario: "default_limit",
     tags: ["@consumer", "@nearest-account-ids", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/nearest-account-ids — custom limit caps result count",
+      "Nearby accounts — list size can be limited",
     scenario: "custom_limit",
     tags: ["@consumer", "@nearest-account-ids", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/nearest-account-ids — tight maxDistance returns empty list",
+      "Nearby accounts — very close match range can return none",
     scenario: "max_distance_empty",
     tags: ["@consumer", "@nearest-account-ids", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/nearest-account-ids — account ID without numeric suffix",
+      "Nearby accounts — letters-only account has no neighbours",
     scenario: "no_numeric_suffix",
     tags: ["@consumer", "@nearest-account-ids", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/nearest-account-ids — prefixed account ID uses trailing digits",
+      "Nearby accounts — number at the end of the account is used",
     scenario: "prefixed_account_id",
     tags: ["@consumer", "@nearest-account-ids", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/nearest-account-ids — accountId required",
+      "Nearby accounts — account number is required",
     scenario: "missing_account_id",
     expectedStatus: 400,
     tags: ["@consumer", "@nearest-account-ids", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/nearest-account-ids — empty accountId rejected",
+      "Nearby accounts — empty account number is rejected",
     scenario: "empty_account_id",
     expectedStatus: 400,
     tags: ["@consumer", "@nearest-account-ids", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/nearest-account-ids — limit must be at least 1",
+      "Nearby accounts — list size cannot be zero",
     scenario: "invalid_limit_zero",
     expectedStatus: 400,
     tags: ["@consumer", "@nearest-account-ids", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/nearest-account-ids — limit must be at most 20",
+      "Nearby accounts — list size cannot be more than 20",
     scenario: "invalid_limit_max",
     expectedStatus: 400,
     tags: ["@consumer", "@nearest-account-ids", "@negative"],

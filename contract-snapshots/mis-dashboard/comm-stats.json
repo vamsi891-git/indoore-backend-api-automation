@@ -1,0 +1,27 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/mis-dashboard/comm-stats",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "activeMeters",
+    "fromDate",
+    "nonOperationalMeters",
+    "referenceDate",
+    "toDate",
+    "totalMeters",
+    "unmappedMeters"
+  ],
+  "itemKeys": [
+    "activeMeters",
+    "fromDate",
+    "nonOperationalMeters",
+    "referenceDate",
+    "toDate",
+    "totalMeters",
+    "unmappedMeters"
+  ],
+  "hasColumnsGrid": false
+}

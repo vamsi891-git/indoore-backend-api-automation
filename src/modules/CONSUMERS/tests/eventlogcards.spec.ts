@@ -18,7 +18,7 @@ import {
 } from "../Mapper/eventlogcards.mapper";
 import { EventLogCardsValidator } from "../Validator/eventlogcards.validator";
 
-test.describe("Event Log Cards API", () => {
+test.describe("Event summary", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

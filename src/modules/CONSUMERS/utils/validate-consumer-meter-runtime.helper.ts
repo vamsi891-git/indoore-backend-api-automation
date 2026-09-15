@@ -2,29 +2,25 @@ import type { APIRequestContext } from "@playwright/test";
 import { ValidateMeterApi } from "../Api/validatemeter.api";
 import { ValidateMeterMapper } from "../Mapper/validatemeter.mapper";
 import type { ValidateMeterScenario } from "../Mapper/validatemeter.mapper";
-import {
-  ensureConsumerAssignableMeterPool,
-  peekConsumerAssignableMeterSerial,
-} from "../Data/consumer-assignable-meter-pool.data";
-import { createConsumerData } from "../../MASTER-DATA/Data/create-consumer.data";
 import { getValidateMeterSerial } from "../../MASTER-DATA/utils/validate-meter-runtime.helper";
 import type { ValidateConsumerMeterRuntimeEnvKey } from "../Data/validatemeter.data";
 
 const RUNTIME_SERIALS: Partial<Record<ValidateConsumerMeterRuntimeEnvKey, string>> =
   {};
 
-function setRuntimeSerial(
-  key: ValidateConsumerMeterRuntimeEnvKey,
-  value: string,
-): void {
+function setRuntimeSerial(key: ValidateConsumerMeterRuntimeEnvKey,value: string,): void {
   const trimmed = value.trim();
   if (trimmed) {
     RUNTIME_SERIALS[key] = trimmed;
   }
 }
 
-function envSerial(key: ValidateConsumerMeterRuntimeEnvKey): string {
-  return RUNTIME_SERIALS[key] ?? process.env[key]?.trim() ?? "";
+function verifiedSerial(key: ValidateConsumerMeterRuntimeEnvKey): string {
+  return RUNTIME_SERIALS[key] ?? "";
+}
+
+function probeEnvSerial(key: ValidateConsumerMeterRuntimeEnvKey): string {
+  return process.env[key]?.trim() ?? "";
 }
 
 function matchesScenario(
@@ -73,9 +69,7 @@ export async function ensureValidateConsumerMeterRuntimeContext(
   }
 
   ensurePromise = (async () => {
-    const organisationLookupId = createConsumerData.organisationLookupId;
-
-    const assignableFromEnv = envSerial(
+    const assignableFromEnv = probeEnvSerial(
       "VALIDATE_CONSUMER_METER_ASSIGNABLE_SERIAL",
     );
     if (
@@ -90,22 +84,14 @@ export async function ensureValidateConsumerMeterRuntimeContext(
         "VALIDATE_CONSUMER_METER_ASSIGNABLE_SERIAL",
         assignableFromEnv,
       );
-    } else {
-      await ensureConsumerAssignableMeterPool(authenticatedApi, {
-        targetCount: 2,
-        organisationLookupId,
-      });
-      const peeked = peekConsumerAssignableMeterSerial();
-      if (
-        peeked &&
-        (await serialMatchesScenario(authenticatedApi, peeked, "assignable"))
-      ) {
-        setRuntimeSerial("VALIDATE_CONSUMER_METER_ASSIGNABLE_SERIAL", peeked);
-      }
+    } else if (assignableFromEnv) {
+      console.warn(
+        "[validate-consumer-meter-runtime] VALIDATE_CONSUMER_METER_ASSIGNABLE_SERIAL is not an unassigned active meter — assignable case will skip",
+      );
     }
 
     const assignedCandidates = [
-      envSerial("VALIDATE_CONSUMER_METER_ASSIGNED_SERIAL"),
+      probeEnvSerial("VALIDATE_CONSUMER_METER_ASSIGNED_SERIAL"),
       getValidateMeterSerial("VALIDATE_DTR_METER_ASSIGNED_SERIAL"),
       "85080223",
     ].filter(Boolean);
@@ -120,7 +106,7 @@ export async function ensureValidateConsumerMeterRuntimeContext(
     }
 
     const inactiveCandidates = [
-      envSerial("VALIDATE_CONSUMER_METER_INACTIVE_SERIAL"),
+      probeEnvSerial("VALIDATE_CONSUMER_METER_INACTIVE_SERIAL"),
       getValidateMeterSerial("VALIDATE_DTR_METER_INACTIVE_SERIAL"),
       "7060268",
     ].filter(Boolean);
@@ -131,9 +117,17 @@ export async function ensureValidateConsumerMeterRuntimeContext(
         break;
       }
     }
+    if (
+      probeEnvSerial("VALIDATE_CONSUMER_METER_INACTIVE_SERIAL") &&
+      !verifiedSerial("VALIDATE_CONSUMER_METER_INACTIVE_SERIAL")
+    ) {
+      console.warn(
+        "[validate-consumer-meter-runtime] VALIDATE_CONSUMER_METER_INACTIVE_SERIAL is not METER_INACTIVE — inactive case will skip",
+      );
+    }
 
     const notInSystemCandidates = [
-      envSerial("VALIDATE_CONSUMER_METER_NOT_IN_SYSTEM_SERIAL"),
+      probeEnvSerial("VALIDATE_CONSUMER_METER_NOT_IN_SYSTEM_SERIAL"),
       "891901",
       "MSN_INVALID_NONEXISTENT_00000",
     ].filter(Boolean);
@@ -152,7 +146,7 @@ export async function ensureValidateConsumerMeterRuntimeContext(
     }
 
     console.log(
-      `[validate-consumer-meter-runtime] assignable=${envSerial("VALIDATE_CONSUMER_METER_ASSIGNABLE_SERIAL") || "none"} not-in-system=${envSerial("VALIDATE_CONSUMER_METER_NOT_IN_SYSTEM_SERIAL") || "none"} assigned=${envSerial("VALIDATE_CONSUMER_METER_ASSIGNED_SERIAL") || "none"} inactive=${envSerial("VALIDATE_CONSUMER_METER_INACTIVE_SERIAL") || "none"}`,
+      `[validate-consumer-meter-runtime] assignable=${verifiedSerial("VALIDATE_CONSUMER_METER_ASSIGNABLE_SERIAL") || "none"} not-in-system=${verifiedSerial("VALIDATE_CONSUMER_METER_NOT_IN_SYSTEM_SERIAL") || "none"} assigned=${verifiedSerial("VALIDATE_CONSUMER_METER_ASSIGNED_SERIAL") || "none"} inactive=${verifiedSerial("VALIDATE_CONSUMER_METER_INACTIVE_SERIAL") || "none"}`,
     );
   })().catch((err) => {
     ensurePromise = null;
@@ -168,16 +162,16 @@ export function getValidateConsumerMeterSerial(
 ): string {
   switch (scenario) {
     case "assignable":
-      return envSerial("VALIDATE_CONSUMER_METER_ASSIGNABLE_SERIAL");
+      return verifiedSerial("VALIDATE_CONSUMER_METER_ASSIGNABLE_SERIAL");
     case "meter_not_in_system":
       return (
-        envSerial("VALIDATE_CONSUMER_METER_NOT_IN_SYSTEM_SERIAL") ||
+        verifiedSerial("VALIDATE_CONSUMER_METER_NOT_IN_SYSTEM_SERIAL") ||
         fallbackNotInSystemSerial
       );
     case "already_assigned":
-      return envSerial("VALIDATE_CONSUMER_METER_ASSIGNED_SERIAL");
+      return verifiedSerial("VALIDATE_CONSUMER_METER_ASSIGNED_SERIAL");
     case "inactive":
-      return envSerial("VALIDATE_CONSUMER_METER_INACTIVE_SERIAL");
+      return verifiedSerial("VALIDATE_CONSUMER_METER_INACTIVE_SERIAL");
     default:
       return "";
   }

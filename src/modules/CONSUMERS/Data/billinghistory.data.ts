@@ -211,90 +211,90 @@ export function resolveBillingHistoryContractBody(
 export const billingHistoryTestCases: BillingHistoryTestCase[] = [
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/billing-history?billingLimit=0 — all archive periods (≤120)",
+      "Billing history — full bill list for the consumer",
     scenario: "bh_by_ivrs_all",
     tags: ["@smoke", "@consumer", "@billing", "@billing-history"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/billing-history?billingLimit=12 — last 12 months",
+      "Billing history — last 12 months of bills",
     scenario: "bh_limit_12",
     tags: ["@consumer", "@billing", "@billing-history", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/billing-history?billingLimit=6 — last 6 months",
+      "Billing history — last 6 months of bills",
     scenario: "bh_limit_6",
     tags: ["@consumer", "@billing", "@billing-history", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{consumerId}/billing-history — resolve by account id",
+      "Billing history — opens using the account number",
     scenario: "bh_by_account",
     tags: ["@consumer", "@billing", "@billing-history", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/billing-history — resolve by meter lookup id",
+      "Billing history — opens using the meter",
     scenario: "bh_by_meter",
     tags: ["@consumer", "@billing", "@billing-history", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/billing-history — unknown query params ignored",
+      "Billing history — extra unused options are ignored",
     scenario: "bh_ignore_unknown_query",
     tags: ["@consumer", "@billing", "@billing-history", "@edge"],
   },
   {
     testName:
-      "Contract — billingLimit=0 empty archive with default month labels and em-dash summary",
+      "Billing history — sample: empty months still listed",
     scenario: "contract_empty_24",
     isContractFixture: true,
     tags: ["@consumer", "@billing", "@billing-history", "@edge"],
   },
   {
     testName:
-      "Contract — billingLimit=12 empty archive with 12 month labels",
+      "Billing history — sample: 12 empty months listed",
     scenario: "contract_empty_12",
     isContractFixture: true,
     tags: ["@consumer", "@billing", "@billing-history", "@edge"],
   },
   {
     testName:
-      "Contract — nonzero consumptionKwh with billAmount and paymentStatus stubs null",
+      "Billing history — sample: months with units consumed",
     scenario: "contract_nonzero_consumption",
     isContractFixture: true,
     tags: ["@consumer", "@billing", "@billing-history", "@edge"],
   },
   {
     testName:
-      "Contract — period kWh matches max(0, cum − prevCum) from archive cumulative registers",
+      "Billing history — sample: monthly units match meter totals",
     scenario: "contract_consumption_formula",
     isContractFixture: true,
     tags: ["@consumer", "@billing", "@billing-history", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{consumerId}/billing-history — consumer not found or empty calendar",
+      "Billing history — unknown consumer is empty or not found",
     scenario: "consumer_not_found",
     tags: ["@consumer", "@billing", "@billing-history", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/billing-history — unknown meter not found or empty calendar",
+      "Billing history — unknown meter is empty or not found",
     scenario: "meter_not_found",
     tags: ["@consumer", "@billing", "@billing-history", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ref}/billing-history — blank consumer ref rejected",
+      "Billing history — blank consumer number is rejected",
     scenario: "empty_consumer_ref",
     expectedStatus: 400,
     tags: ["@consumer", "@billing", "@billing-history", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/billing-history — negative billingLimit rejected",
+      "Billing history — negative month limit is rejected",
     scenario: "invalid_billing_limit",
     expectedStatus: 400,
     tags: ["@consumer", "@billing", "@billing-history", "@negative"],

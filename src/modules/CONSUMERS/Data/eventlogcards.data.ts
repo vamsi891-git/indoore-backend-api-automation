@@ -208,71 +208,71 @@ export function resolveEventLogCardsContractBody(
 export const eventLogCardsTestCases: EventLogCardsTestCase[] = [
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/event-log/cards — success with summary cards",
+      "Event summary — cards for the consumer",
     scenario: "elc_by_ivrs",
     tags: ["@smoke", "@consumer", "@event-log", "@event-log-cards"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{consumerId}/event-log/cards — resolve by account id",
+      "Event summary — opens using the account number",
     scenario: "elc_by_account",
     tags: ["@consumer", "@event-log", "@event-log-cards", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/event-log/cards — resolve by meter lookup id",
+      "Event summary — opens using the meter",
     scenario: "elc_by_meter",
     tags: ["@consumer", "@event-log", "@event-log-cards", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/event-log/cards — unknown query params ignored",
+      "Event summary — extra unused options are ignored",
     scenario: "elc_ignore_unknown_query",
     tags: ["@consumer", "@event-log", "@event-log-cards", "@edge"],
   },
   {
     testName:
-      "Contract — empty cards (getEmptyEventCards backend fallback)",
+      "Event summary — sample: all zeros",
     scenario: "contract_empty_cards",
     isContractFixture: true,
     tags: ["@consumer", "@event-log", "@event-log-cards", "@edge"],
   },
   {
     testName:
-      "Contract — nonzero resolved/pending counts with trend and comparison labels",
+      "Event summary — sample: resolved and pending counts",
     scenario: "contract_nonzero_cards",
     isContractFixture: true,
     tags: ["@consumer", "@event-log", "@event-log-cards", "@edge"],
   },
   {
     testName:
-      "Contract — trendPercent matches ((current − previous) / previous) × 100",
+      "Event summary — sample: change vs yesterday is correct",
     scenario: "contract_trend_formula",
     isContractFixture: true,
     tags: ["@consumer", "@event-log", "@event-log-cards", "@edge"],
   },
   {
     testName:
-      "Contract — avg valueDisplay uses hours+minutes when valueMinutes ≥ 60",
+      "Event summary — sample: long restore time shown as hours and minutes",
     scenario: "contract_avg_display",
     isContractFixture: true,
     tags: ["@consumer", "@event-log", "@event-log-cards", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{consumerId}/event-log/cards — consumer not found or empty cards",
+      "Event summary — unknown consumer is empty or not found",
     scenario: "consumer_not_found",
     tags: ["@consumer", "@event-log", "@event-log-cards", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/event-log/cards — unknown meter not found or empty cards",
+      "Event summary — unknown meter is empty or not found",
     scenario: "meter_not_found",
     tags: ["@consumer", "@event-log", "@event-log-cards", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ref}/event-log/cards — blank consumer ref rejected",
+      "Event summary — blank consumer number is rejected",
     scenario: "empty_consumer_ref",
     expectedStatus: 400,
     tags: ["@consumer", "@event-log", "@event-log-cards", "@negative"],

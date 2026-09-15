@@ -4,7 +4,15 @@ export type ValidateMeterScenario =
   | "already_assigned"
   | "inactive"
   | "missing_meter_serial"
-  | "empty_meter_serial";
+  | "empty_meter_serial"
+  | "whitespace_serial"
+  | "padded_serial"
+  | "unknown_query"
+  | "invalid_org_zero"
+  | "invalid_org_negative"
+  | "foreign_org_id"
+  | "duplicate_get"
+  | "organisation_lookup";
 
 export type ValidateMeterReason =
   | "METER_NOT_FOUND"

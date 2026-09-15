@@ -6,8 +6,8 @@ import { BillingPeriodValidator } from "../Validator/billingperiod.validator";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../../src/core/utils/performancetracker";
-test.describe("Billing Period API",() => {
-        test("Validate Billing Period API",
+test.describe("This month bill",() => {
+        test("This month bill — monthly, daily, outstanding and bill status",
             {
                 tag: [
                     "@consumer",
@@ -24,7 +24,7 @@ test.describe("Billing Period API",() => {
                 } = await api.getBillingPeriod(billingPeriodData.consumerNumber);
                 await PerformanceTracker.track(
         rawResponse,
-        "Billing Period API",
+        "This month bill",
         rawResponse.url(),
         responseTime
       );
@@ -88,6 +88,6 @@ test.describe("Billing Period API",() => {
                 SUMMARY
                 =====================================
                 */
-                validation.printSummary("Billing Period API",responseTime);
+                validation.printSummary("This month bill",responseTime);
             });
     });

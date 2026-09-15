@@ -13,7 +13,7 @@ import {
 import { NearestAccountIdsMapper } from "../Mapper/nearestaccountids.mapper";
 import { NearestAccountIdsValidator } from "../Validator/nearestaccountids.validator";
 
-test.describe("Nearest Account IDs API", () => {
+test.describe("Nearby accounts", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
@@ -174,6 +174,9 @@ test.describe("Nearest Account IDs API", () => {
         );
         validation.execute("Nearest Account IDs Shape", () =>
           validator.validateNearestAccountIdsShape(mapped.data),
+        );
+        validation.execute("No Duplicate Account IDs", () =>
+          validator.validateNoDuplicateAccountIds(mapped.data),
         );
         validation.execute("Scenario Outcome", () =>
           validator.validateScenario(

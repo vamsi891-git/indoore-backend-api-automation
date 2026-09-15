@@ -15,12 +15,16 @@ export class ValidateMeterApi extends TimedApiClient {
     validateMeter(
         meterSerialNumber: string,
         organisationLookupId?: number,
+        extraParams?: Record<string, string | number>,
     ): Promise<ValidateMeterApiResult> {
         const params: Record<string, string | number> = {
             meterSerialNumber,
         };
         if (organisationLookupId != null) {
             params.organisationLookupId = organisationLookupId;
+        }
+        if (extraParams) {
+            Object.assign(params, extraParams);
         }
         return this.getJson<ValidateMeterResponse>(
             ValidateMeterApi.PATH,

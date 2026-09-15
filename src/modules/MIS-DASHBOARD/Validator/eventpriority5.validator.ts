@@ -72,6 +72,16 @@ export class EventPriorityValidator {
         const dup =labels.filter((x, index) =>labels.indexOf(x) !== index);
         expect(dup).toEqual([]);
     }
+    validateUniqueTrendSeriesNames(data: EventPriorityData) {
+        const names = data.trend.map((series) => series.name);
+        expect(new Set(names).size).toBe(names.length);
+    }
+    validateUniqueTrendPointKeys(data: EventPriorityData) {
+        for (const series of data.trend) {
+            const keys = series.data.map((point) => point.key);
+            expect(new Set(keys).size).toBe(keys.length);
+        }
+    }
     validateBusinessInvestigation(data: EventPriorityData) {
         const findings = [];
         for ( const row of data.records) {

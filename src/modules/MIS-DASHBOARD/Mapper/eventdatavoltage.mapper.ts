@@ -7,6 +7,7 @@ export interface TrendPoint {
     key: string;
     label: string;
     value: number;
+    meterCount: number;
 }
 export interface TrendSeries {
     name: string;
@@ -33,8 +34,16 @@ export class EventVoltageMapper {
             category:data.category,
             label:data.label,
             totalCount:Number(data.totalCount),
-            records:data.phases??data.categories??[],
-            trend:data.trend?.series??[]
+            records: data.phases ?? data.categories ?? [],
+            trend: (data.trend?.series ?? []).map((series: any) => ({
+                name: series?.name ?? "",
+                data: (series?.data ?? []).map((point: any) => ({
+                    key: String(point?.key ?? ""),
+                    label: String(point?.label ?? ""),
+                    value: Number(point?.value ?? 0),
+                    meterCount: Number(point?.meterCount ?? 0),
+                })),
+            })),
         };
     }
 }

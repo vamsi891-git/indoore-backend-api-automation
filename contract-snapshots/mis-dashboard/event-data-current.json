@@ -1,0 +1,31 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/mis-dashboard/event-data/current",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "category",
+    "fromDate",
+    "label",
+    "period",
+    "phases",
+    "reportType",
+    "toDate",
+    "totalCount",
+    "trend"
+  ],
+  "itemKeys": [
+    "category",
+    "fromDate",
+    "label",
+    "period",
+    "phases",
+    "reportType",
+    "toDate",
+    "totalCount",
+    "trend"
+  ],
+  "hasColumnsGrid": false
+}

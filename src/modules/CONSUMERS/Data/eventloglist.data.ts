@@ -185,76 +185,76 @@ export function resolveEventLogListContractBody(
 export const eventLogListTestCases: EventLogListTestCase[] = [
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/event-log/list — success with paginated rows",
+      "Event list — events for the consumer",
     scenario: "ell_by_ivrs",
     tags: ["@smoke", "@consumer", "@event-log", "@event-log-list"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{consumerId}/event-log/list — resolve by account id",
+      "Event list — opens using the account number",
     scenario: "ell_by_account",
     tags: ["@consumer", "@event-log", "@event-log-list", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/event-log/list — resolve by meter lookup id",
+      "Event list — opens using the meter",
     scenario: "ell_by_meter",
     tags: ["@consumer", "@event-log", "@event-log-list", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/event-log/list — page 2 echoes query params",
+      "Event list — page 2 of events loads",
     scenario: "ell_page_2",
     tags: ["@consumer", "@event-log", "@event-log-list", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/event-log/list — eventSearch filter accepted",
+      "Event list — search filter is accepted",
     scenario: "ell_with_search",
     tags: ["@consumer", "@event-log", "@event-log-list", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/event-log/list — unknown query params ignored",
+      "Event list — extra unused options are ignored",
     scenario: "ell_ignore_unknown_query",
     tags: ["@consumer", "@event-log", "@event-log-list", "@edge"],
   },
   {
     testName:
-      "Contract — empty list (getEmptyEventLogPage backend fallback)",
+      "Event list — sample: no events",
     scenario: "contract_empty_list",
     isContractFixture: true,
     tags: ["@consumer", "@event-log", "@event-log-list", "@edge"],
   },
   {
     testName:
-      "Contract — pagination math totalPages = ceil(totalCount / pageSize)",
+      "Event list — sample: page count is correct",
     scenario: "contract_pagination",
     isContractFixture: true,
     tags: ["@consumer", "@event-log", "@event-log-list", "@edge"],
   },
   {
     testName:
-      "Contract — Resolved vs Pending row rules (restoreDateTime, status)",
+      "Event list — sample: resolved and pending events",
     scenario: "contract_resolved_pending_rows",
     isContractFixture: true,
     tags: ["@consumer", "@event-log", "@event-log-list", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{consumerId}/event-log/list — consumer not found or empty list",
+      "Event list — unknown consumer is empty or not found",
     scenario: "consumer_not_found",
     tags: ["@consumer", "@event-log", "@event-log-list", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/event-log/list — unknown meter not found or empty list",
+      "Event list — unknown meter is empty or not found",
     scenario: "meter_not_found",
     tags: ["@consumer", "@event-log", "@event-log-list", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ref}/event-log/list — blank consumer ref rejected",
+      "Event list — blank consumer number is rejected",
     scenario: "empty_consumer_ref",
     expectedStatus: 400,
     tags: ["@consumer", "@event-log", "@event-log-list", "@negative"],
