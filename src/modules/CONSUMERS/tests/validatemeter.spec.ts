@@ -14,7 +14,7 @@ import { ValidateMeterMapper } from "../Mapper/validatemeter.mapper";
 import { ValidateMeterValidator } from "../Validator/validatemeter.validator";
 import { ensureValidateConsumerMeterRuntimeContext } from "../utils/validate-consumer-meter-runtime.helper";
 
-test.describe("Validate Meter API", () => {
+test.describe("Can this meter be given to a consumer?", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
@@ -29,21 +29,31 @@ test.describe("Validate Meter API", () => {
       { tag: testCase.tags },
       async ({ authenticatedApi }) => {
         const expectedStatus = testCase.expectedStatus ?? 200;
-        const organisationLookupId = testCase.includeOrganisationLookupId
-          ? createConsumerData.organisationLookupId
-          : undefined;
+        const organisationLookupId =
+          testCase.includeOrganisationLookupId &&
+          Number(createConsumerData.organisationLookupId) > 0
+            ? createConsumerData.organisationLookupId
+            : undefined;
+        const api = new ValidateMeterApi(authenticatedApi);
+        const assert = new AssertionEngine();
+        const validation = new ValidationEngine();
+        const validator = new ValidateMeterValidator();
 
-        if (
-          testCase.scenario === "missing_meter_serial" ||
-          testCase.scenario === "empty_meter_serial"
-        ) {
-          const api = new ValidateMeterApi(authenticatedApi);
+        if (testCase.expectedStatus === 400) {
+          const serial = resolveValidateConsumerMeterSerial(testCase.scenario);
+          const rawParams: Record<string, string | number> = {
+            ...(testCase.extraParams ?? {}),
+          };
+          if (testCase.scenario === "empty_meter_serial") {
+            rawParams.meterSerialNumber = "";
+          } else if (testCase.scenario === "whitespace_serial") {
+            rawParams.meterSerialNumber = "   ";
+          } else if (serial && testCase.scenario !== "missing_meter_serial") {
+            rawParams.meterSerialNumber = serial;
+          }
+
           const { rawResponse, responseBody, responseTime } =
-            await api.validateMeterRaw(
-              testCase.scenario === "empty_meter_serial"
-                ? { meterSerialNumber: "" }
-                : {},
-            );
+            await api.validateMeterRaw(rawParams);
 
           await PerformanceTracker.track(
             rawResponse,
@@ -52,15 +62,14 @@ test.describe("Validate Meter API", () => {
             responseTime,
           );
 
-          const assert = new AssertionEngine();
-          const validation = new ValidationEngine();
-          const validator = new ValidateMeterValidator();
-
           validation.execute("Status Validation", () =>
             assert.validateStatusCode(rawResponse, expectedStatus, responseBody),
           );
           validation.execute("Validation Error", () =>
-            validator.validateValidationError(responseBody),
+            validator.validateValidationError(
+              responseBody,
+              testCase.errorField ?? "meterSerialNumber",
+            ),
           );
           validation.printSummary(testCase.testName, responseTime);
           return;
@@ -77,9 +86,50 @@ test.describe("Validate Meter API", () => {
           return;
         }
 
-        const api = new ValidateMeterApi(authenticatedApi);
+        const requestSerial = testCase.padSerial
+          ? `  ${meterSerialNumber}  `
+          : meterSerialNumber;
+
+        if (testCase.duplicateGet) {
+          const first = await api.validateMeter(requestSerial);
+          const second = await api.validateMeter(requestSerial);
+
+          await PerformanceTracker.track(
+            second.rawResponse,
+            testCase.testName,
+            second.rawResponse.url(),
+            second.responseTime,
+          );
+
+          const firstMapped = ValidateMeterMapper.map(first.responseBody);
+          const secondMapped = ValidateMeterMapper.map(second.responseBody);
+
+          validation.execute("Status Validation", () =>
+            assert.validateStatusCode(second.rawResponse, 200, second.responseBody),
+          );
+          validation.execute("Duplicate GET consistency", () =>
+            validator.validateDuplicateGetConsistency(
+              firstMapped.data,
+              secondMapped.data,
+            ),
+          );
+          validation.execute("Scenario Outcome", () =>
+            validator.validateScenario(
+              secondMapped,
+              testCase.scenario,
+              meterSerialNumber,
+            ),
+          );
+          validation.printSummary(testCase.testName, second.responseTime);
+          return;
+        }
+
         const { rawResponse, responseBody, responseTime } =
-          await api.validateMeter(meterSerialNumber, organisationLookupId);
+          await api.validateMeter(
+            requestSerial,
+            organisationLookupId,
+            testCase.extraParams,
+          );
 
         await PerformanceTracker.track(
           rawResponse,
@@ -88,9 +138,6 @@ test.describe("Validate Meter API", () => {
           responseTime,
         );
 
-        const assert = new AssertionEngine();
-        const validation = new ValidationEngine();
-        const validator = new ValidateMeterValidator();
         const mapped = ValidateMeterMapper.map(responseBody);
 
         validation.execute("Status Validation", () =>

@@ -1,40 +1,92 @@
 import { expect } from "@playwright/test";
-import { PriorityOverviewData, PriorityOverviewResponse }  from "../Mapper/priority-overview.mapper";
+import { EXPECTED_PRIORITY_IDS } from "../Data/priority-overview.data";
+import {
+  PriorityOverviewData,
+  PriorityOverviewResponse,
+} from "../Mapper/priority-overview.mapper";
+
 export class PriorityOverviewValidator {
-    validateResponse( response:  PriorityOverviewResponse) {
-        expect(response.success).toBeTruthy();
-        expect(response.data).toBeDefined();
+  validateResponse(response: PriorityOverviewResponse) {
+    expect(response.success).toBeTruthy();
+    expect(response.data).toBeDefined();
+  }
+
+  validateDates(data: PriorityOverviewData) {
+    expect(data.fromDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(data.toDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(data.fromDate <= data.toDate).toBeTruthy();
+  }
+
+  validateWindow(
+    data: PriorityOverviewData,
+    expectedFromDate?: string,
+    expectedToDate?: string,
+    expectSameDayWindow?: boolean,
+  ) {
+    this.validateDates(data);
+    if (expectedFromDate) {
+      expect(data.fromDate).toBe(expectedFromDate);
     }
-    validateDates(data:PriorityOverviewData) {
-        expect(data.fromDate).toBeTruthy();
-        expect(data.toDate).toBeTruthy();
-        const from =new Date(data.fromDate);
-        const to =new Date(data.toDate);
-        expect(from.getTime()).toBeLessThanOrEqual(to.getTime());
+    if (expectedToDate) {
+      expect(data.toDate).toBe(expectedToDate);
     }
-    validatePrioritiesExist(data:PriorityOverviewData) {
-        expect(data.priorities.length).toBeGreaterThan(0);
+    if (expectSameDayWindow) {
+      expect(data.fromDate).toBe(data.toDate);
     }
-    validatePriorityStructure(data:PriorityOverviewData) {
-        const ids =new Set<number>();
-        for (const item of data.priorities) {
-            expect(item.priorityId).toBeGreaterThan(0);
-            expect(item.priorityLabel).toMatch(/^P\d+$/);
-            expect(item.events).toBeGreaterThanOrEqual(0);
-            expect(ids.has(item.priorityId)).toBeFalsy();
-            ids.add(item.priorityId);
-        }
+  }
+
+  validatePrioritiesExist(data: PriorityOverviewData) {
+    expect(data.priorities.length).toBeGreaterThan(0);
+  }
+
+  validatePriorityStructure(data: PriorityOverviewData) {
+    for (const item of data.priorities) {
+      expect(item.priorityId).toBeGreaterThanOrEqual(0);
+      expect(item.priorityLabel).toBe(`P${item.priorityId}`);
+      expect(item.events).toBeGreaterThanOrEqual(0);
+      expect(item.alarms).toBeGreaterThanOrEqual(0);
     }
-    validatePriorityOrdering(data:PriorityOverviewData) {
-        for (let i = 1;i <data.priorities.length;i++) {
-            expect(data.priorities[i].priorityId).toBeGreaterThan(
-                    data.priorities[ i - 1].priorityId
-                );
-        }
+  }
+
+  validateUniquePriorityIds(data: PriorityOverviewData) {
+    const ids = data.priorities.map((item) => item.priorityId);
+    expect(new Set(ids).size).toBe(ids.length);
+  }
+
+  validateUniquePriorityLabels(data: PriorityOverviewData) {
+    const labels = data.priorities.map((item) => item.priorityLabel);
+    expect(new Set(labels).size).toBe(labels.length);
+  }
+
+  validatePriorityOrdering(data: PriorityOverviewData) {
+    for (let i = 1; i < data.priorities.length; i++) {
+      expect(data.priorities[i].priorityId).toBeGreaterThan(
+        data.priorities[i - 1].priorityId,
+      );
     }
-    validateExpectedPriorities(data:PriorityOverviewData) {
-        const expected = [1, 2, 3, 4, 5, 6];
-        const actual = data.priorities .map(x => x.priorityId);
-        expect(actual).toEqual(expected);
+  }
+
+  validateExpectedPriorities(data: PriorityOverviewData) {
+    expect(data.priorities.map((item) => item.priorityId)).toEqual(
+      EXPECTED_PRIORITY_IDS,
+    );
+  }
+
+  validateSubsetDoesNotExceedAll(
+    allMeters: PriorityOverviewData,
+    subset: PriorityOverviewData,
+  ) {
+    const byId = new Map(
+      allMeters.priorities.map((item) => [item.priorityId, item]),
+    );
+    expect(subset.priorities.map((item) => item.priorityId)).toEqual(
+      allMeters.priorities.map((item) => item.priorityId),
+    );
+    for (const item of subset.priorities) {
+      const allItem = byId.get(item.priorityId);
+      expect(allItem).toBeDefined();
+      expect(item.events).toBeLessThanOrEqual(allItem!.events);
+      expect(item.alarms).toBeLessThanOrEqual(allItem!.alarms);
     }
+  }
 }

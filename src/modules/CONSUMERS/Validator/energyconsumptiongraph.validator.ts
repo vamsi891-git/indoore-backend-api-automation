@@ -75,6 +75,12 @@ export class EnergyConsumptionGraphValidator {
       expect(typeof point.consumptionKwh).toBe("number");
       expect(Number.isFinite(point.consumptionKwh)).toBeTruthy();
     }
+    this.validateUniquePointLabels(points);
+  }
+
+  validateUniquePointLabels(points: GraphPoint[]) {
+    const labels = points.map((point) => point.label.trim());
+    expect(new Set(labels).size).toBe(labels.length);
   }
 
   /** Backend roundEnergy: 2 decimal places. */

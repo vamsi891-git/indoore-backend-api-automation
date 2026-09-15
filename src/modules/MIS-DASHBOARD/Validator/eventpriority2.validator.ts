@@ -21,6 +21,20 @@ export class EventPriorityValidator {
     validatePhaseLabels(data: EventPriorityData) {
         expect(data.records.map(x => x.label)).toEqual(backendRules.phaseLabels);
     }
+    validateUniqueRecordLabels(data: EventPriorityData) {
+        const labels = data.records.map((x) => x.label);
+        expect(new Set(labels).size).toBe(labels.length);
+    }
+    validateUniqueTrendSeriesNames(data: EventPriorityData) {
+        const names = data.trend.map((series) => series.name);
+        expect(new Set(names).size).toBe(names.length);
+    }
+    validateUniqueTrendPointKeys(data: EventPriorityData) {
+        for (const series of data.trend) {
+            const keys = series.data.map((point) => point.key);
+            expect(new Set(keys).size).toBe(keys.length);
+        }
+    }
     validatePercentages(data: EventPriorityData) {
         for (const row of data.records) {
             const expected = data.totalCount === 0 ? 0 : (row.count/data.totalCount)* 100;
@@ -73,6 +87,7 @@ export class EventPriorityValidator {
         this.validatePeriod(data);
         this.validateTotals(data);
         this.validatePhaseLabels(data);
+        this.validateUniqueRecordLabels(data);
         this.validatePercentages(data);
         this.validateTrend(data);
         this.validateTrendAggregation(data);

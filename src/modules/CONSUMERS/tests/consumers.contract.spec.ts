@@ -20,7 +20,6 @@ import { PowerQualityApi } from "../Api/powerquality.api";
 import { RealTimePowerApi } from "../Api/realtimepower.api";
 import { ValidateMeterApi } from "../Api/validatemeter.api";
 import { NearestAccountIdsApi } from "../Api/nearestaccountids.api";
-import { ActivationApi } from "../Api/activation.api";
 import {resolveConsumerProfileQuery,resolveConsumerProfileRef,} from "../Data/consumerprofile.data";
 import {resolveCommunicationStatusQuery,resolveCommunicationStatusRef,} from "../Data/communicationstatus.data";
 import {resolveBillingHistoryQuery,resolveBillingHistoryRef,} from "../Data/billinghistory.data";
@@ -34,7 +33,6 @@ import {resolvePowerQualityQuery,resolvePowerQualityRef,} from "../Data/powerqua
 import {resolveRealTimePowerQuery,resolveRealTimePowerRef,} from "../Data/realtimepower.data";
 import { resolveValidateConsumerMeterSerial } from "../Data/validatemeter.data";
 import { resolveNearestAccountIdsQuery } from "../Data/nearestaccountids.data";
-import { resolveActivationConsumerId } from "../Data/activation.data";
 function asRecord(value: unknown): Record<string, unknown> {
   return value !== null && typeof value === "object"
     ? (value as Record<string, unknown>)
@@ -139,9 +137,9 @@ async function snapshotEndpoint(
     buildConsumersStructuralSnapshot(pathPattern, responseBody),
   );
 }
-test.describe("CONSUMERS — Contract Snapshots", () => {
+test.describe("Consumers — screen shape checks", () => {
   test.setTimeout(180_000);
-  test("Consumer Profile Contract Snapshot",
+  test("Consumer profile — screen shape is unchanged",
     { tag: ["@contract-snapshot", "@consumers", "@profile"] },
     async ({ authenticatedApi }) => {
       const ref = resolveConsumerProfileRef("profile_found")!;
@@ -155,7 +153,7 @@ test.describe("CONSUMERS — Contract Snapshots", () => {
       );
     },
   );
-  test("Communication Status Contract Snapshot",
+  test("Meter communication — screen shape is unchanged",
     { tag: ["@contract-snapshot", "@consumers", "@communication-status"] },
     async ({ authenticatedApi }) => {
       const ref = resolveCommunicationStatusRef("status_with_date")!;
@@ -173,7 +171,7 @@ test.describe("CONSUMERS — Contract Snapshots", () => {
     },
   );
   test(
-    "Billing History Contract Snapshot",
+    "Billing history — screen shape is unchanged",
     { tag: ["@contract-snapshot", "@consumers", "@billing-history"] },
     async ({ authenticatedApi }) => {
       const ref = resolveBillingHistoryRef("bh_by_ivrs_all")!;
@@ -189,7 +187,7 @@ test.describe("CONSUMERS — Contract Snapshots", () => {
   );
 
   test(
-    "Billing Period Contract Snapshot",
+    "This month bill — screen shape is unchanged",
     { tag: ["@contract-snapshot", "@consumers", "@billing-period"] },
     async ({ authenticatedApi }) => {
       const { responseBody } = await new BillingPeriodApi(
@@ -204,7 +202,7 @@ test.describe("CONSUMERS — Contract Snapshots", () => {
   );
 
   test(
-    "Energy Consumption Graph Contract Snapshot",
+    "Consumption chart — screen shape is unchanged",
     { tag: ["@contract-snapshot", "@consumers", "@energy-consumption-graph"] },
     async ({ authenticatedApi }) => {
       const ref = resolveEnergyConsumptionGraphRef("ecg_by_ivrs_daily")!;
@@ -223,7 +221,7 @@ test.describe("CONSUMERS — Contract Snapshots", () => {
   );
 
   test(
-    "Energy Flow Contract Snapshot",
+    "Energy flow chart — screen shape is unchanged",
     { tag: ["@contract-snapshot", "@consumers", "@energy-flow"] },
     async ({ authenticatedApi }) => {
       const ref = resolveEnergyFlowRef("ef_by_ivrs_daily")!;
@@ -239,7 +237,7 @@ test.describe("CONSUMERS — Contract Snapshots", () => {
   );
 
   test(
-    "Event Log Cards Contract Snapshot",
+    "Event summary — screen shape is unchanged",
     { tag: ["@contract-snapshot", "@consumers", "@event-log-cards"] },
     async ({ authenticatedApi }) => {
       const ref = resolveEventLogCardsRef("elc_by_ivrs")!;
@@ -255,7 +253,7 @@ test.describe("CONSUMERS — Contract Snapshots", () => {
   );
 
   test(
-    "Event Log List Contract Snapshot",
+    "Event list — screen shape is unchanged",
     { tag: ["@contract-snapshot", "@consumers", "@event-log-list"] },
     async ({ authenticatedApi }) => {
       const ref = resolveEventLogListRef("ell_by_ivrs")!;
@@ -271,7 +269,7 @@ test.describe("CONSUMERS — Contract Snapshots", () => {
   );
 
   test(
-    "Live Load Profile Contract Snapshot",
+    "Live load — screen shape is unchanged",
     { tag: ["@contract-snapshot", "@consumers", "@live-load-profile"] },
     async ({ authenticatedApi }) => {
       const ref = resolveLiveLoadProfileRef("llp_by_ivrs")!;
@@ -287,7 +285,7 @@ test.describe("CONSUMERS — Contract Snapshots", () => {
   );
 
   test(
-    "Power Quality Contract Snapshot",
+    "Power quality — screen shape is unchanged",
     { tag: ["@contract-snapshot", "@consumers", "@power-quality"] },
     async ({ authenticatedApi }) => {
       const ref = resolvePowerQualityRef("pq_by_ivrs")!;
@@ -303,7 +301,7 @@ test.describe("CONSUMERS — Contract Snapshots", () => {
   );
 
   test(
-    "Real Time Power Contract Snapshot",
+    "Live voltage and current — screen shape is unchanged",
     { tag: ["@contract-snapshot", "@consumers", "@real-time-power"] },
     async ({ authenticatedApi }) => {
       const ref = resolveRealTimePowerRef("power_by_ivrs")!;
@@ -319,7 +317,7 @@ test.describe("CONSUMERS — Contract Snapshots", () => {
   );
 
   test(
-    "Validate Meter Contract Snapshot",
+    "Can this meter be given to a consumer? — screen shape is unchanged",
     { tag: ["@contract-snapshot", "@consumers", "@validate-meter"] },
     async ({ authenticatedApi }) => {
       const serial = resolveValidateConsumerMeterSerial("meter_not_in_system");
@@ -335,7 +333,7 @@ test.describe("CONSUMERS — Contract Snapshots", () => {
   );
 
   test(
-    "Nearest Account IDs Contract Snapshot",
+    "Nearby accounts — screen shape is unchanged",
     { tag: ["@contract-snapshot", "@consumers", "@nearest-account-ids"] },
     async ({ authenticatedApi }) => {
       const query = resolveNearestAccountIdsQuery("nearest_found")!;
@@ -350,19 +348,11 @@ test.describe("CONSUMERS — Contract Snapshots", () => {
     },
   );
 
-  test(
-    "Activation Contract Snapshot",
+  test.skip(
+    "Turn consumer on or off — skipped on shared database",
     { tag: ["@contract-snapshot", "@consumers", "@activation"] },
-    async ({ authenticatedApi }) => {
-      const consumerId = resolveActivationConsumerId("activate_idempotent")!;
-      const { responseBody } = await new ActivationApi(
-        authenticatedApi,
-      ).updateActivation(consumerId, { status: "active" });
-      await snapshotEndpoint(
-        "consumers/activation",
-        "/indore/consumers/{id}/activation",
-        responseBody,
-      );
+    async () => {
+      // PATCH /activation is ConsumerCrudRepository — write tests stay skipped.
     },
   );
 });

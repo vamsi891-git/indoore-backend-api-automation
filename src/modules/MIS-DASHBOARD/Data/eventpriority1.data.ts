@@ -34,6 +34,6 @@ export const backendRules = {
         hourly:/^\d{2}:\d{2}$/,
         daily:/^\d{4}-\d{2}-\d{2}$/,
         weekly:/^\d{4}-\d{2}-\d{2}_\d{4}-\d{2}-\d{2}$/,
-        monthly:/^\d{4}-\d{2}-\d{2}_\d{4}-\d{2}-\d{2}$/
+        monthly:/^\d{4}-\d{2}$/
     }
 };

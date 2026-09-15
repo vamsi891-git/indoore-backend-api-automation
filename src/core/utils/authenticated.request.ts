@@ -161,7 +161,7 @@ async function requestWithAutoRefresh(
   let response = await runRequest(token);
 
   if (response.status() === 401) {
-    LoggerEngine.info(`${method} ${resolvedUrl} received 401; reloading shared token`);
+    LoggerEngine.info(`${method} ${resolvedUrl} received 401; starting a new session`);
     token = await TokenManager.handleUnauthorized(token);
     response = await executeWithToken(request, method, resolvedUrl, normalizedOptions, token);
   }

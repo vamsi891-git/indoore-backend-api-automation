@@ -2,40 +2,121 @@ import { test } from "../../../fixtures/api.fixture";
 import { EventPriorityApi } from "../Api/eventpriority.api";
 import { EventPriorityMapper } from "../Mapper/eventpriority.mapper";
 import { EventPriorityValidator } from "../Validator/eventpriority.validator";
-import { eventPriorityQueries }  from "../Data/eventpriority.data";
+import {
+  eventPriorityLevels,
+  eventPrioritySlug,
+  eventPriorityTestCases,
+  eventPriorityTitle,
+} from "../Data/eventpriority.data";
+import { MisDashboardEdgesValidator } from "../Validator/mis-dashboard.edges.validator";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
-test.describe("MIS Event Priority API",{tag: ["@smoke","@eventpriority"]},() => {
-        eventPriorityQueries.forEach(
-            query => {
-                test(`${query.period}`,
-                    async ({authenticatedApi}) => {
-                        const api =new EventPriorityApi(authenticatedApi);
-                        const result =await api.getPriorityData(query.priority,{ period:query.period});
-                        const rawResponse = result.rawResponse;
-                        if (result.timeout || !rawResponse) {
-                            console.log(`BACKEND FINDING Priority API timeout ${query.period}`);
-                            return;
-                        }
-                        const assert =new AssertionEngine();
-                        const validation =new ValidationEngine();
-                        validation.execute("Status",() => 
-                        assert.validateStatusCode(rawResponse,200));
-                        validation.execute("Content",() => 
-                            assert.validateContentType(rawResponse,"application/json"));
-                        validation.execute("Response Time",() => 
-                            assert.validateResponseTime(result.responseTime,120000));
-                        validation.execute("Sensitive Data",() => 
-                            assert.validateSensitiveData(result.responseBody));
-                        const data =EventPriorityMapper.map(result.responseBody.data);
-                        const validator =new EventPriorityValidator();
-                        validation.execute("Response",() => 
-                            validator.validateResponse(result.responseBody));
-                        validation.execute("Backend",() => 
-                            validator.validate(data));
-                        validation.execute("Investigation",() => 
-                            validator.validateBusinessFindings(data));
-                        validation.printSummary(`Priority ${query.period}`,result.responseTime);
-                    });
-            });
-        });
+
+test.describe("Urgency level events", () => {
+  test.setTimeout(180_000);
+  for (const testCase of eventPriorityTestCases) {
+    test(testCase.testName, { tag: testCase.tags }, async ({ authenticatedApi }) => {
+      const api = new EventPriorityApi(authenticatedApi);
+      const { rawResponse, responseBody, responseTime } =
+        await api.getPriorityData(testCase.priority, testCase.params);
+      const assert = new AssertionEngine();
+      const validation = new ValidationEngine();
+      const validator = new EventPriorityValidator();
+      const edges = new MisDashboardEdgesValidator();
+
+      validation.execute("Status", () =>
+        assert.validateStatusCode(
+          rawResponse,
+          testCase.expectedStatus,
+          responseBody,
+        ),
+      );
+      validation.execute("Content", () =>
+        assert.validateContentType(rawResponse, "application/json"),
+      );
+      validation.execute("Performance", () =>
+        assert.validateResponseTime(responseTime, 120000),
+      );
+      validation.execute("Sensitive Data", () =>
+        assert.validateSensitiveData(responseBody),
+      );
+
+      if (testCase.expectedStatus !== 200) {
+        validation.execute("Error code", () =>
+          edges.validateValidationError(responseBody),
+        );
+        validation.printSummary(testCase.testName, responseTime);
+        return;
+      }
+
+      const mapped = EventPriorityMapper.map(responseBody.data);
+      validation.execute("Response", () =>
+        validator.validateResponse(responseBody),
+      );
+      validation.execute("Urgency chart", () =>
+        validator.validate(mapped, {
+          period: testCase.expectedPeriod,
+          priorityId: testCase.expectedPriorityId,
+          label: testCase.expectedLabel,
+        }),
+      );
+      validation.execute("No duplicate phase labels", () =>
+        validator.validateUniqueRecordLabels(mapped),
+      );
+      validation.execute("No duplicate trend series names", () =>
+        validator.validateUniqueTrendSeriesNames(mapped),
+      );
+      validation.execute("No duplicate trend point keys", () =>
+        validator.validateUniqueTrendPointKeys(mapped),
+      );
+      validation.printSummary(testCase.testName, responseTime);
+    });
+  }
+
+  for (const level of eventPriorityLevels) {
+    const title = eventPriorityTitle(level);
+    test(
+      `${title} — consumer and DTR stay within all meters`,
+      { tag: ["@mis-dashboard", "@event-data", "@edge"] },
+      async ({ authenticatedApi }) => {
+        const api = new EventPriorityApi(authenticatedApi);
+        const assert = new AssertionEngine();
+        const validation = new ValidationEngine();
+        const validator = new EventPriorityValidator();
+        const priority = eventPrioritySlug(level);
+        const query = { period: "monthly", assetType: "all" };
+        const [allResult, consumerResult, dtrResult] = await Promise.all([
+          api.getPriorityData(priority, { ...query, assetType: "all" }),
+          api.getPriorityData(priority, { ...query, assetType: "consumer" }),
+          api.getPriorityData(priority, { ...query, assetType: "dtr" }),
+        ]);
+
+        validation.execute("All meters status", () =>
+          assert.validateStatusCode(allResult.rawResponse, 200),
+        );
+        validation.execute("Consumer status", () =>
+          assert.validateStatusCode(consumerResult.rawResponse, 200),
+        );
+        validation.execute("DTR status", () =>
+          assert.validateStatusCode(dtrResult.rawResponse, 200),
+        );
+
+        const allMeters = EventPriorityMapper.map(allResult.responseBody.data);
+        const consumers = EventPriorityMapper.map(
+          consumerResult.responseBody.data,
+        );
+        const dtrs = EventPriorityMapper.map(dtrResult.responseBody.data);
+        validation.execute("Consumer counts do not exceed all meters", () =>
+          validator.validateSubsetDoesNotExceedAll(allMeters, consumers),
+        );
+        validation.execute("DTR counts do not exceed all meters", () =>
+          validator.validateSubsetDoesNotExceedAll(allMeters, dtrs),
+        );
+        validation.printSummary(
+          `${title} — consumer and DTR stay within all meters`,
+          allResult.responseTime,
+        );
+      },
+    );
+  }
+});

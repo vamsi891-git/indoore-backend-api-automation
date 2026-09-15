@@ -2,11 +2,22 @@ import fs from "fs";
 import path from "path";
 import { AuthApi } from "./auth.util";
 import { LoggerEngine } from "../engine/logger.engine";
+import { normalizeApiBaseUrl } from "./api-path.util";
 
 interface StoredToken {
   accessToken: string;
   expiresAt: number;
   csrfToken?: string;
+  origin?: string;
+}
+
+function apiOrigin(): string {
+  return normalizeApiBaseUrl(process.env.BASE_URL);
+}
+
+function isTwoFactorSecretUnavailable(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return message.includes("TWO_FACTOR_SECRET_UNAVAILABLE");
 }
 
 export class TokenManager {
@@ -16,7 +27,8 @@ export class TokenManager {
   private static refreshPromise: Promise<void> | null = null;
 
   private static readonly defaultExpirySeconds = 900;
-  private static readonly refreshBufferMs = 60_000;
+  /** Slow DTR endpoints can take >2 minutes; do not start a request with a token that dies mid-call. */
+  private static readonly refreshBufferMs = 180_000;
   private static readonly lockWaitMs = 120_000;
   private static readonly lockPollMs = 250;
   private static readonly authDir = path.join(process.cwd(), "playwright", ".auth");
@@ -44,15 +56,23 @@ export class TokenManager {
     return this.csrfToken;
   }
   static async handleUnauthorized(currentToken: string): Promise<string> {
-    this.syncFromDisk();
-    if (this.token && this.token !== currentToken) {
-      return this.token;
-    }
+    this.discardStoredSession();
     await this.refreshToken(true);
-    if (!this.token) {
+    if (!this.token || this.token === currentToken) {
       throw new Error("Token unavailable after unauthorized recovery");
     }
     return this.token;
+  }
+
+  static discardStoredSession(): void {
+    this.reset();
+    try {
+      if (fs.existsSync(this.tokenFilePath)) {
+        fs.unlinkSync(this.tokenFilePath);
+      }
+    } catch {
+      // ignore missing file
+    }
   }
 
   /** Force login/refresh to obtain a fresh CSRF token (e.g. after CSRF_MISMATCH). */
@@ -178,9 +198,22 @@ export class TokenManager {
         } else {
           this.applySession(await AuthApi.login());
         }
-      } catch {
+      } catch (error) {
+        if (isTwoFactorSecretUnavailable(error)) {
+          throw error;
+        }
         LoggerEngine.info("Refresh failed; falling back to login");
-        this.applySession(await AuthApi.login());
+        try {
+          this.applySession(await AuthApi.login());
+        } catch (loginError) {
+          if (isTwoFactorSecretUnavailable(loginError) && previousToken) {
+            LoggerEngine.info(
+              "Cannot re-login (2FA secret unavailable); keeping the current token",
+            );
+            return;
+          }
+          throw loginError;
+        }
       }
 
       this.persistToken(this.token!, this.expiresAtEpochMs());
@@ -229,6 +262,9 @@ export class TokenManager {
       if (!parsed.accessToken || !parsed.expiresAt || parsed.expiresAt <= Date.now()) {
         return null;
       }
+      if (parsed.origin && parsed.origin !== apiOrigin()) {
+        return null;
+      }
       return parsed;
     } catch {
       return null;
@@ -242,6 +278,7 @@ export class TokenManager {
         {
           accessToken,
           expiresAt,
+          origin: apiOrigin(),
           ...(this.csrfToken ? { csrfToken: this.csrfToken } : {})
         } satisfies StoredToken,
         null,

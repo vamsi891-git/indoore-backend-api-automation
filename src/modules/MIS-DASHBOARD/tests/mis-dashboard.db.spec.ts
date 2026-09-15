@@ -3,8 +3,8 @@ import { isDbConfigured } from "../../../core/db/postgres.client";
 import { isMisDashboardDbSqlReady } from "../Db/mis-dashboard.db";
 import { runMisDashboardDbCoverage } from "./mis-dashboard-db.harness";
 
-apiDbTest.describe("MIS-DASHBOARD — DB Coverage", () => {
-  apiDbTest.describe.configure({ retries: 1 });
+apiDbTest.describe("Meter counts versus the database", () => {
+  apiDbTest.describe.configure({ retries: 0 });
   apiDbTest.setTimeout(180_000);
 
   apiDbTest.beforeEach(() => {
@@ -16,7 +16,7 @@ apiDbTest.describe("MIS-DASHBOARD — DB Coverage", () => {
   });
 
   apiDbTest(
-    "IND-MIS-DB-001 — comm-stats live cards ≤ unscoped meter universe",
+    "How many meters we have — cards do not exceed the full meter list",
     { tag: ["@mis-dashboard", "@db"] },
     async ({ authenticatedApi, db }) => {
       await runMisDashboardDbCoverage(authenticatedApi, db);

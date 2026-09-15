@@ -102,8 +102,9 @@ export const REALTIME_POWER_SP_LATEST_SQL = `
 `;
 
 /**
- * Latest TP instantaneous row — mirrors ConsumersRepository
- * fetchLatestTpInstantaneousRow / mapTpRealTimePowerRow (`T_IPData_CateTP` archive).
+ * Latest TP instantaneous row — mirrors ConsumerDetailRepository today cache
+ * (`general.meter_ip_today_tp` via upsertMeterIpTodayTpRow / widget cache).
+ * Do not scan archive T_IPData_CateTP (full-table ORDER BY hangs).
  * Params: $1 = MeterLookup_TblRefID
  */
 export const REALTIME_POWER_TP_LATEST_SQL = `
@@ -117,15 +118,20 @@ export const REALTIME_POWER_TP_LATEST_SQL = `
     "BN_Voltage" AS "bVoltage",
     "B_Current" AS "bCurrent",
     "B_PF" AS "bPowerFactor"
-  FROM public."T_IPData_CateTP"
+  FROM general.meter_ip_today_tp
   WHERE "MeterLookup_TblRefID" = $1::int
+    AND "MeterReading_DateTime" >= (NOW() AT TIME ZONE 'Asia/Kolkata')::date::timestamp
+    AND "MeterReading_DateTime" < (
+      (NOW() AT TIME ZONE 'Asia/Kolkata')::date + interval '1 day'
+    )::timestamp
+    AND "MeterReading_DateTime" <= (NOW() AT TIME ZONE 'Asia/Kolkata')
   ORDER BY "MeterReading_DateTime" DESC
   LIMIT 1
 `;
 
 /**
- * Latest SP power-quality row — mirrors ConsumersRepository.getPowerQuality
- * (`T_IPData_CateSP` archive).
+ * Latest SP power-quality row — same today cache as
+ * awaitConsumerSpTodayIpWidgetCached(..., 'powerQuality').
  * Params: $1 = MeterLookup_TblRefID
  */
 export const POWER_QUALITY_SP_LATEST_SQL = `
@@ -135,15 +141,19 @@ export const POWER_QUALITY_SP_LATEST_SQL = `
     "Neutral_Current" AS "neutralCurrent",
     "MD_kW" AS "mdKw",
     "MD_kVA" AS "mdKva"
-  FROM public."T_IPData_CateSP"
+  FROM general.meter_ip_today_sp
   WHERE "MeterLookup_TblRefID" = $1::int
+    AND "MeterReading_DateTime" >= (NOW() AT TIME ZONE 'Asia/Kolkata')::date::timestamp
+    AND "MeterReading_DateTime" < (
+      (NOW() AT TIME ZONE 'Asia/Kolkata')::date + interval '1 day'
+    )::timestamp
+    AND "MeterReading_DateTime" <= (NOW() AT TIME ZONE 'Asia/Kolkata')
   ORDER BY "MeterReading_DateTime" DESC
   LIMIT 1
 `;
 
 /**
- * Latest TP power-quality row — mirrors ConsumersRepository.getPowerQuality
- * (`T_IPData_CateTP` archive; neutral always null in API mapping).
+ * Latest TP power-quality row — today cache (neutral always null in API mapping).
  * Params: $1 = MeterLookup_TblRefID
  */
 export const POWER_QUALITY_TP_LATEST_SQL = `
@@ -153,9 +163,14 @@ export const POWER_QUALITY_TP_LATEST_SQL = `
     NULL::numeric AS "neutralCurrent",
     "MD_kW" AS "mdKw",
     "MD_kVA" AS "mdKva"
-  FROM public."T_IPData_CateTP"
+  FROM general.meter_ip_today_tp
   WHERE "MeterLookup_TblRefID" = $1::int
-  ORDER BY "MDMS_TimeStamp" DESC, "MeterReading_DateTime" DESC
+    AND "MeterReading_DateTime" >= (NOW() AT TIME ZONE 'Asia/Kolkata')::date::timestamp
+    AND "MeterReading_DateTime" < (
+      (NOW() AT TIME ZONE 'Asia/Kolkata')::date + interval '1 day'
+    )::timestamp
+    AND "MeterReading_DateTime" <= (NOW() AT TIME ZONE 'Asia/Kolkata')
+  ORDER BY "MeterReading_DateTime" DESC
   LIMIT 1
 `;
 

@@ -1,0 +1,25 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/mis-dashboard/event-data",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "classifications",
+    "currentDate",
+    "previousDate",
+    "reportType",
+    "totalEventsCurrentDay",
+    "totalEventsPreviousDay"
+  ],
+  "itemKeys": [
+    "classifications",
+    "currentDate",
+    "previousDate",
+    "reportType",
+    "totalEventsCurrentDay",
+    "totalEventsPreviousDay"
+  ],
+  "hasColumnsGrid": false
+}

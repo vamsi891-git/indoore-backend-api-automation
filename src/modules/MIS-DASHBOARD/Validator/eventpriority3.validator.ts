@@ -38,6 +38,16 @@ export class EventPriorityValidator {
         const duplicates =labels.filter((x, index) =>labels.indexOf(x)!== index);
         expect(duplicates).toEqual([]);
     }
+    validateUniqueTrendSeriesNames(data: EventPriorityData) {
+        const names = data.trend.map((series) => series.name);
+        expect(new Set(names).size).toBe(names.length);
+    }
+    validateUniqueTrendPointKeys(data: EventPriorityData) {
+        for (const series of data.trend) {
+            const keys = series.data.map((point) => point.key);
+            expect(new Set(keys).size).toBe(keys.length);
+        }
+    }
     validatePercentages(data: EventPriorityData) {
         for (const row of data.records) {
             expect(Number(row.percentage)).not.toBeNaN();

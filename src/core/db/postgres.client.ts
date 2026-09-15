@@ -128,11 +128,20 @@ export function readDbConfig(): DbConfig {
   };
 }
 
+function resolvePgStatementTimeoutMs(): number {
+  const explicit = Number(process.env.PG_STATEMENT_TIMEOUT_MS);
+  if (Number.isFinite(explicit) && explicit > 0) {
+    return explicit;
+  }
+  return 45_000;
+}
+
 export function createPgPool(config: DbConfig = readDbConfig()): pg.Pool {
   const poolMax = resolvePgPoolMax();
   const connectionTimeoutMillis = Number(
     process.env.PG_POOL_CONNECTION_TIMEOUT_MS ?? 20_000,
   );
+  const statementTimeoutMs = resolvePgStatementTimeoutMs();
 
   return new pg.Pool({
     host: config.host,
@@ -143,9 +152,22 @@ export function createPgPool(config: DbConfig = readDbConfig()): pg.Pool {
     max: poolMax,
     idleTimeoutMillis: 30_000,
     connectionTimeoutMillis,
+    statement_timeout: statementTimeoutMs,
+    query_timeout: statementTimeoutMs,
     keepAlive: true,
     ...(config.ssl ? { ssl: { rejectUnauthorized: false } } : {}),
   });
+}
+
+/** Close a pool without waiting forever on a stuck archive query. */
+export async function closePgPool(
+  pool: pg.Pool,
+  waitMs = 5_000,
+): Promise<void> {
+  await Promise.race([
+    pool.end().catch(() => undefined),
+    sleep(waitMs),
+  ]);
 }
 
 function emitDbPoolRetry(

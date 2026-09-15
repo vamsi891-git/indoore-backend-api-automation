@@ -1,6 +1,7 @@
 import pg from "pg";
 import { test as apiTest } from "./api.fixture";
 import {
+  closePgPool,
   createArchivePgPool,
   createPgPool,
   isArchiveDbConfigured,
@@ -25,7 +26,7 @@ export const test = apiTest.extend<ApiDbFixtures>({
       // CI runners often cannot reach private/VPN DB hosts — soft-skip instead of hard fail.
       await pool.query("SELECT 1");
     } catch (error) {
-      await pool.end().catch(() => undefined);
+      await closePgPool(pool);
       const detail = error instanceof Error ? error.message : String(error);
       testInfo.skip(
         true,
@@ -37,7 +38,7 @@ export const test = apiTest.extend<ApiDbFixtures>({
     try {
       await use(pool);
     } finally {
-      await pool.end();
+      await closePgPool(pool);
     }
   },
 
@@ -51,7 +52,7 @@ export const test = apiTest.extend<ApiDbFixtures>({
     try {
       await use(pool);
     } finally {
-      await pool.end();
+      await closePgPool(pool);
     }
   },
 });

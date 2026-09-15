@@ -18,7 +18,7 @@ import {
 } from "../Mapper/eventloglist.mapper";
 import { EventLogListValidator } from "../Validator/eventloglist.validator";
 
-test.describe("Event Log List API", () => {
+test.describe("Event list", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
@@ -79,12 +79,7 @@ test.describe("Event Log List API", () => {
         const { rawResponse, responseBody, responseTime } =
           await api.getEventLogList(consumerRef, query);
 
-        await PerformanceTracker.track(
-        rawResponse,
-        testCase.testName,
-        rawResponse.url(),
-        responseTime
-      );
+        await PerformanceTracker.track(rawResponse,testCase.testName,rawResponse.url(),responseTime);
 
         validation.execute("Status Validation", () => {
           if (
@@ -160,6 +155,9 @@ test.describe("Event Log List API", () => {
         );
 
         const mapped = EventLogListMapper.map(responseBody);
+        validation.execute("No Duplicate Serial Numbers", () =>
+          validator.validateUniqueSerialNumbers(mapped.rows),
+        );
         validation.execute("Event Log List Scenario", () =>
           validator.validateScenario(mapped, testCase.scenario, {
             eventPage,

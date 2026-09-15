@@ -167,65 +167,65 @@ export function resolvePowerQualityContractBody(
 export const powerQualityTestCases: PowerQualityTestCase[] = [
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/power-quality — success with data null or metrics",
+      "Power quality — shown for the consumer",
     scenario: "pq_by_ivrs",
     tags: ["@smoke", "@consumer", "@power-quality"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{consumerId}/power-quality — resolve by account id",
+      "Power quality — opens using the account number",
     scenario: "pq_by_account",
     tags: ["@consumer", "@power-quality", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/power-quality — resolve by meter lookup id",
+      "Power quality — opens using the meter",
     scenario: "pq_by_meter",
     tags: ["@consumer", "@power-quality", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/power-quality — unknown query params ignored",
+      "Power quality — extra unused options are ignored",
     scenario: "pq_ignore_unknown_query",
     tags: ["@consumer", "@power-quality", "@edge"],
   },
   {
     testName:
-      "Contract — Shape A success envelope with data null (no live IP row)",
+      "Power quality — sample: no live reading yet",
     scenario: "contract_null_data",
     isContractFixture: true,
     tags: ["@consumer", "@power-quality", "@edge"],
   },
   {
     testName:
-      "Contract — Shape B SP metrics (PF/Hz/neutral/MD) from backend toPowerQuality",
+      "Power quality — sample: single-phase meter",
     scenario: "contract_sp_metrics",
     isContractFixture: true,
     tags: ["@consumer", "@power-quality", "@edge"],
   },
   {
     testName:
-      "Contract — TP metrics: neutralCurrent value null (backend TP hardcode)",
+      "Power quality — sample: three-phase meter",
     scenario: "contract_tp_metrics",
     isContractFixture: true,
     tags: ["@consumer", "@power-quality", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{consumerId}/power-quality — consumer not found",
+      "Power quality — unknown consumer is not found",
     scenario: "consumer_not_found",
     expectedStatus: 200,
     tags: ["@consumer", "@power-quality", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/power-quality — unknown meter not found or null data",
+      "Power quality — unknown meter is empty or not found",
     scenario: "meter_not_found",
     tags: ["@consumer", "@power-quality", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ref}/power-quality — blank consumer ref rejected",
+      "Power quality — blank consumer number is rejected",
     scenario: "empty_consumer_ref",
     expectedStatus: 400,
     tags: ["@consumer", "@power-quality", "@negative"],

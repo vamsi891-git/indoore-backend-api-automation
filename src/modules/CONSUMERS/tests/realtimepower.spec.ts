@@ -18,7 +18,7 @@ import {
 } from "../Mapper/realtimepower.mapper";
 import { RealTimePowerValidator } from "../Validator/realtimepower.validator";
 
-test.describe("Real Time Power API", () => {
+test.describe("Live voltage and current", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 

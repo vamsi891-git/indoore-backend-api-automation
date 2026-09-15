@@ -128,65 +128,65 @@ export function resolveLiveLoadProfileContractBody(
 export const liveLoadProfileTestCases: LiveLoadProfileTestCase[] = [
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/live-load-profile — success with data null or metrics",
+      "Live load — current load for the consumer",
     scenario: "llp_by_ivrs",
     tags: ["@smoke", "@consumer", "@live-load-profile"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{consumerId}/live-load-profile — resolve by account id",
+      "Live load — opens using the account number",
     scenario: "llp_by_account",
     tags: ["@consumer", "@live-load-profile", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/live-load-profile — resolve by meter lookup id",
+      "Live load — opens using the meter",
     scenario: "llp_by_meter",
     tags: ["@consumer", "@live-load-profile", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ivrs}/live-load-profile — unknown query params ignored",
+      "Live load — extra unused options are ignored",
     scenario: "llp_ignore_unknown_query",
     tags: ["@consumer", "@live-load-profile", "@edge"],
   },
   {
     testName:
-      "Contract — Shape A success envelope with data null (no live IP row)",
+      "Live load — sample: no live reading yet",
     scenario: "contract_null_data",
     isContractFixture: true,
     tags: ["@consumer", "@live-load-profile", "@edge"],
   },
   {
     testName:
-      "Contract — Shape B TP metrics (kW/kVA/kvar shares) from backend toLiveLoadProfile",
+      "Live load — sample: three-phase load",
     scenario: "contract_tp_metrics",
     isContractFixture: true,
     tags: ["@consumer", "@live-load-profile", "@edge"],
   },
   {
     testName:
-      "Contract — Shape C SP metrics with reactive derived from sqrt(kVA² − kW²)",
+      "Live load — sample: single-phase load",
     scenario: "contract_sp_metrics",
     isContractFixture: true,
     tags: ["@consumer", "@live-load-profile", "@edge"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{consumerId}/live-load-profile — consumer not found",
+      "Live load — unknown consumer is not found",
     scenario: "consumer_not_found",
     expectedStatus: 200,
     tags: ["@consumer", "@live-load-profile", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/meter-{id}/live-load-profile — unknown meter not found or null data",
+      "Live load — unknown meter is empty or not found",
     scenario: "meter_not_found",
     tags: ["@consumer", "@live-load-profile", "@negative"],
   },
   {
     testName:
-      "Validate GET /indore/consumers/{ref}/live-load-profile — blank consumer ref rejected",
+      "Live load — blank consumer number is rejected",
     scenario: "empty_consumer_ref",
     expectedStatus: 400,
     tags: ["@consumer", "@live-load-profile", "@negative"],

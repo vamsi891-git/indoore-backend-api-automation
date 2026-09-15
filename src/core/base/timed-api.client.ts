@@ -1,18 +1,11 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
-import {
-  deleteWithAutoRefresh,
-  getWithAutoRefresh,
-  patchWithAutoRefresh,
-  postWithAutoRefresh,
-  putWithAutoRefresh
-} from "../utils/authenticated.request";
 import { DEFAULT_REQUEST_TIMEOUT_MS } from "../constants/api-timeouts";
 import { ApiCallResult } from "../models/api-result.model";
 import { appendEvent } from "../../observability/logger";
 import { getCurrentContext } from "../../observability/context";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
-type RequestOptions = Parameters<typeof getWithAutoRefresh>[2];
+type RequestOptions = NonNullable<Parameters<APIRequestContext["get"]>[1]>;
 
 const TRANSIENT_HTTP_STATUSES = new Set([429, 500, 502, 503, 504]);
 const MAX_REQUEST_ATTEMPTS = 4;
@@ -167,15 +160,15 @@ export class TimedApiClient {
   ): Promise<APIResponse> {
     switch (method) {
       case "GET":
-        return getWithAutoRefresh(this.authenticatedApi, path, options);
+        return this.authenticatedApi.get(path, options);
       case "POST":
-        return postWithAutoRefresh(this.authenticatedApi, path, options);
+        return this.authenticatedApi.post(path, options);
       case "PUT":
-        return putWithAutoRefresh(this.authenticatedApi, path, options);
+        return this.authenticatedApi.put(path, options);
       case "PATCH":
-        return patchWithAutoRefresh(this.authenticatedApi, path, options);
+        return this.authenticatedApi.patch(path, options);
       case "DELETE":
-        return deleteWithAutoRefresh(this.authenticatedApi, path, options);
+        return this.authenticatedApi.delete(path, options);
     }
   }
 }
