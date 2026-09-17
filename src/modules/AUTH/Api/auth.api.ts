@@ -36,7 +36,7 @@ export class AuthenticationApi {
     };
   }
 
-  async getLoginCaptcha(): Promise<{ captchaId: string; captcha: string }> {
+  async getLoginCaptcha(): Promise<{ captchaId: string; captcha: string } | undefined> {
     const rawResponse = await this.request.get(AuthPaths.captcha, {
       headers: { Accept: "application/json" },
     });
@@ -45,6 +45,9 @@ export class AuthenticationApi {
       captchaId?: string;
       text?: string;
     };
+    if (rawResponse.status() === 404) {
+      return undefined;
+    }
     if (rawResponse.status() !== 200) {
       throw new Error(
         `CAPTCHA GET failed with status ${rawResponse.status()}: ${JSON.stringify(responseBody)}`,
@@ -58,9 +61,7 @@ export class AuthenticationApi {
       throw new Error("CAPTCHA GET did not include captchaId");
     }
     if (!captcha) {
-      throw new Error(
-        "CAPTCHA GET did not include data.text. Non-production API must return plaintext so tests can POST captcha without OCR.",
-      );
+      return undefined;
     }
     return { captchaId, captcha };
   }
