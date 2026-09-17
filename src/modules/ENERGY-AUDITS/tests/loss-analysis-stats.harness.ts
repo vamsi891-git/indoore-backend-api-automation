@@ -21,7 +21,6 @@ export function registerLossAnalysisStatsTest(
       const api = new LossAnalysisStatsApi(authenticatedApi);
       const { rawResponse, responseBody, responseTime } =
         await api.getLossAnalysisStats(query);
-      const data = mapLossAnalysisStatsData(responseBody);
       const defectContext = {
         module: "ENERGY-AUDITS",
         endpoint: rawResponse.url(),
@@ -34,6 +33,28 @@ export function registerLossAnalysisStatsTest(
       const assert = new AssertionEngine();
       const validation = new ValidationEngine();
       const validator = new LossAnalysisStatsValidator();
+
+      if (rawResponse.status() !== 200 || responseBody.success !== true) {
+        try {
+          ApiValidationHelper.runStandardChecks(validation, assert, {
+            apiName: `Energy Audit Loss Analysis Stats (${label})`,
+            rawResponse,
+            responseBody,
+            responseTime,
+            maxResponseTimeMs: 180000,
+          });
+        } finally {
+          ApiValidationHelper.finalize(validation, {
+            apiName: `Energy Audit Loss Analysis Stats (${label})`,
+            responseTime,
+            testInfo,
+            defectContext,
+          });
+        }
+        return;
+      }
+
+      const data = mapLossAnalysisStatsData(responseBody);
       try {
         ApiValidationHelper.runStandardChecks(validation, assert, {
           apiName: `Energy Audit Loss Analysis Stats (${label})`,

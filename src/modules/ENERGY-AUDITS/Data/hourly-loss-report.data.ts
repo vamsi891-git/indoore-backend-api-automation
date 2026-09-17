@@ -2,14 +2,15 @@ import {
   HourlyLossHierarchyType,
   HourlyLossReportQuery,
 } from "../Mapper/hourly-loss-report.mapper";
+import { energyAuditDateRange } from "./energy-audits.common.data";
 import {
   dtrNetworkLookupId,
   feederNetworkLookupId,
 } from "./loss-analysis.data";
 
 export const hourlyLossReportBaseQuery = {
-  fromDate: "2025-12-20",
-  toDate: "2025-12-20",
+  fromDate: energyAuditDateRange.fromDate,
+  toDate: energyAuditDateRange.toDate,
   page: 1,
   limit: 10,
 } as const;
@@ -36,5 +37,14 @@ export function buildDtrHourlyLossReportQuery(
 export function buildFeederHourlyLossReportQuery(
   overrides: Partial<HourlyLossReportQuery> = {},
 ): HourlyLossReportQuery {
-  return buildHourlyLossReportQuery("feeder", feederNetworkLookupId, overrides);
+  const lookupId = Number(
+    process.env.ENERGY_AUDIT_HOURLY_FEEDER_LOOKUP_ID ??
+      process.env.ENERGY_AUDIT_FEEDER_NETWORK_LOOKUP_ID ??
+      6081,
+  );
+  return buildHourlyLossReportQuery(
+    "feeder",
+    Number.isFinite(lookupId) && lookupId > 0 ? lookupId : feederNetworkLookupId,
+    overrides,
+  );
 }

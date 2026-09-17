@@ -1,5 +1,6 @@
 export const AuthPaths = {
   login: "/indore/auth/login",
+  captcha: "/indore/auth/captcha",
   login2fa: "/indore/auth/login/2fa",
   refresh: "/indore/auth/refresh",
   me: "/indore/auth/me",

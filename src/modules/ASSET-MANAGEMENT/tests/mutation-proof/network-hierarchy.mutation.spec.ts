@@ -129,4 +129,51 @@ test.describe("Mutation proof — Network hierarchy", () => {
       }
     },
   );
+
+  test(
+    "MUT-AM-NH-009 — validateEligibleTreeLevels fails on a DTR child node",
+    { tag: ["@mutation-proof", "@asset-management", "@network-hierarchy"] },
+    async () => {
+      const nodes: NetworkNode[] = structuredClone(
+        sampleNetworkHierarchySuccess.data.hierarchy,
+      );
+      nodes[0].children.push({
+        networkLookupId: 99,
+        networkCode: "DTR-99",
+        networkName: "Lookup DTR",
+        hierarchyLevel: "DTR",
+        children: [],
+        dtrs: [],
+      });
+      const message = captureThrownMessage(() =>
+        new NetworkHierarchyValidator().validateEligibleTreeLevels(nodes),
+      );
+      expect(message).not.toEqual("");
+      expect(message).toMatch(/unexpected hierarchyLevel|DTR|toBe/i);
+    },
+  );
+
+  test(
+    "MUT-AM-NH-010 — validateDtrIdsNotInChildren fails when a DTR id is also a child",
+    { tag: ["@mutation-proof", "@asset-management", "@network-hierarchy"] },
+    async () => {
+      const nodes: NetworkNode[] = structuredClone(
+        sampleNetworkHierarchySuccess.data.hierarchy,
+      );
+      const dtrId = nodes[0].children[0].dtrs[0].networkLookupId;
+      nodes[0].children.push({
+        networkLookupId: dtrId,
+        networkCode: "DUP",
+        networkName: "Duplicate DTR as feeder",
+        hierarchyLevel: "Feeder",
+        children: [],
+        dtrs: [],
+      });
+      const message = captureThrownMessage(() =>
+        new NetworkHierarchyValidator().validateDtrIdsNotInChildren(nodes),
+      );
+      expect(message).not.toEqual("");
+      expect(message).toMatch(/DTR networkLookupId|toBe|false/i);
+    },
+  );
 });

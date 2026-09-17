@@ -47,8 +47,11 @@ const skippedWriteSpecs = [
   "**/invite-accept.spec.ts",
 ];
 
+const cli = process.argv.join(" ");
+const greppingMutation = /@mutation-proof/.test(cli);
 const runMutationProof =
-  process.env.INCLUDE_MUTATION_PROOF?.trim().toLowerCase() === "true";
+  process.env.INCLUDE_MUTATION_PROOF?.trim().toLowerCase() === "true" ||
+  greppingMutation;
 
 export default defineConfig({
   globalSetup: require.resolve("./src/global.setup.ts"),

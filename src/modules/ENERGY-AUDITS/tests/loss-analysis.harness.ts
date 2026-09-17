@@ -13,6 +13,7 @@ import { LossAnalysisValidator } from "../Validator/loss-analysis.validator";
 import { AssertionEngine } from "../../../core/engine/assertion.engine";
 import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
+import { BackendResponse } from "../../../core/utils/backend-response.util";
 
 export function registerLossAnalysisTests(
   networkType: LossNetworkType,
@@ -40,8 +41,18 @@ export function registerLossAnalysisTests(
         const api = new LossAnalysisApi(authenticatedApi);
         const { rawResponse, responseBody, responseTime } =
           await api.getLossAnalysis(query);
-        const view = getLossAnalysisPaginatedView(responseBody, query);
 
+        if (rawResponse.status() >= 500) {
+          BackendResponse.logFinding(
+            `Loss analysis ${networkType}/${reportType}`,
+            rawResponse.status(),
+            responseBody,
+          );
+        }
+
+        const assert = new AssertionEngine();
+        const validation = new ValidationEngine();
+        const validator = new LossAnalysisValidator();
         const defectContext = {
           module: "ENERGY-AUDITS",
           endpoint: rawResponse.url(),
@@ -52,9 +63,27 @@ export function registerLossAnalysisTests(
             "Grid loss analysis: inputUnits, totalSoldUnits, lossKwh, billingEfficiencyPct, lossPct with pagination.",
         };
 
-        const assert = new AssertionEngine();
-        const validation = new ValidationEngine();
-        const validator = new LossAnalysisValidator();
+        if (rawResponse.status() !== 200 || responseBody.success !== true) {
+          try {
+            ApiValidationHelper.runStandardChecks(validation, assert, {
+              apiName: `Energy Audit Loss Analysis (${networkType}/${reportType})`,
+              rawResponse,
+              responseBody,
+              responseTime,
+              maxResponseTimeMs: 120000,
+            });
+          } finally {
+            ApiValidationHelper.finalize(validation, {
+              apiName: `Energy Audit Loss Analysis (${networkType}/${reportType})`,
+              responseTime,
+              testInfo,
+              defectContext,
+            });
+          }
+          return;
+        }
+
+        const view = getLossAnalysisPaginatedView(responseBody, query);
 
         try {
           ApiValidationHelper.runStandardChecks(validation, assert, {
@@ -69,13 +98,16 @@ export function registerLossAnalysisTests(
             validator.validateResponse(responseBody),
           );
           validation.execute("Columns Contract", () =>
-            validator.validateColumns(view),
+            validator.validateColumns(view, reportType),
           );
           validation.execute("Pagination", () =>
             validator.validatePagination(view, query),
           );
           validation.execute("Total Count", () =>
             validator.validateTotalCount(view),
+          );
+          validation.execute("Page Row Count", () =>
+            validator.validatePageRowCount(view),
           );
           validation.execute("Rows Exist", () =>
             validator.validateRowsExist(view),
@@ -108,6 +140,9 @@ export function registerLossAnalysisTests(
           );
           validation.execute("Duplicate Meter Serials", () =>
             validator.validateNoDuplicateMeterSerials(view.rows, networkType),
+          );
+          validation.execute("Duplicate DTR Codes", () =>
+            validator.validateNoDuplicateDtrCodes(view.rows, reportType),
           );
           validation.execute("Duplicate DTR Names", () =>
             validator.validateNoDuplicateDtrNames(view.rows, networkType),

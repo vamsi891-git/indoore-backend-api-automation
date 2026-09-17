@@ -1,0 +1,23 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/energy-audit/network-trends",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "anchorDate",
+    "anchorMonth",
+    "anchorYear",
+    "items",
+    "reportType"
+  ],
+  "itemKeys": [
+    "date",
+    "lossPct",
+    "month",
+    "periodLabel",
+    "year"
+  ],
+  "hasColumnsGrid": false
+}

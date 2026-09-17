@@ -1,0 +1,19 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/energy-audit/loss-analysis-trends",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "date",
+    "items",
+    "networkLookupId"
+  ],
+  "itemKeys": [
+    "hour",
+    "lossPct",
+    "time"
+  ],
+  "hasColumnsGrid": false
+}

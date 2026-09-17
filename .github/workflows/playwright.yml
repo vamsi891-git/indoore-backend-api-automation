@@ -164,12 +164,6 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Observability — CI routing event
-        env:
-          OBS_RUN_TYPE: full-regression
-          OBS_ROUTING_REASON: push to ${{ github.ref_name }} (full regression)
-        run: node scripts/observability-ci-routing.mjs
-
       - name: Run Playwright tests
         run: |
           MODE="full"
@@ -182,10 +176,6 @@ jobs:
           else
             npm test
           fi
-
-      - name: Write Allure environment
-        if: always()
-        run: node scripts/write-allure-environment.mjs
 
       - name: Generate Allure report
         if: always()
@@ -279,12 +269,13 @@ jobs:
         env:
           WORKFLOW_JOB_STATUS: ${{ needs.test.result }}
           ALLURE_REPORT_URL: ${{ format('https://{0}.github.io/{1}/', github.repository_owner, github.event.repository.name) }}
-          GITHUB_SERVER_URL: ${{ github.server_url }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_RUN_ID: ${{ github.run_id }}
-          GITHUB_REF_NAME: ${{ github.ref_name }}
-          GITHUB_SHA: ${{ github.sha }}
-        run: node scripts/build-allure-email-body.mjs
+        run: |
+          mkdir -p reports
+          cat > reports/allure-email-body.html <<EOF
+          <p>Playwright job: ${WORKFLOW_JOB_STATUS}</p>
+          <p>Allure: <a href="${ALLURE_REPORT_URL}">${ALLURE_REPORT_URL}</a></p>
+          <p>Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}</p>
+          EOF
 
       - name: Check report email configuration
         id: email_config
