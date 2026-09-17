@@ -1,7 +1,7 @@
 import { test } from "../../../fixtures/api.fixture";
 import {
+  feederLossReportTypes,
   feederNetworkLookupId,
-  lossReportTypes,
 } from "../Data/loss-analysis.data";
 import { registerLossAnalysisTests } from "./loss-analysis.harness";
 
@@ -11,6 +11,6 @@ test.describe("Energy Audit Loss Analysis — Feeder", () => {
   registerLossAnalysisTests(
     "feeder",
     () => feederNetworkLookupId,
-    lossReportTypes,
+    feederLossReportTypes,
   );
 });

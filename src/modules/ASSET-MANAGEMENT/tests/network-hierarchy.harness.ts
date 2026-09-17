@@ -4,10 +4,8 @@ import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { NetworkHierarchyApi } from "../Api/networkhierarchy.api";
 import {
-  assetManagementMaxResponseTimeMs,
   assetManagementHierarchyMaxResponseTimeMs,
   assetManagementHierarchyRequestTimeoutMs,
-  assetManagementPaths,
 } from "../Data/asset-management.common.data";
 import { NetworkHierarchyMapper } from "../Mapper/networkhierarchy.mapper";
 import { NetworkHierarchyValidator } from "../Validator/networkhierarchy.validator";
@@ -34,8 +32,8 @@ export async function runNetworkHierarchyValidation(
     api,
     testLabel,
     rootId,
-    maxResponseTimeMs = assetManagementMaxResponseTimeMs,
-    requestTimeoutMs,
+    maxResponseTimeMs = assetManagementHierarchyMaxResponseTimeMs,
+    requestTimeoutMs = assetManagementHierarchyRequestTimeoutMs,
     includeSubtreeChecks = false,
     subtreeRootId,
   } = options;
@@ -43,7 +41,6 @@ export async function runNetworkHierarchyValidation(
   const { rawResponse, responseBody, responseTime } =
     await api.getNetworkHierarchy(rootId, requestTimeoutMs);
 
-  const query = rootId != null ? `?rootId=${rootId}` : "";
   await PerformanceTracker.track(
         rawResponse,
         testLabel,
@@ -78,11 +75,19 @@ export async function runNetworkHierarchyValidation(
   validation.execute("Duplicate IDs", () =>
     validator.validateDuplicateIds(data.hierarchy),
   );
-  validation.execute("Expected Levels", () =>
-    validator.validateExpectedLevels(data.hierarchy),
+  validation.execute("Eligible tree levels", () =>
+    validator.validateEligibleTreeLevels(data.hierarchy),
   );
+  if (rootId == null) {
+    validation.execute("Expected Levels", () =>
+      validator.validateExpectedLevels(data.hierarchy),
+    );
+  }
   validation.execute("DTRs Not In Children", () =>
     validator.validateDtrsNotInChildren(data.hierarchy),
+  );
+  validation.execute("DTR ids not in children", () =>
+    validator.validateDtrIdsNotInChildren(data.hierarchy),
   );
   validation.execute("DTR Arrays", () =>
     validator.validateDtrArrays(data.hierarchy),

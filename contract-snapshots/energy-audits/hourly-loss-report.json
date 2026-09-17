@@ -1,0 +1,53 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/energy-audit/hourly-loss-report",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "H1",
+    "H10",
+    "H11",
+    "H12",
+    "H13",
+    "H14",
+    "H15",
+    "H16",
+    "H17",
+    "H18",
+    "H19",
+    "H2",
+    "H20",
+    "H21",
+    "H22",
+    "H23",
+    "H24",
+    "H3",
+    "H4",
+    "H5",
+    "H6",
+    "H7",
+    "H8",
+    "H9",
+    "circle",
+    "consumerName",
+    "division",
+    "dtrMeterSerialNumber",
+    "dtrName",
+    "feeder",
+    "id",
+    "meterSerialNumber",
+    "mf",
+    "rowKind",
+    "substation",
+    "total",
+    "zone"
+  ],
+  "hasColumnsGrid": false
+}

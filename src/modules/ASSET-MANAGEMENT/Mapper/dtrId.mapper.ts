@@ -35,16 +35,16 @@ export interface DtrDetailResponse{
     longitude:string|null;
     }
     export class DtrDetailMapper{
-    static mapData(data:DtrDetailData):DtrDetailData{
+    static mapData(data:DtrDetailData | null | undefined):DtrDetailData{
     return{
-    dtrCode:data.dtrCode ?? "",
-    dtrName:data.dtrName ?? "",
-    dtrMeter:data.dtrMeter ?? null,
-    consumers:data.consumers ?? [],
-    total:data.total ?? 0,
-    page:data.page ?? 1,
-    limit:data.limit ?? 20,
-    totalPages:data.totalPages ?? 0
+    dtrCode:data?.dtrCode ?? "",
+    dtrName:data?.dtrName ?? "",
+    dtrMeter:data?.dtrMeter ?? null,
+    consumers:data?.consumers ?? [],
+    total:data?.total ?? 0,
+    page:data?.page ?? 1,
+    limit:data?.limit ?? 20,
+    totalPages:data?.totalPages ?? 0
     }
 }
     }

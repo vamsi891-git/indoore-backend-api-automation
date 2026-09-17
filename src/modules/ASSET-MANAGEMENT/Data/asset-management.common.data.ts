@@ -9,6 +9,22 @@ export const assetManagementPaths = {
   organisationHierarchy: "/indore/asset-management/organisation-hierarchy",
   dtrDetail: (dtrId: number, page: number, limit: number) =>
     `/indore/asset-management/dtr/${dtrId}?page=${page}&limit=${limit}`,
+  hierarchyChildren: (query: string) =>
+    `/indore/asset-management/hierarchy/children?${query}`,
+  hierarchySearch: (query: string) =>
+    `/indore/asset-management/hierarchy/search?${query}`,
+  hierarchyTypes: (query: string) =>
+    `/indore/asset-management/hierarchy/types?${query}`,
+  assetDetail: (kind: "network" | "organisation" | "dtr", id: number | string) =>
+    `/indore/asset-management/assets/${kind}/${id}`,
+  export: (query: string) =>
+    query.length > 0
+      ? `/indore/asset-management/export?${query}`
+      : "/indore/asset-management/export",
+  mapMarkers: (query: string) =>
+    query.length > 0
+      ? `/indore/asset-management/map-markers?${query}`
+      : "/indore/asset-management/map-markers",
 } as const;
 
 /** Non-existent network / DTR IDs for negative tests */

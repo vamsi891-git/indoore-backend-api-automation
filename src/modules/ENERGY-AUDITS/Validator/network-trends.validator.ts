@@ -1,4 +1,6 @@
 import { expect } from "@playwright/test";
+import { EnergyAuditsCommonValidator } from "./energy-audits-common.validator";
+import { NetworkTrendsSuccessResponseSchema } from "../schemas/energy-audits.schemas";
 
 import {
   addMonths,
@@ -47,6 +49,10 @@ function expectedHourTime(hourIndex: number): string {
 export class NetworkTrendsValidator {
   validateResponse(response: NetworkTrendResponse): void {
     expect(response.success).toBe(true);
+    EnergyAuditsCommonValidator.validateZodResponseSchema(
+      response,
+      NetworkTrendsSuccessResponseSchema,
+    );
     expect(response.data).toBeDefined();
     expect(Array.isArray(response.data.items)).toBe(true);
   }

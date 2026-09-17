@@ -1,128 +1,92 @@
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { AuditLogsApi } from "../Api/auditlogs.api";
 import {
-  auditLogsMaxResponseTimeMs,
+  auditLogsDefaultQuery,
   auditLogsTestCases,
 } from "../Data/auditlogs.data";
-import { AuditLogsMapper } from "../Mapper/auditlogs.mapper";
-import { AuditLogsValidator } from "../Validator/auditlogs.validator";
+import { runAuditLogsValidation } from "./auditlogs.harness";
 
 test.describe("Audit Logs API", () => {
-  test.describe.configure({ retries: 1 });
+  test.describe.configure({ mode: "serial" });
   test.setTimeout(120_000);
+
+  let nextCursor: string | null = null;
+  let sampleAction: string | undefined;
 
   for (const testCase of auditLogsTestCases) {
     test(
       testCase.testName,
       { tag: testCase.tags },
       async ({ authenticatedApi }) => {
-        const api = new AuditLogsApi(authenticatedApi);
-        const { rawResponse, responseBody, responseTime } =
-          await api.getAuditLogs(testCase.query);
+        const result = await runAuditLogsValidation({
+          api: new AuditLogsApi(authenticatedApi),
+          query: testCase.query,
+          testLabel: testCase.testName,
+          sortDirection: testCase.sortDirection,
+          requireLogs: testCase.requireLogs ?? true,
+        });
 
-        const params = new URLSearchParams();
-        params.set("page", String(testCase.query.page ?? 1));
-        params.set("limit", String(testCase.query.limit ?? 20));
-        params.set("sort", testCase.query.sort ?? "createdAt_desc");
-
-        await PerformanceTracker.track(
-        rawResponse,
-        testCase.testName,
-        rawResponse.url(),
-        responseTime
-      );
-
-        const assert = new AssertionEngine();
-        const validation = new ValidationEngine();
-        const validator = new AuditLogsValidator();
-        const mapped = AuditLogsMapper.mapData(responseBody.data);
-
-        validation.execute("Status Validation", () =>
-          assert.validateStatusCode(rawResponse, 200),
-        );
-        validation.execute("Content Validation", () =>
-          assert.validateContentType(rawResponse),
-        );
-        validation.execute("Response Time", () =>
-          assert.validateResponseTime(
-            responseTime,
-            auditLogsMaxResponseTimeMs,
-          ),
-        );
-        validation.execute("Security Validation", () =>
-          assert.validateSensitiveData(responseBody),
-        );
-        validation.execute("Required Fields", () =>
-          assert.validateRequiredFields(responseBody, ["success", "data"]),
-        );
-        validation.execute("Response", () =>
-          validator.validateResponse(responseBody),
-        );
-        validation.execute("Logs Exist", () =>
-          validator.validateAuditLogsExist(mapped),
-        );
-        validation.execute("Pagination", () =>
-          validator.validatePagination(mapped),
-        );
-        validation.execute("Query Params", () =>
-          validator.validateQueryParams(mapped, testCase.query),
-        );
-        validation.execute("Audit Log Fields", () =>
-          validator.validateAuditLogFields(mapped),
-        );
-        validation.execute("UUID Fields", () =>
-          validator.validateUuidFields(mapped),
-        );
-        validation.execute("Emails", () => validator.validateEmails(mapped));
-        validation.execute("Roles", () => validator.validateRoles(mapped));
-        validation.execute("Full Names", () =>
-          validator.validateFullNames(mapped),
-        );
-        validation.execute("Actions", () => validator.validateActions(mapped));
-        validation.execute("IP Addresses", () =>
-          validator.validateIpAddresses(mapped),
-        );
-        validation.execute("Details", () => validator.validateDetails(mapped));
-        validation.execute("Created At", () =>
-          validator.validateCreatedAt(mapped),
-        );
-        validation.execute("Unique IDs", () =>
-          validator.validateUniqueIds(mapped),
-        );
-        validation.execute("Next Cursor", () =>
-          validator.validateNextCursor(mapped),
-        );
-        validation.execute("Action Filter Options", () =>
-          validator.validateActionFilterOptions(mapped),
-        );
-        validation.execute("Log Actions In Filter Options", () =>
-          validator.validateLogActionsInFilterOptions(mapped),
-        );
-        validation.execute("Display Labels", () =>
-          validator.validateDisplayLabels(mapped),
-        );
-        validation.execute("Actor Label Matches Name", () =>
-          validator.validateActorLabelMatchesName(mapped),
-        );
-        validation.execute("No Data Scenario", () =>
-          validator.validateNoDataScenario(mapped),
-        );
-
-        if (testCase.sortDirection === "desc") {
-          validation.execute("Descending Sort", () =>
-            validator.validateDescendingSort(mapped),
-          );
-        } else {
-          validation.execute("Ascending Sort", () =>
-            validator.validateAscendingSort(mapped),
-          );
+        if (testCase.query.page === auditLogsDefaultQuery.page) {
+          nextCursor = result.data.nextCursor;
+          sampleAction = result.data.logs[0]?.action;
         }
-
-        validation.printSummary(testCase.testName, responseTime);
       },
     );
   }
+
+  test(
+    "GET /users/audit-logs — action filter",
+    { tag: ["@smoke", "@audit-logs"] },
+    async ({ authenticatedApi }) => {
+      if (!sampleAction) {
+        test.skip(true, "No audit log action from the default page");
+        return;
+      }
+      await runAuditLogsValidation({
+        api: new AuditLogsApi(authenticatedApi),
+        query: { ...auditLogsDefaultQuery, action: sampleAction },
+        testLabel: "Audit Logs — action filter",
+        sortDirection: "desc",
+        expectedAction: sampleAction,
+      });
+    },
+  );
+
+  test(
+    "GET /users/audit-logs — cursor from page 1",
+    { tag: ["@smoke", "@audit-logs"] },
+    async ({ authenticatedApi }) => {
+      if (!nextCursor) {
+        test.skip(true, "No nextCursor from the default page");
+        return;
+      }
+      await runAuditLogsValidation({
+        api: new AuditLogsApi(authenticatedApi),
+        query: { ...auditLogsDefaultQuery, cursor: nextCursor },
+        testLabel: "Audit Logs — cursor",
+        sortDirection: "desc",
+        requireLogs: false,
+      });
+    },
+  );
+
+  test(
+    "GET /users/audit-logs — unknown action returns empty page",
+    { tag: ["@smoke", "@audit-logs"] },
+    async ({ authenticatedApi }) => {
+      const { data } = await runAuditLogsValidation({
+        api: new AuditLogsApi(authenticatedApi),
+        query: {
+          ...auditLogsDefaultQuery,
+          action: "audit.__no_such_action__",
+        },
+        testLabel: "Audit Logs — unknown action",
+        sortDirection: "desc",
+        requireLogs: false,
+      });
+      if (data.logs.length > 0) {
+        throw new Error("Expected no logs for an unknown action filter");
+      }
+    },
+  );
 });

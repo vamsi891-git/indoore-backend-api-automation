@@ -1,5 +1,6 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
 import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
+import { auditLogsPath, auditLogsQueryString } from "../Data/auditlogs.data";
 import { AuditLogsQuery, AuditLogsResponse } from "../Mapper/auditlogs.mapper";
 
 export interface AuditLogsApiResponse {
@@ -14,15 +15,10 @@ export class AuditLogsApi {
   async getAuditLogs(
     query: AuditLogsQuery = { page: 1, limit: 20, sort: "createdAt_desc" },
   ): Promise<AuditLogsApiResponse> {
-    const params = new URLSearchParams();
-    params.set("page", String(query.page ?? 1));
-    params.set("limit", String(query.limit ?? 20));
-    params.set("sort", query.sort ?? "createdAt_desc");
-
     const start = Date.now();
     const rawResponse = await getWithAutoRefresh(
       this.authenticatedApi,
-      `/indore/users/audit-logs?${params}`,
+      `${auditLogsPath}?${auditLogsQueryString(query)}`,
     );
     const responseBody = (await rawResponse.json()) as AuditLogsResponse;
     const responseTime = Date.now() - start;

@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-09-12T11:23:19.196Z",
+  "updatedAt": "2026-09-17T09:56:31.027Z",
   "reports": {
     "Consumption Compare Last Month": {
-      "updatedAt": "2026-09-12T11:11:02.652Z",
+      "updatedAt": "2026-09-17T09:56:31.027Z",
       "window": {
         "month": 10,
         "year": 2025
@@ -39,7 +39,7 @@
       ]
     },
     "LF < 5%": {
-      "updatedAt": "2026-09-12T11:23:19.196Z",
+      "updatedAt": "2026-09-17T09:21:47.827Z",
       "window": {
         "month": 10,
         "year": 2025

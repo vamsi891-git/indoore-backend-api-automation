@@ -1,0 +1,31 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/asset-management/map-markers",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "consumerMappedTotal",
+    "consumerTotal",
+    "count",
+    "dtrMappedTotal",
+    "dtrTotal",
+    "limit",
+    "markers",
+    "offlineCount",
+    "onlineCount",
+    "truncated"
+  ],
+  "itemKeys": [
+    "assetId",
+    "code",
+    "id",
+    "kind",
+    "lat",
+    "lng",
+    "name",
+    "nodeId"
+  ],
+  "hasColumnsGrid": false
+}

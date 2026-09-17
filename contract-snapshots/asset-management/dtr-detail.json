@@ -1,6 +1,6 @@
 {
   "httpMethod": "GET",
-  "pathPattern": "/indore/asset-management/dtr/2339",
+  "pathPattern": "/indore/asset-management/dtr/:id",
   "successEnvelopeKeys": [
     "data",
     "success"
@@ -16,7 +16,13 @@
     "totalPages"
   ],
   "itemKeys": [
-    "consumers"
+    "accountId",
+    "consumerAddress",
+    "consumerCid",
+    "consumerName",
+    "consumerTblRefId",
+    "meters",
+    "rrNumber"
   ],
   "hasColumnsGrid": false
 }

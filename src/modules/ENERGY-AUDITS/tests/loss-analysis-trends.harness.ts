@@ -21,7 +21,6 @@ export function registerLossAnalysisTrendsTest(
       const api = new LossAnalysisTrendsApi(authenticatedApi);
       const { rawResponse, responseBody, responseTime } =
         await api.getLossAnalysisTrends(query);
-      const data = mapLossAnalysisTrendsData(responseBody);
       const defectContext = {
         module: "ENERGY-AUDITS",
         endpoint: rawResponse.url(),
@@ -36,6 +35,27 @@ export function registerLossAnalysisTrendsTest(
       const validation = new ValidationEngine();
       const validator = new LossAnalysisTrendsValidator();
 
+      if (rawResponse.status() !== 200 || responseBody.success !== true) {
+        try {
+          ApiValidationHelper.runStandardChecks(validation, assert, {
+            apiName: `Energy Audit Loss Analysis Trends (${label})`,
+            rawResponse,
+            responseBody,
+            responseTime,
+            maxResponseTimeMs: 180000,
+          });
+        } finally {
+          ApiValidationHelper.finalize(validation, {
+            apiName: `Energy Audit Loss Analysis Trends (${label})`,
+            responseTime,
+            testInfo,
+            defectContext,
+          });
+        }
+        return;
+      }
+
+      const data = mapLossAnalysisTrendsData(responseBody);
       try {
         ApiValidationHelper.runStandardChecks(validation, assert, {
           apiName: `Energy Audit Loss Analysis Trends (${label})`,

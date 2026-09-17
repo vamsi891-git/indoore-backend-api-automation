@@ -8,11 +8,13 @@ export interface LossAnalysisColumn {
 
 export interface LossAnalysisRow {
   id: string;
-  slNo: number;
+  slNo?: number;
   circle: string | null;
   division: string | null;
   zone: string;
   feeder: string;
+  dtrCode: string;
+  dtrRating: string | number | null;
   dtrName: string;
   mf: string | number | null;
   meterSerialNumber: string;
@@ -64,7 +66,6 @@ export interface LossAnalysisPaginatedView {
 }
 
 export const LOSS_ANALYSIS_COLUMN_KEYS = [
-  "slNo",
   "circle",
   "division",
   "zone",
@@ -83,7 +84,7 @@ export const LOSS_ANALYSIS_COLUMN_KEYS = [
 export function mapLossAnalysisRows(response: LossAnalysisResponse): LossAnalysisRow[] {
   return (response.data?.rows ?? []).map((row) => ({
     ...row,
-    slNo: Number(row.slNo),
+    slNo: row.slNo == null ? undefined : Number(row.slNo),
     inputUnits: Number(row.inputUnits),
     consumerCount: Number(row.consumerCount),
     totalSoldUnits: Number(row.totalSoldUnits),
@@ -94,6 +95,8 @@ export function mapLossAnalysisRows(response: LossAnalysisResponse): LossAnalysi
     division: row.division == null ? null : String(row.division).trim(),
     zone: String(row.zone ?? "").trim(),
     feeder: String(row.feeder ?? "").trim(),
+    dtrCode: String(row.dtrCode ?? "").trim(),
+    dtrRating: row.dtrRating ?? null,
     dtrName: String(row.dtrName ?? "").trim(),
     meterSerialNumber: String(row.meterSerialNumber ?? "").trim(),
     id: String(row.id ?? "").trim(),

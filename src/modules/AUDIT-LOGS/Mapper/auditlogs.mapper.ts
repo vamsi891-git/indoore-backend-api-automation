@@ -2,6 +2,8 @@ export interface AuditLogsQuery {
   page?: number;
   limit?: number;
   sort?: string;
+  action?: string;
+  cursor?: string;
 }
 
 export interface AuditLogsResponse {
