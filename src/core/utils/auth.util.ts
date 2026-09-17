@@ -111,13 +111,14 @@ export class AuthApi {
   }
 
   /**
-   * Staff login requires captchaId + captcha. Non-production GET /auth/captcha
-   * returns plaintext `text` so tests can submit it without OCR.
+   * Non-production GET /auth/captcha returns plaintext `text` so tests can POST
+   * captchaId + captcha without OCR. Production omits `text`; login then goes
+   * without captcha fields (same as GitHub Actions against the live API).
    */
   private static async fetchLoginCaptcha(
     apiContext: Awaited<ReturnType<typeof request.newContext>>,
     csrfToken: string,
-  ): Promise<{ captchaId: string; captcha: string }> {
+  ): Promise<{ captchaId: string; captcha: string } | null> {
     let lastStatus = 0;
     let lastRaw = "";
 
@@ -154,16 +155,18 @@ export class AuthApi {
         throw new Error("Login CAPTCHA GET did not include captchaId");
       }
       if (!text?.trim()) {
-        throw new Error(
-          "Login CAPTCHA GET did not include data.text. Local/non-production API must return the plaintext answer (NODE_ENV !== 'production') so tests can POST captchaId + captcha without OCR.",
+        LoggerEngine.info(
+          "CAPTCHA GET has no plaintext (production/image-only); posting login without captcha fields",
         );
+        return null;
       }
       return { captchaId, captcha: text };
     }
 
-    throw new Error(
-      `Login CAPTCHA route not found (last status ${lastStatus}) - ${lastRaw.slice(0, 200)}`,
+    LoggerEngine.info(
+      `Login CAPTCHA route not found (last status ${lastStatus}); posting login without captcha fields`,
     );
+    return null;
   }
 
   private static buildAuthHeaders(csrfToken: string): Record<string, string> {
@@ -662,8 +665,12 @@ export class AuthApi {
           data: {
             email,
             password,
-            captchaId: loginCaptcha.captchaId,
-            captcha: loginCaptcha.captcha,
+            ...(loginCaptcha
+              ? {
+                  captchaId: loginCaptcha.captchaId,
+                  captcha: loginCaptcha.captcha,
+                }
+              : {}),
           },
         });
         loginRaw = await loginResponse.text();
