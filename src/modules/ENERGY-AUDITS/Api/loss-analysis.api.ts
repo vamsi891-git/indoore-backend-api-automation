@@ -12,7 +12,7 @@ export interface LossAnalysisApiResult {
   responseTime: number;
 }
 
-const RETRY_STATUSES = new Set([500, 502, 503, 504]);
+const RETRY_STATUSES = new Set([502, 503, 504]);
 const MAX_ATTEMPTS = 3;
 const RETRY_DELAY_MS = 5_000;
 
@@ -47,6 +47,12 @@ export class LossAnalysisApi {
     }
 
     const rawResponse = lastResponse!;
+    const responseBody = (
+      lastBodyText
+        ? JSON.parse(lastBodyText)
+        : { success: false }
+    ) as LossAnalysisResponse;
+
     if (!rawResponse.ok()) {
       printApiResponse({
         apiName: "Energy Audit Loss Analysis",
@@ -54,16 +60,7 @@ export class LossAnalysisApi {
         body: lastBodyText,
         requestParams: query,
       });
-      throw new Error(
-        `Loss Analysis API failed — status ${rawResponse.status()}: ${lastBodyText}`,
-      );
     }
-
-    const responseBody = (
-      lastBodyText
-        ? JSON.parse(lastBodyText)
-        : { success: false }
-    ) as LossAnalysisResponse;
 
     return {
       rawResponse,

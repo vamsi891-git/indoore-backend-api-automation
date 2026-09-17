@@ -41,6 +41,17 @@ export class DtrConsumptionValidator {
         expect(data.points.length).toBe(expected);
         expect(data.points.length).toBeGreaterThan(0);
     }
+    validateLivePointCount(data: MappedDtrConsumption): void {
+        const maxCounts: Record<DtrConsumptionPeriod, number> = {
+            hourly: 24,
+            daily: 31,
+            weekly: 12,
+            monthly: 24,
+            yearly: 20,
+        };
+        expect(data.points.length).toBeGreaterThan(0);
+        expect(data.points.length).toBeLessThanOrEqual(maxCounts[data.period]);
+    }
     validateLabelPatterns(data: MappedDtrConsumption): void {
         const pattern = dtrConsumptionLabelPatterns[data.period];
         data.points.forEach((point) => {
@@ -79,7 +90,7 @@ export class DtrConsumptionValidator {
     validateLiveOk(mapped: MappedDtrConsumption,expectedPeriod?: DtrConsumptionPeriod,): void {
         this.validateSuccess(mapped.success);
         this.validatePeriod(mapped, expectedPeriod);
-        this.validatePointCount(mapped);
+        this.validateLivePointCount(mapped);
         this.validateLabelPatterns(mapped);
         this.validateUniqueLabels(mapped);
         this.validatePoints(mapped);

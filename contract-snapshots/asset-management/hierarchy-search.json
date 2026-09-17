@@ -1,0 +1,20 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/asset-management/hierarchy/search",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "items",
+    "page",
+    "pageSize",
+    "total",
+    "totalPages"
+  ],
+  "itemKeys": [
+    "ancestors",
+    "node"
+  ],
+  "hasColumnsGrid": false
+}

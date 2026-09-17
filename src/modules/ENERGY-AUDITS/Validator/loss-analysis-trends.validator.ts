@@ -1,4 +1,6 @@
 import { expect } from "@playwright/test";
+import { EnergyAuditsCommonValidator } from "./energy-audits-common.validator";
+import { LossAnalysisTrendsSuccessResponseSchema } from "../schemas/energy-audits.schemas";
 
 import {
   expectedHourTime,
@@ -18,6 +20,10 @@ const HOUR_TIME_RE = /^([01]\d|2[0-3]):00$/;
 export class LossAnalysisTrendsValidator {
   validateResponse(response: LossAnalysisTrendsResponse): void {
     expect(response.success).toBe(true);
+    EnergyAuditsCommonValidator.validateZodResponseSchema(
+      response,
+      LossAnalysisTrendsSuccessResponseSchema,
+    );
     expect(response.data).toBeDefined();
     expect(Array.isArray(response.data.items)).toBe(true);
   }

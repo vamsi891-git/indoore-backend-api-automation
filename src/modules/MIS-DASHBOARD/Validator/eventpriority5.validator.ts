@@ -1,114 +1,146 @@
 import { expect } from "@playwright/test";
-import { EventPriorityData } from "../Mapper/eventpriority5.mapper";
 import { backendRules } from "../Data/eventpriority5.data";
+import { EventPriorityData } from "../Mapper/eventpriority5.mapper";
+
 type TrendPeriod = keyof typeof backendRules.trendRegex;
+
 export class EventPriorityValidator {
-    validateResponse(response: any) {
-        expect(response.success).toBeTruthy();
-        expect(response.data).toBeDefined();
+  validateResponse(response: { success: boolean; data: unknown }) {
+    expect(response.success).toBeTruthy();
+    expect(response.data).toBeDefined();
+  }
+  validatePeriod(data: EventPriorityData, expected?: string) {
+    expect(backendRules.periods).toContain(data.period);
+    if (expected) {
+      expect(data.period).toBe(expected);
     }
-    validatePriority(data: EventPriorityData) {
-        expect(backendRules.priorityIds).toContain(data.priorityId);
-        expect(data.label).toBe(`Priority ${data.priorityId}`)
+  }
+  validatePriority(
+    data: EventPriorityData,
+    expected?: { priorityId?: number; label?: string },
+  ) {
+    expect(data.priorityId).toBeGreaterThan(0);
+    expect(data.label).toBeTruthy();
+    if (expected?.priorityId !== undefined) {
+      expect(data.priorityId).toBe(expected.priorityId);
     }
-    validatePeriod(data: EventPriorityData) {
-        expect(backendRules.periods).toContain(data.period);
+    if (expected?.label) {
+      expect(data.label).toBe(expected.label);
     }
-    validateDates(data: EventPriorityData) {
-        expect(data.fromDate).toBeTruthy();
-        expect(data.toDate).toBeTruthy();
-        const from =new Date(data.fromDate);
-        const to =new Date(data.toDate);
-        expect(from.getTime()).toBeLessThanOrEqual(to.getTime());
-        if (data.period === "hourly") {
-            expect(data.fromDate).toBe(data.toDate);
-        }
+  }
+  validateDates(data: EventPriorityData) {
+    expect(data.fromDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(data.toDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(data.fromDate <= data.toDate).toBeTruthy();
+    if (data.period === "hourly") {
+      expect(data.fromDate).toBe(data.toDate);
     }
-    validateTotals(data: EventPriorityData) {
-        const total =data.records.reduce((sum, row) =>sum + row.count, 0);
-        expect(total).toBe(data.totalCount);
+  }
+  validateNotEmpty(data: EventPriorityData) {
+    expect(data.records.length).toBeGreaterThan(0);
+    expect(data.trend.length).toBeGreaterThan(0);
+  }
+  validateTotals(data: EventPriorityData) {
+    const total = data.records.reduce((sum, item) => sum + item.count, 0);
+    expect(total).toBe(data.totalCount);
+  }
+  validateUniqueRecordLabels(data: EventPriorityData) {
+    const labels = data.records.map((row) => row.label);
+    expect(new Set(labels).size).toBe(labels.length);
+  }
+  validateUniqueTrendSeriesNames(data: EventPriorityData) {
+    const names = data.trend.map((series) => series.name);
+    expect(new Set(names).size).toBe(names.length);
+  }
+  validateUniqueTrendPointKeys(data: EventPriorityData) {
+    for (const series of data.trend) {
+      const keys = series.data.map((point) => point.key);
+      expect(new Set(keys).size).toBe(keys.length);
     }
-    validatePhaseLabels(data: EventPriorityData) {
-        const labels =data.records.map(x => x.label);
-        expect(labels).toEqual(backendRules.phaseLabels);
+  }
+  validateStructure(data: EventPriorityData) {
+    for (const row of data.records) {
+      expect(row.label).toBeTruthy();
+      expect(row.count).toBeGreaterThanOrEqual(0);
+      expect(Number(row.percentage)).not.toBeNaN();
     }
-    validateTrendStructure(data: EventPriorityData) {
-        expect(data.trend.length).toBe(data.records.length);
-        for (const trend of data.trend) {
-            expect(trend.name).toBeTruthy();
-        }
+    this.validateUniqueRecordLabels(data);
+    expect(data.records.map((row) => row.label)).toEqual(backendRules.phaseLabels);
+  }
+  validatePercentages(data: EventPriorityData) {
+    for (const row of data.records) {
+      const expected =
+        data.totalCount === 0 ? 0 : (row.count / data.totalCount) * 100;
+      expect(Number(row.percentage)).toBeCloseTo(expected, 2);
     }
-    validateTrendNames(data: EventPriorityData) {
-        const phaseLabels =data.records.map(x => x.label);
-        const trendLabels =data.trend.map(x => x.name);
-        expect(trendLabels).toEqual(phaseLabels);
+  }
+  validateTrend(data: EventPriorityData) {
+    const regex = backendRules.trendRegex[data.period as TrendPeriod];
+    expect(regex).toBeDefined();
+    expect(data.trend.length).toBe(data.records.length);
+    for (const series of data.trend) {
+      expect(series.name).toBeTruthy();
+      series.data.forEach((point) => {
+        expect(point.key).toMatch(regex);
+        expect(point.label).toBeTruthy();
+        expect(point.value).toBeGreaterThanOrEqual(0);
+        expect(point.meterCount).toBeGreaterThanOrEqual(0);
+      });
     }
-    validateHourlySlots(data: EventPriorityData) {
-        if (data.period === "hourly") {
-            for (const row of data.trend
-            ) {
-            expect(row.data.length).toBe(24);
-            }
-        }
+  }
+  validateTrendSeriesNames(data: EventPriorityData) {
+    expect(data.trend.map((series) => series.name)).toEqual(
+      data.records.map((row) => row.label),
+    );
+  }
+  validateTrendAggregation(data: EventPriorityData) {
+    for (const series of data.trend) {
+      const trendTotal = series.data.reduce((sum, item) => sum + item.value, 0);
+      const record = data.records.find((row) => row.label === series.name);
+      expect(trendTotal).toBe(record?.count);
     }
-    validateTrendRegex(data: EventPriorityData) 
-    {
-        const regex =backendRules.trendRegex[data.period as TrendPeriod];
-        for (const row of data.trend) {
-            row.data.forEach(point => {
-                    expect(point.key).toMatch(regex);
-                });
-        }
+  }
+  validateTrendPointCounts(data: EventPriorityData) {
+    const from = Date.parse(`${data.fromDate}T00:00:00Z`);
+    const to = Date.parse(`${data.toDate}T00:00:00Z`);
+    const dailyDays = Math.round((to - from) / 86_400_000) + 1;
+    const [fromYear, fromMonth] = data.fromDate.split("-").map(Number);
+    const [toYear, toMonth] = data.toDate.split("-").map(Number);
+    const monthlyMonths = (toYear - fromYear) * 12 + (toMonth - fromMonth) + 1;
+    const expectedCounts: Record<string, number> = {
+      hourly: 24,
+      daily: dailyDays,
+      weekly: 4,
+      monthly: monthlyMonths,
+    };
+    const expected = expectedCounts[data.period];
+    if (!expected) return;
+    for (const series of data.trend) {
+      expect(series.data.length).toBe(expected);
     }
-    validateTrendAggregation(data: EventPriorityData) {
-        for ( const trend of data.trend) {
-            const total = trend.data.reduce((sum, item) => sum + item.value, 0);
-            const phase =data.records.find(x =>x.label === trend.name);
-            expect(total).toBe(phase?.count);
-        }
-    }
-    validateDuplicateLabels(data: EventPriorityData) {
-        const labels =data.records.map(x => x.label);
-        const dup =labels.filter((x, index) =>labels.indexOf(x) !== index);
-        expect(dup).toEqual([]);
-    }
-    validateUniqueTrendSeriesNames(data: EventPriorityData) {
-        const names = data.trend.map((series) => series.name);
-        expect(new Set(names).size).toBe(names.length);
-    }
-    validateUniqueTrendPointKeys(data: EventPriorityData) {
-        for (const series of data.trend) {
-            const keys = series.data.map((point) => point.key);
-            expect(new Set(keys).size).toBe(keys.length);
-        }
-    }
-    validateBusinessInvestigation(data: EventPriorityData) {
-        const findings = [];
-        for ( const row of data.records) {
-            if ( row.count === 0 ) {
-                findings.push({
-                    priority:data.priorityId,
-                    phase:row.label,
-                    issue:"No events"
-                });
-            }
-        }
-        if (findings.length) {
-            console.log("\nBACKEND INVESTIGATION");
-            console.table(findings);
-        }
-    }
-    validate(data: EventPriorityData) {
-        this.validatePriority(data);
-        this.validatePeriod(data);
-        this.validateDates(data);
-        this.validateTotals(data);
-        this.validatePhaseLabels(data);
-        this.validateTrendStructure(data);
-        this.validateTrendNames(data);
-        this.validateHourlySlots(data);
-        this.validateTrendRegex(data);
-        this.validateTrendAggregation(data);
-        this.validateDuplicateLabels(data);
-    }
+  }
+  validateSubsetDoesNotExceedAll(
+    allMeters: EventPriorityData,
+    subset: EventPriorityData,
+  ) {
+    expect(subset.totalCount).toBeLessThanOrEqual(allMeters.totalCount);
+  }
+  validate(
+    data: EventPriorityData,
+    expected?: { period?: string; priorityId?: number; label?: string },
+  ) {
+    this.validatePeriod(data, expected?.period);
+    this.validatePriority(data, expected);
+    this.validateDates(data);
+    this.validateNotEmpty(data);
+    this.validateTotals(data);
+    this.validateStructure(data);
+    this.validatePercentages(data);
+    this.validateTrend(data);
+    this.validateUniqueTrendSeriesNames(data);
+    this.validateUniqueTrendPointKeys(data);
+    this.validateTrendSeriesNames(data);
+    this.validateTrendAggregation(data);
+    this.validateTrendPointCounts(data);
+  }
 }

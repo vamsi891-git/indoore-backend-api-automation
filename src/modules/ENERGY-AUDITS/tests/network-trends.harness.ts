@@ -22,7 +22,6 @@ export function registerNetworkTrendsTest(
       const api = new NetworkTrendsApi(authenticatedApi);
       const { rawResponse, responseBody, responseTime } =
         await api.getNetworkTrends(query);
-      const data = mapNetworkTrendData(responseBody);
 
       const defectContext = {
         module: "ENERGY-AUDITS",
@@ -38,6 +37,27 @@ export function registerNetworkTrendsTest(
       const validation = new ValidationEngine();
       const validator = new NetworkTrendsValidator();
 
+      if (rawResponse.status() !== 200 || responseBody.success !== true) {
+        try {
+          ApiValidationHelper.runStandardChecks(validation, assert, {
+            apiName: `Energy Audit Network Trends (${label})`,
+            rawResponse,
+            responseBody,
+            responseTime,
+            maxResponseTimeMs: 180000,
+          });
+        } finally {
+          ApiValidationHelper.finalize(validation, {
+            apiName: `Energy Audit Network Trends (${label})`,
+            responseTime,
+            testInfo,
+            defectContext,
+          });
+        }
+        return;
+      }
+
+      const data = mapNetworkTrendData(responseBody);
       try {
         ApiValidationHelper.runStandardChecks(validation, assert, {
           apiName: `Energy Audit Network Trends (${label})`,

@@ -1,0 +1,30 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/asset-management/hierarchy/children",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "items",
+    "page",
+    "pageSize",
+    "total",
+    "totalPages"
+  ],
+  "itemKeys": [
+    "childCount",
+    "code",
+    "consumerCount",
+    "displayName",
+    "hasChildren",
+    "id",
+    "isDtr",
+    "meterCount",
+    "name",
+    "parentId",
+    "status",
+    "type"
+  ],
+  "hasColumnsGrid": false
+}

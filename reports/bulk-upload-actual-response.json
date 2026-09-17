@@ -1,4 +1,0 @@
-{
-  "status": 400,
-  "body": "{\"success\":false,\"error\":{\"code\":\"VALIDATION_ERROR\",\"message\":\"The uploaded template has 26 columns. Expected 30 columns.\"}}"
-}

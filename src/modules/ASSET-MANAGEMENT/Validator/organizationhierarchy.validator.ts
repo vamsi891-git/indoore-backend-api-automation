@@ -46,6 +46,12 @@ export class OrganisationHierarchyValidator {
                 expect(dtr.consumerCount).toBeGreaterThanOrEqual(0);
                 if (dtr.dtrMeter) {
                     expect(dtr.dtrMeter.meterLookupId).toBeGreaterThan(0);
+                    if (dtr.dtrMeter.latitude != null) {
+                        expect(typeof dtr.dtrMeter.latitude).toBe("string");
+                    }
+                    if (dtr.dtrMeter.longitude != null) {
+                        expect(typeof dtr.dtrMeter.longitude).toBe("string");
+                    }
                 }
             });
             if (node.children?.length) {
@@ -87,6 +93,30 @@ export class OrganisationHierarchyValidator {
     validateOrgDtrUniqueness(nodes: OrganisationNode[]) {
         const walk = (items: OrganisationNode[]) => {
             items.forEach((node) => {
+                const dtrIds = (node.dtrs ?? []).map((d) => d.networkLookupId);
+                expect(new Set(dtrIds).size).toEqual(dtrIds.length);
+                walk(node.children ?? []);
+            });
+        };
+        walk(nodes);
+    }
+
+    /** Catalog DTRs attach on office `dtrs`, not as organisation `children`. */
+    validateDtrsNotInChildren(nodes: OrganisationNode[]) {
+        const walk = (items: OrganisationNode[]) => {
+            items.forEach((node) => {
+                expect(node.hierarchyLevel.toUpperCase()).not.toContain("DTR");
+                walk(node.children ?? []);
+            });
+        };
+        walk(nodes);
+    }
+
+    validateDtrArrays(nodes: OrganisationNode[]) {
+        const walk = (items: OrganisationNode[]) => {
+            items.forEach((node) => {
+                expect(Array.isArray(node.dtrs)).toBe(true);
+                expect(Array.isArray(node.children)).toBe(true);
                 const dtrIds = (node.dtrs ?? []).map((d) => d.networkLookupId);
                 expect(new Set(dtrIds).size).toEqual(dtrIds.length);
                 walk(node.children ?? []);

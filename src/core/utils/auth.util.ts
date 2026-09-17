@@ -36,17 +36,18 @@ type DeviceSelectionBody = TwoFactorBody;
 
 export class AuthApi {
   private static readonly loginPath = "/indore/auth/login";
+  private static readonly captchaPath = "/indore/auth/captcha";
   private static readonly login2faPath = "/indore/auth/login/2fa";
   private static readonly refreshPath = "/indore/auth/refresh";
   private static readonly releaseDevicePath = "/indore/auth/login/release-device";
   private static readonly devicesPath = "/indore/auth/devices";
   /**
-   * Login backoff including room for API `DB_BUSY` (503) pool contention.
-   * Total wait ≈ 2.8 minutes across attempts before failing global setup.
+   * Login backoff for 503 / pool contention. Keep this short: many login POSTs
+   * trip CAPTCHA_REQUIRED on the same account.
    */
-  private static readonly loginRetryMs = [
-    0, 5_000, 10_000, 20_000, 30_000, 45_000, 60_000,
-  ];
+  private static readonly loginRetryMs = [0, 10_000, 30_000];
+  /** One extra wait if the API already locked login behind captcha. */
+  private static readonly captchaRetryWaitMs = 90_000;
   private static readonly retriablePreflightStatuses = new Set([502, 503, 504]);
   private static readonly retriableAuthStatuses = new Set([429, 502, 503, 504]);
 
@@ -73,7 +74,7 @@ export class AuthApi {
         Accept: "application/json",
         "User-Agent":
           process.env.API_USER_AGENT?.trim() ||
-          "Mozilla/5.0 (compatible; IndooreAPITests/1.0)",
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
       },
     });
   }
@@ -88,6 +89,81 @@ export class AuthApi {
     }
 
     return headers["x-csrf-token"] ?? headers["X-CSRF-Token"] ?? "";
+  }
+
+  private static unwrapLoginCaptcha(body: unknown): {
+    captchaId?: string;
+    text?: string;
+  } {
+    const root =
+      body !== null && typeof body === "object"
+        ? (body as Record<string, unknown>)
+        : {};
+    const nested =
+      root.data !== null && typeof root.data === "object"
+        ? (root.data as Record<string, unknown>)
+        : root;
+    return {
+      captchaId:
+        typeof nested.captchaId === "string" ? nested.captchaId : undefined,
+      text: typeof nested.text === "string" ? nested.text : undefined,
+    };
+  }
+
+  /**
+   * Staff login requires captchaId + captcha. Non-production GET /auth/captcha
+   * returns plaintext `text` so tests can submit it without OCR.
+   */
+  private static async fetchLoginCaptcha(
+    apiContext: Awaited<ReturnType<typeof request.newContext>>,
+    csrfToken: string,
+  ): Promise<{ captchaId: string; captcha: string }> {
+    let lastStatus = 0;
+    let lastRaw = "";
+
+    for (const captchaPath of this.candidatePaths(this.captchaPath)) {
+      const response = await apiContext.get(captchaPath, {
+        headers: this.buildAuthHeaders(csrfToken),
+      });
+      lastStatus = response.status();
+      lastRaw = await response.text();
+      if (this.isRouteNotFound(lastStatus)) {
+        LoggerEngine.info(`CAPTCHA GET ${captchaPath} returned 404; trying next path`);
+        continue;
+      }
+      if (captchaPath === this.captchaPath.slice("/indore".length) || captchaPath === "/auth/captcha") {
+        enableStripIndorePrefix();
+      }
+      if (!response.ok()) {
+        throw new Error(
+          `Login CAPTCHA GET failed with status ${lastStatus} - ${lastRaw.slice(0, 300)}`,
+        );
+      }
+
+      let body: unknown;
+      try {
+        body = JSON.parse(lastRaw) as unknown;
+      } catch {
+        throw new Error(
+          `Login CAPTCHA GET returned non-JSON - ${lastRaw.slice(0, 300)}`,
+        );
+      }
+
+      const { captchaId, text } = this.unwrapLoginCaptcha(body);
+      if (!captchaId?.trim()) {
+        throw new Error("Login CAPTCHA GET did not include captchaId");
+      }
+      if (!text?.trim()) {
+        throw new Error(
+          "Login CAPTCHA GET did not include data.text. Local/non-production API must return the plaintext answer (NODE_ENV !== 'production') so tests can POST captchaId + captcha without OCR.",
+        );
+      }
+      return { captchaId, captcha: text };
+    }
+
+    throw new Error(
+      `Login CAPTCHA route not found (last status ${lastStatus}) - ${lastRaw.slice(0, 200)}`,
+    );
   }
 
   private static buildAuthHeaders(csrfToken: string): Record<string, string> {
@@ -227,9 +303,24 @@ export class AuthApi {
     }
   }
 
+  private static isCaptchaRequired(error: unknown): boolean {
+    const message = error instanceof Error ? error.message : String(error);
+    return /CAPTCHA_REQUIRED/i.test(message);
+  }
+
+  private static captchaLockoutError(cause: string): Error {
+    return new Error(
+      `${cause} Login is locked until captcha cooldown clears. ` +
+        "Wait 5–10 minutes without re-running npm test (repeated POSTs extend the lock). " +
+        "This is the auth API, not a dashboard test failure.",
+    );
+  }
+
   private static isDbBusyError(error: unknown): boolean {
     const message = error instanceof Error ? error.message : String(error);
-    return /DB_BUSY|database is busy|please retry shortly/i.test(message);
+    return /DB_BUSY|database is busy|please retry shortly|temporarily unavailable|SERVICE_UNAVAILABLE/i.test(
+      message,
+    );
   }
 
   private static isRetriableLoginError(error: unknown): boolean {
@@ -558,6 +649,7 @@ export class AuthApi {
     try {
       const startTime = Date.now();
       const csrfToken = await this.fetchCsrf(apiContext);
+      const loginCaptcha = await this.fetchLoginCaptcha(apiContext, csrfToken);
 
       let loginResponse: Awaited<ReturnType<typeof apiContext.post>> | undefined;
       let loginRaw = "";
@@ -567,7 +659,12 @@ export class AuthApi {
         loginPathUsed = loginPath;
         loginResponse = await apiContext.post(loginPath, {
           headers: this.buildAuthHeaders(csrfToken),
-          data: { email, password },
+          data: {
+            email,
+            password,
+            captchaId: loginCaptcha.captchaId,
+            captcha: loginCaptcha.captcha,
+          },
         });
         loginRaw = await loginResponse.text();
         if (!this.isRouteNotFound(loginResponse.status())) {
@@ -608,9 +705,13 @@ export class AuthApi {
       });
 
       if (!loginResponse.ok()) {
-        throw new Error(
+        const loginError = new Error(
           `Login failed with status ${loginResponse.status()} - ${JSON.stringify(loginBody)}`,
         );
+        if (this.isCaptchaRequired(loginError)) {
+          throw this.captchaLockoutError(loginError.message);
+        }
+        throw loginError;
       }
 
       if (loginBody.data?.accessToken) {
@@ -672,6 +773,24 @@ export class AuthApi {
         return await this.loginOnce(credentials);
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
+
+        if (this.isCaptchaRequired(lastError)) {
+          const waitMs = this.captchaRetryWaitMs;
+          const msg = `Login CAPTCHA_REQUIRED — waiting ${waitMs / 1000}s once, then one retry`;
+          LoggerEngine.info(msg);
+          console.log(msg);
+          await new Promise((resolve) => setTimeout(resolve, waitMs));
+          try {
+            return await this.loginOnce(credentials);
+          } catch (retryError) {
+            const failed =
+              retryError instanceof Error ? retryError : new Error(String(retryError));
+            LoggerEngine.error("AuthApi.login failed", failed);
+            throw this.isCaptchaRequired(failed)
+              ? this.captchaLockoutError(failed.message)
+              : failed;
+          }
+        }
 
         if (!this.isRetriableLoginError(lastError)) {
           LoggerEngine.error("AuthApi.login failed", lastError);

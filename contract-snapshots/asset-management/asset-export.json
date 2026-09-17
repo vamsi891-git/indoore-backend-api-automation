@@ -1,0 +1,25 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/asset-management/export",
+  "contentTypeContains": "text/csv",
+  "networkColumns": [
+    "Hierarchy Type",
+    "Asset Code",
+    "Asset Name",
+    "Display Name",
+    "Parent Type",
+    "Parent Code",
+    "Parent Name",
+    "Consumer Count",
+    "Meter Count"
+  ],
+  "organisationColumns": [
+    "Hierarchy Type",
+    "Office Code",
+    "Office Name",
+    "Display Name",
+    "Parent Type",
+    "Parent Code",
+    "Parent Name"
+  ]
+}

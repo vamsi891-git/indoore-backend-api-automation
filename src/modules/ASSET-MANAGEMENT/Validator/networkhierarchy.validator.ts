@@ -85,6 +85,26 @@ export class NetworkHierarchyValidator {
         });
     }
 
+    /**
+     * Explorer tree nodes are Sub Station / Feeder only.
+     * Catalog DTRs are attached on parent `dtrs`, not as `children`.
+     */
+    validateEligibleTreeLevels(nodes: NetworkNode[]) {
+        const walk = (items: NetworkNode[]) => {
+            items.forEach((node) => {
+                const level = node.hierarchyLevel ?? "";
+                const eligible =
+                    /sub\s*station/i.test(level) || /feeder/i.test(level);
+                expect(
+                    eligible,
+                    `unexpected hierarchyLevel on networkLookupId ${node.networkLookupId}: ${level}`,
+                ).toBe(true);
+                walk(node.children ?? []);
+            });
+        };
+        walk(nodes);
+    }
+
     /** Backend excludes DTR nodes from the tree — they appear only under parent `dtrs`. */
     validateDtrsNotInChildren(nodes: NetworkNode[]) {
         const walk = (items: NetworkNode[]) => {
@@ -94,6 +114,28 @@ export class NetworkHierarchyValidator {
             });
         };
         walk(nodes);
+    }
+
+    /** Catalog DTR lookup ids must not also appear as Sub Station / Feeder children. */
+    validateDtrIdsNotInChildren(nodes: NetworkNode[]) {
+        const treeIds = new Set<number>();
+        const dtrIds: number[] = [];
+        const walk = (items: NetworkNode[]) => {
+            items.forEach((node) => {
+                treeIds.add(node.networkLookupId);
+                for (const dtr of node.dtrs ?? []) {
+                    dtrIds.push(dtr.networkLookupId);
+                }
+                walk(node.children ?? []);
+            });
+        };
+        walk(nodes);
+        for (const dtrId of dtrIds) {
+            expect(
+                treeIds.has(dtrId),
+                `DTR networkLookupId ${dtrId} also appears in children`,
+            ).toBe(false);
+        }
     }
 
     validateDtrArrays(nodes: NetworkNode[]) {

@@ -1,4 +1,6 @@
 import { expect } from "@playwright/test";
+import { HourlyLossReportSuccessResponseSchema } from "../schemas/energy-audits.schemas";
+import { EnergyAuditsCommonValidator } from "./energy-audits-common.validator";
 import {
   getHourlyBucketValues,
   HOURLY_BUCKET_KEYS,
@@ -55,6 +57,10 @@ function parseMf(mf: string | number | null | undefined): number | null {
 export class HourlyLossReportValidator {
   validateResponse(response: HourlyLossReportResponse): void {
     expect(response.success).toBe(true);
+    EnergyAuditsCommonValidator.validateZodResponseSchema(
+      response,
+      HourlyLossReportSuccessResponseSchema,
+    );
     expect(response.data).toBeDefined();
     expect(Array.isArray(response.data.columns)).toBe(true);
     expect(Array.isArray(response.data.rows)).toBe(true);
@@ -175,7 +181,31 @@ export class HourlyLossReportValidator {
       return;
     }
 
-    expect(view.rows.length).toBeGreaterThanOrEqual(view.totalCount * 3);
+    expect(summaryRows.length % 3).toBe(0);
+    expect(view.rows.length).toBeGreaterThanOrEqual(summaryRows.length);
+    expect(view.rows.length).toBeLessThanOrEqual(
+      Math.max(view.pageSize * 3, view.totalCount),
+    );
+  }
+
+  validateSummaryKindCounts(rows: HourlyLossReportRow[]): void {
+    const summaryRows = rows.filter(isSummaryRowKind);
+    if (summaryRows.length === 0) {
+      return;
+    }
+    const dtr = summaryRows.filter(isDtrConsumptionRow).length;
+    const consumer = summaryRows.filter(isConsumerConsumptionRow).length;
+    const loss = summaryRows.filter(isLossPercentageRow).length;
+    expect(dtr).toBe(consumer);
+    expect(consumer).toBe(loss);
+    expect(dtr + consumer + loss).toBe(summaryRows.length);
+  }
+
+  validateNoDuplicateRowIds(rows: HourlyLossReportRow[]): void {
+    const ids = rows
+      .map((row) => row.id)
+      .filter((id): id is string => Boolean(id?.trim()));
+    expect(new Set(ids).size).toBe(ids.length);
   }
 
   validateSharedSummaryContext(rows: HourlyLossReportRow[]): void {
@@ -308,7 +338,10 @@ export class HourlyLossReportValidator {
       expect(view.page).toBe(1);
     }
     if (view.page === view.totalPages && view.totalCount > 0) {
-      expect(view.rows.length).toBeGreaterThanOrEqual(view.totalCount);
+      expect(view.rows.length).toBeGreaterThan(0);
+      expect(view.rows.length).toBeLessThanOrEqual(
+        Math.max(view.pageSize * 3, view.totalCount),
+      );
     }
   }
 }

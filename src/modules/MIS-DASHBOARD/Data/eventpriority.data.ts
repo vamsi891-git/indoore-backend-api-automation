@@ -52,7 +52,7 @@ const assets = [
   { assetType: "dtr", words: "DTR meters only" },
 ] as const;
 
-function casesForLevel(level: number): EventPriorityTestCase[] {
+export function eventPriorityCasesFor(level: number): EventPriorityTestCase[] {
   const title = eventPriorityTitle(level);
   const priority = eventPrioritySlug(level);
   const expectedPriorityId = level;
@@ -160,4 +160,4 @@ function casesForLevel(level: number): EventPriorityTestCase[] {
 }
 
 export const eventPriorityTestCases: EventPriorityTestCase[] =
-  eventPriorityLevels.flatMap((level) => casesForLevel(level));
+  eventPriorityLevels.flatMap((level) => eventPriorityCasesFor(level));

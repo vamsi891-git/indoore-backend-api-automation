@@ -36,15 +36,51 @@ export class AuthenticationApi {
     };
   }
 
+  async getLoginCaptcha(): Promise<{ captchaId: string; captcha: string }> {
+    const rawResponse = await this.request.get(AuthPaths.captcha, {
+      headers: { Accept: "application/json" },
+    });
+    const responseBody = (await rawResponse.json().catch(() => ({}))) as {
+      data?: { captchaId?: string; text?: string };
+      captchaId?: string;
+      text?: string;
+    };
+    if (rawResponse.status() !== 200) {
+      throw new Error(
+        `CAPTCHA GET failed with status ${rawResponse.status()}: ${JSON.stringify(responseBody)}`,
+      );
+    }
+    const captchaId = (
+      responseBody.data?.captchaId ?? responseBody.captchaId ?? ""
+    ).trim();
+    const captcha = (responseBody.data?.text ?? responseBody.text ?? "").trim();
+    if (!captchaId) {
+      throw new Error("CAPTCHA GET did not include captchaId");
+    }
+    if (!captcha) {
+      throw new Error(
+        "CAPTCHA GET did not include data.text. Non-production API must return plaintext so tests can POST captcha without OCR.",
+      );
+    }
+    return { captchaId, captcha };
+  }
+
   async postLogin(
     email: string,
     password: string,
     csrfToken: string,
+    captcha?: { captchaId: string; captcha: string },
   ): Promise<ApiCallResult> {
     const start = Date.now();
     const rawResponse = await this.request.post(AuthPaths.login, {
       headers: this.buildCsrfHeaders(csrfToken),
-      data: { email, password },
+      data: {
+        email,
+        password,
+        ...(captcha
+          ? { captchaId: captcha.captchaId, captcha: captcha.captcha }
+          : {}),
+      },
     });
     const responseBody = await rawResponse.json();
     return {
@@ -114,8 +150,9 @@ export class AuthenticationApi {
   ): Promise<EstablishedAuthSession> {
     await this.getLoginPreflight();
     let csrfToken = await AuthMapper.resolveCsrfToken(this.request, {});
+    const captcha = await this.getLoginCaptcha();
 
-    let login = await this.postLogin(email, password, csrfToken);
+    let login = await this.postLogin(email, password, csrfToken, captcha);
     if (login.rawResponse.status() !== 200) {
       throw new Error(
         `Login failed with status ${login.rawResponse.status()}: ${JSON.stringify(login.responseBody)}`,

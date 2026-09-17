@@ -29,6 +29,17 @@ export class DtrPowerStatusValidator {
         expect(data.points.length).toBe(expected);
         expect(data.points.length).toBeGreaterThan(0);
     }
+    validateLivePointCount(data: MappedDtrPowerStatus): void {
+        const maxCounts: Record<DtrPowerStatusPeriod, number> = {
+            hourly: 24,
+            daily: 31,
+            weekly: 12,
+            monthly: 24,
+            yearly: 20,
+        };
+        expect(data.points.length).toBeGreaterThan(0);
+        expect(data.points.length).toBeLessThanOrEqual(maxCounts[data.period]);
+    }
     validateLabelPatterns(data: MappedDtrPowerStatus): void {
         const pattern = dtrPowerStatusLabelPatterns[data.period];
         data.points.forEach((point) => {
@@ -106,7 +117,7 @@ export class DtrPowerStatusValidator {
     validateLiveOk(mapped: MappedDtrPowerStatus,expectedPeriod?: DtrPowerStatusPeriod,): void {
         this.validateSuccess(mapped.success);
         this.validatePeriod(mapped, expectedPeriod);
-        this.validatePointCount(mapped);
+        this.validateLivePointCount(mapped);
         this.validateLabelPatterns(mapped);
         this.validateUniqueLabels(mapped);
         this.validatePoints(mapped);

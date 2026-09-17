@@ -19,24 +19,45 @@ export function registerHourlyLossReportTest(
     async ({ authenticatedApi }, testInfo: TestInfo) => {
       const query = buildQuery();
       const api = new HourlyLossReportApi(authenticatedApi);
-      const { rawResponse, responseBody, responseTime } =
-        await api.getHourlyLossReport(query);
-      const view = getHourlyLossReportPaginatedView(responseBody, query);
-      const hasRows = view.totalCount > 0;
+        const { rawResponse, responseBody, responseTime } =
+          await api.getHourlyLossReport(query);
 
-      const defectContext = {
-        module: "ENERGY-AUDITS",
-        endpoint: rawResponse.url(),
-        requestParams: query,
-        responseStatus: rawResponse.status(),
-        responseBody,
-        expectedBehavior:
-          "Hourly loss grid with H1..H24 buckets, total = sum(hours), pagination; empty dataset returns total=0.",
-      };
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
-      const validator = new HourlyLossReportValidator();
-      try {
+        const defectContext = {
+          module: "ENERGY-AUDITS",
+          endpoint: rawResponse.url(),
+          requestParams: query,
+          responseStatus: rawResponse.status(),
+          responseBody,
+          expectedBehavior:
+            "Hourly loss grid with H1..H24 buckets, total = sum(hours), pagination; empty dataset returns total=0.",
+        };
+        const assert = new AssertionEngine();
+        const validation = new ValidationEngine();
+        const validator = new HourlyLossReportValidator();
+
+        if (rawResponse.status() !== 200 || responseBody.success !== true) {
+          try {
+            ApiValidationHelper.runStandardChecks(validation, assert, {
+              apiName: `Energy Audit Hourly Loss Report (${label})`,
+              rawResponse,
+              responseBody,
+              responseTime,
+              maxResponseTimeMs: 180000,
+            });
+          } finally {
+            ApiValidationHelper.finalize(validation, {
+              apiName: `Energy Audit Hourly Loss Report (${label})`,
+              responseTime,
+              testInfo,
+              defectContext,
+            });
+          }
+          return;
+        }
+
+        const view = getHourlyLossReportPaginatedView(responseBody, query);
+        const hasRows = view.totalCount > 0;
+        try {
         ApiValidationHelper.runStandardChecks(validation, assert, {
           apiName: `Energy Audit Hourly Loss Report (${label})`,
           rawResponse,
@@ -80,6 +101,12 @@ export function registerHourlyLossReportTest(
           );
           validation.execute("Summary Row Count", () =>
             validator.validateSummaryRowCount(view),
+          );
+          validation.execute("Summary Kind Counts", () =>
+            validator.validateSummaryKindCounts(view.rows),
+          );
+          validation.execute("Duplicate Row IDs", () =>
+            validator.validateNoDuplicateRowIds(view.rows),
           );
           validation.execute("Shared Summary Context", () =>
             validator.validateSharedSummaryContext(view.rows),

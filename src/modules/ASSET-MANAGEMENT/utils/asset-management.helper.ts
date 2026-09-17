@@ -84,10 +84,117 @@ export function findFirstNetworkRootId(nodes: NetworkNode[]): number | undefined
   return nodes[0]?.networkLookupId;
 }
 
+function isFeederLevel(level: string | undefined): boolean {
+  return /feeder/i.test(level ?? "");
+}
+
+/** Smallest useful `rootId` GET: a Feeder that already has catalog DTRs. */
+export function findFirstFeederWithDtrs(
+  nodes: NetworkNode[],
+): NetworkNode | undefined {
+  for (const node of nodes) {
+    if (isFeederLevel(node.hierarchyLevel) && (node.dtrs?.length ?? 0) > 0) {
+      return node;
+    }
+    const nested = findFirstFeederWithDtrs(node.children ?? []);
+    if (nested) {
+      return nested;
+    }
+  }
+  return undefined;
+}
+
+export function findFirstFeederWithEmptyDtrs(
+  nodes: NetworkNode[],
+): NetworkNode | undefined {
+  for (const node of nodes) {
+    if (isFeederLevel(node.hierarchyLevel) && (node.dtrs?.length ?? 0) === 0) {
+      return node;
+    }
+    const nested = findFirstFeederWithEmptyDtrs(node.children ?? []);
+    if (nested) {
+      return nested;
+    }
+  }
+  return undefined;
+}
+
+export function findFirstEmptyNetworkCode(
+  nodes: NetworkNode[],
+): NetworkNode | undefined {
+  for (const node of nodes) {
+    if (!node.networkCode?.trim()) {
+      return node;
+    }
+    const nested = findFirstEmptyNetworkCode(node.children ?? []);
+    if (nested) {
+      return nested;
+    }
+  }
+  return undefined;
+}
+
 export function findFirstOrganisationRootId(
   nodes: OrganisationNode[],
 ): number | undefined {
   return nodes[0]?.organisationLookupId;
+}
+
+function isZoneLevel(level: string | undefined): boolean {
+  return /zone/i.test(level ?? "");
+}
+
+/** Prefer a Zone that already has catalog DTRs for a smaller `rootId` GET. */
+export function findFirstOfficeWithDtrs(
+  nodes: OrganisationNode[],
+): OrganisationNode | undefined {
+  let fallback: OrganisationNode | undefined;
+  const walk = (items: OrganisationNode[]): OrganisationNode | undefined => {
+    for (const node of items) {
+      if ((node.dtrs?.length ?? 0) > 0) {
+        if (isZoneLevel(node.hierarchyLevel)) {
+          return node;
+        }
+        fallback ??= node;
+      }
+      const nested = walk(node.children ?? []);
+      if (nested) {
+        return nested;
+      }
+    }
+    return undefined;
+  };
+  return walk(nodes) ?? fallback;
+}
+
+export function findFirstOfficeWithEmptyDtrs(
+  nodes: OrganisationNode[],
+): OrganisationNode | undefined {
+  for (const node of nodes) {
+    if ((node.dtrs?.length ?? 0) === 0) {
+      return node;
+    }
+    const nested = findFirstOfficeWithEmptyDtrs(node.children ?? []);
+    if (nested) {
+      return nested;
+    }
+  }
+  return undefined;
+}
+
+export function findFirstEmptyOfficeCode(
+  nodes: OrganisationNode[],
+): OrganisationNode | undefined {
+  for (const node of nodes) {
+    if (!node.officeCode?.trim()) {
+      return node;
+    }
+    const nested = findFirstEmptyOfficeCode(node.children ?? []);
+    if (nested) {
+      return nested;
+    }
+  }
+  return undefined;
 }
 
 /** Prefer a child node with DTRs so rootId subtree is smaller than the full hierarchy. */

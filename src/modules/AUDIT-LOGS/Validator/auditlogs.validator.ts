@@ -1,9 +1,17 @@
 import { expect } from "@playwright/test";
+import type { ZodType } from "zod";
+import { assertZodSchema } from "../../../core/utils/zod-validation.helper";
+import {
+  EXPECTED_ACTION_FILTER_OPTION_COLUMNS,
+  EXPECTED_AUDIT_LOG_COLUMNS,
+  EXPECTED_AUDIT_LOGS_DATA_COLUMNS,
+} from "../Data/auditlogs.data";
 import {
   AuditLogsData,
   AuditLogsQuery,
   AuditLogsResponse,
 } from "../Mapper/auditlogs.mapper";
+import { AuditLogsListSuccessResponseSchema } from "../schemas/audit-logs.schemas";
 
 const UUID_REGEX =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -11,14 +19,48 @@ const ISO_DATE_REGEX =
   /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z$/;
 
 export class AuditLogsValidator {
+  static validateZodResponseSchema<T>(body: unknown, schema: ZodType<T>): T {
+    return assertZodSchema(schema, body, "Zod Response Schema");
+  }
+
+  static validateErrorResponse(
+    status: number,
+    body: { success?: boolean; error?: { code?: string; message?: string } },
+    expectedStatuses: number[],
+  ): void {
+    expect(expectedStatuses).toContain(status);
+    expect(body.success).toBe(false);
+    expect(body.error?.code).toBeTruthy();
+    expect(body.error?.message).toBeTruthy();
+  }
+
   validateResponse(response: AuditLogsResponse): void {
     expect(response.success).toBeTruthy();
-    expect(response.data).toBeDefined();
+    AuditLogsValidator.validateZodResponseSchema(
+      response,
+      AuditLogsListSuccessResponseSchema,
+    );
+  }
+
+  validateColumns(data: AuditLogsData): void {
+    expect(Object.keys(data).sort()).toEqual(
+      [...EXPECTED_AUDIT_LOGS_DATA_COLUMNS].sort(),
+    );
+    if (data.logs.length > 0) {
+      expect(Object.keys(data.logs[0]).sort()).toEqual(
+        [...EXPECTED_AUDIT_LOG_COLUMNS].sort(),
+      );
+    }
+    if (data.actionFilterOptions.length > 0) {
+      expect(Object.keys(data.actionFilterOptions[0]).sort()).toEqual(
+        [...EXPECTED_ACTION_FILTER_OPTION_COLUMNS].sort(),
+      );
+    }
   }
 
   validateAuditLogsExist(data: AuditLogsData): void {
     expect(data.logs).toBeDefined();
-    if (data.total > 0) {
+    if (data.total > 0 && data.page <= data.totalPages) {
       expect(data.logs.length).toBeGreaterThan(0);
     } else {
       expect(data.logs.length).toBe(0);
@@ -46,6 +88,8 @@ export class AuditLogsValidator {
       const remainder = data.total % data.limit;
       const expectedRows = remainder === 0 ? data.limit : remainder;
       expect(data.logs.length).toEqual(expectedRows);
+    } else {
+      expect(data.logs.length).toEqual(0);
     }
   }
 
@@ -60,10 +104,10 @@ export class AuditLogsValidator {
       expect(log.actorId).toBeTruthy();
       expect(log.action).toBeTruthy();
       expect(log.createdAt).toBeTruthy();
-      expect(log.actionLabel?.trim()).not.toEqual("");
-      expect(log.actorLabel?.trim()).not.toEqual("");
-      expect(log.roleLabel?.trim()).not.toEqual("");
-      expect(log.ipAddressLabel?.trim()).not.toEqual("");
+      expect(log.actionLabel.trim()).not.toEqual("");
+      expect(log.actorLabel.trim()).not.toEqual("");
+      expect(log.roleLabel.trim()).not.toEqual("");
+      expect(log.ipAddressLabel.trim()).not.toEqual("");
       expect(typeof log.detailsLabel).toEqual("string");
       expect(Array.isArray(log.detailsLines)).toBeTruthy();
     });
@@ -94,6 +138,7 @@ export class AuditLogsValidator {
     data.logs.forEach((log) => {
       if (log.actorRoleName?.trim()) {
         expect(log.actorRoleName.trim()).not.toEqual("");
+        expect(log.roleLabel).toEqual(log.actorRoleName);
       }
       if (log.targetRoleName?.trim()) {
         expect(log.targetRoleName.trim()).not.toEqual("");
@@ -105,6 +150,8 @@ export class AuditLogsValidator {
     data.logs.forEach((log) => {
       if (log.actorFullName?.trim()) {
         expect(log.actorFullName.trim()).not.toEqual("");
+      } else {
+        console.log("Empty audit actorFullName:", { id: log.id, action: log.action });
       }
       if (log.targetFullName?.trim()) {
         expect(log.targetFullName.trim()).not.toEqual("");
@@ -116,6 +163,13 @@ export class AuditLogsValidator {
     data.logs.forEach((log) => {
       expect(log.action.trim()).not.toEqual("");
       expect(log.action).toContain(".");
+    });
+  }
+
+  validateActionFilter(data: AuditLogsData, action: string): void {
+    expect(data.logs.length).toBeGreaterThan(0);
+    data.logs.forEach((log) => {
+      expect(log.action).toEqual(action);
     });
   }
 
@@ -148,10 +202,14 @@ export class AuditLogsValidator {
   }
 
   validateNextCursor(data: AuditLogsData): void {
-    if (data.total > data.limit && data.logs.length > 0) {
+    if (data.page < data.totalPages && data.logs.length > 0) {
       expect(data.nextCursor).toBeTruthy();
       const lastLog = data.logs[data.logs.length - 1];
       expect(data.nextCursor).toEqual(lastLog.id);
+      return;
+    }
+    if (data.page >= data.totalPages) {
+      expect(data.nextCursor).toBeNull();
     }
   }
 
@@ -184,9 +242,7 @@ export class AuditLogsValidator {
   }
 
   /**
-   * actionFilterOptions is a curated UI subset (AUDIT_LOG_FILTER_ACTIONS), not the
-   * full set of historical action codes. Logs may include labeled-but-unfilterable
-   * actions (e.g. user.role_changed) — soft-report, do not fail.
+   * actionFilterOptions is a curated UI subset, not every historical action code.
    */
   validateLogActionsInFilterOptions(data: AuditLogsData): void {
     const allowed = new Set(data.actionFilterOptions.map((opt) => opt.value));
@@ -205,14 +261,26 @@ export class AuditLogsValidator {
   }
 
   validateDisplayLabels(data: AuditLogsData): void {
+    const filterByAction = new Map(
+      data.actionFilterOptions.map((opt) => [opt.value, opt.label]),
+    );
+
     data.logs.forEach((log) => {
-      if (log.detailsLines.length > 0) {
-        expect(log.detailsLabel).not.toEqual("—");
+      const expectedActionLabel = filterByAction.get(log.action);
+      if (expectedActionLabel) {
+        expect(log.actionLabel).toEqual(expectedActionLabel);
+      }
+
+      if (log.detailsLines.length === 0) {
+        expect(log.detailsLabel).toEqual("—");
+      } else {
+        expect(log.detailsLabel).toEqual(log.detailsLines.join(". "));
         log.detailsLines.forEach((line) => {
           expect(line.trim()).not.toEqual("");
         });
       }
-      if (log.ipAddress === "::1") {
+
+      if (log.ipAddress === "::1" || log.ipAddress === "127.0.0.1") {
         expect(log.ipAddressLabel.toLowerCase()).toContain("local");
       }
     });

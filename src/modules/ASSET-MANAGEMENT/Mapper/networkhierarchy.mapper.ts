@@ -30,11 +30,11 @@ export interface DtrMeter {
 }
 
 export class NetworkHierarchyMapper {
-    static mapData(data: NetworkHierarchyData): NetworkHierarchyData {
+    static mapData(
+        data: NetworkHierarchyData | null | undefined,
+    ): NetworkHierarchyData {
         return {
-            hierarchy:data.hierarchy ?? []
+            hierarchy: data?.hierarchy ?? [],
         };
-
     }
-
 }

@@ -1,0 +1,21 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/asset-management/hierarchy/types",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "items"
+  ],
+  "itemKeys": [
+    "code",
+    "filterable",
+    "id",
+    "label",
+    "name",
+    "order",
+    "type"
+  ],
+  "hasColumnsGrid": false
+}

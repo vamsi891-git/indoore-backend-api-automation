@@ -4,10 +4,8 @@ import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { PerformanceTracker } from "../../../core/utils/performancetracker";
 import { OrganisationHierarchyApi } from "../Api/organizationhierarchy.api";
 import {
-  assetManagementMaxResponseTimeMs,
   assetManagementHierarchyMaxResponseTimeMs,
   assetManagementHierarchyRequestTimeoutMs,
-  assetManagementPaths,
 } from "../Data/asset-management.common.data";
 import { OrganisationHierarchyMapper } from "../Mapper/organizationhierarchy.mapper";
 import { OrganisationHierarchyValidator } from "../Validator/organizationhierarchy.validator";
@@ -33,8 +31,8 @@ export async function runOrganisationHierarchyValidation(
     api,
     testLabel,
     rootId,
-    maxResponseTimeMs = assetManagementMaxResponseTimeMs,
-    requestTimeoutMs,
+    maxResponseTimeMs = assetManagementHierarchyMaxResponseTimeMs,
+    requestTimeoutMs = assetManagementHierarchyRequestTimeoutMs,
     includeSubtreeChecks = false,
     subtreeRootId,
   } = options;
@@ -42,7 +40,6 @@ export async function runOrganisationHierarchyValidation(
   const { rawResponse, responseBody, responseTime } =
     await api.getOrganisationHierarchy(rootId, requestTimeoutMs);
 
-  const query = rootId != null ? `?rootId=${rootId}` : "";
   await PerformanceTracker.track(
         rawResponse,
         testLabel,
@@ -77,8 +74,16 @@ export async function runOrganisationHierarchyValidation(
   validation.execute("Duplicate IDs", () =>
     validator.validateDuplicateIds(data.hierarchy),
   );
-  validation.execute("Expected Levels", () =>
-    validator.validateExpectedLevels(data.hierarchy),
+  if (rootId == null) {
+    validation.execute("Expected Levels", () =>
+      validator.validateExpectedLevels(data.hierarchy),
+    );
+  }
+  validation.execute("DTRs Not In Children", () =>
+    validator.validateDtrsNotInChildren(data.hierarchy),
+  );
+  validation.execute("DTR Arrays", () =>
+    validator.validateDtrArrays(data.hierarchy),
   );
   validation.execute("Org DTR Uniqueness", () =>
     validator.validateOrgDtrUniqueness(data.hierarchy),

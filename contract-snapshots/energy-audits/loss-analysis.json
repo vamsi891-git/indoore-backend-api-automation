@@ -1,0 +1,35 @@
+{
+  "httpMethod": "GET",
+  "pathPattern": "/indore/energy-audit/loss-analysis",
+  "successEnvelopeKeys": [
+    "data",
+    "success"
+  ],
+  "dataKeys": [
+    "columns",
+    "pagination",
+    "rows"
+  ],
+  "itemKeys": [
+    "billingEfficiencyPct",
+    "circle",
+    "consumerCount",
+    "division",
+    "dtrCode",
+    "dtrName",
+    "dtrRating",
+    "feeder",
+    "header",
+    "id",
+    "inputUnits",
+    "key",
+    "lossKwh",
+    "lossPct",
+    "meterSerialNumber",
+    "mf",
+    "slNo",
+    "totalSoldUnits",
+    "zone"
+  ],
+  "hasColumnsGrid": false
+}

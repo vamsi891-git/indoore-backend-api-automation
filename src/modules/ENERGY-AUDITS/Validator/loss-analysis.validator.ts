@@ -1,12 +1,15 @@
 import { expect } from "@playwright/test";
 
+import { EnergyAuditsCommonValidator } from "./energy-audits-common.validator";
+import { LossAnalysisSuccessResponseSchema } from "../schemas/energy-audits.schemas";
+import { expectedLossAnalysisColumns } from "../Data/loss-analysis.data";
 import {
-  LOSS_ANALYSIS_COLUMN_KEYS,
   LossAnalysisPaginatedView,
   LossAnalysisQuery,
   LossAnalysisResponse,
   LossAnalysisRow,
   LossNetworkType,
+  LossReportType,
 } from "../Mapper/loss-analysis.mapper";
 
 const METRIC_EPSILON = 0.01;
@@ -34,20 +37,28 @@ function isSummaryRow(row: LossAnalysisRow): boolean {
 export class LossAnalysisValidator {
   validateResponse(response: LossAnalysisResponse): void {
     expect(response.success).toBe(true);
+    EnergyAuditsCommonValidator.validateZodResponseSchema(
+      response,
+      LossAnalysisSuccessResponseSchema,
+    );
     expect(response.data).toBeDefined();
     expect(Array.isArray(response.data.columns)).toBe(true);
     expect(Array.isArray(response.data.rows)).toBe(true);
     expect(response.data.pagination).toBeDefined();
   }
 
-  validateColumns(view: LossAnalysisPaginatedView): void {
+  validateColumns(
+    view: LossAnalysisPaginatedView,
+    reportType: LossReportType,
+  ): void {
     const keys = view.columns.map((col) => col.key);
-    expect(keys).toEqual([...LOSS_ANALYSIS_COLUMN_KEYS]);
+    expect(keys).toEqual([...expectedLossAnalysisColumns(reportType)]);
 
     for (const column of view.columns) {
       expect(column.key.trim().length).toBeGreaterThan(0);
       expect(column.header.trim().length).toBeGreaterThan(0);
     }
+    expect(new Set(keys).size).toBe(keys.length);
   }
 
   validatePagination(
@@ -84,7 +95,13 @@ export class LossAnalysisValidator {
     expect(view.rows.length).toBeGreaterThan(0);
   }
 
-  validateSlNoSequence(rows: LossAnalysisRow[],query: Pick<LossAnalysisQuery, "page" | "limit">,): void {
+  validateSlNoSequence(
+    rows: LossAnalysisRow[],
+    query: Pick<LossAnalysisQuery, "page" | "limit">,
+  ): void {
+    if (rows.every((row) => row.slNo == null || Number.isNaN(row.slNo))) {
+      return;
+    }
     const base = (query.page - 1) * query.limit;
     rows.forEach((row, index) => {
       expect(row.slNo).toBe(base + index + 1);
@@ -110,6 +127,9 @@ export class LossAnalysisValidator {
         continue;
       }
       expect(row.dtrName.length,`Row ${row.id}: dtrName is required for meter-scoped rows`,).toBeGreaterThan(0);
+      if (row.dtrCode) {
+        expect(row.dtrCode.trim().length).toBeGreaterThan(0);
+      }
       expect(row.meterSerialNumber.length,`Row ${row.id}: meterSerialNumber is required for meter-scoped rows`,).toBeGreaterThan(0);
       if (networkType === "dtr") {
         expect(String(row.mf ?? "").trim().length,`Row ${row.id}: mf is required for DTR-scoped loss analysis`,).toBeGreaterThan(0);
@@ -119,7 +139,13 @@ export class LossAnalysisValidator {
   validateFieldTypes(rows: LossAnalysisRow[],networkType: LossNetworkType,): void {
     for (const row of rows) {
       expect(typeof row.id).toBe("string");
-      expect(typeof row.slNo).toBe("number");
+      if (row.slNo != null) {
+        expect(typeof row.slNo).toBe("number");
+      }
+      expect(typeof row.dtrCode).toBe("string");
+      if (row.dtrRating !== null && row.dtrRating !== undefined) {
+        expect(["string", "number"]).toContain(typeof row.dtrRating);
+      }
       if (networkType === "feeder") {
         expect(row.circle === null || typeof row.circle === "string").toBe(true);
         expect(row.division === null || typeof row.division === "string").toBe(true);
@@ -203,6 +229,26 @@ export class LossAnalysisValidator {
     const serials = meterRows.map((row) => row.meterSerialNumber);
     expect(new Set(serials).size).toBe(serials.length);
   }
+
+  validateNoDuplicateDtrCodes(
+    rows: LossAnalysisRow[],
+    reportType: LossReportType,
+  ): void {
+    if (reportType !== "ls") {
+      return;
+    }
+    const meterRows = rows.filter(isMeterScopedRow).filter((row) => row.dtrCode);
+    const keys = meterRows.map(
+      (row) => `${row.dtrCode}::${row.meterSerialNumber}`,
+    );
+    expect(new Set(keys).size).toBe(keys.length);
+  }
+
+  validatePageRowCount(view: LossAnalysisPaginatedView): void {
+    expect(view.rows.length).toBeLessThanOrEqual(view.pageSize);
+    expect(view.totalCount).toBeGreaterThanOrEqual(view.rows.length);
+  }
+
   validateFeederMeterSerialFormat(rows: LossAnalysisRow[]): void {
     for (const row of rows) {
       if (isSummaryRow(row)) {

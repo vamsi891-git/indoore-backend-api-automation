@@ -59,6 +59,7 @@ test.describe("Auth Login API", () => {
           AuthTestData.validEmail,
           AuthTestData.invalidPassword,
           csrfToken,
+          await api.getLoginCaptcha(),
         );
 
         if (invalidLogin.rawResponse.status() === 500) {
@@ -71,6 +72,7 @@ test.describe("Auth Login API", () => {
             AuthTestData.validEmail,
             AuthTestData.invalidPassword,
             retryCsrf,
+            await api.getLoginCaptcha(),
           );
         }
 
@@ -103,6 +105,7 @@ test.describe("Auth Login API", () => {
           AuthTestData.validEmail,
           AuthTestData.validPassword,
           freshCsrf,
+          await api.getLoginCaptcha(),
         );
 
         await PerformanceTracker.track(

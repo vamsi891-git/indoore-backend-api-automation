@@ -139,4 +139,58 @@ test.describe("Mutation proof — Organisation hierarchy", () => {
       }
     },
   );
+
+  test(
+    "MUT-AM-OH-007 — validateDuplicateIds fails on duplicate organisationLookupId",
+    {
+      tag: [
+        "@mutation-proof",
+        "@asset-management",
+        "@organisation-hierarchy",
+      ],
+    },
+    async () => {
+      const nodes: OrganisationNode[] = structuredClone(
+        sampleOrganisationHierarchySuccess.data.hierarchy,
+      );
+      nodes[0].children.push({
+        ...nodes[0].children[0],
+        organisationLookupId: 1,
+      });
+      const message = captureThrownMessage(() =>
+        new OrganisationHierarchyValidator().validateDuplicateIds(nodes),
+      );
+      expect(message).not.toEqual("");
+      expect(message).toMatch(/expected|Received|toBe|unique|size/i);
+    },
+  );
+
+  test(
+    "MUT-AM-OH-008 — validateDtrsNotInChildren fails when a DTR is a child office",
+    {
+      tag: [
+        "@mutation-proof",
+        "@asset-management",
+        "@organisation-hierarchy",
+      ],
+    },
+    async () => {
+      const nodes: OrganisationNode[] = structuredClone(
+        sampleOrganisationHierarchySuccess.data.hierarchy,
+      );
+      nodes[0].children.push({
+        organisationLookupId: 99,
+        officeCode: "DTR-99",
+        officeName: "Lookup DTR",
+        hierarchyLevel: "DTR",
+        children: [],
+        dtrs: [],
+      });
+      const message = captureThrownMessage(() =>
+        new OrganisationHierarchyValidator().validateDtrsNotInChildren(nodes),
+      );
+      expect(message).not.toEqual("");
+      expect(message).toMatch(/DTR|toContain|expected|Received/i);
+    },
+  );
 });
