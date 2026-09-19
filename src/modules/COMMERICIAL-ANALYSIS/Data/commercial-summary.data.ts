@@ -1,7 +1,6 @@
-import { commercialAnalysisWindow } from "./commercial-window.data";
-
 export const commercialSummaryData = {
-    ...commercialAnalysisWindow,
+    month: 10,
+    year: 2025,
     pfThreshold: 0.8,
     maxResponseTime: 180_000,
     expectedReportCount: 23,

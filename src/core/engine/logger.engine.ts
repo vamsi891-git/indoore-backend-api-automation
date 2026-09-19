@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-type LogLevel = "INFO" | "ERROR" | "API";
+type LogLevel = "DEBUG" | "INFO" | "ERROR" | "API";
 
 export class LoggerEngine {
   private static readonly logDir = path.join(process.cwd(), "logs");
@@ -18,6 +18,14 @@ export class LoggerEngine {
     const timestamp = new Date().toISOString();
     const line = `[${timestamp}] [${level}] ${message}\n`;
     fs.appendFileSync(this.logFile, line, "utf8");
+  }
+
+  static debug(message: string): void {
+    const level = (process.env.LOG_LEVEL ?? "").trim().toLowerCase();
+    if (level !== "debug") {
+      return;
+    }
+    this.write("DEBUG", message);
   }
 
   static info(message: string): void {

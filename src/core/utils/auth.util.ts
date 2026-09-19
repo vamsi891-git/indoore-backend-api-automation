@@ -1,4 +1,6 @@
 import { request } from "@playwright/test";
+import fs from "fs";
+import path from "path";
 import { LoggerEngine } from "../engine/logger.engine";
 import {
   enableStripIndorePrefix,
@@ -6,6 +8,7 @@ import {
   normalizeApiBaseUrl,
 } from "./api-path.util";
 import { generateTotp, getTotpSecret } from "./totp.util";
+import { solveCaptchaSvg } from "./captcha-ocr.util";
 
 export interface LoginResponse {
   accessToken: string;
@@ -46,6 +49,7 @@ export class AuthApi {
    * trip CAPTCHA_REQUIRED on the same account.
    */
   private static readonly loginRetryMs = [0, 10_000, 30_000];
+  private static readonly captchaOcrMaxAttempts = 5;
   /** One extra wait if the API already locked login behind captcha. */
   private static readonly captchaRetryWaitMs = 90_000;
   private static readonly retriablePreflightStatuses = new Set([502, 503, 504]);
@@ -66,10 +70,22 @@ export class AuthApi {
     return status === 404;
   }
 
-  private static async createContext() {
+  private static readonly storageStatePath = path.join(
+    process.cwd(),
+    "playwright",
+    ".auth",
+    "storage-state.json",
+  );
+
+  private static async createContext(reuseCookies = false) {
+    const storageState =
+      reuseCookies && fs.existsSync(this.storageStatePath)
+        ? this.storageStatePath
+        : undefined;
     return request.newContext({
       baseURL: normalizeApiBaseUrl(process.env.BASE_URL),
       ignoreHTTPSErrors: true,
+      ...(storageState ? { storageState } : {}),
       extraHTTPHeaders: {
         Accept: "application/json",
         "User-Agent":
@@ -77,6 +93,43 @@ export class AuthApi {
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
       },
     });
+  }
+
+  private static lastStorageState: {
+    cookies: AuthCookie[];
+    origins?: unknown;
+  } | null = null;
+
+  private static async snapshotCookies(
+    apiContext: Awaited<ReturnType<typeof request.newContext>>,
+    headers: Record<string, string> = {},
+  ): Promise<{ cookies: AuthCookie[] }> {
+    try {
+      this.lastStorageState = await apiContext.storageState();
+    } catch {
+      // Playwright can close the internal snapshot page after 2FA/device calls.
+    }
+    const cookies = this.lastStorageState?.cookies ?? [];
+    if (cookies.length === 0) {
+      const headerToken = this.readCsrfToken([], headers);
+      if (headerToken) {
+        return {
+          cookies: [{ name: "csrf_token", value: headerToken }],
+        };
+      }
+    }
+    return { cookies };
+  }
+
+  private static persistStorageState(state: {
+    cookies: AuthCookie[];
+    origins?: unknown;
+  }): void {
+    const dir = path.dirname(this.storageStatePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(this.storageStatePath, JSON.stringify(state, null, 2), "utf8");
   }
 
   private static readCsrfToken(
@@ -94,6 +147,7 @@ export class AuthApi {
   private static unwrapLoginCaptcha(body: unknown): {
     captchaId?: string;
     text?: string;
+    svg?: string;
   } {
     const root =
       body !== null && typeof body === "object"
@@ -107,13 +161,13 @@ export class AuthApi {
       captchaId:
         typeof nested.captchaId === "string" ? nested.captchaId : undefined,
       text: typeof nested.text === "string" ? nested.text : undefined,
+      svg: typeof nested.svg === "string" ? nested.svg : undefined,
     };
   }
 
   /**
-   * Non-production GET /auth/captcha returns plaintext `text` so tests can POST
-   * captchaId + captcha without OCR. Production omits `text`; login then goes
-   * without captcha fields (same as GitHub Actions against the live API).
+   * GET /auth/captcha. Uses plaintext `text` when the API returns it (non-prod).
+   * Otherwise OCRs the SVG. Live API is GET, not POST.
    */
   private static async fetchLoginCaptcha(
     apiContext: Awaited<ReturnType<typeof request.newContext>>,
@@ -150,23 +204,37 @@ export class AuthApi {
         );
       }
 
-      const { captchaId, text } = this.unwrapLoginCaptcha(body);
+      const { captchaId, text, svg } = this.unwrapLoginCaptcha(body);
       if (!captchaId?.trim()) {
         throw new Error("Login CAPTCHA GET did not include captchaId");
       }
-      if (!text?.trim()) {
-        LoggerEngine.info(
-          "CAPTCHA GET has no plaintext (production/image-only); posting login without captcha fields",
-        );
-        return null;
+      if (text?.trim()) {
+        const captcha = text.trim();
+        this.printCaptchaAnswer(captcha, "api-text");
+        return { captchaId, captcha };
       }
-      return { captchaId, captcha: text };
+      if (svg?.trim()) {
+        const captcha = await solveCaptchaSvg(svg);
+        this.printCaptchaAnswer(captcha, "ocr");
+        return { captchaId, captcha };
+      }
+      LoggerEngine.info(
+        "CAPTCHA GET had captchaId but no text or svg; posting login without captcha fields",
+      );
+      return null;
     }
 
     LoggerEngine.info(
       `Login CAPTCHA route not found (last status ${lastStatus}); posting login without captcha fields`,
     );
     return null;
+  }
+
+  private static printCaptchaAnswer(captcha: string, source: "api-text" | "ocr"): void {
+    const line = `Login CAPTCHA (${source}): ${captcha}`;
+    LoggerEngine.info(line);
+    // stderr: Playwright globalSetup often hides stdout; this still shows in the terminal.
+    console.error(line);
   }
 
   private static buildAuthHeaders(csrfToken: string): Record<string, string> {
@@ -199,12 +267,13 @@ export class AuthApi {
     responseBody: Parameters<typeof AuthApi.extractAccessToken>[0]
   ): Promise<LoginResponse> {
     const session = this.extractAccessToken(responseBody);
-    const storageState = await apiContext.storageState();
-    const csrfToken = this.readCsrfToken(storageState.cookies, {});
-
+    const storageState = await this.snapshotCookies(apiContext);
+    if (this.lastStorageState) {
+      this.persistStorageState(this.lastStorageState);
+    }
     return {
       ...session,
-      csrfToken
+      csrfToken: this.readCsrfToken(storageState.cookies, {}),
     };
   }
 
@@ -225,7 +294,7 @@ export class AuthApi {
       await response.text();
 
       const fromGet = this.readCsrfToken(
-        (await apiContext.storageState()).cookies,
+        (await this.snapshotCookies(apiContext, response.headers())).cookies,
         response.headers(),
       );
       if (fromGet) {
@@ -248,7 +317,7 @@ export class AuthApi {
     lastStatus = postProbe.status();
     await postProbe.text();
     const fromPost = this.readCsrfToken(
-      (await apiContext.storageState()).cookies,
+      (await this.snapshotCookies(apiContext, postProbe.headers())).cookies,
       postProbe.headers(),
     );
     if (fromPost) {
@@ -269,7 +338,7 @@ export class AuthApi {
   }
 
   static async refresh(accessToken: string): Promise<LoginResponse> {
-    const apiContext = await this.createContext();
+    const apiContext = await this.createContext(true);
 
     try {
       const csrfToken = await this.fetchCsrf(apiContext);
@@ -309,6 +378,11 @@ export class AuthApi {
   private static isCaptchaRequired(error: unknown): boolean {
     const message = error instanceof Error ? error.message : String(error);
     return /CAPTCHA_REQUIRED/i.test(message);
+  }
+
+  private static isInvalidCaptcha(error: unknown): boolean {
+    const message = error instanceof Error ? error.message : String(error);
+    return /INVALID_CAPTCHA/i.test(message);
   }
 
   private static captchaLockoutError(cause: string): Error {
@@ -446,7 +520,7 @@ export class AuthApi {
 
     for (const device of targets) {
       const csrfToken = this.readCsrfToken(
-        (await apiContext.storageState()).cookies,
+        (await this.snapshotCookies(apiContext)).cookies,
         {},
       );
       const deleted = await apiContext.delete(
@@ -483,7 +557,7 @@ export class AuthApi {
     let lastError = "2FA verification failed";
     for (const periodOffset of [0, -1, 1]) {
       const csrfToken = this.readCsrfToken(
-        (await apiContext.storageState()).cookies,
+        (await this.snapshotCookies(apiContext, responseHeaders)).cookies,
         responseHeaders,
       );
       const otp = generateTotp(totpSecret, periodOffset);
@@ -572,7 +646,7 @@ export class AuthApi {
       }
 
       const csrfToken = this.readCsrfToken(
-        (await apiContext.storageState()).cookies,
+        (await this.snapshotCookies(apiContext, responseHeaders)).cookies,
         responseHeaders,
       );
 
@@ -648,77 +722,123 @@ export class AuthApi {
     }
 
     const apiContext = await this.createContext();
+    this.lastStorageState = null;
 
     try {
       const startTime = Date.now();
       const csrfToken = await this.fetchCsrf(apiContext);
-      const loginCaptcha = await this.fetchLoginCaptcha(apiContext, csrfToken);
 
       let loginResponse: Awaited<ReturnType<typeof apiContext.post>> | undefined;
       let loginRaw = "";
       let loginPathUsed = this.path(this.loginPath);
+      let loginBody: {
+        data?: TwoFactorBody & { accessToken?: string; expiresIn?: number };
+        error?: { code?: string; message?: string };
+      } = {};
+      let lastCaptchaGuess = "";
 
-      for (const loginPath of this.candidatePaths(this.loginPath)) {
-        loginPathUsed = loginPath;
-        loginResponse = await apiContext.post(loginPath, {
-          headers: this.buildAuthHeaders(csrfToken),
-          data: {
-            email,
-            password,
-            ...(loginCaptcha
-              ? {
-                  captchaId: loginCaptcha.captchaId,
-                  captcha: loginCaptcha.captcha,
-                }
-              : {}),
-          },
-        });
-        loginRaw = await loginResponse.text();
-        if (!this.isRouteNotFound(loginResponse.status())) {
-          if (loginPath === this.loginPath.slice("/indore".length) || loginPath === "/auth/login") {
-            enableStripIndorePrefix();
+      for (
+        let captchaAttempt = 1;
+        captchaAttempt <= this.captchaOcrMaxAttempts;
+        captchaAttempt += 1
+      ) {
+        const loginCaptcha = await this.fetchLoginCaptcha(apiContext, csrfToken);
+        lastCaptchaGuess = loginCaptcha?.captcha ?? "";
+
+        loginResponse = undefined;
+        loginRaw = "";
+        loginPathUsed = this.path(this.loginPath);
+
+        for (const loginPath of this.candidatePaths(this.loginPath)) {
+          loginPathUsed = loginPath;
+          loginResponse = await apiContext.post(loginPath, {
+            headers: this.buildAuthHeaders(csrfToken),
+            data: {
+              email,
+              password,
+              ...(loginCaptcha
+                ? {
+                    captchaId: loginCaptcha.captchaId,
+                    captcha: loginCaptcha.captcha,
+                  }
+                : {}),
+            },
+          });
+          loginRaw = await loginResponse.text();
+          if (!this.isRouteNotFound(loginResponse.status())) {
+            if (loginPath === this.loginPath.slice("/indore".length) || loginPath === "/auth/login") {
+              enableStripIndorePrefix();
+            }
+            break;
           }
-          break;
+          LoggerEngine.info(`Login POST ${loginPath} returned 404; trying next path`);
         }
-        LoggerEngine.info(`Login POST ${loginPath} returned 404; trying next path`);
+
+        if (!loginResponse) {
+          throw new Error("Login failed: no login path was attempted");
+        }
+
+        if (this.retriableAuthStatuses.has(loginResponse.status())) {
+          throw new Error(
+            `Login failed with status ${loginResponse.status()} - ${loginRaw.slice(0, 300)}`,
+          );
+        }
+
+        try {
+          loginBody = JSON.parse(loginRaw) as typeof loginBody;
+        } catch {
+          throw new Error(
+            `Login failed with status ${loginResponse.status()} - ${loginRaw.slice(0, 300)}`,
+          );
+        }
+
+        LoggerEngine.api({
+          method: "POST",
+          url: loginPathUsed,
+          status: loginResponse.status(),
+          responseTimeMs: Date.now() - startTime,
+          attempt: captchaAttempt,
+        });
+
+        const invalidCaptcha =
+          loginResponse.status() === 401 &&
+          /INVALID_CAPTCHA/i.test(JSON.stringify(loginBody));
+
+        LoggerEngine.debug(
+          `CAPTCHA attempt ${captchaAttempt}/${this.captchaOcrMaxAttempts} guess=${lastCaptchaGuess || "(none)"} result=${
+            invalidCaptcha ? "INVALID_CAPTCHA" : loginResponse.ok() ? "ok" : `status ${loginResponse.status()}`
+          }`,
+        );
+        console.error(
+          `Login CAPTCHA attempt ${captchaAttempt}/${this.captchaOcrMaxAttempts}: ${lastCaptchaGuess || "(none)"} → ${
+            invalidCaptcha ? "INVALID_CAPTCHA" : loginResponse.ok() ? "accepted" : `status ${loginResponse.status()}`
+          }`,
+        );
+
+        if (invalidCaptcha && captchaAttempt < this.captchaOcrMaxAttempts) {
+          continue;
+        }
+
+        if (!loginResponse.ok()) {
+          const loginError = new Error(
+            `Login failed with status ${loginResponse.status()} - ${JSON.stringify(loginBody)}`,
+          );
+          if (invalidCaptcha) {
+            throw new Error(
+              `Login failed after ${this.captchaOcrMaxAttempts} CAPTCHA attempt(s). ${loginError.message}`,
+            );
+          }
+          if (this.isCaptchaRequired(loginError)) {
+            throw this.captchaLockoutError(loginError.message);
+          }
+          throw loginError;
+        }
+
+        break;
       }
 
       if (!loginResponse) {
         throw new Error("Login failed: no login path was attempted");
-      }
-
-      if (this.retriableAuthStatuses.has(loginResponse.status())) {
-        throw new Error(
-          `Login failed with status ${loginResponse.status()} - ${loginRaw.slice(0, 300)}`,
-        );
-      }
-
-      let loginBody: {
-        data?: TwoFactorBody & { accessToken?: string; expiresIn?: number };
-      };
-      try {
-        loginBody = JSON.parse(loginRaw) as typeof loginBody;
-      } catch {
-        throw new Error(
-          `Login failed with status ${loginResponse.status()} - ${loginRaw.slice(0, 300)}`,
-        );
-      }
-
-      LoggerEngine.api({
-        method: "POST",
-        url: loginPathUsed,
-        status: loginResponse.status(),
-        responseTimeMs: Date.now() - startTime,
-      });
-
-      if (!loginResponse.ok()) {
-        const loginError = new Error(
-          `Login failed with status ${loginResponse.status()} - ${JSON.stringify(loginBody)}`,
-        );
-        if (this.isCaptchaRequired(loginError)) {
-          throw this.captchaLockoutError(loginError.message);
-        }
-        throw loginError;
       }
 
       if (loginBody.data?.accessToken) {

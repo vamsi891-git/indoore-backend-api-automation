@@ -3,6 +3,7 @@ import { ApiCallResult } from "../../../core/models/api-result.model";
 import { AuthPaths } from "../Data/auth.data";
 import { AuthMapper } from "../Mapper/auth.mapper";
 import { generateTotp, getTotpSecret } from "../../../core/utils/totp.util";
+import { solveCaptchaSvg } from "../../../core/utils/captcha-ocr.util";
 import {
   AuthLoginSuccessResponseSchema,
   isDeviceSelectionPayload,
@@ -41,9 +42,10 @@ export class AuthenticationApi {
       headers: { Accept: "application/json" },
     });
     const responseBody = (await rawResponse.json().catch(() => ({}))) as {
-      data?: { captchaId?: string; text?: string };
+      data?: { captchaId?: string; text?: string; svg?: string };
       captchaId?: string;
       text?: string;
+      svg?: string;
     };
     if (rawResponse.status() === 404) {
       return undefined;
@@ -53,17 +55,23 @@ export class AuthenticationApi {
         `CAPTCHA GET failed with status ${rawResponse.status()}: ${JSON.stringify(responseBody)}`,
       );
     }
-    const captchaId = (
-      responseBody.data?.captchaId ?? responseBody.captchaId ?? ""
-    ).trim();
-    const captcha = (responseBody.data?.text ?? responseBody.text ?? "").trim();
+    const nested = responseBody.data ?? responseBody;
+    const captchaId = (nested.captchaId ?? "").trim();
+    const plaintext = (nested.text ?? "").trim();
+    const svg = (nested.svg ?? "").trim();
     if (!captchaId) {
       throw new Error("CAPTCHA GET did not include captchaId");
     }
-    if (!captcha) {
-      return undefined;
+    if (plaintext) {
+      console.error(`Login CAPTCHA (api-text): ${plaintext}`);
+      return { captchaId, captcha: plaintext };
     }
-    return { captchaId, captcha };
+    if (svg) {
+      const captcha = await solveCaptchaSvg(svg);
+      console.error(`Login CAPTCHA (ocr): ${captcha}`);
+      return { captchaId, captcha };
+    }
+    return undefined;
   }
 
   async postLogin(
