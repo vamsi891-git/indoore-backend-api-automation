@@ -154,11 +154,17 @@ async function globalSetup(): Promise<void> {
       cachedSession.expiresInSeconds,
       cachedSession.csrfToken,
     );
+    const msg =
+      "Session reused (access token still valid). Captcha and OTP run only on first login; later tests use this token, then refresh when it expires.";
     LoggerEngine.info("Global setup reused valid cached auth token");
+    console.error(msg);
     LoggerEngine.info("Global setup completed");
     return;
   }
 
+  console.error(
+    "Global setup: first login for this session (captcha + OTP). Later tests reuse the token.",
+  );
   const login = await AuthApi.login();
   if (!login.accessToken) {
     throw new Error("Auth warmup failed: missing access token");
