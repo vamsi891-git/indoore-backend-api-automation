@@ -9,6 +9,7 @@
     "test:db": "playwright test --grep @db --workers=1",
     "test:unit": "playwright test src/core/__tests__ --workers=1",
     "test:ui": "playwright test --ui",
+    "test:alarms-and-events": "playwright test src/modules/ALARMS-AND-EVENTS/tests --workers=1 --grep-invert @db",
     "test:asset-management": "playwright test src/modules/ASSET-MANAGEMENT/tests --workers=1 --grep-invert @db",
     "test:asset-management:db": "playwright test src/modules/ASSET-MANAGEMENT/tests --grep @db --workers=1",
     "test:asset-management:contract": "playwright test src/modules/ASSET-MANAGEMENT/tests --grep @contract-snapshot --workers=1",
@@ -144,6 +145,8 @@
     "exceljs": "^4.4.0",
     "playwright-html-reporter": "^0.1.11",
     "prettier": "^3.8.3",
+    "sharp": "^0.35.4",
+    "tesseract.js": "^7.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3"
   },
