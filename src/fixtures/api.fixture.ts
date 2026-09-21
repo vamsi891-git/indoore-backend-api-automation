@@ -13,7 +13,8 @@ type ApiFixtures = {
   authenticatedApi: APIRequestContext;
 };
 export const test = base.extend<ApiFixtures>({
-  authenticatedApi: async (_fixtures, use) => {
+  // Playwright requires object destructuring for the fixtures arg (even when unused).
+  authenticatedApi: async ({}, use) => {
     if (!env.BASE_URL) {
       throw new Error("BASE_URL missing in environment");
     }

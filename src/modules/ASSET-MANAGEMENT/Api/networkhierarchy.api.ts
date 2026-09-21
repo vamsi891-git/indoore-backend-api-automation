@@ -1,34 +1,21 @@
-import {APIRequestContext,APIResponse} from "@playwright/test";
-import {NetworkHierarchyResponse} from "../Mapper/networkhierarchy.mapper";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
-export interface NetworkHierarchyApiResponse {
-    rawResponse: APIResponse;
-    responseBody:
-    NetworkHierarchyResponse;
-    responseTime: number;
-}
-export class NetworkHierarchyApi {
-    constructor(private authenticatedApi:APIRequestContext) { }
-    async getNetworkHierarchy(
-        rootId?: number,
-        requestTimeoutMs?: number,
-    ): Promise<NetworkHierarchyApiResponse> {
-        const start = Date.now();
-        const query = rootId != null ? `?rootId=${rootId}` : "";
-        const rawResponse = await getWithAutoRefresh(
-            this.authenticatedApi,
-            `/indore/asset-management/network-hierarchy${query}`,
-            requestTimeoutMs != null ? { timeout: requestTimeoutMs } : {},
-        );
-        const responseBody:NetworkHierarchyResponse =
-        await rawResponse.json();
-        const responseTime = Date.now() - start;
-        return {
-            rawResponse,
-            responseBody,
-            responseTime
-        };
+import { TimedApiClient } from "../../../core/base/timed-api.client";
+import { ApiCallResult } from "../../../core/models/api-result.model";
+import { DEFAULT_REQUEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
+import type { NetworkHierarchyResponse } from "../Mapper/networkhierarchy.mapper";
 
-    }
+export type NetworkHierarchyApiResult = ApiCallResult<NetworkHierarchyResponse>;
 
+export class NetworkHierarchyApi extends TimedApiClient {
+  getNetworkHierarchy(
+    rootId?: number,
+    requestTimeoutMs?: number,
+  ): Promise<NetworkHierarchyApiResult> {
+    const query = rootId != null ? `?rootId=${rootId}` : "";
+    return this.getJson<NetworkHierarchyResponse>(
+      `/indore/asset-management/network-hierarchy${query}`,
+      {
+        timeout: requestTimeoutMs ?? DEFAULT_REQUEST_TIMEOUT_MS,
+      },
+    );
+  }
 }

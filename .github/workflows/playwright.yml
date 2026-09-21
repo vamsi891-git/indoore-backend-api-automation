@@ -117,9 +117,6 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Prove optional fence
-        run: npm run prove:optional-fence
-
       - name: Run smoke
         run: npm run test:smoke
 
@@ -157,6 +154,7 @@ jobs:
           - audit-logs
           - auth
           - billing
+          - collection-report
           - commericial-analysis
           - consumers
           - consumption

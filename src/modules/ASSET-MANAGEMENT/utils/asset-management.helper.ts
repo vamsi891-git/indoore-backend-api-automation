@@ -21,9 +21,7 @@ export function summarizeNetworkDtrs(nodes: NetworkNode[]): HierarchyDtrSummary 
   };
 }
 
-export function summarizeOrganisationDtrs(
-  nodes: OrganisationNode[],
-): HierarchyDtrSummary {
+export function summarizeOrganisationDtrs(nodes: OrganisationNode[]): HierarchyDtrSummary {
   const dtrs: DtrNode[] = [];
   const walk = (items: OrganisationNode[]) => {
     items.forEach((node) => {
@@ -80,6 +78,40 @@ export function findDtrWithHighestConsumerCount(
   return best;
 }
 
+/**
+ * Coverage needs enough consumers for page 2 (limit 20 → ≥21) but must not
+ * pick a mega-DTR that crashes a local API under load.
+ */
+export function findDtrForCoveragePagination(
+  nodes: NetworkNode[] | OrganisationNode[],
+  pageSize = 20,
+  maxConsumers = 500,
+): DtrNode | undefined {
+  const minForTwoPages = pageSize + 1;
+  let bestInBand: DtrNode | undefined;
+  let smallestAboveMin: DtrNode | undefined;
+
+  const walk = (items: NetworkNode[] | OrganisationNode[]) => {
+    items.forEach((node) => {
+      for (const dtr of node.dtrs ?? []) {
+        const count = dtr.consumerCount;
+        if (count >= minForTwoPages && count <= maxConsumers) {
+          if (!bestInBand || count < bestInBand.consumerCount) {
+            bestInBand = dtr;
+          }
+        } else if (count >= minForTwoPages) {
+          if (!smallestAboveMin || count < smallestAboveMin.consumerCount) {
+            smallestAboveMin = dtr;
+          }
+        }
+      }
+      walk(node.children ?? []);
+    });
+  };
+  walk(nodes);
+  return bestInBand ?? smallestAboveMin;
+}
+
 export function findFirstNetworkRootId(nodes: NetworkNode[]): number | undefined {
   return nodes[0]?.networkLookupId;
 }
@@ -89,9 +121,7 @@ function isFeederLevel(level: string | undefined): boolean {
 }
 
 /** Smallest useful `rootId` GET: a Feeder that already has catalog DTRs. */
-export function findFirstFeederWithDtrs(
-  nodes: NetworkNode[],
-): NetworkNode | undefined {
+export function findFirstFeederWithDtrs(nodes: NetworkNode[]): NetworkNode | undefined {
   for (const node of nodes) {
     if (isFeederLevel(node.hierarchyLevel) && (node.dtrs?.length ?? 0) > 0) {
       return node;
@@ -104,9 +134,7 @@ export function findFirstFeederWithDtrs(
   return undefined;
 }
 
-export function findFirstFeederWithEmptyDtrs(
-  nodes: NetworkNode[],
-): NetworkNode | undefined {
+export function findFirstFeederWithEmptyDtrs(nodes: NetworkNode[]): NetworkNode | undefined {
   for (const node of nodes) {
     if (isFeederLevel(node.hierarchyLevel) && (node.dtrs?.length ?? 0) === 0) {
       return node;
@@ -119,9 +147,7 @@ export function findFirstFeederWithEmptyDtrs(
   return undefined;
 }
 
-export function findFirstEmptyNetworkCode(
-  nodes: NetworkNode[],
-): NetworkNode | undefined {
+export function findFirstEmptyNetworkCode(nodes: NetworkNode[]): NetworkNode | undefined {
   for (const node of nodes) {
     if (!node.networkCode?.trim()) {
       return node;
@@ -134,9 +160,7 @@ export function findFirstEmptyNetworkCode(
   return undefined;
 }
 
-export function findFirstOrganisationRootId(
-  nodes: OrganisationNode[],
-): number | undefined {
+export function findFirstOrganisationRootId(nodes: OrganisationNode[]): number | undefined {
   return nodes[0]?.organisationLookupId;
 }
 
@@ -145,9 +169,7 @@ function isZoneLevel(level: string | undefined): boolean {
 }
 
 /** Prefer a Zone that already has catalog DTRs for a smaller `rootId` GET. */
-export function findFirstOfficeWithDtrs(
-  nodes: OrganisationNode[],
-): OrganisationNode | undefined {
+export function findFirstOfficeWithDtrs(nodes: OrganisationNode[]): OrganisationNode | undefined {
   let fallback: OrganisationNode | undefined;
   const walk = (items: OrganisationNode[]): OrganisationNode | undefined => {
     for (const node of items) {
@@ -182,9 +204,7 @@ export function findFirstOfficeWithEmptyDtrs(
   return undefined;
 }
 
-export function findFirstEmptyOfficeCode(
-  nodes: OrganisationNode[],
-): OrganisationNode | undefined {
+export function findFirstEmptyOfficeCode(nodes: OrganisationNode[]): OrganisationNode | undefined {
   for (const node of nodes) {
     if (!node.officeCode?.trim()) {
       return node;
@@ -198,9 +218,7 @@ export function findFirstEmptyOfficeCode(
 }
 
 /** Prefer a child node with DTRs so rootId subtree is smaller than the full hierarchy. */
-export function findScopedSubtreeNetworkRootId(
-  nodes: NetworkNode[],
-): number | undefined {
+export function findScopedSubtreeNetworkRootId(nodes: NetworkNode[]): number | undefined {
   let fallback: number | undefined;
 
   const walk = (items: NetworkNode[]): number | undefined => {
@@ -231,9 +249,7 @@ export function findScopedSubtreeNetworkRootId(
   return walk(nodes) ?? fallback ?? nodes[0]?.networkLookupId;
 }
 
-export function findScopedSubtreeOrganisationRootId(
-  nodes: OrganisationNode[],
-): number | undefined {
+export function findScopedSubtreeOrganisationRootId(nodes: OrganisationNode[]): number | undefined {
   let fallback: number | undefined;
 
   const walk = (items: OrganisationNode[]): number | undefined => {
@@ -278,9 +294,7 @@ export function collectNetworkHierarchyLevels(nodes: NetworkNode[]): string[] {
   return levels;
 }
 
-export function collectOrganisationHierarchyLevels(
-  nodes: OrganisationNode[],
-): string[] {
+export function collectOrganisationHierarchyLevels(nodes: OrganisationNode[]): string[] {
   const levels: string[] = [];
   const walk = (items: OrganisationNode[]) => {
     items.forEach((node) => {

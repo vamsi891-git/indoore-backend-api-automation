@@ -13,7 +13,6 @@ export default tseslint.config(
       "test-results/**",
       "reports/**",
       "coverage/**",
-      "scripts/**",
     ],
   },
   eslint.configs.recommended,
@@ -38,6 +37,13 @@ export default tseslint.config(
       ],
       "no-console": "off",
       "prefer-const": "warn",
+    },
+  },
+  {
+    // Playwright fixture/hooks require `async ({}, use)` even when no deps are used.
+    files: ["src/fixtures/**/*.{ts,tsx}"],
+    rules: {
+      "no-empty-pattern": "off",
     },
   },
 );

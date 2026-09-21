@@ -15,7 +15,7 @@ type ApiDbFixtures = {
 
 /** Authenticated API + optional read-only PostgreSQL (skips when DB_* unset / unreachable). */
 export const test = apiTest.extend<ApiDbFixtures>({
-  db: async (_fixtures, use, testInfo) => {
+  db: async ({}, use, testInfo) => {
     if (!isDbConfigured()) {
       testInfo.skip(true, "DB_* not configured in .env — API-only run");
       return;
@@ -42,7 +42,7 @@ export const test = apiTest.extend<ApiDbFixtures>({
     }
   },
 
-  archiveDb: async (_fixtures, use) => {
+  archiveDb: async ({}, use) => {
     if (!isArchiveDbConfigured()) {
       await use(null as unknown as pg.Pool);
       return;

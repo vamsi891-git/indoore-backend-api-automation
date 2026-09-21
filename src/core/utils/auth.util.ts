@@ -48,7 +48,7 @@ export class AuthApi {
   private static readonly loginRetryMs = [0, 10_000, 30_000];
   /** Rate-limit (429) waits — short retries only make TOO_MANY_REQUESTS worse. */
   private static readonly rateLimitRetryMs = [0, 60_000, 120_000];
-  private static readonly captchaOcrMaxAttempts = 5;
+  private static readonly captchaOcrMaxAttempts = 8;
   /** One extra wait if the API already locked login behind captcha. */
   private static readonly captchaRetryWaitMs = 90_000;
   /** Cap short 429 waits; longer Retry-After fails fast (do not keep hammering). */
@@ -857,8 +857,8 @@ export class AuthApi {
         );
 
         if (invalidCaptcha && captchaAttempt < this.captchaOcrMaxAttempts) {
-          // Brief pause so we do not stampede captcha GET + OCR.
-          await new Promise((resolve) => setTimeout(resolve, 400));
+          // Pause so a new captchaId is issued and OCR is not racing expiry.
+          await new Promise((resolve) => setTimeout(resolve, 700));
           continue;
         }
 

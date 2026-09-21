@@ -3,7 +3,7 @@ import { applyModuleAllureLabels } from "../core/utils/allure-module.labels";
 
 export const test = playwrightTest;
 
-test.beforeEach(async (_fixtures, testInfo) => {
+test.beforeEach(async ({}, testInfo) => {
   await applyModuleAllureLabels(testInfo);
 });
 

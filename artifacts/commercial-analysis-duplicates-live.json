@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-09-18T09:50:49.669Z",
+  "updatedAt": "2026-09-21T11:53:07.639Z",
   "reports": {
     "Consumption Compare Last Month": {
-      "updatedAt": "2026-09-18T09:18:19.294Z",
+      "updatedAt": "2026-09-21T11:47:23.785Z",
       "window": {
         "month": 10,
         "year": 2025
@@ -17,29 +17,19 @@
         {
           "msn": "85084417",
           "times": 2,
-          "dtrs": [
-            "rjm0000198",
-            "rj6612"
-          ],
-          "values": [
-            "11.66|50.71"
-          ]
+          "dtrs": ["rjm0000198", "rj6612"],
+          "values": ["11.66|50.71"]
         },
         {
           "msn": "93041980",
           "times": 2,
-          "dtrs": [
-            "rjm0000218",
-            "rj6612"
-          ],
-          "values": [
-            "0.00|0.11"
-          ]
+          "dtrs": ["rjm0000218", "rj6612"],
+          "values": ["0.00|0.11"]
         }
       ]
     },
     "LF < 5%": {
-      "updatedAt": "2026-09-18T09:29:17.108Z",
+      "updatedAt": "2026-09-21T11:53:07.639Z",
       "window": {
         "month": 10,
         "year": 2025
@@ -53,60 +43,35 @@
         {
           "msn": "97790242",
           "times": 2,
-          "dtrs": [
-            "rj6612"
-          ],
+          "dtrs": ["rj6612"],
           "sameValue": true,
-          "values": [
-            "4.00"
-          ]
+          "values": ["4.00"]
         }
       ],
       "sameMeterOnMoreThanOneDtr": [
         {
           "msn": "85081274",
           "times": 2,
-          "dtrs": [
-            "rj6612",
-            "29cw1"
-          ],
-          "values": [
-            "0.44",
-            "0.67"
-          ]
+          "dtrs": ["rj6612", "29cw1"],
+          "values": ["0.44", "0.67"]
         },
         {
           "msn": "85084417",
           "times": 2,
-          "dtrs": [
-            "rjm0000198",
-            "rj6612"
-          ],
-          "values": [
-            "2.73"
-          ]
+          "dtrs": ["rjm0000198", "rj6612"],
+          "values": ["2.73"]
         },
         {
           "msn": "85104069",
           "times": 2,
-          "dtrs": [
-            "ar147",
-            "ar149"
-          ],
-          "values": [
-            "2.43"
-          ]
+          "dtrs": ["ar147", "ar149"],
+          "values": ["2.43"]
         },
         {
           "msn": "92577647",
           "times": 2,
-          "dtrs": [
-            "wsn94",
-            "wi685"
-          ],
-          "values": [
-            "4.76"
-          ]
+          "dtrs": ["wsn94", "wi685"],
+          "values": ["4.76"]
         }
       ]
     },
@@ -139,85 +104,47 @@
         {
           "msn": "97790242",
           "times": 2,
-          "dtrs": [
-            "rj6612"
-          ],
+          "dtrs": ["rj6612"],
           "sameValue": true,
-          "values": [
-            "3.05"
-          ]
+          "values": ["3.05"]
         }
       ],
       "sameMeterOnMoreThanOneDtr": [
         {
           "msn": "19248672",
           "times": 2,
-          "dtrs": [
-            "kjn0000221",
-            "ik584"
-          ],
-          "values": [
-            "2.32",
-            "2.83"
-          ]
+          "dtrs": ["kjn0000221", "ik584"],
+          "values": ["2.32", "2.83"]
         },
         {
           "msn": "85081274",
           "times": 2,
-          "dtrs": [
-            "rj6612",
-            "29cw1"
-          ],
-          "values": [
-            "0.45",
-            "0.68"
-          ]
+          "dtrs": ["rj6612", "29cw1"],
+          "values": ["0.45", "0.68"]
         },
         {
           "msn": "85104049",
           "times": 2,
-          "dtrs": [
-            "ar11",
-            "arp0000208"
-          ],
-          "values": [
-            "2.19",
-            "3.90"
-          ]
+          "dtrs": ["ar11", "arp0000208"],
+          "values": ["2.19", "3.90"]
         },
         {
           "msn": "85104069",
           "times": 2,
-          "dtrs": [
-            "ar147",
-            "ar149"
-          ],
-          "values": [
-            "2.30"
-          ]
+          "dtrs": ["ar147", "ar149"],
+          "values": ["2.30"]
         },
         {
           "msn": "92577647",
           "times": 2,
-          "dtrs": [
-            "wsn94",
-            "wi685"
-          ],
-          "values": [
-            "4.78"
-          ]
+          "dtrs": ["wsn94", "wi685"],
+          "values": ["4.78"]
         },
         {
           "msn": "93041980",
           "times": 2,
-          "dtrs": [
-            "rjm0000218",
-            "rj6612"
-          ],
-          "values": [
-            "0.36",
-            "0.72"
-          ]
+          "dtrs": ["rjm0000218", "rj6612"],
+          "values": ["0.36", "0.72"]
         }
       ]
     }

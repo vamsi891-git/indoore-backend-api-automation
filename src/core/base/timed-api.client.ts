@@ -7,6 +7,7 @@ import {
   computeBackoffMs,
   HTTP_RETRY_COUNT,
   isRetryableHttpStatus,
+  isTransientNetworkError,
   parseRetryAfterMs,
 } from "../engine/http-retry.policy";
 
@@ -73,8 +74,8 @@ export class TimedApiClient {
   }
 
   /**
-   * GET retries live only here (429, 502, 503, 504). POST/PUT/PATCH/DELETE
-   * do not retry — writes are skipped on production and must not hide 5xx.
+   * GET retries live only here (429, 502, 503, 504, and transient socket drops).
+   * POST/PUT/PATCH/DELETE do not retry — writes are skipped on production and must not hide 5xx.
    */
   protected async requestJson<T = any>(
     method: HttpMethod,
@@ -95,7 +96,12 @@ export class TimedApiClient {
     if (method === "GET") {
       last = await RetryEngine.execute(
         async () => runOnce(),
-        (result): boolean => result != null && isRetryableHttpStatus(result.rawResponse.status()),
+        (result, error): boolean => {
+          if (error != null) {
+            return isTransientNetworkError(error);
+          }
+          return result != null && isRetryableHttpStatus(result.rawResponse.status());
+        },
         {
           retries: HTTP_RETRY_COUNT,
           label,
@@ -103,13 +109,20 @@ export class TimedApiClient {
             const retryAfter = parseRetryAfterMs(result?.rawResponse.headers()["retry-after"]);
             return computeBackoffMs(failedAttempt, retryAfter);
           },
-          onRetry: async ({ failedAttempt, result }) => {
+          onRetry: async ({ failedAttempt, result, error }) => {
             await noteRetry({
               method,
               url: path,
               status: result?.rawResponse.status() ?? 0,
               attempt: failedAttempt,
             });
+            if (error != null) {
+              LoggerEngine.warn(
+                `[retry] ${label} network error attempt=${failedAttempt}: ${
+                  error instanceof Error ? error.message : String(error)
+                }`,
+              );
+            }
           },
         },
       );

@@ -34,7 +34,7 @@ type ObsFixtures = {
  * TestOutcomeEvent on teardown. Opt-in per module by importing `test` here.
  */
 export const test = apiDbTest.extend<ObsFixtures>({
-  obs: async (_fixtures, use, testInfo) => {
+  obs: async ({}, use, testInfo) => {
     const ctx: ObsContext = {
       runId: resolveRunId(),
       testId: testInfo.title,

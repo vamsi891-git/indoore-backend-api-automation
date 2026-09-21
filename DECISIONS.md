@@ -42,8 +42,6 @@ Recorded so a solo maintainer (or a future teammate) does not re-litigate settle
 
 **Why:** Most day-to-day runs are API-only on a laptop without VPN DB access. Optional power stays available for `@db` / `@contract-snapshot` / defect triage without coupling the happy path.
 
-**Prove:** `npm run prove:optional-fence`.
-
 ## Workers default to 1
 
 **Decision:** Config and module scripts default to one worker. `WORKERS` / `PLAYWRIGHT_WORKERS` can raise the count (capped at 8) for experiments; CI keeps 1.

@@ -10,8 +10,6 @@
  *
  * Perf metrics stay under `src/core/utils/` (used by many GET specs) but no-op
  * when `OBS_DISABLED=1`.
- *
- * Prove fence: `node scripts/prove-optional-fence.mjs`
  */
 
 export const EXTRAS_PACKAGES = [

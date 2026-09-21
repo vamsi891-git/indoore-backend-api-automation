@@ -74,7 +74,6 @@ copy .env.example .env   # set BASE_URL, EMAIL/USERNAME, PASSWORD, TOTP_SECRET
 | `npm run test:dashboard:db`         | `@db` for that module           |
 | `npm run test:dashboard:contract`   | Contract snapshots              |
 | `npm run typecheck`                 | `tsc --noEmit`                  |
-| `npm run prove:optional-fence`      | Extras fence check              |
 
 Workers default to **1** (`WORKERS` / `PLAYWRIGHT_WORKERS`). Module scripts force `--workers=1`.
 

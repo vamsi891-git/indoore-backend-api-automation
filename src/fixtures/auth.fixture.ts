@@ -30,7 +30,7 @@ function wrapUnauthenticatedContext(apiContext: APIRequestContext): APIRequestCo
 }
 
 export const test = base.extend<AuthFixtures>({
-  unauthenticatedApi: async (_fixtures, use) => {
+  unauthenticatedApi: async ({}, use) => {
     if (!env.BASE_URL) {
       throw new Error("BASE_URL missing in environment");
     }

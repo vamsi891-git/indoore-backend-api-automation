@@ -5,6 +5,7 @@ import {
   HTTP_MAX_RETRY_ATTEMPTS,
   HTTP_RETRY_COUNT,
   isRetryableHttpStatus,
+  isTransientNetworkError,
   parseRetryAfterMs,
 } from "../engine/http-retry.policy";
 
@@ -14,6 +15,12 @@ test.describe("http-retry.policy", () => {
     expect(isRetryableHttpStatus(503)).toBe(true);
     expect(isRetryableHttpStatus(502)).toBe(true);
     expect(isRetryableHttpStatus(504)).toBe(true);
+  });
+
+  test("detects transient network errors", () => {
+    expect(isTransientNetworkError(new Error("read ECONNRESET"))).toBe(true);
+    expect(isTransientNetworkError(new Error("socket hang up"))).toBe(true);
+    expect(isTransientNetworkError(new Error("Timeout 90000ms exceeded"))).toBe(false);
   });
 
   test("does not retry 400, 404, or 500", () => {

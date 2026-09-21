@@ -18,6 +18,7 @@ import { NetworkHierarchyValidator } from "../Validator/networkhierarchy.validat
 import { OrganisationHierarchyValidator } from "../Validator/organizationhierarchy.validator";
 import {
   findDtrById,
+  findDtrForCoveragePagination,
   findDtrWithHighestConsumerCount,
   findFirstNetworkRootId,
   findFirstOrganisationRootId,
@@ -84,6 +85,7 @@ export async function runAssetManagementProductionCoverage(
   }
 
   const dtrId = resolveCoverageDtrId(networkResult.hierarchy);
+  console.log(`Coverage DTR lookupId=${dtrId} (set ASSET_DTR_LOOKUP_ID to pin)`);
   const networkDtr = findDtrById(networkResult.hierarchy, dtrId);
   const orgDtr = findDtrById(orgResult.hierarchy, dtrId);
   const defaultQuery = DtrDetailPaginationQueries.default;
@@ -177,7 +179,11 @@ function resolveCoverageDtrId(hierarchy: NetworkNode[]): number {
   if (process.env.ASSET_DTR_LOOKUP_ID) {
     return AssetDtrLookupId;
   }
-  return findDtrWithHighestConsumerCount(hierarchy)?.networkLookupId ?? AssetDtrLookupId;
+  return (
+    findDtrForCoveragePagination(hierarchy)?.networkLookupId ??
+    findDtrWithHighestConsumerCount(hierarchy)?.networkLookupId ??
+    AssetDtrLookupId
+  );
 }
 
 function findZeroConsumerDtr(nodes: NetworkNode[]): DtrNode | undefined {

@@ -11,6 +11,8 @@ export const CAPTCHA_MAX_LENGTH = 6;
 
 const DEFAULT_CAPTCHA_ATTEMPTS = 5;
 
+const TESS_DEBUG_FILE = process.platform === "win32" ? "nul" : "/dev/null";
+
 let ocrWorker: Promise<Worker> | undefined;
 
 function getOcrWorker(): Promise<Worker> {
@@ -22,7 +24,8 @@ function getOcrWorker(): Promise<Worker> {
       });
       await worker.setParameters({
         tessedit_char_whitelist: CAPTCHA_OCR_CHARSET,
-        tessedit_pageseg_mode: PSM.SINGLE_LINE,
+        // Quiet legacy adaptive-thresholder dumps that print "Total count=0".
+        debug_file: TESS_DEBUG_FILE,
       });
       return worker;
     })();
@@ -48,50 +51,90 @@ type RasterPass = {
 };
 
 /**
- * Few fast rasterizations. Captcha tokens expire if OCR takes too long.
+ * Soft rasterizations. Hard binary thresholds often wipe the glyph ink
+ * (Tesseract then reports Total count=0 / 2-char garbage).
  */
 function rasterPasses(): RasterPass[] {
+  const base = (svg: Buffer, density: number, width: number, height: number) =>
+    sharp(svg, { density }).resize(width, height, { fit: "fill" }).grayscale().normalize().extend({
+      top: 48,
+      bottom: 48,
+      left: 64,
+      right: 64,
+      background: "#ffffff",
+    });
+
   return [
     {
-      name: "hires-sharpen",
+      name: "pad-hires",
+      build: (svg) => base(svg, 300, 1200, 300).sharpen({ sigma: 0.8 }).png().toBuffer(),
+    },
+    {
+      name: "pad-contrast",
       build: (svg) =>
-        sharp(svg, { density: 200 })
-          .resize(960, 240, { fit: "fill" })
-          .grayscale()
-          .normalize()
-          .sharpen({ sigma: 1.2 })
+        base(svg, 280, 1100, 280).linear(1.35, -18).sharpen({ sigma: 1 }).png().toBuffer(),
+    },
+    {
+      name: "pad-bright",
+      build: (svg) =>
+        base(svg, 250, 1000, 250)
+          .modulate({ brightness: 1.15 })
+          .sharpen({ sigma: 1.1 })
           .png()
           .toBuffer(),
     },
     {
-      name: "threshold-150",
-      build: (svg) =>
-        sharp(svg, { density: 200 })
-          .resize(960, 240, { fit: "fill" })
-          .grayscale()
-          .normalize()
-          .threshold(150)
-          .png()
-          .toBuffer(),
+      name: "soft-threshold",
+      build: (svg) => base(svg, 260, 1000, 250).threshold(170).png().toBuffer(),
     },
     {
-      name: "negate-threshold",
-      build: (svg) =>
-        sharp(svg, { density: 200 })
-          .resize(800, 200, { fit: "fill" })
-          .grayscale()
-          .normalize()
-          .negate()
-          .threshold(145)
-          .png()
-          .toBuffer(),
+      name: "negate-soft",
+      build: (svg) => base(svg, 250, 960, 240).negate().threshold(160).png().toBuffer(),
     },
   ];
 }
 
+type OcrCandidate = {
+  guess: string;
+  confidence: number;
+  pass: string;
+  psm: string;
+};
+
+function pickBestGuess(candidates: OcrCandidate[]): OcrCandidate | undefined {
+  if (candidates.length === 0) {
+    return undefined;
+  }
+
+  const byGuess = new Map<string, { count: number; best: OcrCandidate }>();
+  for (const c of candidates) {
+    const cur = byGuess.get(c.guess);
+    if (!cur) {
+      byGuess.set(c.guess, { count: 1, best: c });
+      continue;
+    }
+    cur.count += 1;
+    if (c.confidence > cur.best.confidence) {
+      cur.best = c;
+    }
+  }
+
+  let winner: { count: number; best: OcrCandidate } | undefined;
+  for (const entry of byGuess.values()) {
+    if (
+      !winner ||
+      entry.count > winner.count ||
+      (entry.count === winner.count && entry.best.confidence > winner.best.confidence)
+    ) {
+      winner = entry;
+    }
+  }
+  return winner?.best;
+}
+
 /**
  * Rasterize a login CAPTCHA SVG and OCR the answer (4–6 charset chars).
- * Returns the first plausible guess immediately (captchaId expires if we linger).
+ * Runs several soft passes + PSM modes, then votes (majority / confidence).
  */
 export async function solveCaptchaSvg(svg: string): Promise<string> {
   const trimmed = svg.trim();
@@ -101,36 +144,72 @@ export async function solveCaptchaSvg(svg: string): Promise<string> {
 
   const svgBuf = Buffer.from(trimmed);
   const worker = await getOcrWorker();
-  let best = "";
+  const candidates: OcrCandidate[] = [];
+  let bestPartial = "";
+
+  const psmModes: Array<{ name: string; mode: PSM }> = [
+    { name: "single-line", mode: PSM.SINGLE_LINE },
+    { name: "single-word", mode: PSM.SINGLE_WORD },
+  ];
 
   for (const pass of rasterPasses()) {
+    let png: Buffer;
     try {
-      const png = await pass.build(svgBuf);
-      const { data } = await worker.recognize(png);
-      const guess = normalizeCaptchaOcrText(data.text ?? "");
-      if (guess.length > best.length) {
-        best = guess;
-      }
-      if (isPlausibleCaptchaGuess(guess)) {
-        LoggerEngine.debug(`CAPTCHA OCR pass=${pass.name} guess=${guess} (accepted)`);
-        return guess;
-      }
-      LoggerEngine.debug(
-        `CAPTCHA OCR pass=${pass.name} guess=${guess || "(empty)"} (rejected length)`,
-      );
+      png = await pass.build(svgBuf);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      LoggerEngine.debug(`CAPTCHA OCR pass=${pass.name} failed: ${message}`);
+      LoggerEngine.debug(`CAPTCHA raster pass=${pass.name} failed: ${message}`);
+      continue;
+    }
+
+    for (const psm of psmModes) {
+      try {
+        await worker.setParameters({
+          tessedit_char_whitelist: CAPTCHA_OCR_CHARSET,
+          tessedit_pageseg_mode: psm.mode,
+          debug_file: TESS_DEBUG_FILE,
+        });
+        const { data } = await worker.recognize(png);
+        const guess = normalizeCaptchaOcrText(data.text ?? "");
+        const confidence = typeof data.confidence === "number" ? data.confidence : 0;
+
+        if (guess.length > bestPartial.length) {
+          bestPartial = guess;
+        }
+
+        if (isPlausibleCaptchaGuess(guess)) {
+          candidates.push({
+            guess,
+            confidence,
+            pass: pass.name,
+            psm: psm.name,
+          });
+          LoggerEngine.debug(
+            `CAPTCHA OCR pass=${pass.name}/${psm.name} guess=${guess} conf=${confidence.toFixed(1)}`,
+          );
+        } else {
+          LoggerEngine.debug(
+            `CAPTCHA OCR pass=${pass.name}/${psm.name} guess=${guess || "(empty)"} (rejected length)`,
+          );
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        LoggerEngine.debug(`CAPTCHA OCR pass=${pass.name}/${psm.name} failed: ${message}`);
+      }
     }
   }
 
-  if (isPlausibleCaptchaGuess(best)) {
-    return best;
+  const winner = pickBestGuess(candidates);
+  if (winner) {
+    LoggerEngine.debug(
+      `CAPTCHA OCR accepted guess=${winner.guess} via ${winner.pass}/${winner.psm} conf=${winner.confidence.toFixed(1)} (candidates=${candidates.length})`,
+    );
+    return winner.guess;
   }
 
   throw new Error(
     `CAPTCHA OCR could not read ${CAPTCHA_MIN_LENGTH}–${CAPTCHA_MAX_LENGTH} characters` +
-      (best ? ` (best guess length ${best.length}: ${best})` : " (empty)"),
+      (bestPartial ? ` (best guess length ${bestPartial.length}: ${bestPartial})` : " (empty)"),
   );
 }
 
