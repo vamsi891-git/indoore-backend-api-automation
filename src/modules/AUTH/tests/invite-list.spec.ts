@@ -5,9 +5,8 @@ import { InviteTestData } from "../Data/invite.data";
 import { InviteMapper } from "../Mapper/invite.mapper";
 import { InviteValidator } from "../Validator/invite.validator";
 import { SentInvitationsListResponseSchema } from "../schemas/auth.schemas";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Auth Sent Invitations List API", () => {
   test.describe.configure({ mode: "serial" });
@@ -18,8 +17,8 @@ test.describe("Auth Sent Invitations List API", () => {
       { tag: ["@auth", "@invite"] },
       async ({ authenticatedApi }) => {
         const api = new InviteApi(authenticatedApi);
-        const assert = new AssertionEngine();
-        const validation = new ValidationEngine();
+        const assert = new ApiValidationHelper();
+        const validation = new ApiValidationHelper();
         const validator = new InviteValidator();
 
         const response = await api.listMyInvitations({
@@ -43,10 +42,7 @@ test.describe("Auth Sent Invitations List API", () => {
             assert.validateContentType(response.rawResponse),
           );
           validation.execute("List Response Time", () =>
-            assert.validateResponseTime(
-              response.responseTime,
-              InviteTestData.maxResponseTimeMs,
-            ),
+            assert.validateResponseTime(response.responseTime, InviteTestData.maxResponseTimeMs),
           );
           validation.execute("List Sensitive Data", () =>
             assert.validateSensitiveData(response.responseBody),
@@ -54,9 +50,7 @@ test.describe("Auth Sent Invitations List API", () => {
 
           if (response.rawResponse.status() === 200) {
             validation.execute("List Zod", () => {
-              const result = SentInvitationsListResponseSchema.safeParse(
-                response.responseBody,
-              );
+              const result = SentInvitationsListResponseSchema.safeParse(response.responseBody);
               expect(
                 result.success,
                 result.success
@@ -75,12 +69,8 @@ test.describe("Auth Sent Invitations List API", () => {
             validation.execute("Filtered Total", () =>
               validator.validateFilteredTotal(list, status),
             );
-            validation.execute("Pagination", () =>
-              validator.validatePagination(list),
-            );
-            validation.execute("Filter Options", () =>
-              validator.validateFilterOptions(list),
-            );
+            validation.execute("Pagination", () => validator.validatePagination(list));
+            validation.execute("Filter Options", () => validator.validateFilterOptions(list));
             validation.execute("Filter Roles Catalog", () =>
               validator.validateFilterRolesCatalog(list),
             );
@@ -88,9 +78,7 @@ test.describe("Auth Sent Invitations List API", () => {
               validator.validateCreatedAtDescOrder(list.invitations),
             );
             validation.execute("Invitation Items", () => {
-              list.invitations.forEach((item) =>
-                validator.validateInvitationItem(item),
-              );
+              list.invitations.forEach((item) => validator.validateInvitationItem(item));
             });
 
             if (status !== "all") {
@@ -100,10 +88,7 @@ test.describe("Auth Sent Invitations List API", () => {
             }
           }
         } finally {
-          validation.finalize(
-            `Auth Sent Invitations List API (${status})`,
-            response.responseTime,
-          );
+          validation.finalize(`Auth Sent Invitations List API (${status})`, response.responseTime);
         }
       },
     );
@@ -114,7 +99,7 @@ test.describe("Auth Sent Invitations List API", () => {
     { tag: ["@auth", "@invite"] },
     async ({ authenticatedApi }) => {
       const api = new InviteApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const validator = new InviteValidator();
 
       const baseline = await api.listMyInvitations({
@@ -154,10 +139,7 @@ test.describe("Auth Sent Invitations List API", () => {
           }
         });
       } finally {
-        validation.finalize(
-          `Auth Sent Invitations List API (role=${role})`,
-          response.responseTime,
-        );
+        validation.finalize(`Auth Sent Invitations List API (role=${role})`, response.responseTime);
       }
     },
   );
@@ -167,7 +149,7 @@ test.describe("Auth Sent Invitations List API", () => {
     { tag: ["@auth", "@invite"] },
     async ({ authenticatedApi }) => {
       const api = new InviteApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const validator = new InviteValidator();
 
       const baseline = await api.listMyInvitations({
@@ -208,10 +190,7 @@ test.describe("Auth Sent Invitations List API", () => {
           expect(found).toBe(true);
         });
       } finally {
-        validation.finalize(
-          `Auth Sent Invitations List API (q=${query})`,
-          response.responseTime,
-        );
+        validation.finalize(`Auth Sent Invitations List API (q=${query})`, response.responseTime);
       }
     },
   );

@@ -41,6 +41,8 @@ export type EventPriorityTestCase = {
   expectedPriorityId?: number;
   expectedLabel?: string;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 };
 
 const tags = ["@mis-dashboard", "@event-data", "@edge"];
@@ -159,5 +161,6 @@ export function eventPriorityCasesFor(level: number): EventPriorityTestCase[] {
   return cases;
 }
 
-export const eventPriorityTestCases: EventPriorityTestCase[] =
-  eventPriorityLevels.flatMap((level) => eventPriorityCasesFor(level));
+export const eventPriorityTestCases: EventPriorityTestCase[] = eventPriorityLevels.flatMap(
+  (level) => eventPriorityCasesFor(level),
+);

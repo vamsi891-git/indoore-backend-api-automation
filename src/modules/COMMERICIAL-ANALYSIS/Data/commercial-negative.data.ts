@@ -13,7 +13,8 @@ export type CommercialNegativeCase = {
   path: string;
   params: Record<string, string | number>;
   expectedStatuses: number[];
-  expectedCodes?: string[];
+  expectedCodes?: string[]; /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 };
 
 /**
@@ -25,6 +26,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
   {
     testName: "Dashboard — month is required; report is rejected without it",
     tags: ["@commercial", "@commercial-summary", "@negative"],
+    nonEmptyExpected: false,
     path: commercialPaths.summary,
     params: {
       year: commercialSummaryData.year,
@@ -36,6 +38,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
   {
     testName: "Dashboard — month 0 is rejected (month must be 1 to 12)",
     tags: ["@commercial", "@commercial-summary", "@negative"],
+    nonEmptyExpected: false,
     path: commercialPaths.summary,
     params: {
       month: 0,
@@ -48,6 +51,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
   {
     testName: "Dashboard — month 13 is rejected (month must be 1 to 12)",
     tags: ["@commercial", "@commercial-summary", "@negative"],
+    nonEmptyExpected: false,
     path: commercialPaths.summary,
     params: {
       month: 13,
@@ -60,6 +64,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
   {
     testName: "Power Factor Violation — month 13 is rejected (month must be 1 to 12)",
     tags: ["@commercial", "@power-factor", "@negative"],
+    nonEmptyExpected: false,
     path: commercialPaths.pf,
     params: {
       month: 13,
@@ -74,6 +79,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
   {
     testName: "Power Factor Violation — page 0 is rejected (page must start at 1)",
     tags: ["@commercial", "@power-factor", "@negative"],
+    nonEmptyExpected: false,
     path: commercialPaths.pf,
     params: {
       month: pfAnalysisQuery.month,
@@ -88,6 +94,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
   {
     testName: "Maximum Demand — unknown report type is rejected",
     tags: ["@commercial", "@md-analysis", "@negative"],
+    nonEmptyExpected: false,
     path: commercialPaths.md,
     params: {
       month: mdAnalysisCdCompareData.month,
@@ -103,6 +110,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
   {
     testName: "Maximum Demand — month 13 is rejected (month must be 1 to 12)",
     tags: ["@commercial", "@md-analysis", "@negative"],
+    nonEmptyExpected: false,
     path: commercialPaths.md,
     params: {
       month: 13,
@@ -118,6 +126,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
   {
     testName: "Load Factor — month 13 is rejected (month must be 1 to 12)",
     tags: ["@commercial", "@lf-analysis", "@negative"],
+    nonEmptyExpected: false,
     path: commercialPaths.lf,
     params: {
       month: 13,
@@ -134,6 +143,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
   {
     testName: "Load Factor — page 0 is rejected (page must start at 1)",
     tags: ["@commercial", "@lf-analysis", "@negative"],
+    nonEmptyExpected: false,
     path: commercialPaths.lf,
     params: {
       month: lfAnalysisData.month,
@@ -150,6 +160,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
   {
     testName: "Consumption Compare — unknown report type is rejected",
     tags: ["@commercial", "@consumption-compare", "@negative"],
+    nonEmptyExpected: false,
     path: commercialPaths.consumptionCompare,
     params: {
       month: consumptionCompareLastMonthData.month,
@@ -164,6 +175,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
   {
     testName: "Consumption Compare — month 13 is rejected (month must be 1 to 12)",
     tags: ["@commercial", "@consumption-compare", "@negative"],
+    nonEmptyExpected: false,
     path: commercialPaths.consumptionCompare,
     params: {
       month: 13,
@@ -178,6 +190,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
   {
     testName: "Consumption Pattern — unknown report type is rejected",
     tags: ["@commercial", "@consumption-pattern", "@negative"],
+    nonEmptyExpected: false,
     path: commercialPaths.consumptionPattern,
     params: {
       month: consumptionPatternData.month,
@@ -193,6 +206,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
   {
     testName: "Consumption Pattern — month 13 is rejected (month must be 1 to 12)",
     tags: ["@commercial", "@consumption-pattern", "@negative"],
+    nonEmptyExpected: false,
     path: commercialPaths.consumptionPattern,
     params: {
       month: 13,
@@ -209,6 +223,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
   {
     testName: "Consumption Pattern — page 0 is rejected (page must start at 1)",
     tags: ["@commercial", "@consumption-pattern", "@negative"],
+    nonEmptyExpected: false,
     path: commercialPaths.consumptionPattern,
     params: {
       month: consumptionPatternData.month,
@@ -225,6 +240,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
   {
     testName: "Day and Night — month 13 is rejected (month must be 1 to 12)",
     tags: ["@commercial", "@day-night", "@negative"],
+    nonEmptyExpected: false,
     path: commercialPaths.dayNight,
     params: {
       month: 13,
@@ -239,6 +255,7 @@ export const allCommercialNegativeCases: CommercialNegativeCase[] = [
   {
     testName: "Day and Night — page 0 is rejected (page must start at 1)",
     tags: ["@commercial", "@day-night", "@negative"],
+    nonEmptyExpected: false,
     path: commercialPaths.dayNight,
     params: {
       month: dayNightZeroData.month,

@@ -63,6 +63,8 @@ export interface ConsumerMasterTestCase {
   query: ConsumerMasterQuery;
   tags: string[];
   searchTerm?: string;
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export const consumerMasterTestCases: ConsumerMasterTestCase[] = [
@@ -70,16 +72,19 @@ export const consumerMasterTestCases: ConsumerMasterTestCase[] = [
     testName: "Consumer list — first page shows columns, records, and page numbers",
     query: { ...consumerMasterDefaultQuery },
     tags: ["@smoke", "@master-data", "@consumer-master"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Consumer list — page 2 shows the next set of records",
     query: { ...consumerMasterPage2Query },
     tags: ["@master-data", "@consumer-master"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Consumer list — showing 10 per page returns at most 10 records",
     query: { ...consumerMasterSmallPageQuery },
     tags: ["@master-data", "@consumer-master"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Consumer list — search finds the consumer name or meter serial",
@@ -88,6 +93,7 @@ export const consumerMasterTestCases: ConsumerMasterTestCase[] = [
       q: resolveConsumerMasterSearchTerm(),
     },
     tags: ["@master-data", "@consumer-master"],
+    nonEmptyExpected: false,
     searchTerm: resolveConsumerMasterSearchTerm(),
   },
   {
@@ -97,6 +103,7 @@ export const consumerMasterTestCases: ConsumerMasterTestCase[] = [
       meterType: "live",
     },
     tags: ["@master-data", "@consumer-master"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Consumer list — test-meter filter shows test meters only",
@@ -105,6 +112,7 @@ export const consumerMasterTestCases: ConsumerMasterTestCase[] = [
       meterType: "test",
     },
     tags: ["@master-data", "@consumer-master", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Consumer list — list still opens when archive counts are turned off",
@@ -115,5 +123,6 @@ export const consumerMasterTestCases: ConsumerMasterTestCase[] = [
       includeArchiveCounts: false,
     },
     tags: ["@master-data", "@consumer-master", "@edge"],
+    nonEmptyExpected: false,
   },
 ];

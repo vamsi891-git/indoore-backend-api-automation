@@ -1,5 +1,5 @@
 import type pg from "pg";
-import { queryReadOnly, queryScalar } from "../../../core/db/postgres.client";
+import { queryReadOnly, queryScalar } from "../../../extras/db/postgres.client";
 import {
   BILLING_ARCHIVE_UNIVERSE_DISTINCT_COUNT_SQL,
   BILLING_CLASS_D1_DISTINCT_COUNT_SQL,
@@ -29,11 +29,9 @@ export async function getBillingMeterHeaderBySerial(
   pool: pg.Pool,
   meterSerial: string,
 ): Promise<DbBillingMeterHeader | null> {
-  const rows = await queryReadOnly<DbBillingMeterHeader>(
-    pool,
-    BILLING_METER_HEADER_BY_SERIAL_SQL,
-    [meterSerial],
-  );
+  const rows = await queryReadOnly<DbBillingMeterHeader>(pool, BILLING_METER_HEADER_BY_SERIAL_SQL, [
+    meterSerial,
+  ]);
   return rows[0] ?? null;
 }
 
@@ -70,17 +68,13 @@ export async function countBillingClassMonthDistinct(
 
 /** Backend listDtMeterSerialsLower — active DT meter serials on main DB. */
 export async function listDtMeterSerialsLower(mainPool: pg.Pool): Promise<string[]> {
-  const typeId = Number(
-    process.env.DTR_METER_TYPE_TBL_REF_ID ?? DEFAULT_DTR_METER_TYPE_TBL_REF_ID,
-  );
+  const typeId = Number(process.env.DTR_METER_TYPE_TBL_REF_ID ?? DEFAULT_DTR_METER_TYPE_TBL_REF_ID);
   if (!Number.isFinite(typeId) || typeId <= 0) {
     return [];
   }
-  const rows = await queryReadOnly<{ sn: string }>(
-    mainPool,
-    BILLING_DT_METER_SERIALS_SQL,
-    [typeId],
-  );
+  const rows = await queryReadOnly<{ sn: string }>(mainPool, BILLING_DT_METER_SERIALS_SQL, [
+    typeId,
+  ]);
   return rows.map((r) => String(r.sn ?? "").trim()).filter((s) => s.length > 0);
 }
 
@@ -117,9 +111,7 @@ export function billingMonthStart(year: number, month: number): string {
   return `${year}-${String(month).padStart(2, "0")}-01`;
 }
 
-export function resolveBillingArchiveClass(
-  value: string | null | undefined,
-): BillingArchiveClass {
+export function resolveBillingArchiveClass(value: string | null | undefined): BillingArchiveClass {
   const normalized = String(value ?? "d1")
     .trim()
     .toLowerCase();

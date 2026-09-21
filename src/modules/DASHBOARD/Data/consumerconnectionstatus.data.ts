@@ -6,11 +6,9 @@ import type {
   ConsumerConnectionStatusScenario,
 } from "../Mapper/consumerconnectionstatus.mapper";
 
-export const consumerConnectionStatusMaxResponseTimeMs =
-  MASTER_DATA_MAX_RESPONSE_TIME_MS;
+export const consumerConnectionStatusMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 
-export const consumerConnectionStatusSuccessMessage =
-  "Data fetched successfully";
+export const consumerConnectionStatusSuccessMessage = "Data fetched successfully";
 
 export {
   dtrUnbalanceUnauthorizedMessage as consumerConnectionStatusUnauthorizedMessage,
@@ -32,20 +30,14 @@ export const CONSUMER_CONNECTION_STATUS_COLUMN_KEYS = [
 ] as const;
 
 /** Display labels for `connectionStatus` row field by query status. */
-export const CONSUMER_CONNECTION_STATUS_LABELS: Record<
-  ConsumerConnectionStatus,
-  string
-> = {
+export const CONSUMER_CONNECTION_STATUS_LABELS: Record<ConsumerConnectionStatus, string> = {
   connected: "Connected",
   disconnected: "Disconnected",
   "permanently-disconnected": "Permanent Disconnection",
 };
 
 /** Metrics `connectionStatus` map keys aligned with drill-down status. */
-export const CONSUMER_CONNECTION_STATUS_METRICS_KEY: Record<
-  ConsumerConnectionStatus,
-  string
-> = {
+export const CONSUMER_CONNECTION_STATUS_METRICS_KEY: Record<ConsumerConnectionStatus, string> = {
   connected: "cd",
   disconnected: "td",
   "permanently-disconnected": "pd",
@@ -81,9 +73,7 @@ function sampleRow(status: ConsumerConnectionStatus) {
   };
 }
 
-function withRowsContract(
-  status: ConsumerConnectionStatus,
-): ConsumerConnectionStatusResponse {
+function withRowsContract(status: ConsumerConnectionStatus): ConsumerConnectionStatusResponse {
   return {
     success: true,
     data: {
@@ -100,23 +90,21 @@ function withRowsContract(
   };
 }
 
-export const consumerConnectionStatusContractConnected =
-  withRowsContract("connected");
-export const consumerConnectionStatusContractDisconnected =
-  withRowsContract("disconnected");
-export const consumerConnectionStatusContractPermanentlyDisconnected =
-  withRowsContract("permanently-disconnected");
+export const consumerConnectionStatusContractConnected = withRowsContract("connected");
+export const consumerConnectionStatusContractDisconnected = withRowsContract("disconnected");
+export const consumerConnectionStatusContractPermanentlyDisconnected = withRowsContract(
+  "permanently-disconnected",
+);
 
-export const consumerConnectionStatusContractConnectedEmpty: ConsumerConnectionStatusResponse =
-  {
-    success: true,
-    data: {
-      columns: [...columns],
-      rows: [],
-      pagination: { page: 1, limit: 20, total: 0, totalPages: 0 },
-    },
-    message: consumerConnectionStatusSuccessMessage,
-  };
+export const consumerConnectionStatusContractConnectedEmpty: ConsumerConnectionStatusResponse = {
+  success: true,
+  data: {
+    columns: [...columns],
+    rows: [],
+    pagination: { page: 1, limit: 20, total: 0, totalPages: 0 },
+  },
+  message: consumerConnectionStatusSuccessMessage,
+};
 
 export interface ConsumerConnectionStatusTestCase {
   testName: string;
@@ -124,6 +112,8 @@ export interface ConsumerConnectionStatusTestCase {
   expectedStatus?: number;
   isContractFixture?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export function statusForScenario(
@@ -172,55 +162,63 @@ export function resolveConsumerConnectionStatusContractBody(
   }
 }
 
-export const consumerConnectionStatusTestCases: ConsumerConnectionStatusTestCase[] =
-  [
-    {
-      testName: "Consumers by connection status — connected consumers",
-      scenario: "dev_live_connected",
-      tags: ["@smoke", "@dashboard", "@consumer-connection-status"],
-    },
-    {
-      testName: "Consumers by connection status — temporarily disconnected consumers",
-      scenario: "dev_live_disconnected",
-      tags: ["@dashboard", "@consumer-connection-status"],
-    },
-    {
-      testName: "Consumers by connection status — permanently disconnected consumers",
-      scenario: "dev_live_permanently_disconnected",
-      tags: ["@dashboard", "@consumer-connection-status"],
-    },
-    {
-      testName: "Consumers by connection status — page 2 still shows a valid list",
-      scenario: "dev_live_page_limit",
-      tags: ["@dashboard", "@consumer-connection-status", "@edge"],
-    },
-    {
-      testName: "Consumers by connection status — extra unused filters are ignored",
-      scenario: "dev_ignore_unknown_query",
-      tags: ["@dashboard", "@consumer-connection-status", "@edge"],
-    },
-    {
-      testName: "Saved example — connected with rows (offline)",
-      scenario: "contract_connected",
-      isContractFixture: true,
-      tags: ["@contract", "@dashboard", "@consumer-connection-status"],
-    },
-    {
-      testName: "Saved example — disconnected with rows (offline)",
-      scenario: "contract_disconnected",
-      isContractFixture: true,
-      tags: ["@contract", "@dashboard", "@consumer-connection-status"],
-    },
-    {
-      testName: "Saved example — permanently-disconnected with rows (offline)",
-      scenario: "contract_permanently_disconnected",
-      isContractFixture: true,
-      tags: ["@contract", "@dashboard", "@consumer-connection-status"],
-    },
-    {
-      testName: "Saved example — connected empty page (offline)",
-      scenario: "contract_connected_empty",
-      isContractFixture: true,
-      tags: ["@contract", "@dashboard", "@consumer-connection-status"],
-    },
-  ];
+export const consumerConnectionStatusTestCases: ConsumerConnectionStatusTestCase[] = [
+  {
+    testName: "Consumers by connection status — connected consumers",
+    scenario: "dev_live_connected",
+    tags: ["@smoke", "@dashboard", "@consumer-connection-status"],
+    nonEmptyExpected: true,
+  },
+  {
+    testName: "Consumers by connection status — temporarily disconnected consumers",
+    scenario: "dev_live_disconnected",
+    tags: ["@dashboard", "@consumer-connection-status"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumers by connection status — permanently disconnected consumers",
+    scenario: "dev_live_permanently_disconnected",
+    tags: ["@dashboard", "@consumer-connection-status"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumers by connection status — page 2 still shows a valid list",
+    scenario: "dev_live_page_limit",
+    tags: ["@dashboard", "@consumer-connection-status", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumers by connection status — extra unused filters are ignored",
+    scenario: "dev_ignore_unknown_query",
+    tags: ["@dashboard", "@consumer-connection-status", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Saved example — connected with rows (offline)",
+    scenario: "contract_connected",
+    isContractFixture: true,
+    tags: ["@contract", "@dashboard", "@consumer-connection-status"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Saved example — disconnected with rows (offline)",
+    scenario: "contract_disconnected",
+    isContractFixture: true,
+    tags: ["@contract", "@dashboard", "@consumer-connection-status"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Saved example — permanently-disconnected with rows (offline)",
+    scenario: "contract_permanently_disconnected",
+    isContractFixture: true,
+    tags: ["@contract", "@dashboard", "@consumer-connection-status"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Saved example — connected empty page (offline)",
+    scenario: "contract_connected_empty",
+    isContractFixture: true,
+    tags: ["@contract", "@dashboard", "@consumer-connection-status"],
+    nonEmptyExpected: false,
+  },
+];

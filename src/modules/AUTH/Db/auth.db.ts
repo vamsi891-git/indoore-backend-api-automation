@@ -1,5 +1,5 @@
 import type pg from "pg";
-import { queryReadOnly, queryScalar } from "../../../core/db/postgres.client";
+import { queryReadOnly, queryScalar } from "../../../extras/db/postgres.client";
 import {
   AUTH_ACTIVE_DEVICE_BY_ID_SQL,
   AUTH_ACTIVE_DEVICES_COUNT_SQL,
@@ -50,21 +50,12 @@ export async function getAuthUserById(
   pool: pg.Pool,
   userId: string,
 ): Promise<DbAuthUserRow | null> {
-  const rows = await queryReadOnly<DbAuthUserRow>(pool, AUTH_USER_BY_ID_SQL, [
-    userId,
-  ]);
+  const rows = await queryReadOnly<DbAuthUserRow>(pool, AUTH_USER_BY_ID_SQL, [userId]);
   return rows[0] ?? null;
 }
 
-export async function countAuthActiveDevices(
-  pool: pg.Pool,
-  userId: string,
-): Promise<number> {
-  return (
-    (await queryScalar<number>(pool, AUTH_ACTIVE_DEVICES_COUNT_SQL, [
-      userId,
-    ])) ?? 0
-  );
+export async function countAuthActiveDevices(pool: pg.Pool, userId: string): Promise<number> {
+  return (await queryScalar<number>(pool, AUTH_ACTIVE_DEVICES_COUNT_SQL, [userId])) ?? 0;
 }
 
 export async function getAuthActiveDeviceById(
@@ -72,11 +63,10 @@ export async function getAuthActiveDeviceById(
   deviceId: string,
   userId: string,
 ): Promise<DbAuthDeviceRow | null> {
-  const rows = await queryReadOnly<DbAuthDeviceRow>(
-    pool,
-    AUTH_ACTIVE_DEVICE_BY_ID_SQL,
-    [deviceId, userId],
-  );
+  const rows = await queryReadOnly<DbAuthDeviceRow>(pool, AUTH_ACTIVE_DEVICE_BY_ID_SQL, [
+    deviceId,
+    userId,
+  ]);
   return rows[0] ?? null;
 }
 
@@ -84,11 +74,9 @@ export async function getAuthInvitationSummary(
   pool: pg.Pool,
   invitedByUserId: string,
 ): Promise<DbAuthInvitationSummary> {
-  const rows = await queryReadOnly<DbAuthInvitationSummary>(
-    pool,
-    AUTH_INVITATION_SUMMARY_SQL,
-    [invitedByUserId],
-  );
+  const rows = await queryReadOnly<DbAuthInvitationSummary>(pool, AUTH_INVITATION_SUMMARY_SQL, [
+    invitedByUserId,
+  ]);
   return (
     rows[0] ?? {
       total: 0,
@@ -103,9 +91,5 @@ export async function countAuthActiveSessionFamilies(
   pool: pg.Pool,
   userId: string,
 ): Promise<number> {
-  return (
-    (await queryScalar<number>(pool, AUTH_ACTIVE_SESSION_FAMILY_COUNT_SQL, [
-      userId,
-    ])) ?? 0
-  );
+  return (await queryScalar<number>(pool, AUTH_ACTIVE_SESSION_FAMILY_COUNT_SQL, [userId])) ?? 0;
 }

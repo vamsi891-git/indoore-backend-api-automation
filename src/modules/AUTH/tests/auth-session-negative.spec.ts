@@ -1,9 +1,8 @@
 import { expect, test } from "../../../fixtures/auth.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { AuthenticationApi } from "../Api/auth.api";
 import { AuthTestData } from "../Data/auth.data";
 import { AuthValidator } from "../Validator/auth.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Auth Session — Negative", () => {
   test.describe.configure({ mode: "serial" });
@@ -12,8 +11,8 @@ test.describe("Auth Session — Negative", () => {
     "GET /auth/me — without authentication returns 401",
     { tag: ["@negative", "@auth"] },
     async ({ unauthenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new AuthValidator();
 
       const rawResponse = await unauthenticatedApi.get(AuthTestData.paths.me);
@@ -28,11 +27,9 @@ test.describe("Auth Session — Negative", () => {
         ),
       );
       validation.execute("Error envelope", () =>
-        validator.validateErrorEnvelope(
-          rawResponse.status(),
-          responseBody,
-          [AuthTestData.expectedUnauthorizedStatus],
-        ),
+        validator.validateErrorEnvelope(rawResponse.status(), responseBody, [
+          AuthTestData.expectedUnauthorizedStatus,
+        ]),
       );
 
       validation.printSummary("Auth Me — Unauthorized", responseTime);
@@ -43,8 +40,8 @@ test.describe("Auth Session — Negative", () => {
     "GET /auth/devices — without authentication returns 401",
     { tag: ["@negative", "@auth"] },
     async ({ unauthenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new AuthValidator();
 
       const rawResponse = await unauthenticatedApi.get(AuthTestData.paths.devices);
@@ -58,11 +55,9 @@ test.describe("Auth Session — Negative", () => {
         ),
       );
       validation.execute("Error envelope", () =>
-        validator.validateErrorEnvelope(
-          rawResponse.status(),
-          responseBody,
-          [AuthTestData.expectedUnauthorizedStatus],
-        ),
+        validator.validateErrorEnvelope(rawResponse.status(), responseBody, [
+          AuthTestData.expectedUnauthorizedStatus,
+        ]),
       );
 
       validation.printSummary("Auth Devices — Unauthorized", 0);
@@ -73,20 +68,14 @@ test.describe("Auth Session — Negative", () => {
     "POST /auth/refresh — succeeds without CSRF header when refresh cookie is present",
     { tag: ["@auth"] },
     async ({ unauthenticatedApi }) => {
-      test.skip(
-        !AuthTestData.hasValidCredentials,
-        "EMAIL/USERNAME and PASSWORD required in .env",
-      );
+      test.skip(!AuthTestData.hasValidCredentials, "EMAIL/USERNAME and PASSWORD required in .env");
 
       const api = new AuthenticationApi(unauthenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new AuthValidator();
 
-      await api.loginUntilSession(
-        AuthTestData.validEmail,
-        AuthTestData.validPassword,
-      );
+      await api.loginUntilSession(AuthTestData.validEmail, AuthTestData.validPassword);
 
       // Live API does not require x-csrf-token / csrf_token for refresh when the
       // httpOnly refresh cookie is present (CSRF_MISSING 403 is no longer returned).
@@ -101,9 +90,7 @@ test.describe("Auth Session — Negative", () => {
       validation.execute("Status (refresh without csrf header)", () =>
         assert.validateStatusCode(rawResponse, 200, responseBody),
       );
-      validation.execute("Success envelope", () =>
-        validator.validateSuccessEnvelope(responseBody),
-      );
+      validation.execute("Success envelope", () => validator.validateSuccessEnvelope(responseBody));
       validation.execute("Access token issued", () => {
         expect(responseBody?.data?.accessToken).toMatch(
           /^eyJ[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+$/,
@@ -118,8 +105,8 @@ test.describe("Auth Session — Negative", () => {
     "POST /auth/refresh — without session cookies returns 401",
     { tag: ["@negative", "@auth"] },
     async ({ unauthenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new AuthValidator();
 
       const preflight = await unauthenticatedApi.get(AuthTestData.paths.login);
@@ -148,11 +135,9 @@ test.describe("Auth Session — Negative", () => {
         ),
       );
       validation.execute("Error envelope", () =>
-        validator.validateErrorEnvelope(
-          rawResponse.status(),
-          responseBody,
-          [AuthTestData.expectedUnauthorizedStatus],
-        ),
+        validator.validateErrorEnvelope(rawResponse.status(), responseBody, [
+          AuthTestData.expectedUnauthorizedStatus,
+        ]),
       );
 
       validation.printSummary("Auth Refresh — No Session", 0);

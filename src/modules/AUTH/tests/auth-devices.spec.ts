@@ -1,14 +1,13 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { UserManagementValidator } from "../../USERS-ADMIN/Validator/usermanagement.validator";
 import { AuthSessionApi } from "../Api/auth-session.api";
 import { AuthTestData } from "../Data/auth.data";
 import { AuthMapper } from "../Mapper/auth.mapper";
 import { AuthValidator } from "../Validator/auth.validator";
 import { AuthDevicesResponseSchema } from "../schemas/auth.schemas";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Auth Devices API", () => {
   test.describe.configure({ mode: "serial" });
@@ -18,8 +17,8 @@ test.describe("Auth Devices API", () => {
     { tag: ["@smoke", "@auth"] },
     async ({ authenticatedApi }) => {
       const api = new AuthSessionApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new AuthValidator();
       const deviceValidator = new UserManagementValidator();
 
@@ -29,20 +28,15 @@ test.describe("Auth Devices API", () => {
         rawResponse,
         "Auth Devices API",
         rawResponse.url(),
-        responseTime
+        responseTime,
       );
 
       validation.execute("Devices Status Code", () =>
         assert.validateStatusCode(rawResponse, 200, responseBody),
       );
-      validation.execute("Devices Content Type", () =>
-        assert.validateContentType(rawResponse),
-      );
+      validation.execute("Devices Content Type", () => assert.validateContentType(rawResponse));
       validation.execute("Devices Response Time", () =>
-        assert.validateResponseTime(
-          responseTime,
-          AuthTestData.maxResponseTimeMs,
-        ),
+        assert.validateResponseTime(responseTime, AuthTestData.maxResponseTimeMs),
       );
       validation.execute("Devices Sensitive Data", () =>
         assert.validateSensitiveData(responseBody),
@@ -74,9 +68,7 @@ test.describe("Auth Devices API", () => {
           deviceValidator.validateEmptyDevicesContract(mapped),
         );
       } else {
-        validation.execute("Devices", () =>
-          deviceValidator.validateDevices(mapped.devices),
-        );
+        validation.execute("Devices", () => deviceValidator.validateDevices(mapped.devices));
         validation.execute("Device Types", () =>
           deviceValidator.validateDeviceTypes(mapped.devices),
         );
@@ -94,8 +86,8 @@ test.describe("Auth Devices API", () => {
     { tag: ["@auth"] },
     async ({ authenticatedApi }) => {
       const api = new AuthSessionApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new AuthValidator();
       const deviceValidator = new UserManagementValidator();
 
@@ -116,11 +108,7 @@ test.describe("Auth Devices API", () => {
 
       const deleteResponse = await api.deleteDevice(deviceToDelete!.id);
       validation.execute("Delete Device Status Code", () =>
-        assert.validateStatusCode(
-          deleteResponse.rawResponse,
-          200,
-          deleteResponse.responseBody,
-        ),
+        assert.validateStatusCode(deleteResponse.rawResponse, 200, deleteResponse.responseBody),
       );
       validation.execute("Delete Device Content Type", () =>
         assert.validateContentType(deleteResponse.rawResponse),
@@ -137,9 +125,7 @@ test.describe("Auth Devices API", () => {
       const verifyResponse = await api.getDevices();
       const verifyMapped = AuthMapper.mapAuthDevices(verifyResponse.responseBody);
       validation.execute("Verify Device Revoked Or Removed", () => {
-        const device = verifyMapped.devices.find(
-          (entry) => entry.id === deviceToDelete!.id,
-        );
+        const device = verifyMapped.devices.find((entry) => entry.id === deviceToDelete!.id);
         if (device) {
           expect(device.revokedAt).toBeTruthy();
         } else {
@@ -166,12 +152,13 @@ test.describe("Auth Devices API", () => {
     { tag: ["@negative", "@auth"] },
     async ({ authenticatedApi }) => {
       const api = new AuthSessionApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new AuthValidator();
 
-      const { rawResponse, responseBody, responseTime } =
-        await api.deleteDevice(AuthTestData.unknownDeviceId);
+      const { rawResponse, responseBody, responseTime } = await api.deleteDevice(
+        AuthTestData.unknownDeviceId,
+      );
 
       validation.execute("Status (not found)", () =>
         assert.validateStatusCode(rawResponse, 404, responseBody),

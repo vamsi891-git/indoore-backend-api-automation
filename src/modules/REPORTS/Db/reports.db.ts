@@ -1,5 +1,5 @@
 import type pg from "pg";
-import { queryReadOnly, queryScalar } from "../../../core/db/postgres.client";
+import { queryReadOnly, queryScalar } from "../../../extras/db/postgres.client";
 import {
   REPORTS_ACTIVE_EVENT_COUNT_SQL,
   REPORTS_EVENT_BY_ID_SQL,

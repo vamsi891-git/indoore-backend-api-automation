@@ -44,8 +44,7 @@ export type CreateConsumerRequestBody = Record<string, string | number | boolean
 
 export const createConsumerMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 
-export const createConsumerExpectedSuccessMessage =
-  "Consumer created successfully";
+export const createConsumerExpectedSuccessMessage = "Consumer created successfully";
 
 export const CREATE_CONSUMER_HIERARCHY_ENV_KEYS = [
   "BULK_DTR_ZONE_NAME",
@@ -56,10 +55,7 @@ export const CREATE_CONSUMER_HIERARCHY_ENV_KEYS = [
 export const createConsumerData = {
   maxResponseTime: createConsumerMaxResponseTimeMs,
   expectedSuccessMessage: createConsumerExpectedSuccessMessage,
-  organisationLookupId: resolveMasterDataEnvInt(
-    "CREATE_CONSUMER_ORGANISATION_LOOKUP_ID",
-    0,
-  ),
+  organisationLookupId: resolveMasterDataEnvInt("CREATE_CONSUMER_ORGANISATION_LOOKUP_ID", 0),
   get connectionTypeId() {
     return getConnectionTypeId();
   },
@@ -97,6 +93,8 @@ export interface CreateConsumerTestCase {
   envKeys?: string[];
   validationField?: string;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 function uniqueSuffix(): string {
@@ -164,9 +162,7 @@ export interface CreateConsumerMeterContext {
 
 let meterContextCache: CreateConsumerMeterContext | null = null;
 
-export function setCreateConsumerMeterContext(
-  context: CreateConsumerMeterContext | null,
-): void {
+export function setCreateConsumerMeterContext(context: CreateConsumerMeterContext | null): void {
   meterContextCache = context;
 }
 
@@ -216,15 +212,16 @@ function findDtrHierarchyContext(
     return null;
   }
 
-  const walk = (
-    items: NetworkNode[],
-    ancestors: NetworkNode[],
-  ): HierarchyLabels | null => {
+  const walk = (items: NetworkNode[], ancestors: NetworkNode[]): HierarchyLabels | null => {
     for (const node of items) {
       const chain = [...ancestors, node];
       for (const dtr of node.dtrs ?? []) {
-        const code = String(dtr.dtrCode ?? "").trim().toLowerCase();
-        const name = String(dtr.dtrName ?? "").trim().toLowerCase();
+        const code = String(dtr.dtrCode ?? "")
+          .trim()
+          .toLowerCase();
+        const name = String(dtr.dtrName ?? "")
+          .trim()
+          .toLowerCase();
         if (code === target || name === target) {
           return hierarchyLabelsFromChain(chain, dtr, options);
         }
@@ -246,15 +243,11 @@ function hierarchyLabelsFromChain(
   options?: { allowEnvFallback?: boolean },
 ): HierarchyLabels | null {
   const allowEnvFallback = options?.allowEnvFallback ?? true;
-  const zone = [...chain]
-    .reverse()
-    .find((n) => /zone/i.test(n.hierarchyLevel))?.networkName;
+  const zone = [...chain].reverse().find((n) => /zone/i.test(n.hierarchyLevel))?.networkName;
   const subStation = [...chain]
     .reverse()
     .find((n) => /sub.?station/i.test(n.hierarchyLevel))?.networkName;
-  const feeder = [...chain]
-    .reverse()
-    .find((n) => /feeder/i.test(n.hierarchyLevel))?.networkName;
+  const feeder = [...chain].reverse().find((n) => /feeder/i.test(n.hierarchyLevel))?.networkName;
 
   if (!allowEnvFallback && (!subStation?.trim() || !feeder?.trim())) {
     return null;
@@ -274,10 +267,7 @@ function findDtrHierarchyByNetworkLookupId(
   networkLookupId: number,
   options?: { allowEnvFallback?: boolean },
 ): HierarchyLabels | null {
-  const walk = (
-    items: NetworkNode[],
-    ancestors: NetworkNode[],
-  ): HierarchyLabels | null => {
+  const walk = (items: NetworkNode[], ancestors: NetworkNode[]): HierarchyLabels | null => {
     for (const node of items) {
       const chain = [...ancestors, node];
       for (const dtr of node.dtrs ?? []) {
@@ -296,9 +286,7 @@ function findDtrHierarchyByNetworkLookupId(
   return walk(nodes, []);
 }
 
-async function fetchNetworkHierarchy(
-  authenticatedApi: APIRequestContext,
-): Promise<NetworkNode[]> {
+async function fetchNetworkHierarchy(authenticatedApi: APIRequestContext): Promise<NetworkNode[]> {
   const response = await getWithAutoRefresh(
     authenticatedApi,
     "/indore/asset-management/network-hierarchy",
@@ -396,20 +384,23 @@ function findDtrInOrganisationHierarchy(
     return null;
   }
 
-  const walk = (items: OrganisationNode[]): {
+  const walk = (
+    items: OrganisationNode[],
+  ): {
     networkLookupId: number;
     organisationLookupId: number;
     dtr: string;
   } | null => {
     for (const node of items) {
       for (const dtr of node.dtrs ?? []) {
-        const code = String(dtr.dtrCode ?? "").trim().toLowerCase();
-        const name = String(dtr.dtrName ?? "").trim().toLowerCase();
+        const code = String(dtr.dtrCode ?? "")
+          .trim()
+          .toLowerCase();
+        const name = String(dtr.dtrName ?? "")
+          .trim()
+          .toLowerCase();
         if (code === target || name === target) {
-          if (
-            organisationLookupId != null &&
-            node.organisationLookupId !== organisationLookupId
-          ) {
+          if (organisationLookupId != null && node.organisationLookupId !== organisationLookupId) {
             continue;
           }
           return {
@@ -437,21 +428,16 @@ export async function resolveCreateConsumerMeterContext(
   const preferredDtr = dtrName();
   const orgHierarchy = await fetchOrganisationHierarchy(authenticatedApi);
   let resolvedDtr = preferredDtr
-    ? findDtrInOrganisationHierarchy(
-        orgHierarchy,
-        preferredDtr,
-        organisationLookupId,
-      )
+    ? findDtrInOrganisationHierarchy(orgHierarchy, preferredDtr, organisationLookupId)
     : null;
   if (!resolvedDtr && preferredDtr) {
     resolvedDtr = findDtrInOrganisationHierarchy(orgHierarchy, preferredDtr);
   }
 
   if (resolvedDtr?.networkLookupId) {
-    const cascade = await ensureNetworkHierarchyCascadeContext(
-      authenticatedApi,
-      { dtrNetworkLookupId: resolvedDtr.networkLookupId },
-    );
+    const cascade = await ensureNetworkHierarchyCascadeContext(authenticatedApi, {
+      dtrNetworkLookupId: resolvedDtr.networkLookupId,
+    });
     if (cascade) {
       return {
         organisationLookupId: resolvedDtr.organisationLookupId,
@@ -488,9 +474,7 @@ export async function resolveCreateConsumerMeterContext(
 
   return {
     organisationLookupId:
-      resolvedDtr?.organisationLookupId ??
-      cascade.organisationLookupId ??
-      organisationLookupId,
+      resolvedDtr?.organisationLookupId ?? cascade.organisationLookupId ?? organisationLookupId,
     networkLookupId: cascade.dtrNetworkLookupId,
     subStation: cascade.subStation,
     feeder: cascade.feeder,
@@ -594,10 +578,9 @@ async function fetchValidNearestAccountId(
     return null;
   }
 
-  const candidates = [
-    trimmed,
-    trimmed.startsWith("N") ? trimmed.slice(1) : `N${trimmed}`,
-  ].filter((value, index, list) => list.indexOf(value) === index);
+  const candidates = [trimmed, trimmed.startsWith("N") ? trimmed.slice(1) : `N${trimmed}`].filter(
+    (value, index, list) => list.indexOf(value) === index,
+  );
 
   for (const candidate of candidates) {
     const response = await getWithAutoRefresh(
@@ -628,12 +611,7 @@ async function fetchValidNearestAccountId(
           return first.trim();
         }
       }
-      for (const key of [
-        "accountId",
-        "nearestAccountId",
-        "nearestAcctId",
-        "ivrsNumber",
-      ]) {
+      for (const key of ["accountId", "nearestAccountId", "nearestAcctId", "ivrsNumber"]) {
         const value = record[key];
         if (typeof value === "string" && value.trim()) {
           return value.trim();
@@ -662,10 +640,7 @@ async function resolveNearestAccountIdFromMasterData(
       .map((value) => (value == null ? "" : String(value).trim()))
       .filter(Boolean);
     for (const candidate of candidates) {
-      const resolved = await fetchValidNearestAccountId(
-        authenticatedApi,
-        candidate,
-      );
+      const resolved = await fetchValidNearestAccountId(authenticatedApi, candidate);
       if (resolved) {
         return resolved;
       }
@@ -690,10 +665,7 @@ export async function ensureBulkConsumerNearestAcctId(
   }
   const consumerNumber = envValue("CONSUMER_NUMBER");
   if (consumerNumber) {
-    const resolved = await fetchValidNearestAccountId(
-      authenticatedApi,
-      consumerNumber,
-    );
+    const resolved = await fetchValidNearestAccountId(authenticatedApi, consumerNumber);
     if (resolved) {
       setBulkConsumerNearestAcctId(resolved);
       return resolved;
@@ -721,8 +693,7 @@ export function buildValidCreateConsumerRequest(options?: {
   const stamp = String(Date.now()).slice(-8);
   const consumerId = options?.consumerId ?? uniqueConsumerId();
   const meterSerial =
-    options?.meterSerial ??
-    (options?.allocateMeter ? nextMeterSerial() : peekMeterSerial());
+    options?.meterSerial ?? (options?.allocateMeter ? nextMeterSerial() : peekMeterSerial());
   const meterContext = getCreateConsumerMeterContext();
   const cascade = getNetworkHierarchyCascade();
   const hierarchy = getConsumerHierarchyLabels();
@@ -732,23 +703,17 @@ export function buildValidCreateConsumerRequest(options?: {
       ? {
           organisationLookupId: meterContext.organisationLookupId,
           networkLookupId: meterContext.networkLookupId,
-          ...(meterContext.meterLookupId
-            ? { meterLookupId: meterContext.meterLookupId }
-            : {}),
+          ...(meterContext.meterLookupId ? { meterLookupId: meterContext.meterLookupId } : {}),
           "Organisation Lookup ID": meterContext.organisationLookupId,
-          ...(meterContext.meterLookupId
-            ? { "Meter Lookup ID": meterContext.meterLookupId }
-            : {}),
+          ...(meterContext.meterLookupId ? { "Meter Lookup ID": meterContext.meterLookupId } : {}),
         }
       : cascade
         ? {
             organisationLookupId:
-              cascade.organisationLookupId ??
-              createConsumerData.organisationLookupId,
+              cascade.organisationLookupId ?? createConsumerData.organisationLookupId,
             networkLookupId: cascade.dtrNetworkLookupId,
             "Organisation Lookup ID":
-              cascade.organisationLookupId ??
-              createConsumerData.organisationLookupId,
+              cascade.organisationLookupId ?? createConsumerData.organisationLookupId,
           }
         : {
             organisationLookupId: createConsumerData.organisationLookupId,
@@ -833,6 +798,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
         allocateMeter: true,
       }),
     tags: ["@master-data", "@create-consumer", "@positive", "@smoke"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Add consumer — consumer ID is required",
@@ -845,6 +811,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       "Consumer ID": "",
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — nearest account ID is required",
@@ -858,6 +825,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
         nearestAcctId: "",
       }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — nearest account ID must be valid",
@@ -871,6 +839,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
         nearestAcctId: "NEAREST_INVALID_XXXX",
       }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — a consumer ID that already exists is rejected",
@@ -884,6 +853,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
         consumerId: existingConsumerCid(),
       }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — bill day cannot be greater than 28",
@@ -896,6 +866,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       "Bill Day": 31,
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — bill day cannot be less than 1",
@@ -908,6 +879,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       "Bill Day": 0,
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — consumer category must be valid",
@@ -920,6 +892,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       "Consumer Category": invalidLookupId,
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — billing cycle must be valid",
@@ -932,6 +905,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       "Billing Cycle": invalidLookupId,
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — connection type must be valid",
@@ -944,6 +918,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       "Connection Type": invalidLookupId,
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — connection status must be valid",
@@ -956,6 +931,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       "Connection Status": invalidLookupId,
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — TOD must be valid",
@@ -968,6 +944,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       TOD: invalidLookupId,
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — substation must belong to the selected network",
@@ -980,6 +957,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       subStationNetworkLookupId: invalidLookupId,
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — feeder must belong to the selected network",
@@ -992,22 +970,20 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       feederNetworkLookupId: invalidLookupId,
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — DTR must be valid",
     scenario: "invalid_dtr",
     expectedStatus: 400,
-    envKeys: [
-      "BULK_DTR_ZONE_NAME",
-      "BULK_DTR_SUBSTATION_NAME",
-      "BULK_DTR_FEEDER_NAME",
-    ],
+    envKeys: ["BULK_DTR_ZONE_NAME", "BULK_DTR_SUBSTATION_NAME", "BULK_DTR_FEEDER_NAME"],
     buildPayload: () => ({
       ...buildValidCreateConsumerRequest({ label: "bad-dtr" }),
       DTR: "DTR_INVALID_XXXX",
       networkLookupId: invalidLookupId,
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — meter serial is required",
@@ -1020,6 +996,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       MSN: "",
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — meter serial must already exist",
@@ -1032,6 +1009,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
         meterSerial: `Z${Date.now().toString().slice(-11)}`,
       }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — meter must be active",
@@ -1044,6 +1022,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
         meterSerial: getValidateMeterSerial("VALIDATE_DTR_METER_INACTIVE_SERIAL"),
       }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — meter cannot already be assigned to another consumer",
@@ -1057,6 +1036,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
         meterSerial: getValidateMeterSerial("VALIDATE_DTR_METER_ASSIGNED_SERIAL"),
       }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — main/sub meter type must be valid",
@@ -1069,6 +1049,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       "Main/Sub Meter": invalidLookupId,
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — meter phase must be valid",
@@ -1081,6 +1062,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       "Meter Phase": invalidLookupId,
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — service point ID is required",
@@ -1093,6 +1075,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       "Service Point ID": "",
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — initial reading must be greater than zero",
@@ -1105,6 +1088,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       "Meter Initial Reading": 0,
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — SIM number is required",
@@ -1117,6 +1101,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       "SIM No.": "",
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — IMSI must contain digits only",
@@ -1129,6 +1114,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       "IMSI No.": "IMSI-ABC-XYZ",
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — meter mobile number must be 10 digits",
@@ -1141,6 +1127,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       "Mobile No. (Meter)": "12345",
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — IP address must be valid",
@@ -1153,6 +1140,7 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       "IP Address": "not-an-ip",
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add consumer — modem serial is required",
@@ -1165,5 +1153,6 @@ export const createConsumerTestCases: CreateConsumerTestCase[] = [
       "Modem Serial Number": "",
     }),
     tags: ["@master-data", "@create-consumer", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

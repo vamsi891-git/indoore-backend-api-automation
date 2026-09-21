@@ -1,8 +1,7 @@
 import type pg from "pg";
 import type { APIRequestContext } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { compareApiToDb } from "../../../core/db/db-compare.engine";
+import { compareApiToDb } from "../../../extras/db/db-compare.engine";
 import { ModulePermissionApi } from "../Api/modulepermission.api";
 import { ModulePermissionMapper } from "../Mapper/modulepermission.mapper";
 import {
@@ -12,6 +11,7 @@ import {
 } from "../Db/modules-permissions.db";
 import { compareModuleSpotToDb } from "../Db/modules-permissions-db-compare";
 import { logModulesPermissionsDataQualityFindings } from "../Db/modules-permissions-db.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 /**
  * Part 4 harness — unscoped modules/permissions catalog exact counts + spot.
@@ -20,7 +20,7 @@ export async function runModulesPermissionsDbCoverage(
   authenticatedApi: APIRequestContext,
   db: pg.Pool,
 ): Promise<void> {
-  const validation = new ValidationEngine();
+  const validation = new ApiValidationHelper();
   const api = new ModulePermissionApi(authenticatedApi);
   const { rawResponse, responseBody } = await api.getModules();
   expect(rawResponse.status()).toBe(200);
@@ -33,10 +33,7 @@ export async function runModulesPermissionsDbCoverage(
 
   const dbModuleCount = await countModulesCatalog(db);
   const dbPermissionCount = await countPermissionsCatalog(db);
-  const apiPermissionCount = modules.reduce(
-    (sum, mod) => sum + (mod.permissions?.length ?? 0),
-    0,
-  );
+  const apiPermissionCount = modules.reduce((sum, mod) => sum + (mod.permissions?.length ?? 0), 0);
 
   validation.execute("Modules catalog count exact vs DB", () => {
     expect(dbModuleCount).toBeGreaterThan(0);
@@ -67,9 +64,7 @@ export async function runModulesPermissionsDbCoverage(
 
   const spot = modules[0];
   if (!spot) {
-    console.warn(
-      "[BACKEND FINDING] module spot skipped — empty modules catalog",
-    );
+    console.warn("[BACKEND FINDING] module spot skipped — empty modules catalog");
   } else {
     const dbRow = await getModuleById(db, spot.id);
     validation.execute(`Module spot vs DB (${spot.id} / ${spot.key})`, () => {

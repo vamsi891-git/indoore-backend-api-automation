@@ -44,8 +44,7 @@ export const MASTER_DATA_AUDIT_DETAIL_KEYS = [
   "updatedCount",
 ] as const;
 
-export const masterDataAuditLogsMaxResponseTimeMs =
-  MASTER_DATA_MAX_RESPONSE_TIME_MS;
+export const masterDataAuditLogsMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 
 export const masterDataAuditLogsDefaultQuery = {
   page: 1,
@@ -125,6 +124,8 @@ export interface MasterDataAuditLogsTestCase {
     | "invalid_prefix"
     | "invalid_page"
     | "invalid_sort";
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export const masterDataAuditLogsTestCases: MasterDataAuditLogsTestCase[] = [
@@ -132,6 +133,7 @@ export const masterDataAuditLogsTestCases: MasterDataAuditLogsTestCase[] = [
     testName: "Master data change history — newest changes appear first",
     query: { ...masterDataAuditLogsDefaultQuery },
     tags: ["@smoke", "@master-data", "@audit-logs"],
+    nonEmptyExpected: true,
     sortDirection: "desc",
     scenario: "live_ok",
   },
@@ -139,6 +141,7 @@ export const masterDataAuditLogsTestCases: MasterDataAuditLogsTestCase[] = [
     testName: "Master data change history — oldest changes appear first",
     query: { ...masterDataAuditLogsAscQuery },
     tags: ["@master-data", "@audit-logs", "@edge"],
+    nonEmptyExpected: false,
     sortDirection: "asc",
     scenario: "live_ok",
   },
@@ -146,6 +149,7 @@ export const masterDataAuditLogsTestCases: MasterDataAuditLogsTestCase[] = [
     testName: "Master data change history — page 2 shows the next set of changes",
     query: { ...masterDataAuditLogsPage2Query },
     tags: ["@master-data", "@audit-logs", "@edge"],
+    nonEmptyExpected: false,
     sortDirection: "desc",
     scenario: "live_ok",
   },
@@ -153,6 +157,7 @@ export const masterDataAuditLogsTestCases: MasterDataAuditLogsTestCase[] = [
     testName: "Master data change history — showing 10 per page returns at most 10 changes",
     query: { ...masterDataAuditLogsSmallPageQuery },
     tags: ["@master-data", "@audit-logs", "@edge"],
+    nonEmptyExpected: false,
     sortDirection: "desc",
     scenario: "live_ok",
   },
@@ -160,6 +165,7 @@ export const masterDataAuditLogsTestCases: MasterDataAuditLogsTestCase[] = [
     testName: "Master data change history — filter shows only meter-created changes",
     query: { ...masterDataAuditLogsMeterCreatedQuery },
     tags: ["@master-data", "@audit-logs", "@edge"],
+    nonEmptyExpected: false,
     sortDirection: "desc",
     scenario: "filter_action",
   },
@@ -167,6 +173,7 @@ export const masterDataAuditLogsTestCases: MasterDataAuditLogsTestCase[] = [
     testName: "Master data change history — filter shows only meter-related changes",
     query: { ...masterDataAuditLogsMeterPrefixQuery },
     tags: ["@master-data", "@audit-logs", "@edge"],
+    nonEmptyExpected: false,
     sortDirection: "desc",
     scenario: "filter_prefix",
   },
@@ -174,6 +181,7 @@ export const masterDataAuditLogsTestCases: MasterDataAuditLogsTestCase[] = [
     testName: "Master data change history — an action that is not from master data is rejected",
     query: { ...masterDataAuditLogsInvalidActionQuery },
     tags: ["@master-data", "@audit-logs", "@negative"],
+    nonEmptyExpected: false,
     sortDirection: "desc",
     expectedStatus: 400,
     scenario: "invalid_action",
@@ -182,6 +190,7 @@ export const masterDataAuditLogsTestCases: MasterDataAuditLogsTestCase[] = [
     testName: "Master data change history — an unknown change-type filter is rejected",
     query: { ...masterDataAuditLogsInvalidPrefixQuery },
     tags: ["@master-data", "@audit-logs", "@negative"],
+    nonEmptyExpected: false,
     sortDirection: "desc",
     expectedStatus: 400,
     scenario: "invalid_prefix",
@@ -190,6 +199,7 @@ export const masterDataAuditLogsTestCases: MasterDataAuditLogsTestCase[] = [
     testName: "Master data change history — an invalid page number is rejected",
     query: { ...masterDataAuditLogsInvalidPageQuery },
     tags: ["@master-data", "@audit-logs", "@negative"],
+    nonEmptyExpected: false,
     sortDirection: "desc",
     expectedStatus: 400,
     scenario: "invalid_page",
@@ -198,6 +208,7 @@ export const masterDataAuditLogsTestCases: MasterDataAuditLogsTestCase[] = [
     testName: "Master data change history — an invalid sort order is rejected",
     query: { ...masterDataAuditLogsInvalidSortQuery },
     tags: ["@master-data", "@audit-logs", "@negative"],
+    nonEmptyExpected: false,
     sortDirection: "desc",
     expectedStatus: 400,
     scenario: "invalid_sort",

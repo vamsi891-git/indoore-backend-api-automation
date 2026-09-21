@@ -1,19 +1,19 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ModulePermissionApi } from "../Api/modulepermission.api";
 import { ModulePermissionData } from "../Data/modulepermission.data";
 import { ModulePermissionMapper } from "../Mapper/modulepermission.mapper";
 import { ModulePermissionValidator } from "../Validator/modulepermission.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Module Permission — Advanced", () => {
   test.describe.configure({ mode: "serial" });
-  test("PATCH /permissions/modules/:id — isEnabled false then true",
+  test(
+    "PATCH /permissions/modules/:id — isEnabled false then true",
     { tag: ["@permissions", "@modules-permissions"] },
     async ({ authenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new ModulePermissionValidator();
       const moduleApi = new ModulePermissionApi(authenticatedApi);
       const payload = ModulePermissionData.buildUniqueModulePayload();
@@ -30,28 +30,15 @@ test.describe("Module Permission — Advanced", () => {
         ModulePermissionData.disableModulePayload,
       );
       validation.execute("Disable module status", () =>
-        assert.validateStatusCode(
-          disableResponse.rawResponse,
-          200,
-          disableResponse.responseBody,
-        ),
+        assert.validateStatusCode(disableResponse.rawResponse, 200, disableResponse.responseBody),
       );
-      const disabledModule = ModulePermissionMapper.mapModule(
-        disableResponse.responseBody,
-      );
+      const disabledModule = ModulePermissionMapper.mapModule(disableResponse.responseBody);
       validation.execute("Disabled module response", () =>
-        validator.validateUpdatedModule(
-          disabledModule,
-          ModulePermissionData.disableModulePayload,
-        ),
+        validator.validateUpdatedModule(disabledModule, ModulePermissionData.disableModulePayload),
       );
       const listAfterDisable = await moduleApi.getModules();
-      const modulesAfterDisable = ModulePermissionMapper.mapModules(
-        listAfterDisable.responseBody,
-      );
-      const moduleInList = modulesAfterDisable.find(
-        (entry) => entry.id === moduleId,
-      );
+      const modulesAfterDisable = ModulePermissionMapper.mapModules(listAfterDisable.responseBody);
+      const moduleInList = modulesAfterDisable.find((entry) => entry.id === moduleId);
       validation.execute("Module isEnabled false in list", () => {
         expect(moduleInList?.isEnabled).toBe(false);
       });
@@ -69,7 +56,10 @@ test.describe("Module Permission — Advanced", () => {
         expect(moduleAfterEnable?.isEnabled).toBe(true);
       });
       await moduleApi.deleteModule(moduleId);
-      validation.printSummary("Module isEnabled Toggle",created.responseTime + disableResponse.responseTime,);
+      validation.printSummary(
+        "Module isEnabled Toggle",
+        created.responseTime + disableResponse.responseTime,
+      );
     },
   );
 });

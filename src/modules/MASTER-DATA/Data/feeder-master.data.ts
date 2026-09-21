@@ -45,6 +45,8 @@ export interface FeederMasterTestCase {
   query: FeederMasterQuery;
   tags: string[];
   searchTerm?: string;
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export const feederMasterTestCases: FeederMasterTestCase[] = [
@@ -52,16 +54,19 @@ export const feederMasterTestCases: FeederMasterTestCase[] = [
     testName: "Feeder list — first page shows columns, records, and page numbers",
     query: { ...feederMasterDefaultQuery },
     tags: ["@smoke", "@master-data", "@feeder-master"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Feeder list — page 2 shows the next set of records",
     query: { ...feederMasterPage2Query },
     tags: ["@master-data", "@feeder-master"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Feeder list — a smaller page size shows fewer records",
     query: { ...feederMasterSmallPageQuery },
     tags: ["@master-data", "@feeder-master"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Feeder list — search finds the feeder name",
@@ -70,16 +75,19 @@ export const feederMasterTestCases: FeederMasterTestCase[] = [
       q: resolveFeederMasterSearchTerm(),
     },
     tags: ["@master-data", "@feeder-master"],
+    nonEmptyExpected: false,
     searchTerm: resolveFeederMasterSearchTerm(),
   },
   {
     testName: "Feeder list — an empty search shows the full list",
     query: { ...feederMasterDefaultQuery, q: "" },
     tags: ["@master-data", "@feeder-master", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Feeder list — a page past the last page shows no records",
     query: { page: 99999, limit: 20 },
     tags: ["@master-data", "@feeder-master", "@edge"],
+    nonEmptyExpected: false,
   },
 ];

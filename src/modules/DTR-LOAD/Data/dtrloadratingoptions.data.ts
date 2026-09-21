@@ -1,7 +1,4 @@
-import {
-  dtrLoadDefaultFromDate,
-  dtrLoadDefaultToDate,
-} from "./dtrload.data";
+import { dtrLoadDefaultFromDate, dtrLoadDefaultToDate } from "./dtrload.data";
 
 export type DtrLoadRatingOptionsScenario =
   | "live_oct"
@@ -59,43 +56,50 @@ export interface DtrLoadRatingOptionsTestCase {
   tags: string[];
   isContractFixture?: boolean;
   expectedStatus?: number;
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export const dtrLoadRatingOptionsTestCases: DtrLoadRatingOptionsTestCase[] = [
   {
-    testName:
-      "Transformer sizes — October 2025 lists each size once, smallest first",
+    testName: "Transformer sizes — October 2025 lists each size once, smallest first",
     scenario: "live_oct",
     tags: ["@smoke", "@dtr-load"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Transformer sizes — leftover unused filters are ignored",
     scenario: "live_unknown_query",
     tags: ["@dtr-load", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Transformer sizes — October 2025 sample matches the live layout",
     scenario: "contract_oct",
     isContractFixture: true,
     tags: ["@dtr-load", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Transformer sizes — start date after end date is rejected",
     scenario: "from_after_to",
     expectedStatus: 400,
     tags: ["@dtr-load", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Transformer sizes — leaving out the start date is rejected",
     scenario: "missing_from",
     expectedStatus: 400,
     tags: ["@dtr-load", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Transformer sizes — leaving out the end date is rejected",
     scenario: "missing_to",
     expectedStatus: 400,
     tags: ["@dtr-load", "@negative"],
+    nonEmptyExpected: false,
   },
 ];
 

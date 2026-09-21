@@ -1,7 +1,4 @@
-import {
-  EXPECTED_CHART_CATEGORIES,
-  alarmsEventsChartData,
-} from "./alarms-events-chart.data";
+import { EXPECTED_CHART_CATEGORIES, alarmsEventsChartData } from "./alarms-events-chart.data";
 
 export const alarmsEventsPhaseDrillData = {
   path: "/indore/alarms-events/phase-wise/drill-down",
@@ -28,6 +25,8 @@ export type AlarmsEventsPhaseDrillTestCase = {
   expectedLabel?: string;
   expectedSeries?: string;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 };
 
 const tags = ["@alarms-events", "@alarms-events-phase-drill", "@edge"];
@@ -51,8 +50,7 @@ function happyCases(): AlarmsEventsPhaseDrillTestCase[] {
 export const alarmsEventsPhaseDrillTestCases: AlarmsEventsPhaseDrillTestCase[] = [
   ...happyCases(),
   {
-    testName:
-      "GET /alarms-events/phase-wise/drill-down - extra unused query is ignored",
+    testName: "GET /alarms-events/phase-wise/drill-down - extra unused query is ignored",
     params: {
       category: "Power",
       date: alarmsEventsPhaseDrillData.date,
@@ -63,30 +61,30 @@ export const alarmsEventsPhaseDrillTestCases: AlarmsEventsPhaseDrillTestCase[] =
     expectedSlug: "power",
     expectedLabel: "Power",
     tags: [...tags],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "GET /alarms-events/phase-wise/drill-down - missing category is rejected",
+    testName: "GET /alarms-events/phase-wise/drill-down - missing category is rejected",
     params: {
       date: alarmsEventsPhaseDrillData.date,
       series: alarmsEventsPhaseDrillData.series,
     },
     expectedStatus: 400,
     tags: [...tags],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "GET /alarms-events/phase-wise/drill-down - missing date is rejected",
+    testName: "GET /alarms-events/phase-wise/drill-down - missing date is rejected",
     params: {
       category: "Power",
       series: alarmsEventsPhaseDrillData.series,
     },
     expectedStatus: 400,
     tags: [...tags],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "GET /alarms-events/phase-wise/drill-down - missing series returns empty rows",
+    testName: "GET /alarms-events/phase-wise/drill-down - missing series returns empty rows",
     params: {
       category: "Power",
       date: alarmsEventsPhaseDrillData.date,
@@ -96,10 +94,10 @@ export const alarmsEventsPhaseDrillTestCases: AlarmsEventsPhaseDrillTestCase[] =
     expectedLabel: "Power",
     expectedSeries: "",
     tags: [...tags],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "GET /alarms-events/phase-wise/drill-down - blank category is rejected",
+    testName: "GET /alarms-events/phase-wise/drill-down - blank category is rejected",
     params: {
       category: " ",
       date: alarmsEventsPhaseDrillData.date,
@@ -107,10 +105,10 @@ export const alarmsEventsPhaseDrillTestCases: AlarmsEventsPhaseDrillTestCase[] =
     },
     expectedStatus: 400,
     tags: [...tags],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "GET /alarms-events/phase-wise/drill-down - unknown category is rejected",
+    testName: "GET /alarms-events/phase-wise/drill-down - unknown category is rejected",
     params: {
       category: "not-a-category",
       date: alarmsEventsPhaseDrillData.date,
@@ -118,10 +116,10 @@ export const alarmsEventsPhaseDrillTestCases: AlarmsEventsPhaseDrillTestCase[] =
     },
     expectedStatus: 400,
     tags: [...tags],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "GET /alarms-events/phase-wise/drill-down - invalid date is rejected",
+    testName: "GET /alarms-events/phase-wise/drill-down - invalid date is rejected",
     params: {
       category: "Power",
       date: "23-08-2025",
@@ -129,5 +127,6 @@ export const alarmsEventsPhaseDrillTestCases: AlarmsEventsPhaseDrillTestCase[] =
     },
     expectedStatus: 400,
     tags: [...tags],
+    nonEmptyExpected: false,
   },
 ];

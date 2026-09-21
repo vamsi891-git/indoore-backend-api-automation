@@ -4,42 +4,29 @@ import { CommStatsMapper } from "../Mapper/communication.mapper";
 import { CommStatsValidator } from "../Validator/communication.validator";
 import { communicationTestCases } from "../Data/communication.data";
 import { MisDashboardEdgesValidator } from "../Validator/mis-dashboard.edges.validator";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("How meters are talking", () => {
   for (const testCase of communicationTestCases) {
     test(testCase.testName, { tag: testCase.tags }, async ({ authenticatedApi }) => {
       const api = new CommStatsApi(authenticatedApi);
-      const { rawResponse, responseBody, responseTime } = await api.getCommStats(
-        testCase.params,
-      );
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const { rawResponse, responseBody, responseTime } = await api.getCommStats(testCase.params);
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new CommStatsValidator();
       const edges = new MisDashboardEdgesValidator();
 
       validation.execute("Status", () =>
-        assert.validateStatusCode(
-          rawResponse,
-          testCase.expectedStatus,
-          responseBody,
-        ),
+        assert.validateStatusCode(rawResponse, testCase.expectedStatus, responseBody),
       );
       validation.execute("Content", () =>
         assert.validateContentType(rawResponse, "application/json"),
       );
-      validation.execute("Performance", () =>
-        assert.validateResponseTime(responseTime, 120000),
-      );
-      validation.execute("Sensitive Data", () =>
-        assert.validateSensitiveData(responseBody),
-      );
+      validation.execute("Performance", () => assert.validateResponseTime(responseTime, 120000));
+      validation.execute("Sensitive Data", () => assert.validateSensitiveData(responseBody));
 
       if (testCase.expectedStatus !== 200) {
-        validation.execute("Error code", () =>
-          edges.validateValidationError(responseBody),
-        );
+        validation.execute("Error code", () => edges.validateValidationError(responseBody));
         validation.printSummary(testCase.testName, responseTime);
         return;
       }
@@ -54,9 +41,7 @@ test.describe("How meters are talking", () => {
           testCase.expectSameDayWindow,
         ),
       );
-      validation.execute("Talking vs not talking adds up", () =>
-        validator.validateOverall(data),
-      );
+      validation.execute("Talking vs not talking adds up", () => validator.validateOverall(data));
       validation.execute("Category list", () => validator.validateCategories(data));
       if (testCase.checkExpectedLabels !== false) {
         validation.execute("Expected category names", () =>

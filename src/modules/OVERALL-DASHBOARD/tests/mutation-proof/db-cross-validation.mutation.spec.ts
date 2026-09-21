@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { compareApiToDb } from "../../../../core/db/db-compare.engine";
+import { compareApiToDb } from "../../../../extras/db/db-compare.engine";
 import { compareOdCountLteDb } from "../../Db/overall-dashboard-db-compare";
 
 test.describe("Mutation proof — Overall Dashboard DB (fixture)", () => {
@@ -24,9 +24,9 @@ test.describe("Mutation proof — Overall Dashboard DB (fixture)", () => {
     "MUT-OD-DB-002 — lte fails when API > DB",
     { tag: ["@mutation-proof", "@overall-dashboard"] },
     async () => {
-      expect(() =>
-        compareOdCountLteDb({ label: "dtrs", apiCount: 99, dbCount: 1 }),
-      ).toThrow(/exceeds|dtrs/i);
+      expect(() => compareOdCountLteDb({ label: "dtrs", apiCount: 99, dbCount: 1 })).toThrow(
+        /exceeds|dtrs/i,
+      );
     },
   );
 });

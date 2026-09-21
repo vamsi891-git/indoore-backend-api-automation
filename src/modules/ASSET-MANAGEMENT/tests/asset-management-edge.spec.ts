@@ -1,6 +1,5 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
 import { NetworkHierarchyInvalidQueries } from "../Data/networkhierarchy.data";
 import { OrganisationHierarchyInvalidQueries } from "../Data/organisationhierarchy.data";
@@ -12,6 +11,7 @@ import { AssetExportInvalidQueries } from "../Data/assetexport.data";
 import { MapMarkersInvalidQueries } from "../Data/mapmarkers.data";
 import { assetManagementPaths } from "../Data/asset-management.common.data";
 import { AssetManagementCommonValidator } from "../Validator/asset-management-common.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Asset Management — Edge", () => {
   test.describe.configure({ mode: "serial" });
@@ -21,7 +21,7 @@ test.describe("Asset Management — Edge", () => {
       row.testName,
       { tag: ["@edge", "@asset-management", "@hierarchy"] },
       async ({ authenticatedApi }) => {
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const rawResponse = await getWithAutoRefresh(
           authenticatedApi,
           `${assetManagementPaths.networkHierarchy}?${row.query}`,
@@ -40,11 +40,9 @@ test.describe("Asset Management — Edge", () => {
           });
         } else {
           validation.execute("Error envelope", () =>
-            AssetManagementCommonValidator.validateErrorResponse(
-              status,
-              responseBody,
-              [...row.expectedStatus],
-            ),
+            AssetManagementCommonValidator.validateErrorResponse(status, responseBody, [
+              ...row.expectedStatus,
+            ]),
           );
         }
 
@@ -58,7 +56,7 @@ test.describe("Asset Management — Edge", () => {
       row.testName,
       { tag: ["@edge", "@asset-management", "@hierarchy"] },
       async ({ authenticatedApi }) => {
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const rawResponse = await getWithAutoRefresh(
           authenticatedApi,
           `${assetManagementPaths.organisationHierarchy}?${row.query}`,
@@ -77,11 +75,9 @@ test.describe("Asset Management — Edge", () => {
           });
         } else {
           validation.execute("Error envelope", () =>
-            AssetManagementCommonValidator.validateErrorResponse(
-              status,
-              responseBody,
-              [...row.expectedStatus],
-            ),
+            AssetManagementCommonValidator.validateErrorResponse(status, responseBody, [
+              ...row.expectedStatus,
+            ]),
           );
         }
 
@@ -95,7 +91,7 @@ test.describe("Asset Management — Edge", () => {
       row.testName,
       { tag: ["@edge", "@asset-management", "@hierarchy"] },
       async ({ authenticatedApi }) => {
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const rawResponse = await getWithAutoRefresh(
           authenticatedApi,
           assetManagementPaths.hierarchyChildren(row.query),
@@ -107,11 +103,9 @@ test.describe("Asset Management — Edge", () => {
           expect(row.expectedStatus).toContain(status);
         });
         validation.execute("Error envelope", () =>
-          AssetManagementCommonValidator.validateErrorResponse(
-            status,
-            responseBody,
-            [...row.expectedStatus],
-          ),
+          AssetManagementCommonValidator.validateErrorResponse(status, responseBody, [
+            ...row.expectedStatus,
+          ]),
         );
 
         validation.printSummary(row.testName, 0);
@@ -124,7 +118,7 @@ test.describe("Asset Management — Edge", () => {
       row.testName,
       { tag: ["@edge", "@asset-management", "@hierarchy"] },
       async ({ authenticatedApi }) => {
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const rawResponse = await getWithAutoRefresh(
           authenticatedApi,
           assetManagementPaths.hierarchySearch(row.query),
@@ -136,11 +130,9 @@ test.describe("Asset Management — Edge", () => {
           expect(row.expectedStatus).toContain(status);
         });
         validation.execute("Error envelope", () =>
-          AssetManagementCommonValidator.validateErrorResponse(
-            status,
-            responseBody,
-            [...row.expectedStatus],
-          ),
+          AssetManagementCommonValidator.validateErrorResponse(status, responseBody, [
+            ...row.expectedStatus,
+          ]),
         );
 
         validation.printSummary(row.testName, 0);
@@ -153,7 +145,7 @@ test.describe("Asset Management — Edge", () => {
       row.testName,
       { tag: ["@edge", "@asset-management", "@hierarchy"] },
       async ({ authenticatedApi }) => {
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const path =
           row.query.length > 0
             ? assetManagementPaths.hierarchyTypes(row.query)
@@ -166,11 +158,9 @@ test.describe("Asset Management — Edge", () => {
           expect(row.expectedStatus).toContain(status);
         });
         validation.execute("Error envelope", () =>
-          AssetManagementCommonValidator.validateErrorResponse(
-            status,
-            responseBody,
-            [...row.expectedStatus],
-          ),
+          AssetManagementCommonValidator.validateErrorResponse(status, responseBody, [
+            ...row.expectedStatus,
+          ]),
         );
 
         validation.printSummary(row.testName, 0);
@@ -183,22 +173,17 @@ test.describe("Asset Management — Edge", () => {
       row.testName,
       { tag: ["@edge", "@asset-management", "@asset-detail"] },
       async ({ authenticatedApi }) => {
-        const validation = new ValidationEngine();
-        const rawResponse = await getWithAutoRefresh(
-          authenticatedApi,
-          row.path,
-        );
+        const validation = new ApiValidationHelper();
+        const rawResponse = await getWithAutoRefresh(authenticatedApi, row.path);
         const responseBody = await rawResponse.json().catch(() => ({}));
         const status = rawResponse.status();
         validation.execute("Status", () => {
           expect(row.expectedStatus).toContain(status);
         });
         validation.execute("Error envelope", () =>
-          AssetManagementCommonValidator.validateErrorResponse(
-            status,
-            responseBody,
-            [...row.expectedStatus],
-          ),
+          AssetManagementCommonValidator.validateErrorResponse(status, responseBody, [
+            ...row.expectedStatus,
+          ]),
         );
         validation.printSummary(row.testName, 0);
       },
@@ -210,7 +195,7 @@ test.describe("Asset Management — Edge", () => {
       row.testName,
       { tag: ["@edge", "@asset-management", "@asset-export"] },
       async ({ authenticatedApi }) => {
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const rawResponse = await getWithAutoRefresh(
           authenticatedApi,
           assetManagementPaths.export(row.query),
@@ -223,11 +208,9 @@ test.describe("Asset Management — Edge", () => {
           expect(row.expectedStatus).toContain(status);
         });
         validation.execute("Error envelope", () =>
-          AssetManagementCommonValidator.validateErrorResponse(
-            status,
-            responseBody,
-            [...row.expectedStatus],
-          ),
+          AssetManagementCommonValidator.validateErrorResponse(status, responseBody, [
+            ...row.expectedStatus,
+          ]),
         );
 
         validation.printSummary(row.testName, 0);
@@ -240,7 +223,7 @@ test.describe("Asset Management — Edge", () => {
       row.testName,
       { tag: ["@edge", "@asset-management", "@map-markers"] },
       async ({ authenticatedApi }) => {
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const rawResponse = await getWithAutoRefresh(
           authenticatedApi,
           assetManagementPaths.mapMarkers(row.query),
@@ -252,11 +235,9 @@ test.describe("Asset Management — Edge", () => {
           expect(row.expectedStatus).toContain(status);
         });
         validation.execute("Error envelope", () =>
-          AssetManagementCommonValidator.validateErrorResponse(
-            status,
-            responseBody,
-            [...row.expectedStatus],
-          ),
+          AssetManagementCommonValidator.validateErrorResponse(status, responseBody, [
+            ...row.expectedStatus,
+          ]),
         );
 
         validation.printSummary(row.testName, 0);

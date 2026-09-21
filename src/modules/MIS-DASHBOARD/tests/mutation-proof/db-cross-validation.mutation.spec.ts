@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { compareApiToDb } from "../../../../core/db/db-compare.engine";
+import { compareApiToDb } from "../../../../extras/db/db-compare.engine";
 import { compareMisDashboardCountLteDb } from "../../Db/mis-dashboard-db-compare";
 
 test.describe("Mutation proof — MIS-DASHBOARD DB (fixture)", () => {

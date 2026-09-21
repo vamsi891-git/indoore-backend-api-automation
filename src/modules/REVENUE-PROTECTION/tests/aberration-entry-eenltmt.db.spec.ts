@@ -1,12 +1,18 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/observability.fixture";
-import { compareApiToDb } from "../../../core/db/db-compare.engine";
-import { isDbConfigured } from "../../../core/db/postgres.client";
+import { compareApiToDb } from "../../../extras/db/db-compare.engine";
+import { isDbConfigured } from "../../../extras/db/postgres.client";
 import { REVENUE_PROTECTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { AberrationEntryApi } from "../Api/aberration-entry.api";
 import { aberrationEntryEenltmtDefaultQuery } from "../Data/aberration-entry-eenltmt.data";
 import { AberrationEntryMapper } from "../Mapper/aberration-entry.mapper";
-import {countAberrationEntryForFilters,getAberrationEntryRowByBusinessKey,isAberrationEntryDbSqlReady,resolveDbSampleSize,sampleRowIds,} from "../Db/aberration-entry.db";
+import {
+  countAberrationEntryForFilters,
+  getAberrationEntryRowByBusinessKey,
+  isAberrationEntryDbSqlReady,
+  resolveDbSampleSize,
+  sampleRowIds,
+} from "../Db/aberration-entry.db";
 import { applyAllureTestCaseId } from "../../../core/utils/allure-test-case.helper";
 test.describe("Revenue Protection — Aberration Entry EENLTMT DB cross-validation", () => {
   test.describe.configure({
@@ -21,7 +27,8 @@ test.describe("Revenue Protection — Aberration Entry EENLTMT DB cross-validati
       "Set RP_ABERRATION_ENTRY_DB_SQL_READY=true after validating SQL against live schema",
     );
   });
-  test("IND-REV-ABE-EEN-DB-001 — COUNT(*) matches pagination.total",
+  test(
+    "IND-REV-ABE-EEN-DB-001 — COUNT(*) matches pagination.total",
     {
       tag: ["@revenue-protection", "@aberration-entry-eenltmt", "@db"],
     },
@@ -49,7 +56,8 @@ test.describe("Revenue Protection — Aberration Entry EENLTMT DB cross-validati
       );
     },
   );
-  test("IND-REV-ABE-EEN-DB-002 — Sampled rows match DB",
+  test(
+    "IND-REV-ABE-EEN-DB-002 — Sampled rows match DB",
     {
       tag: ["@revenue-protection", "@aberration-entry-eenltmt", "@db"],
     },
@@ -60,7 +68,7 @@ test.describe("Revenue Protection — Aberration Entry EENLTMT DB cross-validati
       const { responseBody } = await api.getAberrationEntry(query);
       const mapped = AberrationEntryMapper.mapData(responseBody.data);
       const rowsWithIvrs = mapped.rows.filter((row) => row.ivrsNo.trim().length > 0);
-      test.skip(rowsWithIvrs.length === 0,"No IVRS rows available for DB validation",);
+      test.skip(rowsWithIvrs.length === 0, "No IVRS rows available for DB validation");
       const sampleIvrs = sampleRowIds(
         rowsWithIvrs.map((r) => r.ivrsNo),
         resolveDbSampleSize(),

@@ -10,28 +10,21 @@ import {
 import { registerSearchLookupTests } from "../utils/lookup-catalog.harness";
 import { getLookupResponseData } from "../utils/lookup-spec.harness";
 import type { NetworkData } from "../Mapper/networksearch.mapper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 function runNetworkSearchValidations(
   scenario: NetworkSearchScenario,
   responseBody: unknown,
-  validation: import("../../../core/engine/validation.engine").ValidationEngine,
+  validation: ApiValidationHelper,
 ): void {
-  const data = NetworkSearchMapper.mapData(
-    getLookupResponseData<NetworkData>(responseBody),
-  );
+  const data = NetworkSearchMapper.mapData(getLookupResponseData<NetworkData>(responseBody));
   const validator = new NetworkSearchValidator();
 
-  validation.execute("Response", () =>
-    validator.validateResponse(responseBody as never),
-  );
+  validation.execute("Response", () => validator.validateResponse(responseBody as never));
   validation.execute("Items", () => validator.validateItemsExist(data));
   validation.execute("Fields", () => validator.validateFields(data));
-  validation.execute("Duplicate IDs", () =>
-    validator.validateDuplicateIds(data),
-  );
-  validation.execute("Backend Rules", () =>
-    validator.validateBackendRules(data),
-  );
+  validation.execute("Duplicate IDs", () => validator.validateDuplicateIds(data));
+  validation.execute("Backend Rules", () => validator.validateBackendRules(data));
   validation.execute("Code Rules", () => validator.validateCodeRules(data));
 
   if (scenario === "edge_limit_one") {
@@ -43,7 +36,6 @@ registerSearchLookupTests({
   describeTitle: "Network search",
   testCases: networkSearchTestCases,
   resolveQuery: resolveNetworkSearchQuery,
-  fetch: (authenticatedApi, query) =>
-    new NetworkSearchApi(authenticatedApi).searchNetworks(query),
+  fetch: (authenticatedApi, query) => new NetworkSearchApi(authenticatedApi).searchNetworks(query),
   validate: runNetworkSearchValidations,
 });

@@ -1,8 +1,6 @@
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { CommandsMeterAlarmsApi } from "../Api/commands-meter-alarms.api";
 import {
@@ -22,19 +20,18 @@ test.describe("HES Commands — Meter Alarms", () => {
     async ({ authenticatedApi }, testInfo) => {
       const body = buildMeterAlarmsBody();
       const api = new CommandsMeterAlarmsApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new CommandsMeterAlarmsValidator();
 
-      const { rawResponse, responseBody, responseTime } =
-        await api.postMeterAlarms(body);
+      const { rawResponse, responseBody, responseTime } = await api.postMeterAlarms(body);
 
       const url = `${process.env.BASE_URL}${METER_ALARMS_PATH}`;
       await PerformanceTracker.track(
         rawResponse,
         "Commands Meter Alarms",
         rawResponse.url(),
-        responseTime
+        responseTime,
       );
 
       ApiValidationHelper.runStandardChecks(validation, assert, {
@@ -45,9 +42,7 @@ test.describe("HES Commands — Meter Alarms", () => {
         maxResponseTimeMs: commandsMeterAlarmsData.maxResponseTimeMs,
       });
 
-      validation.execute("Success Response", () =>
-        validator.validateResponse(responseBody),
-      );
+      validation.execute("Success Response", () => validator.validateResponse(responseBody));
 
       const mapped = CommandsMeterAlarmsMapper.mapResponse(responseBody);
 
@@ -60,18 +55,12 @@ test.describe("HES Commands — Meter Alarms", () => {
       validation.execute("Unique Meter Alarm IDs", () =>
         validator.validateUniqueMeterAlarmIds(mapped.alarms),
       );
-      validation.execute("All Alarm Rows", () =>
-        validator.validateAllAlarms(mapped.alarms),
-      );
+      validation.execute("All Alarm Rows", () => validator.validateAllAlarms(mapped.alarms));
       validation.execute("Sequence Numbers Consecutive Same Meter", () =>
-        validator.validateSequenceNumbersAscendingForConsecutiveSameMeter(
-          mapped.alarms,
-        ),
+        validator.validateSequenceNumbersAscendingForConsecutiveSameMeter(mapped.alarms),
       );
       validation.execute("Alarm Time Consecutive Same Meter", () =>
-        validator.validateAlarmTimeAscendingForConsecutiveSameMeter(
-          mapped.alarms,
-        ),
+        validator.validateAlarmTimeAscendingForConsecutiveSameMeter(mapped.alarms),
       );
       validation.execute("Full API Contract", () =>
         validator.validateFullContract(mapped, body.startId, body.count),
@@ -104,12 +93,11 @@ test.describe("HES Commands — Meter Alarms", () => {
         startId: commandsMeterAlarmsData.paginationStartId,
       });
       const api = new CommandsMeterAlarmsApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new CommandsMeterAlarmsValidator();
 
-      const { rawResponse, responseBody, responseTime } =
-        await api.postMeterAlarms(body);
+      const { rawResponse, responseBody, responseTime } = await api.postMeterAlarms(body);
 
       ApiValidationHelper.runStandardChecks(validation, assert, {
         apiName: "Commands Meter Alarms — Pagination",
@@ -119,9 +107,7 @@ test.describe("HES Commands — Meter Alarms", () => {
         maxResponseTimeMs: commandsMeterAlarmsData.maxResponseTimeMs,
       });
 
-      validation.execute("Success Response", () =>
-        validator.validateResponse(responseBody),
-      );
+      validation.execute("Success Response", () => validator.validateResponse(responseBody));
 
       const mapped = CommandsMeterAlarmsMapper.mapResponse(responseBody);
       validation.execute("Paginated ID Window", () =>
@@ -139,8 +125,7 @@ test.describe("HES Commands — Meter Alarms", () => {
           requestParams: body,
           responseStatus: rawResponse.status(),
           responseBody,
-          expectedBehavior:
-            "startId + count window returns sequential meterAlarmId values.",
+          expectedBehavior: "startId + count window returns sequential meterAlarmId values.",
         },
       });
     },
@@ -154,12 +139,11 @@ test.describe("HES Commands — Meter Alarms", () => {
         count: commandsMeterAlarmsData.invalidCount,
       });
       const api = new CommandsMeterAlarmsApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new CommandsMeterAlarmsValidator();
 
-      const { rawResponse, responseBody, responseTime } =
-        await api.postMeterAlarms(body);
+      const { rawResponse, responseBody, responseTime } = await api.postMeterAlarms(body);
 
       const label = "Commands Meter Alarms — Invalid Count";
       const status = rawResponse.status();
@@ -187,12 +171,8 @@ test.describe("HES Commands — Meter Alarms", () => {
       validation.execute("Status (bad request)", () =>
         assert.validateStatusCode(rawResponse, 400, responseBody),
       );
-      validation.execute("Content Type", () =>
-        assert.validateContentType(rawResponse),
-      );
-      validation.execute("Error Response", () =>
-        validator.validateErrorResponse(responseBody),
-      );
+      validation.execute("Content Type", () => assert.validateContentType(rawResponse));
+      validation.execute("Error Response", () => validator.validateErrorResponse(responseBody));
 
       ApiValidationHelper.finalize(validation, {
         apiName: label,

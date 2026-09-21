@@ -1,6 +1,5 @@
 import { expect } from "@playwright/test";
 import { test as authTest } from "../../../fixtures/auth.fixture";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { assertZodSchema } from "../../../core/utils/zod-validation.helper";
 import { ApiErrorResponseSchema } from "../../../core/schemas/api-response.schemas";
 import { resolveAberrationEntryByIvrsPath } from "../Api/aberration-entry.api";
@@ -15,6 +14,7 @@ import {
 } from "../Validator/revenue-common.validator";
 import { applyAllureTestCaseId } from "../../../core/utils/allure-test-case.helper";
 import { requestRevenueProtectionWithRetry } from "../utils/revenue-protection-request.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 /** Fallback IVRS when env unset — auth probes only need a path, not a live row. */
 const byIvrsUrl = resolveAberrationEntryByIvrsPath(
@@ -27,18 +27,14 @@ authTest.describe("Revenue Protection — Aberration Entry By IVRS Auth Negative
   authTest.describe.configure({ mode: "serial" });
   authTest.setTimeout(180_000);
 
-  authTest("IND-REV-ABE-IVRS-AUTH-001 — PATCH without Authorization header",
+  authTest(
+    "IND-REV-ABE-IVRS-AUTH-001 — PATCH without Authorization header",
     {
-      tag: [
-        "@revenue-protection",
-        "@aberration-entry-by-ivrs",
-        "@negative",
-        "@auth",
-      ],
+      tag: ["@revenue-protection", "@aberration-entry-by-ivrs", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
       await applyAllureTestCaseId("IND-REV-ABE-IVRS-AUTH-001");
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const rawResponse = await requestRevenueProtectionWithRetry(() =>
         unauthenticatedApi.patch(byIvrsUrl, { data: updatePayload }),
       );
@@ -57,18 +53,14 @@ authTest.describe("Revenue Protection — Aberration Entry By IVRS Auth Negative
     },
   );
 
-  authTest("IND-REV-ABE-IVRS-AUTH-002 — PATCH with invalid bearer token",
+  authTest(
+    "IND-REV-ABE-IVRS-AUTH-002 — PATCH with invalid bearer token",
     {
-      tag: [
-        "@revenue-protection",
-        "@aberration-entry-by-ivrs",
-        "@negative",
-        "@auth",
-      ],
+      tag: ["@revenue-protection", "@aberration-entry-by-ivrs", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
       await applyAllureTestCaseId("IND-REV-ABE-IVRS-AUTH-002");
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const rawResponse = await requestRevenueProtectionWithRetry(() =>
         unauthenticatedApi.patch(byIvrsUrl, {
           data: updatePayload,
@@ -98,18 +90,14 @@ authTest.describe("Revenue Protection — Aberration Entry By IVRS Auth Negative
     },
   );
 
-  authTest("IND-REV-ABE-IVRS-AUTH-003 — Unsupported HTTP methods (POST/PUT/DELETE)",
+  authTest(
+    "IND-REV-ABE-IVRS-AUTH-003 — Unsupported HTTP methods (POST/PUT/DELETE)",
     {
-      tag: [
-        "@revenue-protection",
-        "@aberration-entry-by-ivrs",
-        "@negative",
-        "@auth",
-      ],
+      tag: ["@revenue-protection", "@aberration-entry-by-ivrs", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
       await applyAllureTestCaseId("IND-REV-ABE-IVRS-AUTH-003");
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       /** PATCH is the supported update verb — do not treat it as disallowed. */
       const callers: Record<string, () => Promise<import("@playwright/test").APIResponse>> = {
         POST: () =>
@@ -120,10 +108,7 @@ authTest.describe("Revenue Protection — Aberration Entry By IVRS Auth Negative
           requestRevenueProtectionWithRetry(() =>
             unauthenticatedApi.put(byIvrsUrl, { data: updatePayload }),
           ),
-        DELETE: () =>
-          requestRevenueProtectionWithRetry(() =>
-            unauthenticatedApi.delete(byIvrsUrl),
-          ),
+        DELETE: () => requestRevenueProtectionWithRetry(() => unauthenticatedApi.delete(byIvrsUrl)),
       };
       for (const method of Object.keys(callers)) {
         const response = await callers[method]();

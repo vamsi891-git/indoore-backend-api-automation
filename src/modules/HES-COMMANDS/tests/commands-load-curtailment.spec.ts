@@ -1,10 +1,8 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
 import { HES_COMMANDS_E2E_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { CommandsLoadCurtailmentApi } from "../Api/commands-load-curtailment.api";
 import { CommandsQueryMeterJobApi } from "../Api/commands-query-meter-job.api";
@@ -37,13 +35,7 @@ test.describe("HES Commands — Load Curtailment (E2E)", () => {
   test(
     "Validate POST /commands/load-curtailment → query-meter-job — load_curtailment_get E2E",
     {
-      tag: [
-        "@smoke",
-        "@commands",
-        "@hes",
-        "@commands-load-curtailment",
-        "@e2e",
-      ],
+      tag: ["@smoke", "@commands", "@hes", "@commands-load-curtailment", "@e2e"],
     },
     async ({ authenticatedApi }, testInfo) => {
       await waitForHesJobQueueSlot();
@@ -51,8 +43,8 @@ test.describe("HES Commands — Load Curtailment (E2E)", () => {
       const requestedMeters = normalizeMeters(body.meters);
       const loadApi = new CommandsLoadCurtailmentApi(authenticatedApi);
       const queryApi = new CommandsQueryMeterJobApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const initValidator = new CommandsJobInitValidator();
       const queryValidator = new CommandsQueryMeterJobValidator();
       const loadValidator = new CommandsLoadCurtailmentValidator();
@@ -67,7 +59,7 @@ test.describe("HES Commands — Load Curtailment (E2E)", () => {
         postRaw,
         "Commands Load Curtailment — Init Job",
         postRaw.url(),
-        postTime
+        postTime,
       );
 
       const postStatus = postRaw.status();
@@ -82,23 +74,19 @@ test.describe("HES Commands — Load Curtailment (E2E)", () => {
         validation.execute("Error Response (500 backend defect)", () =>
           initValidator.validateErrorResponse(postBody),
         );
-        validation.printSummary(
-          "Commands Load Curtailment — Init Job",
-          postTime,
-          {
-            testInfo,
-            defectContext: {
-              module: "HES-COMMANDS",
-              endpoint: postRaw.url(),
-              method: "POST",
-              requestParams: body,
-              responseStatus: postStatus,
-              responseBody: postBody,
-              expectedBehavior:
-                "200 with jobName in meterResults for load_curtailment_get (backend intermittently returns 500).",
-            },
+        validation.printSummary("Commands Load Curtailment — Init Job", postTime, {
+          testInfo,
+          defectContext: {
+            module: "HES-COMMANDS",
+            endpoint: postRaw.url(),
+            method: "POST",
+            requestParams: body,
+            responseStatus: postStatus,
+            responseBody: postBody,
+            expectedBehavior:
+              "200 with jobName in meterResults for load_curtailment_get (backend intermittently returns 500).",
           },
-        );
+        });
         return;
       }
 
@@ -110,9 +98,7 @@ test.describe("HES Commands — Load Curtailment (E2E)", () => {
         maxResponseTimeMs: commandsLoadCurtailmentData.maxResponseTimeMs,
       });
 
-      validation.execute("Init Success Response", () =>
-        initValidator.validateResponse(postBody),
-      );
+      validation.execute("Init Success Response", () => initValidator.validateResponse(postBody));
 
       const mappedInit = CommandsJobInitMapper.mapResponse(postBody);
 
@@ -137,9 +123,7 @@ test.describe("HES Commands — Load Curtailment (E2E)", () => {
       validation.execute("Init IN_PROGRESS Status", () =>
         loadValidator.validateInitInProgressStatus(mappedInit),
       );
-      validation.execute("Init Message", () =>
-        loadValidator.validateInitMessage(mappedInit),
-      );
+      validation.execute("Init Message", () => loadValidator.validateInitMessage(mappedInit));
       validation.execute("Init Full Contract", () =>
         initValidator.validateFullInitContract(mappedInit, requestedMeters),
       );
@@ -163,17 +147,13 @@ test.describe("HES Commands — Load Curtailment (E2E)", () => {
         softSkipHesE2eInfraFailure(error, testInfo);
       }
 
-      logCommandE2eResponses(
-        "Commands Load Curtailment",
-        postBody,
-        pollResult.responseBody,
-      );
+      logCommandE2eResponses("Commands Load Curtailment", postBody, pollResult.responseBody);
 
       await PerformanceTracker.track(
         pollResult.rawResponse,
         "Commands Load Curtailment — Query Meter Job",
         pollResult.rawResponse.url(),
-        pollResult.responseTime
+        pollResult.responseTime,
       );
 
       ApiValidationHelper.runStandardChecks(validation, assert, {
@@ -192,9 +172,7 @@ test.describe("HES Commands — Load Curtailment (E2E)", () => {
         meterId: requestedMeters[0],
         onFinished: () => {
           validation.execute("Query Finished Message", () =>
-            loadValidator.validateQueryFinishedMessage(
-              pollResult.mapped.message,
-            ),
+            loadValidator.validateQueryFinishedMessage(pollResult.mapped.message),
           );
           validation.execute("Query HES Job Status FINISHED", () => {
             expect(pollResult.mapped.job.hesJobStatus).toBe("FINISHED");
@@ -203,9 +181,7 @@ test.describe("HES Commands — Load Curtailment (E2E)", () => {
             queryValidator.validateSummaryCounts(pollResult.mapped.job.summary),
           );
           validation.execute("Query All Meter Results", () =>
-            queryValidator.validateAllMeterResults(
-              pollResult.mapped.job.meterResults,
-            ),
+            queryValidator.validateAllMeterResults(pollResult.mapped.job.meterResults),
           );
           validation.execute("Query Load Curtailment HES Response", () =>
             loadValidator.validateLoadCurtailmentQueryMeterResults(
@@ -214,11 +190,7 @@ test.describe("HES Commands — Load Curtailment (E2E)", () => {
             ),
           );
           validation.execute("Query Full Contract", () =>
-            queryValidator.validateFullContract(
-              pollResult.mapped,
-              jobName,
-              requestedMeters[0],
-            ),
+            queryValidator.validateFullContract(pollResult.mapped, jobName, requestedMeters[0]),
           );
         },
       });
@@ -260,26 +232,21 @@ test.describe("HES Commands — Load Curtailment (E2E)", () => {
       };
 
       const api = new CommandsLoadCurtailmentApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const initValidator = new CommandsJobInitValidator();
 
-      const { rawResponse, responseBody, responseTime } =
-        await api.postLoadCurtailment(
-          body as Parameters<CommandsLoadCurtailmentApi["postLoadCurtailment"]>[0],
-        );
+      const { rawResponse, responseBody, responseTime } = await api.postLoadCurtailment(
+        body as Parameters<CommandsLoadCurtailmentApi["postLoadCurtailment"]>[0],
+      );
 
       logCommandE2eResponses("Commands Load Curtailment — Invalid Type", responseBody);
 
       validation.execute("Status (validation error)", () =>
         assert.validateStatusCode(rawResponse, 400, responseBody),
       );
-      validation.execute("Content Type", () =>
-        assert.validateContentType(rawResponse),
-      );
-      validation.execute("Error Response", () =>
-        initValidator.validateErrorResponse(responseBody),
-      );
+      validation.execute("Content Type", () => assert.validateContentType(rawResponse));
+      validation.execute("Error Response", () => initValidator.validateErrorResponse(responseBody));
 
       ApiValidationHelper.finalize(validation, {
         apiName: "Commands Load Curtailment — Invalid Type",
@@ -292,8 +259,7 @@ test.describe("HES Commands — Load Curtailment (E2E)", () => {
           requestParams: body,
           responseStatus: rawResponse.status(),
           responseBody,
-          expectedBehavior:
-            "Invalid load curtailment type returns 400 VALIDATION_ERROR.",
+          expectedBehavior: "Invalid load curtailment type returns 400 VALIDATION_ERROR.",
         },
       });
     },

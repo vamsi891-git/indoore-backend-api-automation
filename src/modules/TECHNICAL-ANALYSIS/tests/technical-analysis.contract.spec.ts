@@ -9,7 +9,7 @@ import { test, expect } from "../../../fixtures/observability.fixture";
 import {
   assertContractSnapshot,
   buildLookupItemsContractSnapshot,
-} from "../../../core/contract/contract-snapshot.helper";
+} from "../../../extras/contract/contract-snapshot.helper";
 import { TechnicalSummaryApi } from "../Api/technical-summary.api";
 import { TechnicalReportApi } from "../Api/technicalanalysis.api";
 import { resolveTechnicalSummaryQuery } from "../Data/technical-summary.data";
@@ -21,9 +21,7 @@ import {
 import { isTechnicalGridData } from "../Mapper/technicalanalysis.mapper";
 
 function asRecord(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === "object"
-    ? (value as Record<string, unknown>)
-    : {};
+  return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
 test.describe("Technical analysis — contract snapshots", () => {
@@ -33,15 +31,14 @@ test.describe("Technical analysis — contract snapshots", () => {
     "Technical summary — column and field names stay the same",
     { tag: ["@contract-snapshot", "@technical-analysis", "@technical-summary"] },
     async ({ authenticatedApi }) => {
-      const { responseBody } = await new TechnicalSummaryApi(
-        authenticatedApi,
-      ).getTechnicalSummary(resolveTechnicalSummaryQuery("dev_live_primary"));
+      const { responseBody } = await new TechnicalSummaryApi(authenticatedApi).getTechnicalSummary(
+        resolveTechnicalSummaryQuery("dev_live_primary"),
+      );
       expect(responseBody.success).toBe(true);
 
       const data = asRecord(responseBody.data);
       const reports = Array.isArray(data.reports) ? data.reports : [];
-      const itemKeys =
-        reports.length > 0 ? Object.keys(asRecord(reports[0])) : [];
+      const itemKeys = reports.length > 0 ? Object.keys(asRecord(reports[0])) : [];
 
       await assertContractSnapshot(
         "technical-analysis/technical-summary",
@@ -60,14 +57,10 @@ test.describe("Technical analysis — contract snapshots", () => {
     async ({ authenticatedApi }) => {
       const liveConfig =
         technicalAnalysisLiveConfigs.find(
-          (c) =>
-            c.analysisType === technicalAnalysisDefaultAnalysisType &&
-            c.hasData,
+          (c) => c.analysisType === technicalAnalysisDefaultAnalysisType && c.hasData,
         ) ?? technicalAnalysisLiveConfigs.find((c) => c.hasData);
 
-      const { responseBody } = await new TechnicalReportApi(
-        authenticatedApi,
-      ).getTechnicalReport(
+      const { responseBody } = await new TechnicalReportApi(authenticatedApi).getTechnicalReport(
         resolveTechnicalReportQuery("dev_live_report", liveConfig),
       );
       expect(responseBody.success).toBe(true);
@@ -78,8 +71,7 @@ test.describe("Technical analysis — contract snapshots", () => {
         return;
       }
 
-      const rowKeys =
-        data.rows.length > 0 ? Object.keys(asRecord(data.rows[0])) : [];
+      const rowKeys = data.rows.length > 0 ? Object.keys(asRecord(data.rows[0])) : [];
       const columns = (data.columns ?? []).map((c) => ({
         key: c.key,
         header: c.header,

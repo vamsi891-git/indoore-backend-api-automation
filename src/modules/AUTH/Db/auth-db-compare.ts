@@ -1,9 +1,5 @@
-﻿import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
-import type {
-  DbAuthDeviceRow,
-  DbAuthInvitationSummary,
-  DbAuthUserRow,
-} from "./auth.db";
+﻿import { compareApiToDb, type DbCompareObs } from "../../../extras/db/db-compare.engine";
+import type { DbAuthDeviceRow, DbAuthInvitationSummary, DbAuthUserRow } from "./auth.db";
 
 /**
  * Same-user auth surfaces (/devices for current JWT) should match DB exactly.
@@ -79,10 +75,7 @@ export function compareAuthMeToDb(options: {
     },
   ];
 
-  if (
-    options.api.organisationLookupId != null ||
-    options.dbRow.organisation_lookup_id != null
-  ) {
+  if (options.api.organisationLookupId != null || options.dbRow.organisation_lookup_id != null) {
     fields.push({
       label: "organisationLookupId",
       apiValue: options.api.organisationLookupId ?? null,
@@ -90,10 +83,7 @@ export function compareAuthMeToDb(options: {
       optional: true,
     } as never);
   }
-  if (
-    options.api.networkLookupId != null ||
-    options.dbRow.network_lookup_id != null
-  ) {
+  if (options.api.networkLookupId != null || options.dbRow.network_lookup_id != null) {
     fields.push({
       label: "networkLookupId",
       apiValue: options.api.networkLookupId ?? null,

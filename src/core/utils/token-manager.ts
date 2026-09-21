@@ -3,6 +3,7 @@ import path from "path";
 import { AuthApi } from "./auth.util";
 import { LoggerEngine } from "../engine/logger.engine";
 import { normalizeApiBaseUrl } from "./api-path.util";
+import { env } from "../config/env.schema";
 
 interface StoredToken {
   accessToken: string;
@@ -12,7 +13,7 @@ interface StoredToken {
 }
 
 function apiOrigin(): string {
-  return normalizeApiBaseUrl(process.env.BASE_URL);
+  return normalizeApiBaseUrl(env.BASE_URL);
 }
 
 function isTwoFactorSecretUnavailable(error: unknown): boolean {
@@ -83,7 +84,11 @@ export class TokenManager {
     }
   }
 
-  static seed(accessToken: string,expiresInSeconds = this.defaultExpirySeconds,csrfToken?: string): void {
+  static seed(
+    accessToken: string,
+    expiresInSeconds = this.defaultExpirySeconds,
+    csrfToken?: string,
+  ): void {
     this.applyToken(accessToken, expiresInSeconds);
     if (csrfToken) {
       this.csrfToken = csrfToken;
@@ -121,7 +126,11 @@ export class TokenManager {
   }
 
   /** Reuse a still-valid token from disk to avoid flaky login during global setup. */
-  static loadValidSession(): {accessToken: string;expiresInSeconds: number;csrfToken?: string;} | null {
+  static loadValidSession(): {
+    accessToken: string;
+    expiresInSeconds: number;
+    csrfToken?: string;
+  } | null {
     const stored = this.readStoredToken();
     if (!stored) {
       return null;
@@ -132,10 +141,7 @@ export class TokenManager {
     }
     return {
       accessToken: stored.accessToken,
-      expiresInSeconds: Math.max(
-        60,
-        Math.floor((remainingMs - this.refreshBufferMs) / 1000),
-      ),
+      expiresInSeconds: Math.max(60, Math.floor((remainingMs - this.refreshBufferMs) / 1000)),
       csrfToken: stored.csrfToken,
     };
   }
@@ -152,7 +158,11 @@ export class TokenManager {
     this.token = accessToken;
     this.refreshAtEpochMs = Date.now() + expiresInSeconds * 1000 - this.refreshBufferMs;
   }
-  private static applySession(session: {accessToken: string;expiresIn?: number;csrfToken: string;}): void {
+  private static applySession(session: {
+    accessToken: string;
+    expiresIn?: number;
+    csrfToken: string;
+  }): void {
     this.applyToken(session.accessToken, session.expiresIn ?? this.defaultExpirySeconds);
     this.csrfToken = session.csrfToken;
   }
@@ -218,7 +228,7 @@ export class TokenManager {
 
       this.persistToken(this.token!, this.expiresAtEpochMs());
       LoggerEngine.info(
-        `Token refresh successful; next refresh at ${new Date(this.refreshAtEpochMs).toISOString()}`
+        `Token refresh successful; next refresh at ${new Date(this.refreshAtEpochMs).toISOString()}`,
       );
     });
   }
@@ -272,19 +282,30 @@ export class TokenManager {
   }
   private static persistToken(accessToken: string, expiresAt: number): void {
     this.ensureAuthDir();
-    fs.writeFileSync(
-      this.tokenFilePath,
-      JSON.stringify(
-        {
-          accessToken,
-          expiresAt,
-          origin: apiOrigin(),
-          ...(this.csrfToken ? { csrfToken: this.csrfToken } : {})
-        } satisfies StoredToken,
-        null,
-        2
-      )
+    const payload = JSON.stringify(
+      {
+        accessToken,
+        expiresAt,
+        origin: apiOrigin(),
+        ...(this.csrfToken ? { csrfToken: this.csrfToken } : {}),
+      } satisfies StoredToken,
+      null,
+      2,
     );
+    // Atomic replace so parallel workers never read a half-written token.json.
+    const tmpPath = `${this.tokenFilePath}.${process.pid}.${Date.now()}.tmp`;
+    fs.writeFileSync(tmpPath, payload, "utf-8");
+    try {
+      fs.renameSync(tmpPath, this.tokenFilePath);
+    } catch {
+      // Windows: rename onto existing file can fail — fall back to overwrite.
+      fs.writeFileSync(this.tokenFilePath, payload, "utf-8");
+      try {
+        fs.unlinkSync(tmpPath);
+      } catch {
+        // ignore tmp cleanup races
+      }
+    }
   }
   private static ensureAuthDir(): void {
     if (!fs.existsSync(this.authDir)) {

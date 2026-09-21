@@ -4,20 +4,9 @@ export const communicationOverviewQuery = {
   assetType: "all",
 };
 
-export const EXPECTED_OVERVIEW_PHASES = [
-  "1 PH",
-  "3PH 4CT",
-  "3PH WC",
-  "HT",
-  "Unknown",
-];
+export const EXPECTED_OVERVIEW_PHASES = ["1 PH", "3PH 4CT", "3PH WC", "HT", "Unknown"];
 
-export const EXPECTED_OVERVIEW_PHASES_DTR = [
-  "1 PH",
-  "3PH 4CT",
-  "3PH WC",
-  "HT",
-];
+export const EXPECTED_OVERVIEW_PHASES_DTR = ["1 PH", "3PH 4CT", "3PH WC", "HT"];
 
 export type CommunicationOverviewTestCase = {
   testName: string;
@@ -30,6 +19,8 @@ export type CommunicationOverviewTestCase = {
   expectedPhaseLabels?: string[];
   checkChartMembership?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 };
 
 const tags = ["@mis-dashboard", "@edge"];

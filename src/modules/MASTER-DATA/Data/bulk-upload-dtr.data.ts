@@ -182,10 +182,7 @@ export function takeDistinctBulkDtrMeterSerials(count: number): string[] {
 }
 
 function uniqueFifteenDigitId(seed: string): string {
-  const digits = `${seed}${Date.now()}${Math.floor(Math.random() * 10000)}`.replace(
-    /\D/g,
-    "",
-  );
+  const digits = `${seed}${Date.now()}${Math.floor(Math.random() * 10000)}`.replace(/\D/g, "");
   return digits.padEnd(15, "7").slice(0, 15);
 }
 
@@ -242,15 +239,13 @@ function meterPhaseName(): string {
   return envValue("BULK_DTR_METER_PHASE") || "1 PH";
 }
 
-export function buildValidDtrBulkRow(
-  options?: {
-    meterSerial?: string;
-    dtrCode?: string;
-    label?: string;
-    /** When true, rotates through the provisioned meter pool (success / multi-row uploads). */
-    allocateMeter?: boolean;
-  },
-): DtrBulkUploadRow {
+export function buildValidDtrBulkRow(options?: {
+  meterSerial?: string;
+  dtrCode?: string;
+  label?: string;
+  /** When true, rotates through the provisioned meter pool (success / multi-row uploads). */
+  allocateMeter?: boolean;
+}): DtrBulkUploadRow {
   const today = isoToday();
   const label = options?.label ?? uniqueSuffix();
   bulkDtrRowSequence += 1;
@@ -345,6 +340,8 @@ export interface BulkUploadDtrTestCase {
   buildUpload: () => Promise<BulkUploadFileInput>;
   envKeys?: string[];
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 function xlsxUpload(
@@ -353,8 +350,7 @@ function xlsxUpload(
 ): BulkUploadFileInput {
   return {
     fileName,
-    mimeType:
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     buffer,
   };
 }
@@ -370,12 +366,10 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     buildUpload: async () => ({
       fileName: "dtrs-invalid.csv",
       mimeType: "text/csv",
-      buffer: Buffer.from(
-        `${DTR_BULK_UPLOAD_COLUMNS.join(",")}\nDTR1,Test`,
-        "utf8",
-      ),
+      buffer: Buffer.from(`${DTR_BULK_UPLOAD_COLUMNS.join(",")}\nDTR1,Test`, "utf8"),
     }),
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — required Excel columns must be present",
@@ -391,6 +385,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer, "dtr-bulk-missing-columns.xlsx");
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — duplicate column names are rejected",
@@ -398,13 +393,13 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
     buildUpload: async () => {
-      const buffer = await buildDtrBulkUploadXlsx(
-        [buildValidDtrBulkRow({ label: "dup-col" })],
-        { duplicateColumn: "DTR Code" },
-      );
+      const buffer = await buildDtrBulkUploadXlsx([buildValidDtrBulkRow({ label: "dup-col" })], {
+        duplicateColumn: "DTR Code",
+      });
       return xlsxUpload(buffer, "dtr-bulk-duplicate-columns.xlsx");
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — the file must contain at least one data row",
@@ -415,6 +410,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer, "dtr-bulk-header-only.xlsx");
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — zone must be a known value",
@@ -428,6 +424,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
 
   // ─── DTR validation (manual §1) ──────────────────────────────────────────
@@ -443,6 +440,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — DTR name is required",
@@ -456,6 +454,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — the same DTR code cannot appear twice in the file",
@@ -470,6 +469,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — a DTR code that already exists is rejected",
@@ -485,6 +485,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — DTR capacity must be greater than zero",
@@ -498,6 +499,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — status must be valid",
@@ -511,6 +513,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
 
   // ─── Network hierarchy ───────────────────────────────────────────────────
@@ -528,6 +531,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
 
   // ─── Meter mapping (manual §2) ───────────────────────────────────────────
@@ -543,6 +547,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — meter serial must already exist",
@@ -558,6 +563,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — meter must be active",
@@ -573,6 +579,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative", "@backend-defect"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — meter cannot already be on another DTR",
@@ -588,6 +595,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — main/sub meter type must be valid",
@@ -601,6 +609,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — meter phase must be valid",
@@ -614,6 +623,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — service point ID is required",
@@ -627,6 +637,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
 
   // ─── Communication (manual §3) ───────────────────────────────────────────
@@ -642,6 +653,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — IMSI must contain digits only",
@@ -655,6 +667,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — IP address must be valid",
@@ -668,6 +681,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — modem serial is required",
@@ -681,6 +695,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — modem IMEI must be 15 digits",
@@ -694,6 +709,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
 
   // ─── Date validation (manual §4) ─────────────────────────────────────────
@@ -709,6 +725,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — service date cannot be in the future",
@@ -725,6 +742,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — entry date cannot be in the future",
@@ -741,6 +759,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — initial reading must be greater than zero",
@@ -754,6 +773,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
 
   // ─── Success (multi-row first — needs two fresh meters before single-row consumes pool) ─
@@ -783,6 +803,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-dtr"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (DTRs) — one DTR is created from the file",
@@ -796,6 +817,7 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@smoke", "@master-data", "@bulk-upload-dtr", "@dtr-master"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Excel upload (DTRs) — blank rows are ignored",
@@ -830,5 +852,6 @@ export const bulkUploadDtrTestCases: BulkUploadDtrTestCase[] = [
       return xlsxUpload(Buffer.from(arrayBuffer));
     },
     tags: ["@master-data", "@bulk-upload-dtr"],
+    nonEmptyExpected: false,
   },
 ];

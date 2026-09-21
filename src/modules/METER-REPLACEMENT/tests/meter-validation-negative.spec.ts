@@ -4,14 +4,13 @@ import { test as authTest } from "../../../fixtures/auth.fixture";
 import { MeterValidationApi } from "../Api/meter-validation.api";
 import { meterValidationData } from "../Data/meter-validation.data";
 import { MeterValidationMapper } from "../Mapper/meter-validation.mapper";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { pauseMs } from "../utils/response.helper";
 import {
   MeterReplacementCommonValidator,
   meterReplacementAuthData,
   meterReplacementPaths,
 } from "../Validator/meter-replacement-common.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Meter Replacement Meter Validation API — Negative & Edge", () => {
   test(
@@ -21,8 +20,8 @@ test.describe("Meter Replacement Meter Validation API — Negative & Edge", () =
     },
     async ({ authenticatedApi }) => {
       const api = new MeterValidationApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
 
       const cases = [
         meterValidationData.invalidMeterSerial,
@@ -46,8 +45,7 @@ test.describe("Meter Replacement Meter Validation API — Negative & Edge", () =
           await pauseMs(300);
         }
 
-        const { rawResponse, responseBody } =
-          await api.validateMeter(meterSerial);
+        const { rawResponse, responseBody } = await api.validateMeter(meterSerial);
 
         validation.execute(`Status (${meterSerial.slice(0, 12)})`, () =>
           assert.validateStatusCode(rawResponse, 200, responseBody),
@@ -73,19 +71,16 @@ test.describe("Meter Replacement Meter Validation API — Negative & Edge", () =
     },
     async ({ authenticatedApi }) => {
       const api = new MeterValidationApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
-      const empty = await api.validateMeter(
-        meterValidationData.emptyMeterSerial,
-      );
+      const empty = await api.validateMeter(meterValidationData.emptyMeterSerial);
       validation.execute("Empty status", () => {
         expect(empty.rawResponse.status()).toBe(400);
       });
       validation.execute("Empty error", () =>
-        MeterReplacementCommonValidator.validateErrorEnvelope(
-          empty.responseBody,
-          ["VALIDATION_ERROR"],
-        ),
+        MeterReplacementCommonValidator.validateErrorEnvelope(empty.responseBody, [
+          "VALIDATION_ERROR",
+        ]),
       );
 
       const missing = await api.validateMeterWithoutSerial();
@@ -93,15 +88,12 @@ test.describe("Meter Replacement Meter Validation API — Negative & Edge", () =
         expect(missing.rawResponse.status()).toBe(400);
       });
       validation.execute("Missing error", () =>
-        MeterReplacementCommonValidator.validateErrorEnvelope(
-          missing.responseBody,
-          ["VALIDATION_ERROR"],
-        ),
+        MeterReplacementCommonValidator.validateErrorEnvelope(missing.responseBody, [
+          "VALIDATION_ERROR",
+        ]),
       );
 
-      const whitespace = await api.validateMeter(
-        meterValidationData.whitespaceMeterSerial,
-      );
+      const whitespace = await api.validateMeter(meterValidationData.whitespaceMeterSerial);
       validation.execute("Whitespace status", () => {
         expect([400, 200]).toContain(whitespace.rawResponse.status());
       });
@@ -117,8 +109,8 @@ test.describe("Meter Replacement Meter Validation API — Negative & Edge", () =
     },
     async ({ authenticatedApi }) => {
       const api = new MeterValidationApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
 
       const baseSerial = meterValidationData.validMeterSerial;
       const plain = await api.validateMeter(baseSerial);
@@ -132,8 +124,7 @@ test.describe("Meter Replacement Meter Validation API — Negative & Edge", () =
         meterValidationData.leadingSpaceMeterSerial,
         meterValidationData.trailingSpaceMeterSerial,
       ]) {
-        const { rawResponse, responseBody } =
-          await api.validateMeter(meterSerial);
+        const { rawResponse, responseBody } = await api.validateMeter(meterSerial);
         const mapped = MeterValidationMapper.map(responseBody);
 
         validation.execute(`Status (${meterSerial.trim()})`, () =>
@@ -158,20 +149,16 @@ authTest.describe("Meter Replacement Meter Validation API — Auth Negative", ()
       tag: ["@meter-replacement", "@meter-validation", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
-      const rawResponse =
-        await MeterReplacementCommonValidator.getUnauthenticated(
-          unauthenticatedApi,
-          meterReplacementPaths.meterValidate,
-          { params: { meterSerial: meterValidationData.validMeterSerial } },
-        );
+      const validation = new ApiValidationHelper();
+      const rawResponse = await MeterReplacementCommonValidator.getUnauthenticated(
+        unauthenticatedApi,
+        meterReplacementPaths.meterValidate,
+        { params: { meterSerial: meterValidationData.validMeterSerial } },
+      );
       const body = await rawResponse.json().catch(() => ({}));
 
       validation.execute("Unauthorized", () =>
-        MeterReplacementCommonValidator.validateUnauthorizedError(
-          rawResponse.status(),
-          body,
-        ),
+        MeterReplacementCommonValidator.validateUnauthorizedError(rawResponse.status(), body),
       );
       validation.printSummary("Meter Validation — Missing Auth", 0);
     },
@@ -183,29 +170,25 @@ authTest.describe("Meter Replacement Meter Validation API — Auth Negative", ()
       tag: ["@meter-replacement", "@meter-validation", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
       for (const authorization of [
         meterReplacementAuthData.invalidBearerToken,
         meterReplacementAuthData.malformedBearerToken,
         meterReplacementAuthData.emptyBearerToken,
       ]) {
-        const rawResponse =
-          await MeterReplacementCommonValidator.getUnauthenticated(
-            unauthenticatedApi,
-            meterReplacementPaths.meterValidate,
-            {
-              params: { meterSerial: meterValidationData.validMeterSerial },
-              headers: { Authorization: authorization },
-            },
-          );
+        const rawResponse = await MeterReplacementCommonValidator.getUnauthenticated(
+          unauthenticatedApi,
+          meterReplacementPaths.meterValidate,
+          {
+            params: { meterSerial: meterValidationData.validMeterSerial },
+            headers: { Authorization: authorization },
+          },
+        );
         const body = await rawResponse.json().catch(() => ({}));
 
         validation.execute(`Unauthorized (${authorization.slice(0, 18)})`, () =>
-          MeterReplacementCommonValidator.validateUnauthorizedError(
-            rawResponse.status(),
-            body,
-          ),
+          MeterReplacementCommonValidator.validateUnauthorizedError(rawResponse.status(), body),
         );
       }
 
@@ -219,19 +202,16 @@ authTest.describe("Meter Replacement Meter Validation API — Auth Negative", ()
       tag: ["@meter-replacement", "@meter-validation", "@negative"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
-      const callers =
-        MeterReplacementCommonValidator.getDisallowedMethodCallers(
-          unauthenticatedApi,
-          meterReplacementPaths.meterValidate,
-        );
+      const validation = new ApiValidationHelper();
+      const callers = MeterReplacementCommonValidator.getDisallowedMethodCallers(
+        unauthenticatedApi,
+        meterReplacementPaths.meterValidate,
+      );
 
       for (const method of meterReplacementAuthData.disallowedMethods) {
         const rawResponse = await callers[method]();
         validation.execute(`${method} status`, () =>
-          MeterReplacementCommonValidator.validateDisallowedMethodRejected(
-            rawResponse.status(),
-          ),
+          MeterReplacementCommonValidator.validateDisallowedMethodRejected(rawResponse.status()),
         );
       }
 

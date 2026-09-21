@@ -11,16 +11,15 @@ export interface AberrationsNegativeCase {
   params: Record<string, string>;
   outcome: AberrationsNegativeOutcome;
   expectedStatuses: number[];
-  tags: string[];
+  tags: string[]; /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 const base = {
   organisationLookupId: String(aberrationsDefaultQuery.organisationLookupId),
   month: String(aberrationsDefaultQuery.month),
   year: String(aberrationsDefaultQuery.year),
-  servicePointMeterPhaseTblRefId: String(
-    aberrationsDefaultQuery.servicePointMeterPhaseTblRefId,
-  ),
+  servicePointMeterPhaseTblRefId: String(aberrationsDefaultQuery.servicePointMeterPhaseTblRefId),
   categoryTblRefId: String(aberrationsDefaultQuery.categoryTblRefId),
   eventTblRefId: String(aberrationsDefaultQuery.eventTblRefId),
   page: "1",
@@ -35,12 +34,12 @@ function omit(key: keyof typeof base): Record<string, string> {
 
 export const aberrationsNegativeCases: AberrationsNegativeCase[] = [
   {
-    testName:
-      "Missing organisationLookupId returns empty success grid (not 4xx)",
+    testName: "Missing organisationLookupId returns empty success grid (not 4xx)",
     params: omit("organisationLookupId"),
     outcome: "empty-success",
     expectedStatuses: [200],
     tags: ["@revenue-protection", "@aberrations", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Missing month returns empty success grid (not 4xx)",
@@ -48,6 +47,7 @@ export const aberrationsNegativeCases: AberrationsNegativeCase[] = [
     outcome: "empty-success",
     expectedStatuses: [200],
     tags: ["@revenue-protection", "@aberrations", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Missing year returns empty success grid (not 4xx)",
@@ -55,6 +55,7 @@ export const aberrationsNegativeCases: AberrationsNegativeCase[] = [
     outcome: "empty-success",
     expectedStatuses: [200],
     tags: ["@revenue-protection", "@aberrations", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Non-numeric organisationLookupId is rejected",
@@ -62,6 +63,7 @@ export const aberrationsNegativeCases: AberrationsNegativeCase[] = [
     outcome: "hard-reject",
     expectedStatuses: [400, 422],
     tags: ["@revenue-protection", "@aberrations", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Invalid month token returns empty success grid (not 4xx)",
@@ -69,6 +71,7 @@ export const aberrationsNegativeCases: AberrationsNegativeCase[] = [
     outcome: "empty-success",
     expectedStatuses: [200],
     tags: ["@revenue-protection", "@aberrations", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Zero limit is rejected",
@@ -76,6 +79,7 @@ export const aberrationsNegativeCases: AberrationsNegativeCase[] = [
     outcome: "hard-reject",
     expectedStatuses: [400, 422],
     tags: ["@revenue-protection", "@aberrations", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Negative page is rejected",
@@ -83,5 +87,6 @@ export const aberrationsNegativeCases: AberrationsNegativeCase[] = [
     outcome: "hard-reject",
     expectedStatuses: [400, 422],
     tags: ["@revenue-protection", "@aberrations", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

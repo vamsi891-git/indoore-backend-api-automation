@@ -9,19 +9,18 @@ import {
 import { registerSearchLookupTests } from "../utils/lookup-catalog.harness";
 import { getLookupResponseData } from "../utils/lookup-spec.harness";
 import type { DtrSearchRawData } from "../Mapper/dtrsearch.mapper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 function runDtrSearchValidations(
   scenario: DtrSearchScenario,
   responseBody: unknown,
-  validation: import("../../../core/engine/validation.engine").ValidationEngine,
+  validation: ApiValidationHelper,
 ): void {
   const raw = getLookupResponseData<DtrSearchRawData>(responseBody);
   const data = DtrSearchMapper.mapData(raw);
   const validator = new DtrSearchValidator();
 
-  validation.execute("Response", () =>
-    validator.validateResponse(responseBody as never),
-  );
+  validation.execute("Response", () => validator.validateResponse(responseBody as never));
   validation.execute("Columns", () => validator.validateColumns(raw.columns));
   validation.execute("Pagination", () => validator.validatePagination(data));
 
@@ -40,34 +39,21 @@ function runDtrSearchValidations(
   }
 
   validation.execute("Items", () => validator.validateItemsExist(data));
-  validation.execute("Serial Numbers", () =>
-    validator.validateSerialNumbers(data),
-  );
-  validation.execute("Required Fields", () =>
-    validator.validateRequiredFields(data),
-  );
+  validation.execute("Serial Numbers", () => validator.validateSerialNumbers(data));
+  validation.execute("Required Fields", () => validator.validateRequiredFields(data));
   validation.execute("Data Types", () => validator.validateDataTypes(data));
-  validation.execute("Meter Serial", () =>
-    validator.validateMeterSerialNumbers(data),
-  );
-  validation.execute("Duplicate Meter", () =>
-    validator.validateDuplicateMeterSerials(data),
-  );
+  validation.execute("Meter Serial", () => validator.validateMeterSerialNumbers(data));
+  validation.execute("Duplicate Meter", () => validator.validateDuplicateMeterSerials(data));
   validation.execute("Coordinates", () => validator.validateCoordinates(data));
   validation.execute("MF", () => validator.validateMF(data));
-  validation.execute("Business Rules", () =>
-    validator.validateBusinessRules(data),
-  );
-  validation.execute("Page Aggregation", () =>
-    validator.validatePageAggregation(data),
-  );
+  validation.execute("Business Rules", () => validator.validateBusinessRules(data));
+  validation.execute("Page Aggregation", () => validator.validatePageAggregation(data));
 }
 
 registerSearchLookupTests({
   describeTitle: "DTR search",
   testCases: dtrSearchTestCases,
   resolveQuery: resolveDtrSearchQuery,
-  fetch: (authenticatedApi, query) =>
-    new DtrSearchApi(authenticatedApi).searchDtr(query),
+  fetch: (authenticatedApi, query) => new DtrSearchApi(authenticatedApi).searchDtr(query),
   validate: runDtrSearchValidations,
 });

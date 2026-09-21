@@ -6,8 +6,10 @@ import {
   isStripIndorePrefixEnabled,
   normalizeApiBaseUrl,
 } from "./src/core/utils/api-path.util";
+import { env, loadEnv, resolvePlaywrightWorkers } from "./src/core/config/env.schema";
 
 dotenv.config();
+loadEnv();
 
 if (isStripIndorePrefixEnabled()) {
   enableStripIndorePrefix();
@@ -49,18 +51,18 @@ const skippedWriteSpecs = [
 
 const cli = process.argv.join(" ");
 const greppingMutation = /@mutation-proof/.test(cli);
-const runMutationProof =
-  process.env.INCLUDE_MUTATION_PROOF?.trim().toLowerCase() === "true" ||
-  greppingMutation;
+const runMutationProof = env.INCLUDE_MUTATION_PROOF || greppingMutation;
+
+const workers = resolvePlaywrightWorkers();
 
 export default defineConfig({
   globalSetup: require.resolve("./src/global.setup.ts"),
   testDir: "./src",
   testIgnore: skippedWriteSpecs,
   fullyParallel: false,
-  workers: 1,
+  workers,
   timeout: DEFAULT_TEST_TIMEOUT_MS,
-  retries: 1,
+  retries: env.CI ? 1 : 0,
   grepInvert: runMutationProof ? /@mutation-proof-oneoff/ : /@mutation-proof/,
   reporter: [
     ["list"],
@@ -76,6 +78,6 @@ export default defineConfig({
     ],
   ],
   use: {
-    baseURL: normalizeApiBaseUrl(process.env.BASE_URL),
+    baseURL: normalizeApiBaseUrl(env.BASE_URL),
   },
 });

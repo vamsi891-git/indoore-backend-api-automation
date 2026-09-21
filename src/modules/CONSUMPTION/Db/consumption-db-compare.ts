@@ -2,11 +2,8 @@
   compareApiToDb,
   logDbVsApiSection,
   type DbCompareObs,
-} from "../../../core/db/db-compare.engine";
-import type {
-  DbConsumptionConsumerRow,
-  DbConsumptionDailyReadingRow,
-} from "./consumption.db";
+} from "../../../extras/db/db-compare.engine";
+import type { DbConsumptionConsumerRow, DbConsumptionDailyReadingRow } from "./consumption.db";
 
 /**
  * Daily/hourly/monthly pagination totals are JWT-scoped.
@@ -83,9 +80,7 @@ export function compareConsumptionPatternTotalToDb(options: {
   if (apiCount > dbCount) {
     const drift = apiCount - dbCount;
     // Live API totalCount can exceed page-key SQL by a few hundred (universe drift).
-    const maxDrift = Number(
-      process.env.CONSUMPTION_PATTERN_TOTAL_DRIFT ?? 300,
-    );
+    const maxDrift = Number(process.env.CONSUMPTION_PATTERN_TOTAL_DRIFT ?? 300);
     if (drift <= maxDrift) {
       console.warn(
         [
@@ -242,9 +237,7 @@ export function compareConsumptionDailyReadingToDb(options: {
   const dbIr = toFiniteNumber(dbRow.ir);
   const dbFr = toFiniteNumber(dbRow.fr);
   if (dbIr == null || dbFr == null) {
-    console.warn(
-      `[BACKEND FINDING] daily reading: archive IR/FR null for msn=${api.msn}`,
-    );
+    console.warn(`[BACKEND FINDING] daily reading: archive IR/FR null for msn=${api.msn}`);
     return;
   }
 

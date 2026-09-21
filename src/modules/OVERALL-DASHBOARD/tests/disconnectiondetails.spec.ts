@@ -7,12 +7,11 @@ import {
 } from "../Data/disconnectiondetails.data";
 import { DisconnectionDetailsMapper } from "../Mapper/disconnectiondetails.mapper";
 import { DisconnectionDetailsValidator } from "../Validator/disconnectiondetails.validator";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { DisconnectionDetailsSuccessResponseSchema } from "../schemas/overall-dashboard.schemas";
 import { skipIfOverallDashboardInternalError } from "../utils/overall-dashboard-env.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Connect and disconnect by month", () => {
   test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
@@ -20,18 +19,12 @@ test.describe("Connect and disconnect by month", () => {
   test(
     "Connect and disconnect by month — last six months, each month listed once",
     {
-      tag: [
-        "@smoke",
-        "@overall-dashboard",
-        "@disconnection-details",
-        "@positive",
-      ],
+      tag: ["@smoke", "@overall-dashboard", "@disconnection-details", "@positive"],
     },
     async ({ authenticatedApi }) => {
       const api = new DisconnectionDetailsApi(authenticatedApi);
       const { maxResponseTime } = disconnectionDetailsData;
-      const { rawResponse, responseBody, responseTime } =
-        await api.getDisconnectionDetails();
+      const { rawResponse, responseBody, responseTime } = await api.getDisconnectionDetails();
       await PerformanceTracker.track(
         rawResponse,
         "Connect and disconnect by month — last six months, each month listed once",
@@ -43,21 +36,15 @@ test.describe("Connect and disconnect by month", () => {
         responseBody,
         DISCONNECTION_DETAILS_PATH,
       );
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new DisconnectionDetailsValidator();
-      validation.execute("Status", () =>
-        assert.validateStatusCode(rawResponse, 200, responseBody),
-      );
-      validation.execute("Content Type", () =>
-        assert.validateContentType(rawResponse),
-      );
+      validation.execute("Status", () => assert.validateStatusCode(rawResponse, 200, responseBody));
+      validation.execute("Content Type", () => assert.validateContentType(rawResponse));
       validation.execute("Response Time", () =>
         assert.validateResponseTime(responseTime, maxResponseTime),
       );
-      validation.execute("Sensitive Data", () =>
-        assert.validateSensitiveData(responseBody),
-      );
+      validation.execute("Sensitive Data", () => assert.validateSensitiveData(responseBody));
       validation.execute("Required Fields", () =>
         assert.validateRequiredFields(responseBody, ["success"]),
       );
@@ -67,8 +54,7 @@ test.describe("Connect and disconnect by month", () => {
           assert.validateRequiredFields(responseBody, ["data"]),
         );
         validation.execute("Zod Response Schema", () => {
-          const result =
-            DisconnectionDetailsSuccessResponseSchema.safeParse(responseBody);
+          const result = DisconnectionDetailsSuccessResponseSchema.safeParse(responseBody);
           expect(
             result.success,
             result.success
@@ -76,12 +62,8 @@ test.describe("Connect and disconnect by month", () => {
               : `Zod contract mismatch:\n${JSON.stringify(result.error.format(), null, 2)}`,
           ).toBe(true);
         });
-        validation.execute("Success", () =>
-          validator.validateSuccess(mapped.success),
-        );
-        validation.execute("Six unique months", () =>
-          validator.validateMonthSeries(mapped),
-        );
+        validation.execute("Success", () => validator.validateSuccess(mapped.success));
+        validation.execute("Six unique months", () => validator.validateMonthSeries(mapped));
       }
       validation.printSummary(
         "Connect and disconnect by month — last six months, each month listed once",
@@ -93,12 +75,7 @@ test.describe("Connect and disconnect by month", () => {
   test(
     "Connect and disconnect by month — leftover extra filters are blocked",
     {
-      tag: [
-        "@overall-dashboard",
-        "@disconnection-details",
-        "@negative",
-        "@edge",
-      ],
+      tag: ["@overall-dashboard", "@disconnection-details", "@negative", "@edge"],
     },
     async ({ authenticatedApi }) => {
       const api = new DisconnectionDetailsApi(authenticatedApi);
@@ -110,7 +87,7 @@ test.describe("Connect and disconnect by month", () => {
         responseBody,
         DISCONNECTION_DETAILS_PATH,
       );
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       validation.execute("Status 400", () => {
         expect(rawResponse.status()).toBe(400);
       });

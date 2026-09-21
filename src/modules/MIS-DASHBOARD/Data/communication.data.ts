@@ -16,13 +16,7 @@ export const EXPECTED_COMMUNICATION_CATEGORIES = [
   "Unknown",
 ];
 
-export const EXPECTED_COMMUNICATION_PHASES = [
-  "1 PH",
-  "3PH 4CT",
-  "3PH WC",
-  "HT",
-  "Unknown",
-];
+export const EXPECTED_COMMUNICATION_PHASES = ["1 PH", "3PH 4CT", "3PH WC", "HT", "Unknown"];
 
 export type CommunicationScenario =
   | "happy_all"
@@ -60,6 +54,8 @@ export type CommunicationTestCase = {
   checkExpectedLabels?: boolean;
   checkChartMembership?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 };
 
 const tags = ["@mis-dashboard", "@comm-stats", "@edge"];

@@ -6,14 +6,12 @@ import { test, expect } from "../../../fixtures/observability.fixture";
 import {
   assertContractSnapshot,
   buildLookupItemsContractSnapshot,
-} from "../../../core/contract/contract-snapshot.helper";
+} from "../../../extras/contract/contract-snapshot.helper";
 import { NotificationsApi } from "../Api/notifications.api";
 import { NotificationsData } from "../Data/notifications.data";
 
 function asRecord(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === "object"
-    ? (value as Record<string, unknown>)
-    : {};
+  return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
 test.describe("NOTIFICATIONS — Contract Snapshots", () => {

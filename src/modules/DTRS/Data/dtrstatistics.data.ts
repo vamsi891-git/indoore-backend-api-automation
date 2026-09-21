@@ -1,9 +1,6 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { DtrStatisticsQuery } from "../Api/dtrstatistics.api";
-import type {
-  DtrStatisticsResponse,
-  DtrStatisticsScenario,
-} from "../Mapper/dtrstatistics.mapper";
+import type { DtrStatisticsResponse, DtrStatisticsScenario } from "../Mapper/dtrstatistics.mapper";
 import { EM_DASH } from "../utils/dtr-backend.util";
 
 export const dtrStatisticsMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
@@ -173,109 +170,97 @@ export const dtrStatisticsContractTrendFormulaMeta = {
   kvah: { current: 1200, previous: 1000, expectedTrend: 20 },
 };
 
-export const dtrStatisticsContractTrendFormulaResponse: DtrStatisticsResponse =
-  {
-    success: true,
-    data: {
-      statisticCards: [
-        {
-          title: "Total Consumer",
-          value: "5",
-          subtitle: "Linked to this DTR",
-          trendPercent: null,
-        },
-        {
-          title: "Total KW",
-          value: "110.00",
-          subtitle: "Active Power",
-          trendPercent:
-            dtrStatisticsContractTrendFormulaMeta.kw.expectedTrend,
-        },
-        {
-          title: "Total KVA",
-          value: "55",
-          subtitle: "Apparent Power",
-          trendPercent:
-            dtrStatisticsContractTrendFormulaMeta.kva.expectedTrend,
-        },
-        {
-          title: "Total KWh",
-          value: "1000.00",
-          subtitle: "Cumulative Active Energy",
-          trendPercent:
-            dtrStatisticsContractTrendFormulaMeta.kwh.expectedTrend,
-        },
-        {
-          title: "Total KVAh",
-          value: "1200.00",
-          subtitle: "Cumulative Apparent Energy",
-          trendPercent:
-            dtrStatisticsContractTrendFormulaMeta.kvah.expectedTrend,
-        },
-        {
-          title: "Power On",
-          value: "01:00:00",
-          subtitle: null,
-          trendPercent: null,
-        },
-        {
-          title: "Power Off",
-          value: EM_DASH,
-          subtitle: null,
-          trendPercent: null,
-        },
-        {
-          title: "Status",
-          value: "Under Load",
-          subtitle: "100.00",
-          trendPercent: null,
-        },
-      ],
-    },
-  };
+export const dtrStatisticsContractTrendFormulaResponse: DtrStatisticsResponse = {
+  success: true,
+  data: {
+    statisticCards: [
+      {
+        title: "Total Consumer",
+        value: "5",
+        subtitle: "Linked to this DTR",
+        trendPercent: null,
+      },
+      {
+        title: "Total KW",
+        value: "110.00",
+        subtitle: "Active Power",
+        trendPercent: dtrStatisticsContractTrendFormulaMeta.kw.expectedTrend,
+      },
+      {
+        title: "Total KVA",
+        value: "55",
+        subtitle: "Apparent Power",
+        trendPercent: dtrStatisticsContractTrendFormulaMeta.kva.expectedTrend,
+      },
+      {
+        title: "Total KWh",
+        value: "1000.00",
+        subtitle: "Cumulative Active Energy",
+        trendPercent: dtrStatisticsContractTrendFormulaMeta.kwh.expectedTrend,
+      },
+      {
+        title: "Total KVAh",
+        value: "1200.00",
+        subtitle: "Cumulative Apparent Energy",
+        trendPercent: dtrStatisticsContractTrendFormulaMeta.kvah.expectedTrend,
+      },
+      {
+        title: "Power On",
+        value: "01:00:00",
+        subtitle: null,
+        trendPercent: null,
+      },
+      {
+        title: "Power Off",
+        value: EM_DASH,
+        subtitle: null,
+        trendPercent: null,
+      },
+      {
+        title: "Status",
+        value: "Under Load",
+        subtitle: "100.00",
+        trendPercent: null,
+      },
+    ],
+  },
+};
 
-export const dtrStatisticsContractStatusLimitedResponse: DtrStatisticsResponse =
-  {
-    success: true,
-    data: {
-      statisticCards: dtrStatisticsContractDegradedResponse.data!
-        .statisticCards.map((card) =>
-          card.title === "Status"
-            ? {
-                ...card,
-                value: "Limited",
-                subtitle: "150.00",
-              }
-            : card,
-        ),
-    },
-  };
+export const dtrStatisticsContractStatusLimitedResponse: DtrStatisticsResponse = {
+  success: true,
+  data: {
+    statisticCards: dtrStatisticsContractDegradedResponse.data!.statisticCards.map((card) =>
+      card.title === "Status"
+        ? {
+            ...card,
+            value: "Limited",
+            subtitle: "150.00",
+          }
+        : card,
+    ),
+  },
+};
 
-export const dtrStatisticsContractStatusUnderLoadResponse: DtrStatisticsResponse =
-  {
-    success: true,
-    data: {
-      statisticCards: dtrStatisticsContractDegradedResponse.data!
-        .statisticCards.map((card) =>
-          card.title === "Status"
-            ? {
-                ...card,
-                value: "Under Load",
-                subtitle: "42.50",
-              }
-            : card,
-        ),
-    },
-  };
+export const dtrStatisticsContractStatusUnderLoadResponse: DtrStatisticsResponse = {
+  success: true,
+  data: {
+    statisticCards: dtrStatisticsContractDegradedResponse.data!.statisticCards.map((card) =>
+      card.title === "Status"
+        ? {
+            ...card,
+            value: "Under Load",
+            subtitle: "42.50",
+          }
+        : card,
+    ),
+  },
+};
 
 export const dtrStatisticsContractUnbalancedResponse: DtrStatisticsResponse = {
   success: true,
   data: {
-    statisticCards: dtrStatisticsContractDegradedResponse.data!.statisticCards.map(
-      (card) =>
-        card.title === "Total Consumer"
-          ? { ...card, value: "42" }
-          : card,
+    statisticCards: dtrStatisticsContractDegradedResponse.data!.statisticCards.map((card) =>
+      card.title === "Total Consumer" ? { ...card, value: "42" } : card,
     ),
   },
 };
@@ -283,27 +268,23 @@ export const dtrStatisticsContractUnbalancedResponse: DtrStatisticsResponse = {
 export const dtrStatisticsContractPowerOnResponse: DtrStatisticsResponse = {
   success: true,
   data: {
-    statisticCards: dtrStatisticsContractDegradedResponse.data!.statisticCards.map(
-      (card) =>
-        card.title === "Power On" ? { ...card, value: "03:45:00" } : card,
+    statisticCards: dtrStatisticsContractDegradedResponse.data!.statisticCards.map((card) =>
+      card.title === "Power On" ? { ...card, value: "03:45:00" } : card,
     ),
   },
 };
 
-export const dtrStatisticsContractIntegerFeedersResponse: DtrStatisticsResponse =
-  {
-    success: true,
-    data: {
-      statisticCards: dtrStatisticsContractDegradedResponse.data!.statisticCards.map(
-        (card) => {
-          if (card.title === "Total Consumer") {
-            return { ...card, value: "25" };
-          }
-          return card;
-        },
-      ),
-    },
-  };
+export const dtrStatisticsContractIntegerFeedersResponse: DtrStatisticsResponse = {
+  success: true,
+  data: {
+    statisticCards: dtrStatisticsContractDegradedResponse.data!.statisticCards.map((card) => {
+      if (card.title === "Total Consumer") {
+        return { ...card, value: "25" };
+      }
+      return card;
+    }),
+  },
+};
 
 export interface DtrStatisticsTestCase {
   testName: string;
@@ -311,11 +292,11 @@ export interface DtrStatisticsTestCase {
   expectedStatus?: number;
   isContractFixture?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
-export function resolveDtrStatisticsCode(
-  scenario: DtrStatisticsScenario,
-): string | undefined {
+export function resolveDtrStatisticsCode(scenario: DtrStatisticsScenario): string | undefined {
   switch (scenario) {
     case "dts_by_code_primary":
     case "dts_ignore_unknown_query":
@@ -348,9 +329,7 @@ export function resolveDtrStatisticsCode(
   }
 }
 
-export function resolveDtrStatisticsQuery(
-  scenario: DtrStatisticsScenario,
-): DtrStatisticsQuery {
+export function resolveDtrStatisticsQuery(scenario: DtrStatisticsScenario): DtrStatisticsQuery {
   if (scenario === "dts_ignore_unknown_query") {
     return { foo: 1, bar: "baz" };
   }
@@ -396,77 +375,87 @@ export const dtrStatisticsTestCases: DtrStatisticsTestCase[] = [
     testName: "DTR statistic cards — load, energy, consumers, and status",
     scenario: "dts_by_code_primary",
     tags: ["@smoke", "@dtr", "@statistics"],
+    nonEmptyExpected: true,
   },
   {
     testName: "DTR statistic cards — a second transformer still shows cards",
     scenario: "dts_by_code_alt",
     tags: ["@dtr", "@statistics", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "DTR statistic cards — extra filters that nobody uses are ignored",
+    testName: "DTR statistic cards — extra filters that nobody uses are ignored",
     scenario: "dts_ignore_unknown_query",
     tags: ["@dtr", "@statistics", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample statistic cards — dashes when numbers are missing",
     scenario: "contract_degraded_em_dash",
     isContractFixture: true,
     tags: ["@dtr", "@statistics", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Sample statistic cards — kW, kVA, kWh, kVAh, consumers, and power-on time",
+    testName: "Sample statistic cards — kW, kVA, kWh, kVAh, consumers, and power-on time",
     scenario: "contract_populated_metrics",
     isContractFixture: true,
     tags: ["@dtr", "@statistics", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample statistic cards — up/down percent vs last period",
     scenario: "contract_trend_formula",
     isContractFixture: true,
     tags: ["@dtr", "@statistics", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample statistic cards — status shows Limited when load is capped",
     scenario: "contract_status_limited",
     isContractFixture: true,
     tags: ["@dtr", "@statistics", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample statistic cards — status shows Under Load",
     scenario: "contract_status_under_load",
     isContractFixture: true,
     tags: ["@dtr", "@statistics", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample statistic cards — consumer count is zero or more",
     scenario: "contract_unbalanced_percent",
     isContractFixture: true,
     tags: ["@dtr", "@statistics", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample statistic cards — power-on time looks like a clock",
     scenario: "contract_power_on_clock",
     isContractFixture: true,
     tags: ["@dtr", "@statistics", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample statistic cards — feeder and fuse counts are whole numbers",
     scenario: "contract_integer_feeders_fuse",
     isContractFixture: true,
     tags: ["@dtr", "@statistics", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "DTR statistic cards — unknown transformer is not shown or cards are empty",
+    testName: "DTR statistic cards — unknown transformer is not shown or cards are empty",
     scenario: "dtr_not_found",
     tags: ["@dtr", "@statistics", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR statistic cards — a blank transformer code is not allowed",
     scenario: "empty_dtr_code",
     expectedStatus: 400,
     tags: ["@dtr", "@statistics", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

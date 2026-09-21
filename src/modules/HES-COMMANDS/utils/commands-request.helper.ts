@@ -1,9 +1,6 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
 import { DEFAULT_REQUEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
-import {
-  getWithAutoRefresh,
-  postWithAutoRefresh,
-} from "../../../core/utils/authenticated.request";
+import { getWithAutoRefresh, postWithAutoRefresh } from "../../../core/utils/authenticated.request";
 
 const RETRY_STATUSES = new Set([429, 500, 502, 503, 504]);
 const MAX_ATTEMPTS = 5;
@@ -30,31 +27,25 @@ async function requestCommandsWithRetry(
   dispatch: () => Promise<APIResponse>,
 ): Promise<CommandsRequestResult> {
   let lastError: unknown;
-  let lastResponseTime = 0;
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     const start = Date.now();
     try {
       const rawResponse = await dispatch();
-      lastResponseTime = Date.now() - start;
+      const responseTime = Date.now() - start;
       const status = rawResponse.status();
 
       if (!RETRY_STATUSES.has(status) || attempt === MAX_ATTEMPTS) {
-        return { rawResponse, responseTime: lastResponseTime };
+        return { rawResponse, responseTime };
       }
 
-      await new Promise((resolve) =>
-        setTimeout(resolve, retryDelayMs(status, attempt)),
-      );
+      await new Promise((resolve) => setTimeout(resolve, retryDelayMs(status, attempt)));
     } catch (error) {
       lastError = error;
-      lastResponseTime = Date.now() - start;
       if (!isTransientNetworkError(error) || attempt === MAX_ATTEMPTS) {
         throw error;
       }
-      await new Promise((resolve) =>
-        setTimeout(resolve, retryDelayMs(500, attempt)),
-      );
+      await new Promise((resolve) => setTimeout(resolve, retryDelayMs(500, attempt)));
     }
   }
 

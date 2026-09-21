@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { buildHeuristicTriage } from "../ai/defect-heuristic-triage";
+import { buildHeuristicTriage } from "../../extras/ai/defect-heuristic-triage";
 import { DeveloperReportEngine } from "../engine/developer-report.engine";
 
 test.describe("defect-heuristic-triage", () => {

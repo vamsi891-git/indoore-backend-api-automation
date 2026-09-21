@@ -1,18 +1,12 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
 import { HES_COMMANDS_E2E_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { CommandsBillingApi } from "../Api/commands-billing.api";
 import { CommandsQueryMeterJobApi } from "../Api/commands-query-meter-job.api";
-import {
-  BILLING_PATH,
-  buildBillingBody,
-  commandsBillingData,
-} from "../Data/commands-billing.data";
+import { BILLING_PATH, buildBillingBody, commandsBillingData } from "../Data/commands-billing.data";
 import { buildQueryMeterJobPath } from "../Data/commands-query-meter-job.data";
 import { CommandsBillingValidator } from "../Validator/commands-billing.validator";
 import { CommandsJobInitValidator } from "../Validator/commands-job-init.validator";
@@ -40,8 +34,8 @@ test.describe("HES Commands — Billing (E2E)", () => {
       const body = buildBillingBody();
       const billingApi = new CommandsBillingApi(authenticatedApi);
       const queryApi = new CommandsQueryMeterJobApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const initValidator = new CommandsJobInitValidator();
       const queryValidator = new CommandsQueryMeterJobValidator();
       const billingValidator = new CommandsBillingValidator();
@@ -56,16 +50,12 @@ test.describe("HES Commands — Billing (E2E)", () => {
         postRaw,
         "Commands Billing — Init Job",
         postRaw.url(),
-        postTime
+        postTime,
       );
 
       const postStatus = postRaw.status();
       if (
-        BackendResponse.shouldSkipServerFailure(
-          postStatus,
-          "Commands Billing — Init Job",
-          postBody,
-        )
+        BackendResponse.shouldSkipServerFailure(postStatus, "Commands Billing — Init Job", postBody)
       ) {
         validation.execute("Error Response (500 backend defect)", () =>
           initValidator.validateErrorResponse(postBody),
@@ -94,9 +84,7 @@ test.describe("HES Commands — Billing (E2E)", () => {
         maxResponseTimeMs: commandsBillingData.maxResponseTimeMs,
       });
 
-      validation.execute("Init Success Response", () =>
-        initValidator.validateResponse(postBody),
-      );
+      validation.execute("Init Success Response", () => initValidator.validateResponse(postBody));
 
       const mappedInit = CommandsJobInitMapper.mapResponse(postBody);
 
@@ -121,9 +109,7 @@ test.describe("HES Commands — Billing (E2E)", () => {
       validation.execute("Init IN_PROGRESS Status", () =>
         billingValidator.validateInitInProgressStatus(mappedInit),
       );
-      validation.execute("Init Message", () =>
-        billingValidator.validateInitMessage(mappedInit),
-      );
+      validation.execute("Init Message", () => billingValidator.validateInitMessage(mappedInit));
       validation.execute("Init Full Contract", () =>
         initValidator.validateFullInitContract(mappedInit, body.meters),
       );
@@ -151,7 +137,7 @@ test.describe("HES Commands — Billing (E2E)", () => {
         pollResult.rawResponse,
         "Commands Billing — Query Meter Job",
         pollResult.rawResponse.url(),
-        pollResult.responseTime
+        pollResult.responseTime,
       );
 
       ApiValidationHelper.runStandardChecks(validation, assert, {
@@ -170,9 +156,7 @@ test.describe("HES Commands — Billing (E2E)", () => {
         meterId: body.meters[0],
         onFinished: () => {
           validation.execute("Query Finished Message", () =>
-            billingValidator.validateQueryFinishedMessage(
-              pollResult.mapped.message,
-            ),
+            billingValidator.validateQueryFinishedMessage(pollResult.mapped.message),
           );
           validation.execute("Query HES Job Status FINISHED", () => {
             expect(pollResult.mapped.job.hesJobStatus).toBe("FINISHED");
@@ -181,9 +165,7 @@ test.describe("HES Commands — Billing (E2E)", () => {
             queryValidator.validateSummaryCounts(pollResult.mapped.job.summary),
           );
           validation.execute("Query All Meter Results", () =>
-            queryValidator.validateAllMeterResults(
-              pollResult.mapped.job.meterResults,
-            ),
+            queryValidator.validateAllMeterResults(pollResult.mapped.job.meterResults),
           );
           validation.execute("Query Billing Period HES Response", () =>
             billingValidator.validateBillingQueryMeterResults(
@@ -192,11 +174,7 @@ test.describe("HES Commands — Billing (E2E)", () => {
             ),
           );
           validation.execute("Query Full Contract", () =>
-            queryValidator.validateFullContract(
-              pollResult.mapped,
-              jobName,
-              body.meters[0],
-            ),
+            queryValidator.validateFullContract(pollResult.mapped, jobName, body.meters[0]),
           );
         },
       });
@@ -238,22 +216,19 @@ test.describe("HES Commands — Billing (E2E)", () => {
       };
 
       const api = new CommandsBillingApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const initValidator = new CommandsJobInitValidator();
 
-      const { rawResponse, responseBody, responseTime } =
-        await api.postBilling(body as Parameters<CommandsBillingApi["postBilling"]>[0]);
+      const { rawResponse, responseBody, responseTime } = await api.postBilling(
+        body as Parameters<CommandsBillingApi["postBilling"]>[0],
+      );
 
       validation.execute("Status (validation error)", () =>
         assert.validateStatusCode(rawResponse, 400, responseBody),
       );
-      validation.execute("Content Type", () =>
-        assert.validateContentType(rawResponse),
-      );
-      validation.execute("Error Response", () =>
-        initValidator.validateErrorResponse(responseBody),
-      );
+      validation.execute("Content Type", () => assert.validateContentType(rawResponse));
+      validation.execute("Error Response", () => initValidator.validateErrorResponse(responseBody));
 
       ApiValidationHelper.finalize(validation, {
         apiName: "Commands Billing — Invalid Type",
@@ -266,8 +241,7 @@ test.describe("HES Commands — Billing (E2E)", () => {
           requestParams: body,
           responseStatus: rawResponse.status(),
           responseBody,
-          expectedBehavior:
-            "Invalid billing type returns 400 VALIDATION_ERROR.",
+          expectedBehavior: "Invalid billing type returns 400 VALIDATION_ERROR.",
         },
       });
     },

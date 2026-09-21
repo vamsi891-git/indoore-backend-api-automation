@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { compareApiToDb } from "../../../../core/db/db-compare.engine";
+import { compareApiToDb } from "../../../../extras/db/db-compare.engine";
 
 /**
  * Mutation proof: compareApiToDb reports MISMATCH when API and DB values differ.
@@ -11,7 +11,8 @@ import { compareApiToDb } from "../../../../core/db/db-compare.engine";
  * Throws via Playwright expect when any required field mismatches.
  */
 test.describe("Mutation proof — DB cross-validation mismatch", () => {
-  test("MUT-005 — compareApiToDb fails when amountBilled API ≠ DB",
+  test(
+    "MUT-005 — compareApiToDb fails when amountBilled API ≠ DB",
     { tag: ["@mutation-proof", "@revenue-protection"] },
     async () => {
       let caught: Error | undefined;

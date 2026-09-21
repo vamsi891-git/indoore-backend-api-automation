@@ -1,5 +1,5 @@
-import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
-import type {DbConsumerActivationRow,DbConsumerProfileRow,DbMeterRow,} from "./consumers.db";
+import { compareApiToDb, type DbCompareObs } from "../../../extras/db/db-compare.engine";
+import type { DbConsumerActivationRow, DbConsumerProfileRow, DbMeterRow } from "./consumers.db";
 /** DB often stores ", First Last" — API usually returns "First Last". */
 export function normalizeConsumerName(value: string | null | undefined): string {
   return String(value ?? "")
@@ -43,9 +43,7 @@ export function compareConsumerProfileSpotCheck(options: {
   }
   const apiAccount = String(api.uniqueId ?? "").trim() || null;
   const apiIvrs =
-    String(api.ivrsNo ?? "").trim() ||
-    String(api.consumerNumber ?? "").trim() ||
-    null;
+    String(api.ivrsNo ?? "").trim() || String(api.consumerNumber ?? "").trim() || null;
   compareApiToDb(
     [
       {
@@ -279,13 +277,7 @@ export function compareBillingHistoryCountToDb(options: {
   meterSerial: string;
   obs?: DbCompareObs;
 }): void {
-  const {
-    apiRowCount,
-    dbRowCount,
-    meterSerial,
-    obs,
-    apiNonNullConsumptionCount,
-  } = options;
+  const { apiRowCount, dbRowCount, meterSerial, obs, apiNonNullConsumptionCount } = options;
   const limit = options.limit ?? 12;
 
   if (dbRowCount <= 0) {
@@ -296,8 +288,7 @@ export function compareBillingHistoryCountToDb(options: {
   }
 
   // billingLimit=0 → all archive periods; billingLimit>0 → at most N (lookback may return fewer).
-  const rawExpected =
-    limit <= 0 ? dbRowCount : Math.min(limit, dbRowCount);
+  const rawExpected = limit <= 0 ? dbRowCount : Math.min(limit, dbRowCount);
   const lengthOk =
     apiRowCount === rawExpected ||
     (limit > 0 && apiRowCount === limit) ||
@@ -388,8 +379,7 @@ export function compareCommunicationLastSeenToDb(options: {
   obs?: DbCompareObs;
 }): void {
   const { apiHasLastSeen, dbLastSeen, meterLookupId, obs } = options;
-  const dbPresent =
-    dbLastSeen != null && String(dbLastSeen).trim() !== "";
+  const dbPresent = dbLastSeen != null && String(dbLastSeen).trim() !== "";
 
   if (apiHasLastSeen && !dbPresent) {
     console.warn(

@@ -1,18 +1,24 @@
 import { test as base, request, APIRequestContext } from "./base.fixture";
 import { LoggerEngine } from "../core/engine/logger.engine";
-import { DEFAULT_REQUEST_TIMEOUT_MS } from "../core/constants/api-timeouts";
-import {getWithAutoRefresh,postWithAutoRefresh,putWithAutoRefresh,patchWithAutoRefresh,deleteWithAutoRefresh} from "../core/utils/authenticated.request";
+import {
+  getWithAutoRefresh,
+  postWithAutoRefresh,
+  putWithAutoRefresh,
+  patchWithAutoRefresh,
+  deleteWithAutoRefresh,
+} from "../core/utils/authenticated.request";
 import { normalizeApiBaseUrl } from "../core/utils/api-path.util";
+import { env } from "../core/config/env.schema";
 type ApiFixtures = {
   authenticatedApi: APIRequestContext;
 };
 export const test = base.extend<ApiFixtures>({
-  authenticatedApi: async ({}, use) => {
-    if (!process.env.BASE_URL) {
+  authenticatedApi: async (_fixtures, use) => {
+    if (!env.BASE_URL) {
       throw new Error("BASE_URL missing in environment");
     }
     const apiContext = await request.newContext({
-      baseURL: normalizeApiBaseUrl(process.env.BASE_URL),
+      baseURL: normalizeApiBaseUrl(env.BASE_URL),
       extraHTTPHeaders: {
         Accept: "application/json",
       },
@@ -26,14 +32,22 @@ export const test = base.extend<ApiFixtures>({
       put: (url: string, options?: unknown) =>
         putWithAutoRefresh(apiContext, url, options as Parameters<typeof putWithAutoRefresh>[2]),
       patch: (url: string, options?: unknown) =>
-        patchWithAutoRefresh(apiContext, url, options as Parameters<typeof patchWithAutoRefresh>[2]),
+        patchWithAutoRefresh(
+          apiContext,
+          url,
+          options as Parameters<typeof patchWithAutoRefresh>[2],
+        ),
       delete: (url: string, options?: unknown) =>
-        deleteWithAutoRefresh(apiContext, url, options as Parameters<typeof deleteWithAutoRefresh>[2])
+        deleteWithAutoRefresh(
+          apiContext,
+          url,
+          options as Parameters<typeof deleteWithAutoRefresh>[2],
+        ),
     } as APIRequestContext;
 
     LoggerEngine.info("API fixture context created");
     await use(wrappedApiContext);
     await apiContext.dispose();
     LoggerEngine.info("API fixture context disposed");
-  }
+  },
 });

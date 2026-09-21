@@ -1,5 +1,5 @@
 import type pg from "pg";
-import { queryReadOnly, queryScalar } from "../../../core/db/postgres.client";
+import { queryReadOnly, queryScalar } from "../../../extras/db/postgres.client";
 import {
   CONNECTION_STATUS_COUNT_SQL,
   CONNECTION_STATUS_ROW_BY_ID_SQL,
@@ -24,9 +24,7 @@ import {
 } from "./lookup-catalog-sql";
 
 export function isUtilsLookupDbSqlReady(): boolean {
-  return (
-    process.env.UTILS_LOOKUP_DB_SQL_READY?.trim().toLowerCase() === "true"
-  );
+  return process.env.UTILS_LOOKUP_DB_SQL_READY?.trim().toLowerCase() === "true";
 }
 
 export function resolveUtilsLookupDbSampleSize(): number {
@@ -130,9 +128,7 @@ export async function eventPriorityExists(
   pool: pg.Pool,
   priorityTblRefId: number,
 ): Promise<boolean> {
-  const present = await queryScalar<boolean>(pool, EVENT_PRIORITY_EXISTS_SQL, [
-    priorityTblRefId,
-  ]);
+  const present = await queryScalar<boolean>(pool, EVENT_PRIORITY_EXISTS_SQL, [priorityTblRefId]);
   return present === true;
 }
 
@@ -141,17 +137,13 @@ export async function countMeterPhases(pool: pg.Pool): Promise<number> {
 }
 
 export async function getMeterPhaseById(pool: pg.Pool, id: number) {
-  const rows = await queryReadOnly<{ id: number; name: string }>(
-    pool,
-    METER_PHASE_ROW_BY_ID_SQL,
-    [id],
-  );
+  const rows = await queryReadOnly<{ id: number; name: string }>(pool, METER_PHASE_ROW_BY_ID_SQL, [
+    id,
+  ]);
   return rows[0] ?? null;
 }
 
-export async function countOrganisationHierarchies(
-  pool: pg.Pool,
-): Promise<number> {
+export async function countOrganisationHierarchies(pool: pg.Pool): Promise<number> {
   return count(pool, ORG_HIERARCHY_COUNT_SQL);
 }
 

@@ -1,5 +1,5 @@
 import type pg from "pg";
-import { queryReadOnly, queryScalar } from "../../../core/db/postgres.client";
+import { queryReadOnly, queryScalar } from "../../../extras/db/postgres.client";
 import {
   COMMERCIAL_LF_LT5_REPORTING_COUNT_SQL,
   COMMERCIAL_METER_BY_LOOKUP_ID_SQL,
@@ -12,10 +12,7 @@ import {
 } from "./commericial-analysis-sql";
 
 export function isCommericialAnalysisDbSqlReady(): boolean {
-  return (
-    process.env.COMMERICIAL_ANALYSIS_DB_SQL_READY?.trim().toLowerCase() ===
-    "true"
-  );
+  return process.env.COMMERICIAL_ANALYSIS_DB_SQL_READY?.trim().toLowerCase() === "true";
 }
 
 export type DbCommercialMeterRow = {
@@ -54,11 +51,9 @@ export async function getCommercialMeterByLookupId(
   meterLookupId: number,
 ): Promise<DbCommercialMeterRow | null> {
   if (!Number.isFinite(meterLookupId) || meterLookupId <= 0) return null;
-  const rows = await queryReadOnly<DbCommercialMeterRow>(
-    pool,
-    COMMERCIAL_METER_BY_LOOKUP_ID_SQL,
-    [meterLookupId],
-  );
+  const rows = await queryReadOnly<DbCommercialMeterRow>(pool, COMMERCIAL_METER_BY_LOOKUP_ID_SQL, [
+    meterLookupId,
+  ]);
   return rows[0] ?? null;
 }
 
@@ -80,11 +75,7 @@ export async function getCommercialMeterByMsn(
   pool: pg.Pool,
   msn: string,
 ): Promise<DbCommercialMeterRow | null> {
-  const rows = await queryReadOnly<DbCommercialMeterRow>(
-    pool,
-    COMMERCIAL_METER_BY_MSN_SQL,
-    [msn],
-  );
+  const rows = await queryReadOnly<DbCommercialMeterRow>(pool, COMMERCIAL_METER_BY_MSN_SQL, [msn]);
   return rows[0] ?? null;
 }
 
@@ -96,11 +87,11 @@ export async function countCommercialPfViolations(
 ): Promise<number> {
   const { startDate, endDate } = commercialMonthDateRange(month, year);
   return (
-    (await queryScalar<number>(
-      archivePool,
-      COMMERCIAL_PF_VIOLATION_COUNT_SQL,
-      [startDate, endDate, threshold],
-    )) ?? 0
+    (await queryScalar<number>(archivePool, COMMERCIAL_PF_VIOLATION_COUNT_SQL, [
+      startDate,
+      endDate,
+      threshold,
+    ])) ?? 0
   );
 }
 
@@ -112,11 +103,12 @@ export async function getCommercialPfByMsn(
   msn: string,
 ): Promise<DbCommercialPfRow | null> {
   const { startDate, endDate } = commercialMonthDateRange(month, year);
-  const rows = await queryReadOnly<DbCommercialPfRow>(
-    archivePool,
-    COMMERCIAL_PF_BY_MSN_SQL,
-    [startDate, endDate, threshold, msn],
-  );
+  const rows = await queryReadOnly<DbCommercialPfRow>(archivePool, COMMERCIAL_PF_BY_MSN_SQL, [
+    startDate,
+    endDate,
+    threshold,
+    msn,
+  ]);
   return rows[0] ?? null;
 }
 
@@ -151,18 +143,14 @@ export async function countCommercialLfViolations(
       ? commercialMonthDateRange(month, year)
       : commercialMultiMonthDateRange(month, year, months);
   const sql = buildCommercialLfViolationCountSql(operator, threshold);
-  return (
-    (await queryScalar<number>(archivePool, sql, [startDate, endDate])) ?? 0
-  );
+  return (await queryScalar<number>(archivePool, sql, [startDate, endDate])) ?? 0;
 }
 
 function isoMonthStart(year: number, month: number): string {
   return `${year}-${String(month).padStart(2, "0")}-01`;
 }
 
-export async function hasCommercialReportingLfTables(
-  archivePool: pg.Pool,
-): Promise<boolean> {
+export async function hasCommercialReportingLfTables(archivePool: pg.Pool): Promise<boolean> {
   const rows = await queryReadOnly<{
     day_fact: string | null;
     meter_dim: string | null;

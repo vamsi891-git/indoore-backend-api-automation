@@ -1,8 +1,6 @@
 import { expect } from "@playwright/test";
 import { test as authTest } from "../../../fixtures/auth.fixture";
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
 import { AssetManagementCommonValidator } from "../Validator/asset-management-common.validator";
 import {
@@ -16,12 +14,10 @@ import { HierarchyChildrenInvalidQueries } from "../Data/hierarchychildren.data"
 import { HierarchySearchInvalidQueries } from "../Data/hierarchysearch.data";
 import { HierarchyTypesInvalidQueries } from "../Data/hierarchytypes.data";
 import { AssetDetailInvalidPaths } from "../Data/assetdetail.data";
-import {
-  AssetExportInvalidQueries,
-  assetExportQuery,
-} from "../Data/assetexport.data";
+import { AssetExportInvalidQueries, assetExportQuery } from "../Data/assetexport.data";
 import { mapMarkersQuery } from "../Data/mapmarkers.data";
 import { AssetExportMapper } from "../Mapper/assetexport.mapper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Asset Management — Negative", () => {
   test.describe.configure({ mode: "serial" });
@@ -30,8 +26,8 @@ test.describe("Asset Management — Negative", () => {
     "GET /asset-management/dtr/:id — unknown DTR returns 404",
     { tag: ["@negative", "@asset-management", "@dtr"] },
     async ({ authenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const dtrId = AssetManagementNegativeData.unknownDtrId;
       const { page, limit } = DtrDetailPaginationQueries.default;
 
@@ -60,7 +56,7 @@ test.describe("Asset Management — Negative", () => {
     "GET /asset-management/dtr/:id — invalid id zero returns 400 or 404",
     { tag: ["@negative", "@asset-management", "@dtr"] },
     async ({ authenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const dtrId = AssetManagementNegativeData.invalidDtrId;
       const { page, limit } = DtrDetailPaginationQueries.default;
 
@@ -89,7 +85,7 @@ test.describe("Asset Management — Negative", () => {
     "GET /asset-management/dtr/:id — invalid pagination params",
     { tag: ["@negative", "@asset-management", "@dtr"] },
     async ({ authenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const dtrId = AssetManagementNegativeData.unknownDtrId;
 
       for (const query of ["page=0&limit=20", "page=1&limit=0", "page=-1&limit=20"]) {
@@ -122,7 +118,7 @@ test.describe("Asset Management — Negative", () => {
     "GET /asset-management/network-hierarchy — unknown rootId returns 404 or empty scoped tree",
     { tag: ["@negative", "@asset-management", "@hierarchy"] },
     async ({ authenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const rootId = AssetManagementNegativeData.unknownNetworkLookupId;
 
       const rawResponse = await getWithAutoRefresh(
@@ -159,7 +155,7 @@ test.describe("Asset Management — Negative", () => {
       `${row.testName} (negative)`,
       { tag: ["@negative", "@asset-management", "@hierarchy"] },
       async ({ authenticatedApi }) => {
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const rawResponse = await getWithAutoRefresh(
           authenticatedApi,
           `${assetManagementPaths.networkHierarchy}?${row.query}`,
@@ -178,11 +174,9 @@ test.describe("Asset Management — Negative", () => {
           });
         } else {
           validation.execute("Error envelope", () =>
-            AssetManagementCommonValidator.validateErrorResponse(
-              status,
-              responseBody,
-              [...row.expectedStatus],
-            ),
+            AssetManagementCommonValidator.validateErrorResponse(status, responseBody, [
+              ...row.expectedStatus,
+            ]),
           );
         }
 
@@ -195,7 +189,7 @@ test.describe("Asset Management — Negative", () => {
     "GET /asset-management/organisation-hierarchy — unknown rootId returns 404 or empty scoped tree",
     { tag: ["@negative", "@asset-management", "@hierarchy"] },
     async ({ authenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const rootId = AssetManagementNegativeData.unknownOrganisationLookupId;
 
       const rawResponse = await getWithAutoRefresh(
@@ -232,7 +226,7 @@ test.describe("Asset Management — Negative", () => {
       `${row.testName} (negative)`,
       { tag: ["@negative", "@asset-management", "@hierarchy"] },
       async ({ authenticatedApi }) => {
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const rawResponse = await getWithAutoRefresh(
           authenticatedApi,
           `${assetManagementPaths.organisationHierarchy}?${row.query}`,
@@ -251,11 +245,9 @@ test.describe("Asset Management — Negative", () => {
           });
         } else {
           validation.execute("Error envelope", () =>
-            AssetManagementCommonValidator.validateErrorResponse(
-              status,
-              responseBody,
-              [...row.expectedStatus],
-            ),
+            AssetManagementCommonValidator.validateErrorResponse(status, responseBody, [
+              ...row.expectedStatus,
+            ]),
           );
         }
 
@@ -268,7 +260,7 @@ test.describe("Asset Management — Negative", () => {
     "GET /asset-management/hierarchy/children — unknown parentId returns empty page",
     { tag: ["@negative", "@asset-management", "@hierarchy"] },
     async ({ authenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const parentId = AssetManagementNegativeData.unknownNetworkLookupId;
       const rawResponse = await getWithAutoRefresh(
         authenticatedApi,
@@ -306,7 +298,7 @@ test.describe("Asset Management — Negative", () => {
       `${row.testName} (negative)`,
       { tag: ["@negative", "@asset-management", "@hierarchy"] },
       async ({ authenticatedApi }) => {
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const rawResponse = await getWithAutoRefresh(
           authenticatedApi,
           assetManagementPaths.hierarchyChildren(row.query),
@@ -318,11 +310,9 @@ test.describe("Asset Management — Negative", () => {
           expect(row.expectedStatus).toContain(status);
         });
         validation.execute("Error envelope", () =>
-          AssetManagementCommonValidator.validateErrorResponse(
-            status,
-            responseBody,
-            [...row.expectedStatus],
-          ),
+          AssetManagementCommonValidator.validateErrorResponse(status, responseBody, [
+            ...row.expectedStatus,
+          ]),
         );
 
         validation.printSummary(row.testName, 0);
@@ -334,7 +324,7 @@ test.describe("Asset Management — Negative", () => {
     "GET /asset-management/hierarchy/search — unknown hierarchyId returns empty page",
     { tag: ["@negative", "@asset-management", "@hierarchy"] },
     async ({ authenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const hierarchyId = AssetManagementNegativeData.unknownNetworkLookupId;
       const rawResponse = await getWithAutoRefresh(
         authenticatedApi,
@@ -372,7 +362,7 @@ test.describe("Asset Management — Negative", () => {
       `${row.testName} (negative)`,
       { tag: ["@negative", "@asset-management", "@hierarchy"] },
       async ({ authenticatedApi }) => {
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const rawResponse = await getWithAutoRefresh(
           authenticatedApi,
           assetManagementPaths.hierarchySearch(row.query),
@@ -384,11 +374,9 @@ test.describe("Asset Management — Negative", () => {
           expect(row.expectedStatus).toContain(status);
         });
         validation.execute("Error envelope", () =>
-          AssetManagementCommonValidator.validateErrorResponse(
-            status,
-            responseBody,
-            [...row.expectedStatus],
-          ),
+          AssetManagementCommonValidator.validateErrorResponse(status, responseBody, [
+            ...row.expectedStatus,
+          ]),
         );
 
         validation.printSummary(row.testName, 0);
@@ -401,7 +389,7 @@ test.describe("Asset Management — Negative", () => {
       `${row.testName} (negative)`,
       { tag: ["@negative", "@asset-management", "@hierarchy"] },
       async ({ authenticatedApi }) => {
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const path =
           row.query.length > 0
             ? assetManagementPaths.hierarchyTypes(row.query)
@@ -414,11 +402,9 @@ test.describe("Asset Management — Negative", () => {
           expect(row.expectedStatus).toContain(status);
         });
         validation.execute("Error envelope", () =>
-          AssetManagementCommonValidator.validateErrorResponse(
-            status,
-            responseBody,
-            [...row.expectedStatus],
-          ),
+          AssetManagementCommonValidator.validateErrorResponse(status, responseBody, [
+            ...row.expectedStatus,
+          ]),
         );
 
         validation.printSummary(row.testName, 0);
@@ -430,7 +416,7 @@ test.describe("Asset Management — Negative", () => {
     "GET /asset-management/assets/network/:id — unknown id returns 404",
     { tag: ["@negative", "@asset-management", "@asset-detail"] },
     async ({ authenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const rawResponse = await getWithAutoRefresh(
         authenticatedApi,
         assetManagementPaths.assetDetail(
@@ -457,7 +443,7 @@ test.describe("Asset Management — Negative", () => {
     "GET /asset-management/assets/organisation/:id — unknown id returns 404",
     { tag: ["@negative", "@asset-management", "@asset-detail"] },
     async ({ authenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const rawResponse = await getWithAutoRefresh(
         authenticatedApi,
         assetManagementPaths.assetDetail(
@@ -484,13 +470,10 @@ test.describe("Asset Management — Negative", () => {
     "GET /asset-management/assets/dtr/:id — unknown id returns 404",
     { tag: ["@negative", "@asset-management", "@asset-detail"] },
     async ({ authenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const rawResponse = await getWithAutoRefresh(
         authenticatedApi,
-        assetManagementPaths.assetDetail(
-          "dtr",
-          AssetManagementNegativeData.unknownDtrId,
-        ),
+        assetManagementPaths.assetDetail("dtr", AssetManagementNegativeData.unknownDtrId),
       );
       const responseBody = await rawResponse.json().catch(() => ({}));
       validation.execute("Status", () => {
@@ -512,22 +495,17 @@ test.describe("Asset Management — Negative", () => {
       `${row.testName} (negative)`,
       { tag: ["@negative", "@asset-management", "@asset-detail"] },
       async ({ authenticatedApi }) => {
-        const validation = new ValidationEngine();
-        const rawResponse = await getWithAutoRefresh(
-          authenticatedApi,
-          row.path,
-        );
+        const validation = new ApiValidationHelper();
+        const rawResponse = await getWithAutoRefresh(authenticatedApi, row.path);
         const responseBody = await rawResponse.json().catch(() => ({}));
         const status = rawResponse.status();
         validation.execute("Status", () => {
           expect(row.expectedStatus).toContain(status);
         });
         validation.execute("Error envelope", () =>
-          AssetManagementCommonValidator.validateErrorResponse(
-            status,
-            responseBody,
-            [...row.expectedStatus],
-          ),
+          AssetManagementCommonValidator.validateErrorResponse(status, responseBody, [
+            ...row.expectedStatus,
+          ]),
         );
         validation.printSummary(row.testName, 0);
       },
@@ -538,7 +516,7 @@ test.describe("Asset Management — Negative", () => {
     "GET /asset-management/export — unknown hierarchyId returns empty CSV or 404",
     { tag: ["@negative", "@asset-management", "@asset-export"] },
     async ({ authenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const rawResponse = await getWithAutoRefresh(
         authenticatedApi,
         assetManagementPaths.export(
@@ -582,7 +560,7 @@ test.describe("Asset Management — Negative", () => {
       `${row.testName} (negative)`,
       { tag: ["@negative", "@asset-management", "@asset-export"] },
       async ({ authenticatedApi }) => {
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const rawResponse = await getWithAutoRefresh(
           authenticatedApi,
           assetManagementPaths.export(row.query),
@@ -595,11 +573,9 @@ test.describe("Asset Management — Negative", () => {
           expect(row.expectedStatus).toContain(status);
         });
         validation.execute("Error envelope", () =>
-          AssetManagementCommonValidator.validateErrorResponse(
-            status,
-            responseBody,
-            [...row.expectedStatus],
-          ),
+          AssetManagementCommonValidator.validateErrorResponse(status, responseBody, [
+            ...row.expectedStatus,
+          ]),
         );
 
         validation.printSummary(row.testName, 0);
@@ -613,12 +589,10 @@ authTest.describe("Asset Management — Auth Negative", () => {
     "GET /asset-management/network-hierarchy — without auth returns 401",
     { tag: ["@negative", "@asset-management", "@auth"] },
     async ({ unauthenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
 
-      const rawResponse = await unauthenticatedApi.get(
-        assetManagementPaths.networkHierarchy,
-      );
+      const rawResponse = await unauthenticatedApi.get(assetManagementPaths.networkHierarchy);
       const responseBody = await rawResponse.json().catch(() => ({}));
 
       validation.execute("Status (unauthorized)", () =>
@@ -640,12 +614,10 @@ authTest.describe("Asset Management — Auth Negative", () => {
     "GET /asset-management/organisation-hierarchy — without auth returns 401",
     { tag: ["@negative", "@asset-management", "@auth"] },
     async ({ unauthenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
 
-      const rawResponse = await unauthenticatedApi.get(
-        assetManagementPaths.organisationHierarchy,
-      );
+      const rawResponse = await unauthenticatedApi.get(assetManagementPaths.organisationHierarchy);
       const responseBody = await rawResponse.json().catch(() => ({}));
 
       validation.execute("Status (unauthorized)", () =>
@@ -667,16 +639,12 @@ authTest.describe("Asset Management — Auth Negative", () => {
     "GET /asset-management/dtr/:id — without auth returns 401",
     { tag: ["@negative", "@asset-management", "@auth"] },
     async ({ unauthenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const { page, limit } = DtrDetailPaginationQueries.default;
 
       const rawResponse = await unauthenticatedApi.get(
-        assetManagementPaths.dtrDetail(
-          AssetManagementNegativeData.unknownDtrId,
-          page,
-          limit,
-        ),
+        assetManagementPaths.dtrDetail(AssetManagementNegativeData.unknownDtrId, page, limit),
       );
       const responseBody = await rawResponse.json().catch(() => ({}));
 
@@ -699,13 +667,11 @@ authTest.describe("Asset Management — Auth Negative", () => {
     "GET /asset-management/hierarchy/children — without auth returns 401",
     { tag: ["@negative", "@asset-management", "@auth"] },
     async ({ unauthenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
 
       const rawResponse = await unauthenticatedApi.get(
-        assetManagementPaths.hierarchyChildren(
-          "mode=network&page=1&pageSize=20",
-        ),
+        assetManagementPaths.hierarchyChildren("mode=network&page=1&pageSize=20"),
       );
       const responseBody = await rawResponse.json().catch(() => ({}));
 
@@ -728,13 +694,11 @@ authTest.describe("Asset Management — Auth Negative", () => {
     "GET /asset-management/hierarchy/search — without auth returns 401",
     { tag: ["@negative", "@asset-management", "@auth"] },
     async ({ unauthenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
 
       const rawResponse = await unauthenticatedApi.get(
-        assetManagementPaths.hierarchySearch(
-          "mode=organisation&q=In&page=1&pageSize=20",
-        ),
+        assetManagementPaths.hierarchySearch("mode=organisation&q=In&page=1&pageSize=20"),
       );
       const responseBody = await rawResponse.json().catch(() => ({}));
 
@@ -757,8 +721,8 @@ authTest.describe("Asset Management — Auth Negative", () => {
     "GET /asset-management/hierarchy/types — without auth returns 401",
     { tag: ["@negative", "@asset-management", "@auth"] },
     async ({ unauthenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
 
       const rawResponse = await unauthenticatedApi.get(
         assetManagementPaths.hierarchyTypes("mode=network"),
@@ -784,8 +748,8 @@ authTest.describe("Asset Management — Auth Negative", () => {
     "GET /asset-management/assets/network/:id — without auth returns 401",
     { tag: ["@negative", "@asset-management", "@auth"] },
     async ({ unauthenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const rawResponse = await unauthenticatedApi.get(
         assetManagementPaths.assetDetail("network", 1),
       );
@@ -808,8 +772,8 @@ authTest.describe("Asset Management — Auth Negative", () => {
     "GET /asset-management/assets/organisation/:id — without auth returns 401",
     { tag: ["@negative", "@asset-management", "@auth"] },
     async ({ unauthenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const rawResponse = await unauthenticatedApi.get(
         assetManagementPaths.assetDetail("organisation", 1),
       );
@@ -832,11 +796,9 @@ authTest.describe("Asset Management — Auth Negative", () => {
     "GET /asset-management/assets/dtr/:id — without auth returns 401",
     { tag: ["@negative", "@asset-management", "@auth"] },
     async ({ unauthenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
-      const rawResponse = await unauthenticatedApi.get(
-        assetManagementPaths.assetDetail("dtr", 1),
-      );
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
+      const rawResponse = await unauthenticatedApi.get(assetManagementPaths.assetDetail("dtr", 1));
       const responseBody = await rawResponse.json().catch(() => ({}));
       validation.execute("Status (unauthorized)", () =>
         assert.validateStatusCode(rawResponse, 401, responseBody),
@@ -856,8 +818,8 @@ authTest.describe("Asset Management — Auth Negative", () => {
     "GET /asset-management/export — without auth returns 401",
     { tag: ["@negative", "@asset-management", "@auth", "@asset-export"] },
     async ({ unauthenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const rawResponse = await unauthenticatedApi.get(
         assetManagementPaths.export(assetExportQuery({ kind: "network" })),
         { headers: { Accept: "text/csv" } },
@@ -881,12 +843,10 @@ authTest.describe("Asset Management — Auth Negative", () => {
     "GET /asset-management/map-markers — without auth returns 401",
     { tag: ["@negative", "@asset-management", "@auth", "@map-markers"] },
     async ({ unauthenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const rawResponse = await unauthenticatedApi.get(
-        assetManagementPaths.mapMarkers(
-          mapMarkersQuery({ mode: "network", limit: 2000 }),
-        ),
+        assetManagementPaths.mapMarkers(mapMarkersQuery({ mode: "network", limit: 2000 })),
       );
       const responseBody = await rawResponse.json().catch(() => ({}));
       validation.execute("Status (unauthorized)", () =>

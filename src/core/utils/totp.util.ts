@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { env } from "../config/env.schema";
 
 const BASE32 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
@@ -25,11 +26,7 @@ function decodeBase32(secret: string): Buffer {
 }
 
 /** RFC 6238 TOTP (SHA-1, 30s, 6 digits). `periodOffset` is -1 / 0 / +1 for clock skew. */
-export function generateTotp(
-  secret: string,
-  periodOffset = 0,
-  atMs = Date.now(),
-): string {
+export function generateTotp(secret: string, periodOffset = 0, atMs = Date.now()): string {
   const key = decodeBase32(secret);
   const counter = Math.floor(atMs / 1000 / 30) + periodOffset;
   const buf = Buffer.alloc(8);
@@ -46,5 +43,5 @@ export function generateTotp(
 }
 
 export function getTotpSecret(): string {
-  return (process.env.TOTP_SECRET ?? "").trim();
+  return env.TOTP_SECRET ?? "";
 }

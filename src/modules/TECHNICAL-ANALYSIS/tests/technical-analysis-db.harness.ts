@@ -1,6 +1,5 @@
 import type pg from "pg";
 import type { APIRequestContext } from "@playwright/test";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { TechnicalSummaryApi } from "../Api/technical-summary.api";
 import { TechnicalReportApi } from "../Api/technicalanalysis.api";
 import {
@@ -28,6 +27,7 @@ import {
   TechnicalAnalysisDbValidator,
   logTechnicalAnalysisDataQualityFindings,
 } from "../Db/technical-analysis-db.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 /**
  * Part 4 harness — summary↔report consistency + V_Consumerdetails row spot-checks.
@@ -36,7 +36,7 @@ export async function runTechnicalAnalysisDbCoverage(
   authenticatedApi: APIRequestContext,
   db: pg.Pool,
 ): Promise<void> {
-  const validation = new ValidationEngine();
+  const validation = new ApiValidationHelper();
   const summaryApi = new TechnicalSummaryApi(authenticatedApi);
   const reportApi = new TechnicalReportApi(authenticatedApi);
   const sampleSize = resolveTechnicalAnalysisDbSampleSize();
@@ -55,33 +55,22 @@ export async function runTechnicalAnalysisDbCoverage(
     summaryMapped as unknown as Record<string, unknown>,
   );
 
-  const reportQuery = resolveTechnicalReportQuery(
-    "dev_live_report",
-    liveConfig,
-  );
+  const reportQuery = resolveTechnicalReportQuery("dev_live_report", liveConfig);
   const reportBody = await reportApi.getTechnicalReport(reportQuery);
-  const reportMapped = TechnicalReportMapper.map(
-    reportBody.responseBody,
-    {
-      analysisType: String(reportQuery.analysisType ?? technicalAnalysisDefaultAnalysisType),
-      month: Number(reportQuery.month ?? technicalSummaryDefaultMonth),
-      year: Number(reportQuery.year ?? technicalSummaryDefaultYear),
-      pageSize: Number(reportQuery.pageSize ?? 100),
-      category: String(reportQuery.category ?? "total"),
-      page: Number(reportQuery.page ?? 1),
-    },
-  );
-  await logTechnicalAnalysisDataQualityFindings(
-    "report",
-    {
-      rows: reportMapped.rows,
-    } as unknown as Record<string, unknown>,
-  );
+  const reportMapped = TechnicalReportMapper.map(reportBody.responseBody, {
+    analysisType: String(reportQuery.analysisType ?? technicalAnalysisDefaultAnalysisType),
+    month: Number(reportQuery.month ?? technicalSummaryDefaultMonth),
+    year: Number(reportQuery.year ?? technicalSummaryDefaultYear),
+    pageSize: Number(reportQuery.pageSize ?? 100),
+    category: String(reportQuery.category ?? "total"),
+    page: Number(reportQuery.page ?? 1),
+  });
+  await logTechnicalAnalysisDataQualityFindings("report", {
+    rows: reportMapped.rows,
+  } as unknown as Record<string, unknown>);
 
   const analysisType = reportMapped.analysisType;
-  const summaryRow = summaryMapped.reports.find(
-    (r) => r.analysisType === analysisType,
-  );
+  const summaryRow = summaryMapped.reports.find((r) => r.analysisType === analysisType);
   if (summaryRow) {
     validation.execute("Summary totalCount vs report pagination.total", () => {
       compareSummaryTotalToReportTotal({
@@ -97,8 +86,7 @@ export async function runTechnicalAnalysisDbCoverage(
     .slice(0, sampleSize);
 
   for (const row of spotRows) {
-    const lookup =
-      String(row.ivrsNumber ?? "").trim() || String(row.msn ?? "").trim();
+    const lookup = String(row.ivrsNumber ?? "").trim() || String(row.msn ?? "").trim();
     const dbRow = await getTechnicalConsumerByIvrsOrMsn(db, lookup);
     validation.execute(`Report row vs V_Consumerdetails (${lookup})`, () => {
       compareTechnicalReportRowToDb({

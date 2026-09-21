@@ -237,7 +237,8 @@ export interface ConsumerReportTestCase {
   scenario: ConsumerReportScenario;
   tags: string[];
   isContractFixture?: boolean;
-  expectedStatus?: number;
+  expectedStatus?: number;  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export function resolveConsumerReportQuery(
@@ -303,93 +304,110 @@ export const consumerReportTestCases: ConsumerReportTestCase[] = [
     testName: "Consumer report LS — first page shows columns and intervals",
     scenario: "dev_live_ls",
     tags: ["@smoke", "@reports", "@consumer-report"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Consumer report DP — first page shows columns and daily readings",
     scenario: "dev_live_dp",
     tags: ["@reports", "@consumer-report", "@matrix"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Consumer report IP — first page shows columns and instants",
     scenario: "dev_live_ip",
     tags: ["@reports", "@consumer-report", "@matrix"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Consumer report LS — without total still shows columns",
     scenario: "dev_live_ls_without_total",
     tags: ["@reports", "@consumer-report", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Consumer report LS — showing 1 per page returns at most 1 record",
     scenario: "dev_limit_one",
     tags: ["@reports", "@consumer-report", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Consumer report LS — a page past the last page shows no records",
     scenario: "dev_live_page_beyond",
     tags: ["@reports", "@consumer-report", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Consumer report LS — unknown query params are ignored",
     scenario: "dev_ignore_unknown_query",
     tags: ["@reports", "@consumer-report", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Consumer report LS — Oct 2025 fixture",
     scenario: "contract_live_ls",
     isContractFixture: true,
     tags: ["@reports", "@consumer-report", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Consumer report DP — Oct 2025 fixture",
     scenario: "contract_live_dp",
     isContractFixture: true,
     tags: ["@reports", "@consumer-report", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Consumer report IP — Oct 2025 fixture",
     scenario: "contract_live_ip",
     isContractFixture: true,
     tags: ["@reports", "@consumer-report", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Consumer report — empty page fixture",
     scenario: "contract_empty_page",
     isContractFixture: true,
     tags: ["@reports", "@consumer-report", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Consumer report — invalid report type still returns the LS grid",
     scenario: "invalid_report_type",
     tags: ["@reports", "@consumer-report", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Consumer report — fromDate after toDate is rejected",
     scenario: "invalid_date_range",
     expectedStatus: 400,
     tags: ["@reports", "@consumer-report", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Consumer report — invalid fromDate is rejected",
     scenario: "invalid_date_format",
     expectedStatus: 400,
     tags: ["@reports", "@consumer-report", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Consumer report — missing fromDate is rejected",
     scenario: "missing_from_date",
     expectedStatus: 400,
     tags: ["@reports", "@consumer-report", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Consumer report — missing meter serial is rejected",
     scenario: "missing_meter_serial",
     expectedStatus: 400,
     tags: ["@reports", "@consumer-report", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Consumer report — missing report type still returns the LS grid",
     scenario: "missing_report_type",
     tags: ["@reports", "@consumer-report", "@edge"],
+    nonEmptyExpected: false,
   },
 ];

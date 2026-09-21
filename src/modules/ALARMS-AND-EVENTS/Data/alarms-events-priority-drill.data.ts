@@ -1,7 +1,4 @@
-import {
-  EXPECTED_CHART_CATEGORIES,
-  alarmsEventsChartData,
-} from "./alarms-events-chart.data";
+import { EXPECTED_CHART_CATEGORIES, alarmsEventsChartData } from "./alarms-events-chart.data";
 import { EXPECTED_PHASE_DRILL_COLUMNS } from "./alarms-events-phase-drill.data";
 
 export const alarmsEventsPriorityDrillData = {
@@ -34,6 +31,8 @@ export type AlarmsEventsPriorityDrillTestCase = {
   expectedSeries?: string;
   expectedDate?: string;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 };
 
 const tags = ["@alarms-events", "@alarms-events-priority-drill", "@edge"];
@@ -59,254 +58,254 @@ function priorityCases(): AlarmsEventsPriorityDrillTestCase[] {
 }
 
 function categoryCases(): AlarmsEventsPriorityDrillTestCase[] {
-  return EXPECTED_CHART_CATEGORIES.filter((row) => row.slug !== "power").map(
-    (row) => ({
-      testName: `GET /alarms-events/priority-wise/drill-down - Resolved + ${row.label} for ${alarmsEventsPriorityDrillData.series}`,
-      params: {
-        priority: "Resolved",
-        category: row.queryCategory,
-        date: alarmsEventsPriorityDrillData.date,
-        series: alarmsEventsPriorityDrillData.series,
-      },
-      expectedStatus: 200,
-      expectedPrioritySlug: "resolved",
-      expectedCategorySlug: row.slug,
-      expectedLabel: row.label,
-      tags: [...tags],
-    }),
-  );
+  return EXPECTED_CHART_CATEGORIES.filter((row) => row.slug !== "power").map((row) => ({
+    testName: `GET /alarms-events/priority-wise/drill-down - Resolved + ${row.label} for ${alarmsEventsPriorityDrillData.series}`,
+    params: {
+      priority: "Resolved",
+      category: row.queryCategory,
+      date: alarmsEventsPriorityDrillData.date,
+      series: alarmsEventsPriorityDrillData.series,
+    },
+    expectedStatus: 200,
+    expectedPrioritySlug: "resolved",
+    expectedCategorySlug: row.slug,
+    expectedLabel: row.label,
+    tags: [...tags],
+    nonEmptyExpected: false,
+  }));
 }
 
-export const alarmsEventsPriorityDrillTestCases: AlarmsEventsPriorityDrillTestCase[] =
-  [
-    ...priorityCases(),
-    ...categoryCases(),
-    {
-      testName:
-        "GET /alarms-events/priority-wise/drill-down - Resolved + Power for 1 PH",
-      params: {
-        priority: "Resolved",
-        category: "Power",
-        date: alarmsEventsPriorityDrillData.date,
-        series: "1 PH",
-      },
-      expectedStatus: 200,
-      expectedPrioritySlug: "resolved",
-      expectedCategorySlug: "power",
-      expectedLabel: "Power",
-      expectedSeries: "1 PH",
-      tags: [...tags],
+export const alarmsEventsPriorityDrillTestCases: AlarmsEventsPriorityDrillTestCase[] = [
+  ...priorityCases(),
+  ...categoryCases(),
+  {
+    testName: "GET /alarms-events/priority-wise/drill-down - Resolved + Power for 1 PH",
+    params: {
+      priority: "Resolved",
+      category: "Power",
+      date: alarmsEventsPriorityDrillData.date,
+      series: "1 PH",
     },
-    {
-      testName:
-        "GET /alarms-events/priority-wise/drill-down - Resolved + Power for 3PH 4CT",
-      params: {
-        priority: "Resolved",
-        category: "Power",
-        date: alarmsEventsPriorityDrillData.date,
-        series: "3PH 4CT",
-      },
-      expectedStatus: 200,
-      expectedPrioritySlug: "resolved",
-      expectedCategorySlug: "power",
-      expectedLabel: "Power",
-      expectedSeries: "3PH 4CT",
-      tags: [...tags],
+    expectedStatus: 200,
+    expectedPrioritySlug: "resolved",
+    expectedCategorySlug: "power",
+    expectedLabel: "Power",
+    expectedSeries: "1 PH",
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/priority-wise/drill-down - Resolved + Power for 3PH 4CT",
+    params: {
+      priority: "Resolved",
+      category: "Power",
+      date: alarmsEventsPriorityDrillData.date,
+      series: "3PH 4CT",
     },
-    {
-      testName:
-        "GET /alarms-events/priority-wise/drill-down - extra unused query is ignored",
-      params: {
-        priority: "Resolved",
-        category: "Power",
-        date: alarmsEventsPriorityDrillData.date,
-        series: alarmsEventsPriorityDrillData.series,
-        foo: "1",
-      },
-      expectedStatus: 200,
-      expectedPrioritySlug: "resolved",
-      expectedCategorySlug: "power",
-      expectedLabel: "Power",
-      tags: [...tags],
+    expectedStatus: 200,
+    expectedPrioritySlug: "resolved",
+    expectedCategorySlug: "power",
+    expectedLabel: "Power",
+    expectedSeries: "3PH 4CT",
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/priority-wise/drill-down - extra unused query is ignored",
+    params: {
+      priority: "Resolved",
+      category: "Power",
+      date: alarmsEventsPriorityDrillData.date,
+      series: alarmsEventsPriorityDrillData.series,
+      foo: "1",
     },
-    {
-      testName:
-        "GET /alarms-events/priority-wise/drill-down - missing priority is rejected",
-      params: {
-        category: "Power",
-        date: alarmsEventsPriorityDrillData.date,
-        series: alarmsEventsPriorityDrillData.series,
-      },
-      expectedStatus: 400,
-      tags: [...tags],
+    expectedStatus: 200,
+    expectedPrioritySlug: "resolved",
+    expectedCategorySlug: "power",
+    expectedLabel: "Power",
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/priority-wise/drill-down - missing priority is rejected",
+    params: {
+      category: "Power",
+      date: alarmsEventsPriorityDrillData.date,
+      series: alarmsEventsPriorityDrillData.series,
     },
-    {
-      testName:
-        "GET /alarms-events/priority-wise/drill-down - missing category returns all classifications",
-      params: {
-        priority: "Resolved",
-        date: alarmsEventsPriorityDrillData.date,
-        series: alarmsEventsPriorityDrillData.series,
-      },
-      expectedStatus: 200,
-      expectedPrioritySlug: "resolved",
-      tags: [...tags],
+    expectedStatus: 400,
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName:
+      "GET /alarms-events/priority-wise/drill-down - missing category returns all classifications",
+    params: {
+      priority: "Resolved",
+      date: alarmsEventsPriorityDrillData.date,
+      series: alarmsEventsPriorityDrillData.series,
     },
-    {
-      testName:
-        "GET /alarms-events/priority-wise/drill-down - missing date is rejected",
-      params: {
-        priority: "Resolved",
-        category: "Power",
-        series: alarmsEventsPriorityDrillData.series,
-      },
-      expectedStatus: 400,
-      tags: [...tags],
+    expectedStatus: 200,
+    expectedPrioritySlug: "resolved",
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/priority-wise/drill-down - missing date is rejected",
+    params: {
+      priority: "Resolved",
+      category: "Power",
+      series: alarmsEventsPriorityDrillData.series,
     },
-    {
-      testName:
-        "GET /alarms-events/priority-wise/drill-down - missing series returns empty rows",
-      params: {
-        priority: "Resolved",
-        category: "Power",
-        date: alarmsEventsPriorityDrillData.date,
-      },
-      expectedStatus: 200,
-      expectedPrioritySlug: "resolved",
-      expectedCategorySlug: "power",
-      expectedLabel: "Power",
-      expectedSeries: "",
-      tags: [...tags],
+    expectedStatus: 400,
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/priority-wise/drill-down - missing series returns empty rows",
+    params: {
+      priority: "Resolved",
+      category: "Power",
+      date: alarmsEventsPriorityDrillData.date,
     },
-    {
-      testName:
-        "GET /alarms-events/priority-wise/drill-down - blank priority is rejected",
-      params: {
-        priority: " ",
-        category: "Power",
-        date: alarmsEventsPriorityDrillData.date,
-        series: alarmsEventsPriorityDrillData.series,
-      },
-      expectedStatus: 400,
-      tags: [...tags],
+    expectedStatus: 200,
+    expectedPrioritySlug: "resolved",
+    expectedCategorySlug: "power",
+    expectedLabel: "Power",
+    expectedSeries: "",
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/priority-wise/drill-down - blank priority is rejected",
+    params: {
+      priority: " ",
+      category: "Power",
+      date: alarmsEventsPriorityDrillData.date,
+      series: alarmsEventsPriorityDrillData.series,
     },
-    {
-      testName:
-        "GET /alarms-events/priority-wise/drill-down - blank category returns all classifications",
-      params: {
-        priority: "Resolved",
-        category: " ",
-        date: alarmsEventsPriorityDrillData.date,
-        series: alarmsEventsPriorityDrillData.series,
-      },
-      expectedStatus: 200,
-      expectedPrioritySlug: "resolved",
-      tags: [...tags],
+    expectedStatus: 400,
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName:
+      "GET /alarms-events/priority-wise/drill-down - blank category returns all classifications",
+    params: {
+      priority: "Resolved",
+      category: " ",
+      date: alarmsEventsPriorityDrillData.date,
+      series: alarmsEventsPriorityDrillData.series,
     },
-    {
-      testName:
-        "GET /alarms-events/priority-wise/drill-down - unknown priority is rejected",
-      params: {
-        priority: "Priority 99",
-        category: "Power",
-        date: alarmsEventsPriorityDrillData.date,
-        series: alarmsEventsPriorityDrillData.series,
-      },
-      expectedStatus: 400,
-      tags: [...tags],
+    expectedStatus: 200,
+    expectedPrioritySlug: "resolved",
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/priority-wise/drill-down - unknown priority is rejected",
+    params: {
+      priority: "Priority 99",
+      category: "Power",
+      date: alarmsEventsPriorityDrillData.date,
+      series: alarmsEventsPriorityDrillData.series,
     },
-    {
-      testName:
-        "GET /alarms-events/priority-wise/drill-down - Priority 0 is rejected",
-      params: {
-        priority: "Priority 0",
-        category: "Power",
-        date: alarmsEventsPriorityDrillData.date,
-        series: alarmsEventsPriorityDrillData.series,
-      },
-      expectedStatus: 400,
-      tags: [...tags],
+    expectedStatus: 400,
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/priority-wise/drill-down - Priority 0 is rejected",
+    params: {
+      priority: "Priority 0",
+      category: "Power",
+      date: alarmsEventsPriorityDrillData.date,
+      series: alarmsEventsPriorityDrillData.series,
     },
-    {
-      testName:
-        "GET /alarms-events/priority-wise/drill-down - unknown category is rejected",
-      params: {
-        priority: "Resolved",
-        category: "not-a-category",
-        date: alarmsEventsPriorityDrillData.date,
-        series: alarmsEventsPriorityDrillData.series,
-      },
-      expectedStatus: 400,
-      tags: [...tags],
+    expectedStatus: 400,
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/priority-wise/drill-down - unknown category is rejected",
+    params: {
+      priority: "Resolved",
+      category: "not-a-category",
+      date: alarmsEventsPriorityDrillData.date,
+      series: alarmsEventsPriorityDrillData.series,
     },
-    {
-      testName:
-        "GET /alarms-events/priority-wise/drill-down - invalid date is rejected",
-      params: {
-        priority: "Resolved",
-        category: "Power",
-        date: "23-08-2025",
-        series: alarmsEventsPriorityDrillData.series,
-      },
-      expectedStatus: 400,
-      tags: [...tags],
+    expectedStatus: 400,
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/priority-wise/drill-down - invalid date is rejected",
+    params: {
+      priority: "Resolved",
+      category: "Power",
+      date: "23-08-2025",
+      series: alarmsEventsPriorityDrillData.series,
     },
-    {
-      testName:
-        "GET /alarms-events/priority-wise/drill-down - blank series returns empty rows",
-      params: {
-        priority: "Resolved",
-        category: "Power",
-        date: alarmsEventsPriorityDrillData.date,
-        series: " ",
-      },
-      expectedStatus: 200,
-      expectedPrioritySlug: "resolved",
-      expectedCategorySlug: "power",
-      expectedLabel: "Power",
-      expectedSeries: "",
-      tags: [...tags],
+    expectedStatus: 400,
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/priority-wise/drill-down - blank series returns empty rows",
+    params: {
+      priority: "Resolved",
+      category: "Power",
+      date: alarmsEventsPriorityDrillData.date,
+      series: " ",
     },
-    {
-      testName:
-        "GET /alarms-events/priority-wise/drill-down - page 0 is rejected",
-      params: {
-        priority: "Resolved",
-        category: "Power",
-        date: alarmsEventsPriorityDrillData.date,
-        series: alarmsEventsPriorityDrillData.series,
-        page: 0,
-      },
-      expectedStatus: 400,
-      tags: [...tags],
+    expectedStatus: 200,
+    expectedPrioritySlug: "resolved",
+    expectedCategorySlug: "power",
+    expectedLabel: "Power",
+    expectedSeries: "",
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/priority-wise/drill-down - page 0 is rejected",
+    params: {
+      priority: "Resolved",
+      category: "Power",
+      date: alarmsEventsPriorityDrillData.date,
+      series: alarmsEventsPriorityDrillData.series,
+      page: 0,
     },
-    {
-      testName:
-        "GET /alarms-events/priority-wise/drill-down - limit 0 is rejected",
-      params: {
-        priority: "Resolved",
-        category: "Power",
-        date: alarmsEventsPriorityDrillData.date,
-        series: alarmsEventsPriorityDrillData.series,
-        limit: 0,
-      },
-      expectedStatus: 400,
-      tags: [...tags],
+    expectedStatus: 400,
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/priority-wise/drill-down - limit 0 is rejected",
+    params: {
+      priority: "Resolved",
+      category: "Power",
+      date: alarmsEventsPriorityDrillData.date,
+      series: alarmsEventsPriorityDrillData.series,
+      limit: 0,
     },
-    {
-      testName:
-        "GET /alarms-events/priority-wise/drill-down - a future date returns empty rows",
-      params: {
-        priority: "Resolved",
-        category: "Power",
-        date: "2099-01-01",
-        series: alarmsEventsPriorityDrillData.series,
-      },
-      expectedStatus: 200,
-      expectedPrioritySlug: "resolved",
-      expectedCategorySlug: "power",
-      expectedLabel: "Power",
-      expectedDate: "2099-01-01",
-      tags: [...tags],
+    expectedStatus: 400,
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/priority-wise/drill-down - a future date returns empty rows",
+    params: {
+      priority: "Resolved",
+      category: "Power",
+      date: "2099-01-01",
+      series: alarmsEventsPriorityDrillData.series,
     },
-  ];
+    expectedStatus: 200,
+    expectedPrioritySlug: "resolved",
+    expectedCategorySlug: "power",
+    expectedLabel: "Power",
+    expectedDate: "2099-01-01",
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+];

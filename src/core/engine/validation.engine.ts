@@ -1,10 +1,15 @@
+/**
+ * INTERNAL — do not import from specs.
+ * Specs use ApiValidationHelper (src/core/helpers/api-validation.helper.ts).
+ *
+ * Observability + defect AI live under src/extras/ and are loaded lazily
+ * (only when `obs` is set, or when a defect report is written).
+ */
 import { type TestInfo } from "@playwright/test";
-import { ValidationResult } from "../models/resultModel";
-import type { DefectReportContext } from "../ai/defect-triage.types";
-import { DeveloperReportEngine } from "./developer-report.engine";
-import { isDefectLlmEnabled } from "../ai/defect-llm-triage";
-import { appendEvent } from "../../observability/logger";
-import type { ObsContext } from "../../observability/context";
+import { ValidationResult } from "../models/result.model";
+import type { DefectReportContext } from "../../extras/ai/defect-triage.types";
+import type { ObsContext } from "../../extras/observability/context";
+import { env } from "../config/env.schema";
 
 export type { DefectReportContext };
 
@@ -14,12 +19,26 @@ export interface PrintSummaryOptions {
 }
 
 function isVerboseSummary(): boolean {
-  const flag = process.env.API_TEST_VERBOSE_SUMMARY?.trim().toLowerCase();
-  return flag === "1" || flag === "true" || flag === "yes";
+  return env.API_TEST_VERBOSE_SUMMARY;
 }
 
 function firstLine(message: string): string {
   return message.split("\n")[0]?.trim() ?? message;
+}
+
+function loadAppendEvent(): typeof import("../../extras/observability/logger").appendEvent {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  return require("../../extras/observability/logger").appendEvent;
+}
+
+function loadDeveloperReport(): typeof import("./developer-report.engine").DeveloperReportEngine {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  return require("./developer-report.engine").DeveloperReportEngine;
+}
+
+function loadIsDefectLlmEnabled(): typeof import("../../extras/ai/defect-llm-triage").isDefectLlmEnabled {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  return require("../../extras/ai/defect-llm-triage").isDefectLlmEnabled;
 }
 
 export class ValidationEngine {
@@ -70,7 +89,7 @@ export class ValidationEngine {
     if (!this.obs) {
       return;
     }
-    appendEvent({
+    loadAppendEvent()({
       kind: "contract",
       runId: this.obs.runId,
       testId: this.obs.testId,
@@ -84,15 +103,11 @@ export class ValidationEngine {
     });
   }
 
-  private emitContract(
-    check: string,
-    status: "PASS" | "FAIL",
-    message?: string,
-  ): void {
+  private emitContract(check: string, status: "PASS" | "FAIL", message?: string): void {
     if (!this.obs) {
       return;
     }
-    appendEvent({
+    loadAppendEvent()({
       kind: "contract",
       runId: this.obs.runId,
       testId: this.obs.testId,
@@ -108,11 +123,7 @@ export class ValidationEngine {
    * Writes a heuristic defect triage report on failure (no API key required).
    * For optional LLM enrichment, use finalizeAsync when DEFECT_LLM_ENABLED=1.
    */
-  finalize(
-    apiName: string,
-    responseTime: number,
-    options?: PrintSummaryOptions,
-  ): void {
+  finalize(apiName: string, responseTime: number, options?: PrintSummaryOptions): void {
     this.printSummary(apiName, responseTime, options);
   }
 
@@ -133,12 +144,8 @@ export class ValidationEngine {
     if (failed.length === 0) {
       return;
     }
-    const lines = failed.map(
-      (f, i) => `  ${i + 1}. ${f.name}${f.message ? `: ${f.message}` : ""}`,
-    );
-    throw new Error(
-      `${failed.length} validation(s) failed:\n${lines.join("\n")}`,
-    );
+    const lines = failed.map((f, i) => `  ${i + 1}. ${f.name}${f.message ? `: ${f.message}` : ""}`);
+    throw new Error(`${failed.length} validation(s) failed:\n${lines.join("\n")}`);
   }
 
   getResults(): ValidationResult[] {
@@ -157,11 +164,7 @@ export class ValidationEngine {
     return this.results.length;
   }
 
-  printSummary(
-    apiName: string,
-    responseTime: number,
-    options?: PrintSummaryOptions,
-  ): void {
+  printSummary(apiName: string, responseTime: number, options?: PrintSummaryOptions): void {
     const failed = this.results.filter((r) => r.status === "FAIL");
     const finalStatus = failed.length === 0 ? "PASS" : "FAIL";
 
@@ -233,11 +236,7 @@ export class ValidationEngine {
     console.log(divider);
   }
 
-  private buildReportInput(
-    apiName: string,
-    responseTime: number,
-    options?: PrintSummaryOptions,
-  ) {
+  private buildReportInput(apiName: string, responseTime: number, options?: PrintSummaryOptions) {
     const context: DefectReportContext = options?.defectContext ?? {
       endpoint: "(not provided — pass defectContext for richer reports)",
       expectedBehavior:
@@ -258,6 +257,7 @@ export class ValidationEngine {
     responseTime: number,
     options?: PrintSummaryOptions,
   ): void {
+    const DeveloperReportEngine = loadDeveloperReport();
     const input = this.buildReportInput(apiName, responseTime, options);
     const triage = DeveloperReportEngine.resolveTriageSync(input);
     const { reportPath, triagePath } = DeveloperReportEngine.write({
@@ -270,7 +270,7 @@ export class ValidationEngine {
       `Defect triage: ${triagePath} [${triage.source}] ${triage.triage.classification}/${triage.triage.severity}`,
     );
 
-    if (isDefectLlmEnabled()) {
+    if (loadIsDefectLlmEnabled()()) {
       console.log(
         "Defect LLM is enabled — use validation.finalizeAsync(...) to await LLM enrichment.",
       );
@@ -296,6 +296,7 @@ export class ValidationEngine {
     responseTime: number,
     options?: PrintSummaryOptions,
   ): Promise<void> {
+    const DeveloperReportEngine = loadDeveloperReport();
     const input = this.buildReportInput(apiName, responseTime, options);
     const { reportPath, triagePath, triage } =
       await DeveloperReportEngine.writeWithOptionalLlm(input);

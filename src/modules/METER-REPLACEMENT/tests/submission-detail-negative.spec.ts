@@ -3,14 +3,13 @@ import { test } from "../../../fixtures/api.fixture";
 import { test as authTest } from "../../../fixtures/auth.fixture";
 import { SubmissionDetailApi } from "../Api/submission-detail.api";
 import { submissionDetailData } from "../Data/submission-detail.data";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import {
   MeterReplacementCommonValidator,
   meterReplacementAuthData,
   meterReplacementPaths,
 } from "../Validator/meter-replacement-common.validator";
 import { pauseMs } from "../utils/response.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Meter Replacement Submission Detail API — Negative & Edge", () => {
   test(
@@ -20,7 +19,7 @@ test.describe("Meter Replacement Submission Detail API — Negative & Edge", () 
     },
     async ({ authenticatedApi }) => {
       const api = new SubmissionDetailApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
       const { rawResponse, responseBody } = await api.getSubmissionDetail(
         submissionDetailData.invalidSubmissionId,
@@ -31,10 +30,9 @@ test.describe("Meter Replacement Submission Detail API — Negative & Edge", () 
       });
 
       validation.execute("Error envelope", () =>
-        MeterReplacementCommonValidator.validateErrorEnvelope(
-          responseBody,
-          ["SUBMISSION_NOT_FOUND"],
-        ),
+        MeterReplacementCommonValidator.validateErrorEnvelope(responseBody, [
+          "SUBMISSION_NOT_FOUND",
+        ]),
       );
 
       validation.printSummary("Submission Detail — Not Found", 0);
@@ -48,7 +46,7 @@ test.describe("Meter Replacement Submission Detail API — Negative & Edge", () 
     },
     async ({ authenticatedApi }) => {
       const api = new SubmissionDetailApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
       const cases: Array<number | string> = [
         submissionDetailData.zeroSubmissionId,
@@ -65,23 +63,15 @@ test.describe("Meter Replacement Submission Detail API — Negative & Edge", () 
       ];
 
       for (const submissionId of cases) {
-        const { rawResponse, responseBody } =
-          await api.getSubmissionDetail(submissionId);
+        const { rawResponse, responseBody } = await api.getSubmissionDetail(submissionId);
 
-        validation.execute(
-          `Status (${String(submissionId).slice(0, 16)})`,
-          () =>
-            MeterReplacementCommonValidator.validateClientOrNotFound(
-              rawResponse.status(),
-            ),
+        validation.execute(`Status (${String(submissionId).slice(0, 16)})`, () =>
+          MeterReplacementCommonValidator.validateClientOrNotFound(rawResponse.status()),
         );
 
-        validation.execute(
-          `Error (${String(submissionId).slice(0, 16)})`,
-          () => {
-            expect(responseBody.success).toBeFalsy();
-          },
-        );
+        validation.execute(`Error (${String(submissionId).slice(0, 16)})`, () => {
+          expect(responseBody.success).toBeFalsy();
+        });
 
         await pauseMs(250);
       }
@@ -97,23 +87,20 @@ test.describe("Meter Replacement Submission Detail API — Negative & Edge", () 
     },
     async ({ authenticatedApi }) => {
       const api = new SubmissionDetailApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
       for (const submissionId of [
         submissionDetailData.maximumSubmissionId,
         submissionDetailData.minimumSubmissionId,
       ]) {
-        const { rawResponse, responseBody } =
-          await api.getSubmissionDetail(submissionId);
+        const { rawResponse, responseBody } = await api.getSubmissionDetail(submissionId);
 
         validation.execute(`Status (${submissionId})`, () => {
           expect(rawResponse.status()).toBeLessThan(500);
         });
 
         validation.execute(`Handled (${submissionId})`, () => {
-          expect(
-            rawResponse.status() === 200 || responseBody.success === false,
-          ).toBeTruthy();
+          expect(rawResponse.status() === 200 || responseBody.success === false).toBeTruthy();
         });
       }
 
@@ -128,16 +115,14 @@ test.describe("Meter Replacement Submission Detail API — Negative & Edge", () 
     },
     async ({ authenticatedApi }) => {
       const api = new SubmissionDetailApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
 
       const { rawResponse, responseBody } = await api.getSubmissionDetail(
         submissionDetailData.submissionId,
       );
 
-      validation.execute("Status", () =>
-        assert.validateStatusCode(rawResponse, 200, responseBody),
-      );
+      validation.execute("Status", () => assert.validateStatusCode(rawResponse, 200, responseBody));
       validation.execute("Success", () => {
         expect(responseBody.success).toBeTruthy();
         expect(responseBody.data).toBeDefined();
@@ -155,21 +140,15 @@ authTest.describe("Meter Replacement Submission Detail API — Auth Negative", (
       tag: ["@meter-replacement", "@submission-detail", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
-      const rawResponse =
-        await MeterReplacementCommonValidator.getUnauthenticated(
-          unauthenticatedApi,
-          meterReplacementPaths.submissionDetail(
-            submissionDetailData.submissionId,
-          ),
-        );
+      const validation = new ApiValidationHelper();
+      const rawResponse = await MeterReplacementCommonValidator.getUnauthenticated(
+        unauthenticatedApi,
+        meterReplacementPaths.submissionDetail(submissionDetailData.submissionId),
+      );
       const body = await rawResponse.json().catch(() => ({}));
 
       validation.execute("Unauthorized", () =>
-        MeterReplacementCommonValidator.validateUnauthorizedError(
-          rawResponse.status(),
-          body,
-        ),
+        MeterReplacementCommonValidator.validateUnauthorizedError(rawResponse.status(), body),
       );
       validation.printSummary("Submission Detail — Missing Auth", 0);
     },
@@ -181,28 +160,22 @@ authTest.describe("Meter Replacement Submission Detail API — Auth Negative", (
       tag: ["@meter-replacement", "@submission-detail", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
       for (const authorization of [
         meterReplacementAuthData.invalidBearerToken,
         meterReplacementAuthData.malformedBearerToken,
         meterReplacementAuthData.emptyBearerToken,
       ]) {
-        const rawResponse =
-          await MeterReplacementCommonValidator.getUnauthenticated(
-            unauthenticatedApi,
-            meterReplacementPaths.submissionDetail(
-              submissionDetailData.submissionId,
-            ),
-            { headers: { Authorization: authorization } },
-          );
+        const rawResponse = await MeterReplacementCommonValidator.getUnauthenticated(
+          unauthenticatedApi,
+          meterReplacementPaths.submissionDetail(submissionDetailData.submissionId),
+          { headers: { Authorization: authorization } },
+        );
         const body = await rawResponse.json().catch(() => ({}));
 
         validation.execute(`Unauthorized (${authorization.slice(0, 18)})`, () =>
-          MeterReplacementCommonValidator.validateUnauthorizedError(
-            rawResponse.status(),
-            body,
-          ),
+          MeterReplacementCommonValidator.validateUnauthorizedError(rawResponse.status(), body),
         );
       }
 
@@ -216,21 +189,16 @@ authTest.describe("Meter Replacement Submission Detail API — Auth Negative", (
       tag: ["@meter-replacement", "@submission-detail", "@negative"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
-      const callers =
-        MeterReplacementCommonValidator.getDisallowedMethodCallers(
-          unauthenticatedApi,
-          meterReplacementPaths.submissionDetail(
-            submissionDetailData.submissionId,
-          ),
-        );
+      const validation = new ApiValidationHelper();
+      const callers = MeterReplacementCommonValidator.getDisallowedMethodCallers(
+        unauthenticatedApi,
+        meterReplacementPaths.submissionDetail(submissionDetailData.submissionId),
+      );
 
       for (const method of meterReplacementAuthData.disallowedMethods) {
         const rawResponse = await callers[method]();
         validation.execute(`${method} status`, () =>
-          MeterReplacementCommonValidator.validateDisallowedMethodRejected(
-            rawResponse.status(),
-          ),
+          MeterReplacementCommonValidator.validateDisallowedMethodRejected(rawResponse.status()),
         );
       }
 

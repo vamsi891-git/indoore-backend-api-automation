@@ -1,19 +1,19 @@
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { RolePermissionApi } from "../Api/rolepermission.api";
 import { RolePermissionData } from "../Data/rolepermission.data";
 import { RolePermissionMapper } from "../Mapper/rolepermission.mapper";
 import { RolePermissionValidator } from "../Validator/rolepermission.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 test.describe("Role Permission — List & Me", () => {
   test.describe.configure({ mode: "serial" });
-  test("Validate GET /permissions/roles — role catalog",
+  test(
+    "Validate GET /permissions/roles — role catalog",
     { tag: ["@smoke", "@permissions", "@role-permissions"] },
     async ({ authenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new RolePermissionValidator();
       const roleApi = new RolePermissionApi(authenticatedApi);
       const getRolesResponse = await roleApi.getRoles();
@@ -43,21 +43,11 @@ test.describe("Role Permission — List & Me", () => {
       validation.execute("Validate Roles Response", () =>
         validator.validateResponse(getRolesResponse.responseBody),
       );
-      validation.execute("Validate Roles List", () =>
-        validator.validateRoles(roles),
-      );
-      validation.execute("Validate Role Structure", () =>
-        validator.validateRoleStructure(roles),
-      );
-      validation.execute("Validate Duplicate Roles", () =>
-        validator.validateDuplicateRoles(roles),
-      );
-      validation.execute("Validate Sort Order", () =>
-        validator.validateSortOrder(roles),
-      );
-      validation.execute("Validate Ultimate Role", () =>
-        validator.validateUltimateRole(roles),
-      );
+      validation.execute("Validate Roles List", () => validator.validateRoles(roles));
+      validation.execute("Validate Role Structure", () => validator.validateRoleStructure(roles));
+      validation.execute("Validate Duplicate Roles", () => validator.validateDuplicateRoles(roles));
+      validation.execute("Validate Sort Order", () => validator.validateSortOrder(roles));
+      validation.execute("Validate Ultimate Role", () => validator.validateUltimateRole(roles));
       validation.printSummary("Get Roles", getRolesResponse.responseTime);
     },
   );
@@ -66,8 +56,8 @@ test.describe("Role Permission — List & Me", () => {
     "Validate GET /permissions/me/modules and /me/permissions",
     { tag: ["@smoke", "@permissions", "@role-permissions"] },
     async ({ authenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new RolePermissionValidator();
       const roleApi = new RolePermissionApi(authenticatedApi);
       const modulesResponse = await roleApi.getMyModules();
@@ -91,11 +81,12 @@ test.describe("Role Permission — List & Me", () => {
     },
   );
 
-  test("Validate GET /permissions/dependency-rules",
+  test(
+    "Validate GET /permissions/dependency-rules",
     { tag: ["@smoke", "@permissions", "@role-permissions"] },
     async ({ authenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new RolePermissionValidator();
       const roleApi = new RolePermissionApi(authenticatedApi);
       const response = await roleApi.getDependencyRules();

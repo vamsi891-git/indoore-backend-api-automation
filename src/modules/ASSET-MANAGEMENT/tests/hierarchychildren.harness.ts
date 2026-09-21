@@ -1,12 +1,11 @@
 import type { APIResponse } from "@playwright/test";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { HierarchyChildrenApi } from "../Api/hierarchychildren.api";
 import { assetManagementMaxResponseTimeMs } from "../Data/asset-management.common.data";
 import type { HierarchyExplorerMode } from "../Data/hierarchychildren.data";
 import { HierarchyChildrenMapper } from "../Mapper/hierarchychildren.mapper";
 import { HierarchyChildrenValidator } from "../Validator/hierarchychildren.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 export interface RunHierarchyChildrenValidationOptions {
   api: HierarchyChildrenApi;
@@ -39,18 +38,12 @@ export async function runHierarchyChildrenValidation(
     maxResponseTimeMs = assetManagementMaxResponseTimeMs,
   } = options;
 
-  const { rawResponse, responseBody, responseTime } =
-    await api.getHierarchyChildren(query);
+  const { rawResponse, responseBody, responseTime } = await api.getHierarchyChildren(query);
 
-  await PerformanceTracker.track(
-    rawResponse,
-    testLabel,
-    rawResponse.url(),
-    responseTime,
-  );
+  await PerformanceTracker.track(rawResponse, testLabel, rawResponse.url(), responseTime);
 
-  const assert = new AssertionEngine();
-  const validation = new ValidationEngine();
+  const assert = new ApiValidationHelper();
+  const validation = new ApiValidationHelper();
   const validator = new HierarchyChildrenValidator();
   const data = HierarchyChildrenMapper.mapData(responseBody.data);
 
@@ -59,12 +52,8 @@ export async function runHierarchyChildrenValidation(
   validation.execute("Response Time", () =>
     assert.validateResponseTime(responseTime, maxResponseTimeMs),
   );
-  validation.execute("Security", () =>
-    assert.validateSensitiveData(responseBody),
-  );
-  validation.execute("Response Contract", () =>
-    validator.validateResponse(responseBody),
-  );
+  validation.execute("Security", () => assert.validateSensitiveData(responseBody));
+  validation.execute("Response Contract", () => validator.validateResponse(responseBody));
   validation.execute("Columns", () => validator.validateColumns(data));
   if (requireItems) {
     validation.execute("Items", () => validator.validateItemsExist(data));
@@ -76,9 +65,7 @@ export async function runHierarchyChildrenValidation(
     validator.validatePaginationConsistency(data, page, pageSize),
   );
   if (parentId != null) {
-    validation.execute("Parent ID", () =>
-      validator.validateParentId(data.items, parentId),
-    );
+    validation.execute("Parent ID", () => validator.validateParentId(data.items, parentId));
   }
 
   validation.printSummary(testLabel, responseTime);

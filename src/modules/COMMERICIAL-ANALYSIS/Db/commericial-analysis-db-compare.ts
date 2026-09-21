@@ -1,5 +1,12 @@
-﻿import { assertDbVsApiScalar, compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
-import { normalizeCommercialIvrs, normalizeCommercialMsn } from "../Validator/commercial-analysis.shared";
+﻿import {
+  assertDbVsApiScalar,
+  compareApiToDb,
+  type DbCompareObs,
+} from "../../../extras/db/db-compare.engine";
+import {
+  normalizeCommercialIvrs,
+  normalizeCommercialMsn,
+} from "../Validator/commercial-analysis.shared";
 import type { DbCommercialMeterRow } from "./commericial-analysis.db";
 
 /** Fail when the API number is not the same as the SQL count. */
@@ -53,7 +60,11 @@ export function officeLabelsMatch(api: unknown, db: unknown): boolean {
   return a === b || a.includes(b) || b.includes(a);
 }
 
-function matchOrRaw(api: unknown, db: unknown, matched: boolean): {
+function matchOrRaw(
+  api: unknown,
+  db: unknown,
+  matched: boolean,
+): {
   apiValue: string;
   dbValue: string;
 } {
@@ -74,9 +85,7 @@ function softOrEqual(
       dbValue: matched ? trimText(db) || "MATCH" : "SOFT",
     };
   }
-  console.warn(
-    `[SOFT] commercial meter field drift: API=${trimText(api)} DB=${trimText(db)}`,
-  );
+  console.warn(`[SOFT] commercial meter field drift: API=${trimText(api)} DB=${trimText(db)}`);
   return { apiValue: "SOFT", dbValue: "SOFT" };
 }
 
@@ -111,8 +120,7 @@ export function compareCommercialMeterSpotToDb(options: {
   const ivrs = softOrEqual(
     api.ivrsNumber,
     dbRow.ivrsNumber,
-    normalizeCommercialIvrs(api.ivrsNumber) ===
-      normalizeCommercialIvrs(dbRow.ivrsNumber),
+    normalizeCommercialIvrs(api.ivrsNumber) === normalizeCommercialIvrs(dbRow.ivrsNumber),
   );
   const phase = softOrEqual(
     api.phase,
@@ -124,8 +132,7 @@ export function compareCommercialMeterSpotToDb(options: {
     dbRow.feeder,
     trimText(api.feeder).toLowerCase() === trimText(dbRow.feeder).toLowerCase(),
   );
-  const dtrMatched =
-    trimText(api.dtr).toLowerCase() === trimText(dbRow.dtr).toLowerCase();
+  const dtrMatched = trimText(api.dtr).toLowerCase() === trimText(dbRow.dtr).toLowerCase();
   const tariff = softOrEqual(
     api.tariff,
     dbRow.tariff,

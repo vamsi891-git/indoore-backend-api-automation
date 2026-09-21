@@ -1,7 +1,5 @@
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { CommunicationConsumersApi } from "../Api/communicationconsumers.api";
 import {
@@ -16,6 +14,7 @@ import {
 } from "../Mapper/communicationconsumers.mapper";
 import { CommunicationConsumersValidator } from "../Validator/communicationconsumers.validator";
 import { skipIfReportsInternalError } from "../utils/reports-env.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Communication consumers report", () => {
   test.describe.configure({ retries: 1 });
@@ -28,8 +27,8 @@ test.describe("Communication consumers report", () => {
       async ({ authenticatedApi }) => {
         const expectedStatus = testCase.expectedStatus ?? 200;
         const validator = new CommunicationConsumersValidator();
-        const assert = new AssertionEngine();
-        const validation = new ValidationEngine();
+        const assert = new ApiValidationHelper();
+        const validation = new ApiValidationHelper();
 
         if (testCase.isContractFixture) {
           const fixtureBody = resolveCommunicationConsumersContractBody(

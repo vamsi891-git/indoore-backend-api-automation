@@ -8,7 +8,8 @@ export interface AtrZoneNegativeCase {
   params: Record<string, string>;
   outcome: AtrZoneNegativeOutcome;
   expectedStatuses: number[];
-  tags: string[];
+  tags: string[]; /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 const base = {
@@ -25,6 +26,7 @@ export const atrZoneNegativeCases: AtrZoneNegativeCase[] = [
     outcome: "empty-success",
     expectedStatuses: [200],
     tags: ["@revenue-protection", "@atr-zone", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-ATZ-NEG-002",
@@ -33,6 +35,7 @@ export const atrZoneNegativeCases: AtrZoneNegativeCase[] = [
     outcome: "hard-reject",
     expectedStatuses: [400, 422],
     tags: ["@revenue-protection", "@atr-zone", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-ATZ-NEG-003",
@@ -41,6 +44,7 @@ export const atrZoneNegativeCases: AtrZoneNegativeCase[] = [
     outcome: "empty-success",
     expectedStatuses: [200, 400, 422],
     tags: ["@revenue-protection", "@atr-zone", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-ATZ-NEG-004",
@@ -49,6 +53,7 @@ export const atrZoneNegativeCases: AtrZoneNegativeCase[] = [
     outcome: "hard-reject",
     expectedStatuses: [400, 422],
     tags: ["@revenue-protection", "@atr-zone", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-ATZ-NEG-005",
@@ -57,6 +62,7 @@ export const atrZoneNegativeCases: AtrZoneNegativeCase[] = [
     outcome: "hard-reject",
     expectedStatuses: [400, 422],
     tags: ["@revenue-protection", "@atr-zone", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-ATZ-NEG-006",
@@ -65,6 +71,7 @@ export const atrZoneNegativeCases: AtrZoneNegativeCase[] = [
     outcome: "hard-reject",
     expectedStatuses: [400, 422],
     tags: ["@revenue-protection", "@atr-zone", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-ATZ-NEG-007",
@@ -73,6 +80,7 @@ export const atrZoneNegativeCases: AtrZoneNegativeCase[] = [
     outcome: "hard-reject",
     expectedStatuses: [400, 422],
     tags: ["@revenue-protection", "@atr-zone", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-ATZ-NEG-008",
@@ -81,6 +89,7 @@ export const atrZoneNegativeCases: AtrZoneNegativeCase[] = [
     outcome: "empty-success",
     expectedStatuses: [200],
     tags: ["@revenue-protection", "@atr-zone", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-ATZ-NEG-009",
@@ -89,5 +98,6 @@ export const atrZoneNegativeCases: AtrZoneNegativeCase[] = [
     outcome: "empty-page",
     expectedStatuses: [200],
     tags: ["@revenue-protection", "@atr-zone", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

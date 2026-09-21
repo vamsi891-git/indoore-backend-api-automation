@@ -28,10 +28,10 @@ export interface ConsumerProfileTestCase {
   scenario: ConsumerProfileScenario;
   expectedStatus?: number;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
-export function resolveConsumerProfileRef(
-  scenario: ConsumerProfileScenario,
-): string | undefined {
+export function resolveConsumerProfileRef(scenario: ConsumerProfileScenario): string | undefined {
   switch (scenario) {
     case "profile_found":
     case "profile_no_query":
@@ -41,10 +41,7 @@ export function resolveConsumerProfileRef(
         consumerProfileDefaultConsumerId,
       );
     case "profile_by_ivrs":
-      return resolveLiveIvrs(
-        process.env.CONSUMER_PROFILE_IVRS,
-        consumerProfileDefaultIvrs,
-      );
+      return resolveLiveIvrs(process.env.CONSUMER_PROFILE_IVRS, consumerProfileDefaultIvrs);
     case "profile_by_meter":
       return resolveLiveMeterRoute(
         process.env.CONSUMER_PROFILE_METER_ROUTE,
@@ -68,41 +65,41 @@ export function resolveConsumerProfileQuery(
 }
 export const consumerProfileTestCases: ConsumerProfileTestCase[] = [
   {
-    testName:
-      "Consumer profile — details open using the account number",
+    testName: "Consumer profile — details open using the account number",
     scenario: "profile_found",
     tags: ["@smoke", "@consumer", "@profile"],
+    nonEmptyExpected: true,
   },
   {
-    testName:
-      "Consumer profile — details open with no extra filters",
+    testName: "Consumer profile — details open with no extra filters",
     scenario: "profile_no_query",
     tags: ["@consumer", "@profile", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Consumer profile — details open using the IVRS number",
+    testName: "Consumer profile — details open using the IVRS number",
     scenario: "profile_by_ivrs",
     tags: ["@consumer", "@profile", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Consumer profile — details open using the meter",
+    testName: "Consumer profile — details open using the meter",
     scenario: "profile_by_meter",
     tags: ["@consumer", "@profile", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Consumer profile — unknown account is not found",
+    testName: "Consumer profile — unknown account is not found",
     scenario: "consumer_not_found",
     expectedStatus: 404,
     tags: ["@consumer", "@profile", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Consumer profile — unknown meter is not found",
+    testName: "Consumer profile — unknown meter is not found",
     scenario: "meter_not_found",
     expectedStatus: 404,
     tags: ["@consumer", "@profile", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

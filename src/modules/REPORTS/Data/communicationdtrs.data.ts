@@ -154,7 +154,8 @@ export interface CommunicationDtrsTestCase {
   scenario: CommunicationDtrsScenario;
   tags: string[];
   isContractFixture?: boolean;
-  expectedStatus?: number;
+  expectedStatus?: number;  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export function resolveCommunicationDtrsQuery(
@@ -235,79 +236,93 @@ export const communicationDtrsTestCases: CommunicationDtrsTestCase[] = [
     testName: "Communication DTRs — month first page shows columns and DTRs",
     scenario: "dev_live_month",
     tags: ["@smoke", "@reports", "@communication-dtrs"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Communication DTRs — day first page shows columns and DTRs",
     scenario: "dev_live_day",
     tags: ["@reports", "@communication-dtrs", "@matrix"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Communication DTRs — range first page shows columns and DTRs",
     scenario: "dev_live_range",
     tags: ["@reports", "@communication-dtrs", "@matrix"],
+    nonEmptyExpected: false,
   },
   {
     testName:
       "Communication DTRs — showing 1 per page returns at most 1 record",
     scenario: "dev_limit_one",
     tags: ["@reports", "@communication-dtrs", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Communication DTRs — a page past the last page shows no records",
     scenario: "dev_live_page_beyond",
     tags: ["@reports", "@communication-dtrs", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Communication DTRs — unknown query params are ignored",
     scenario: "dev_ignore_unknown_query",
     tags: ["@reports", "@communication-dtrs", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Communication DTRs — Oct 2025 month fixture",
     scenario: "contract_live_month",
     isContractFixture: true,
     tags: ["@reports", "@communication-dtrs", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Communication DTRs — empty page fixture",
     scenario: "contract_empty_page",
     isContractFixture: true,
     tags: ["@reports", "@communication-dtrs", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Communication DTRs — invalid period type is rejected",
     scenario: "invalid_period_type",
     expectedStatus: 400,
     tags: ["@reports", "@communication-dtrs", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Communication DTRs — invalid date is rejected",
     scenario: "invalid_date",
     expectedStatus: 400,
     tags: ["@reports", "@communication-dtrs", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Communication DTRs — missing date for day is rejected",
     scenario: "missing_date",
     expectedStatus: 400,
     tags: ["@reports", "@communication-dtrs", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Communication DTRs — missing month is rejected",
     scenario: "missing_month",
     expectedStatus: 400,
     tags: ["@reports", "@communication-dtrs", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Communication DTRs — fromDate after toDate is rejected",
     scenario: "invalid_date_range",
     expectedStatus: 400,
     tags: ["@reports", "@communication-dtrs", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Communication DTRs — missing fromDate is rejected",
     scenario: "missing_from_date",
     expectedStatus: 400,
     tags: ["@reports", "@communication-dtrs", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

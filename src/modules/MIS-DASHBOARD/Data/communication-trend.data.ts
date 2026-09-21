@@ -13,6 +13,8 @@ export type CommunicationTrendTestCase = {
   expectSameDayWindow?: boolean;
   expectZeroCounts?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 };
 
 const tags = ["@mis-dashboard", "@edge"];

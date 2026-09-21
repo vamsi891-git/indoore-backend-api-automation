@@ -1,14 +1,9 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { CreateMeterApi } from "../Api/create-meter.api";
-import {
-  createMeterMaxResponseTimeMs,
-  createMeterTestCases,
-} from "../Data/create-meter.data";
+import { createMeterMaxResponseTimeMs, createMeterTestCases } from "../Data/create-meter.data";
 import { CreateMeterMapper } from "../Mapper/create-meter.mapper";
 import { CreateMeterValidator } from "../Validator/create-meter.validator";
 import { MasterDataCommonValidator } from "../Validator/master-data-common.validator";
@@ -16,12 +11,9 @@ import { CreateMeterSuccessResponseSchema } from "../schemas/master-data.schemas
 import { ensureMeterManufacturerContext } from "../utils/meter-manufacturer.helper";
 import { ensureValidateMeterRuntimeContext } from "../utils/validate-meter-runtime.helper";
 import { assertNegativeMasterDataHttpStatus } from "../utils/master-data-negative-outcome.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
-const SUCCESS_SCENARIOS = new Set([
-  "success",
-  "success_matching_asset",
-  "success_active_status",
-]);
+const SUCCESS_SCENARIOS = new Set(["success", "success_matching_asset", "success_active_status"]);
 
 // SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
 test.describe.skip("Master data — add meter", () => {
@@ -39,90 +31,70 @@ test.describe.skip("Master data — add meter", () => {
   });
 
   for (const testCase of createMeterTestCases) {
-    test(
-      testCase.testName,
-      { tag: testCase.tags },
-      async ({ authenticatedApi }) => {
-        const requestBody = testCase.buildPayload();
+    test(testCase.testName, { tag: testCase.tags }, async ({ authenticatedApi }) => {
+      const requestBody = testCase.buildPayload();
 
-        if (testCase.envKey && !requestBody.meterSerialNumber) {
-          test.skip(
-            true,
-            `Could not resolve ${testCase.envKey} at runtime`,
-          );
-          return;
-        }
+      if (testCase.envKey && !requestBody.meterSerialNumber) {
+        test.skip(true, `Could not resolve ${testCase.envKey} at runtime`);
+        return;
+      }
 
-        const api = new CreateMeterApi(authenticatedApi);
-        const { rawResponse, responseBody, responseTime } =
-          await api.createMeter(requestBody);
-        if (testCase.scenario === "success")
-          console.log(JSON.stringify(responseBody, null, 2));
+      const api = new CreateMeterApi(authenticatedApi);
+      const { rawResponse, responseBody, responseTime } = await api.createMeter(requestBody);
+      if (testCase.scenario === "success") console.log(JSON.stringify(responseBody, null, 2));
 
-        await PerformanceTracker.track(
+      await PerformanceTracker.track(
         rawResponse,
         testCase.testName,
         rawResponse.url(),
-        responseTime
+        responseTime,
       );
 
-        const assert = new AssertionEngine();
-        const validation = new ValidationEngine();
-        const validator = new CreateMeterValidator();
-        const mapped = CreateMeterMapper.map(responseBody);
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
+      const validator = new CreateMeterValidator();
+      const mapped = CreateMeterMapper.map(responseBody);
 
-        validation.execute("Status Validation", () => {
-          if (SUCCESS_SCENARIOS.has(testCase.scenario)) {
-            expect(rawResponse.status()).toBe(testCase.expectedStatus);
-            return;
-          }
-          assertNegativeMasterDataHttpStatus(
-            rawResponse,
-            testCase.expectedStatus,
-          );
-        });
-        validation.execute("Content Validation", () =>
-          assert.validateContentType(rawResponse),
-        );
-        validation.execute("Response Time", () =>
-          assert.validateResponseTime(responseTime, createMeterMaxResponseTimeMs),
-        );
-        validation.execute("Security Validation", () =>
-          assert.validateSensitiveData(responseBody),
-        );
-
+      validation.execute("Status Validation", () => {
         if (SUCCESS_SCENARIOS.has(testCase.scenario)) {
-          validation.execute("Zod Response Schema", () =>
-            MasterDataCommonValidator.validateZodResponseSchema(
-              responseBody,
-              CreateMeterSuccessResponseSchema,
-            ),
-          );
-          validation.execute("Required Fields", () =>
-            assert.validateRequiredFields(responseBody, [
-              "success",
-              "message",
-              "data",
-            ]),
-          );
-        } else {
-          validation.execute("Required Fields", () =>
-            assert.validateRequiredFields(responseBody, ["success", "error"]),
-          );
+          expect(rawResponse.status()).toBe(testCase.expectedStatus);
+          return;
         }
+        assertNegativeMasterDataHttpStatus(rawResponse, testCase.expectedStatus);
+      });
+      validation.execute("Content Validation", () => assert.validateContentType(rawResponse));
+      validation.execute("Response Time", () =>
+        assert.validateResponseTime(responseTime, createMeterMaxResponseTimeMs),
+      );
+      validation.execute("Security Validation", () => assert.validateSensitiveData(responseBody));
 
-        validation.execute("Response", () => validator.validateResponse(mapped));
-        validation.execute("Scenario Outcome", () =>
-          validator.validateScenario(
-            mapped,
-            testCase.scenario,
-            requestBody,
-            testCase.validationField,
+      if (SUCCESS_SCENARIOS.has(testCase.scenario)) {
+        validation.execute("Zod Response Schema", () =>
+          MasterDataCommonValidator.validateZodResponseSchema(
+            responseBody,
+            CreateMeterSuccessResponseSchema,
           ),
         );
+        validation.execute("Required Fields", () =>
+          assert.validateRequiredFields(responseBody, ["success", "message", "data"]),
+        );
+      } else {
+        validation.execute("Required Fields", () =>
+          assert.validateRequiredFields(responseBody, ["success", "error"]),
+        );
+      }
 
-        validation.printSummary(testCase.testName, responseTime);
-      },
-    );
+      validation.execute("Response", () => validator.validateResponse(mapped));
+      validation.execute("Scenario Outcome", () =>
+        validator.validateScenario(
+          mapped,
+          testCase.scenario,
+          requestBody,
+          testCase.validationField,
+        ),
+      );
+
+      validation.printSummary(testCase.testName, responseTime);
+    });
   }
 });

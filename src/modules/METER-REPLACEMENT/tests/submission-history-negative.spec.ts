@@ -4,14 +4,13 @@ import { test as authTest } from "../../../fixtures/auth.fixture";
 import { SubmissionHistoryApi } from "../Api/submission-history.api";
 import { submissionHistoryData } from "../Data/submission-history.data";
 import { SubmissionHistoryMapper } from "../Mapper/submission-history.mapper";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import {
   MeterReplacementCommonValidator,
   meterReplacementAuthData,
   meterReplacementPaths,
 } from "../Validator/meter-replacement-common.validator";
 import { pauseMs } from "../utils/response.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 async function getHistoryWithRetry(
   api: SubmissionHistoryApi,
@@ -22,37 +21,16 @@ async function getHistoryWithRetry(
   dateFrom?: string,
   dateTo?: string,
 ) {
-  let result = await api.getSubmissionHistory(
-    page,
-    limit,
-    search,
-    status,
-    dateFrom,
-    dateTo,
-  );
+  let result = await api.getSubmissionHistory(page, limit, search, status, dateFrom, dateTo);
 
   if (result.rawResponse.status() === 429) {
     await pauseMs(5000);
-    result = await api.getSubmissionHistory(
-      page,
-      limit,
-      search,
-      status,
-      dateFrom,
-      dateTo,
-    );
+    result = await api.getSubmissionHistory(page, limit, search, status, dateFrom, dateTo);
   }
 
   if (result.rawResponse.status() === 429) {
     await pauseMs(8000);
-    result = await api.getSubmissionHistory(
-      page,
-      limit,
-      search,
-      status,
-      dateFrom,
-      dateTo,
-    );
+    result = await api.getSubmissionHistory(page, limit, search, status, dateFrom, dateTo);
   }
 
   return result;
@@ -72,21 +50,18 @@ test.describe("Meter Replacement Submission History API - Filters and Edge", () 
     },
     async ({ authenticatedApi }) => {
       const api = new SubmissionHistoryApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
 
-      const { rawResponse, responseBody, responseTime } =
-        await getHistoryWithRetry(
-          api,
-          submissionHistoryData.page,
-          submissionHistoryData.limit,
-          undefined,
-          submissionHistoryData.pendngStatus,
-        );
-
-      validation.execute("Status", () =>
-        assert.validateStatusCode(rawResponse, 200, responseBody),
+      const { rawResponse, responseBody, responseTime } = await getHistoryWithRetry(
+        api,
+        submissionHistoryData.page,
+        submissionHistoryData.limit,
+        undefined,
+        submissionHistoryData.pendngStatus,
       );
+
+      validation.execute("Status", () => assert.validateStatusCode(rawResponse, 200, responseBody));
 
       const mapped = SubmissionHistoryMapper.map(responseBody);
 
@@ -97,10 +72,7 @@ test.describe("Meter Replacement Submission History API - Filters and Edge", () 
         });
       });
 
-      validation.printSummary(
-        "Submission History - PENDING Filter",
-        responseTime,
-      );
+      validation.printSummary("Submission History - PENDING Filter", responseTime);
     },
   );
 
@@ -111,21 +83,18 @@ test.describe("Meter Replacement Submission History API - Filters and Edge", () 
     },
     async ({ authenticatedApi }) => {
       const api = new SubmissionHistoryApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
 
-      const { rawResponse, responseBody, responseTime } =
-        await getHistoryWithRetry(
-          api,
-          submissionHistoryData.page,
-          submissionHistoryData.limit,
-          undefined,
-          submissionHistoryData.completedStatus,
-        );
-
-      validation.execute("Status", () =>
-        assert.validateStatusCode(rawResponse, 200, responseBody),
+      const { rawResponse, responseBody, responseTime } = await getHistoryWithRetry(
+        api,
+        submissionHistoryData.page,
+        submissionHistoryData.limit,
+        undefined,
+        submissionHistoryData.completedStatus,
       );
+
+      validation.execute("Status", () => assert.validateStatusCode(rawResponse, 200, responseBody));
 
       const mapped = SubmissionHistoryMapper.map(responseBody);
 
@@ -135,10 +104,7 @@ test.describe("Meter Replacement Submission History API - Filters and Edge", () 
         });
       });
 
-      validation.printSummary(
-        "Submission History - COMPLETED Filter",
-        responseTime,
-      );
+      validation.printSummary("Submission History - COMPLETED Filter", responseTime);
     },
   );
 
@@ -149,13 +115,10 @@ test.describe("Meter Replacement Submission History API - Filters and Edge", () 
     },
     async ({ authenticatedApi }) => {
       const api = new SubmissionHistoryApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
 
-      for (const search of [
-        submissionHistoryData.validSearch,
-        submissionHistoryData.meterSearch,
-      ]) {
+      for (const search of [submissionHistoryData.validSearch, submissionHistoryData.meterSearch]) {
         const { rawResponse, responseBody } = await getHistoryWithRetry(
           api,
           submissionHistoryData.page,
@@ -186,23 +149,20 @@ test.describe("Meter Replacement Submission History API - Filters and Edge", () 
     },
     async ({ authenticatedApi }) => {
       const api = new SubmissionHistoryApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
 
-      const { rawResponse, responseBody, responseTime } =
-        await getHistoryWithRetry(
-          api,
-          submissionHistoryData.page,
-          submissionHistoryData.limit,
-          undefined,
-          undefined,
-          submissionHistoryData.validDateFrom,
-          submissionHistoryData.vaidDateTo,
-        );
-
-      validation.execute("Status", () =>
-        assert.validateStatusCode(rawResponse, 200, responseBody),
+      const { rawResponse, responseBody, responseTime } = await getHistoryWithRetry(
+        api,
+        submissionHistoryData.page,
+        submissionHistoryData.limit,
+        undefined,
+        undefined,
+        submissionHistoryData.validDateFrom,
+        submissionHistoryData.vaidDateTo,
       );
+
+      validation.execute("Status", () => assert.validateStatusCode(rawResponse, 200, responseBody));
 
       validation.execute("Envelope", () => {
         expect(responseBody.success).toBeTruthy();
@@ -228,7 +188,7 @@ test.describe("Meter Replacement Submission History API - Negative", () => {
     },
     async ({ authenticatedApi }) => {
       const api = new SubmissionHistoryApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
       const cases = [
         {
@@ -265,10 +225,7 @@ test.describe("Meter Replacement Submission History API - Negative", () => {
         });
 
         validation.execute(`Error (${testCase.label})`, () =>
-          MeterReplacementCommonValidator.validateErrorEnvelope(
-            responseBody,
-            ["VALIDATION_ERROR"],
-          ),
+          MeterReplacementCommonValidator.validateErrorEnvelope(responseBody, ["VALIDATION_ERROR"]),
         );
 
         await pauseMs(400);
@@ -285,8 +242,8 @@ test.describe("Meter Replacement Submission History API - Negative", () => {
     },
     async ({ authenticatedApi }) => {
       const api = new SubmissionHistoryApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
 
       const { rawResponse, responseBody } = await getHistoryWithRetry(
         api,
@@ -295,9 +252,7 @@ test.describe("Meter Replacement Submission History API - Negative", () => {
         submissionHistoryData.invalidSearch,
       );
 
-      validation.execute("Status", () =>
-        assert.validateStatusCode(rawResponse, 200, responseBody),
-      );
+      validation.execute("Status", () => assert.validateStatusCode(rawResponse, 200, responseBody));
 
       const mapped = SubmissionHistoryMapper.map(responseBody);
 
@@ -317,8 +272,8 @@ test.describe("Meter Replacement Submission History API - Negative", () => {
     },
     async ({ authenticatedApi }) => {
       const api = new SubmissionHistoryApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
 
       const { rawResponse, responseBody } = await getHistoryWithRetry(
         api,
@@ -328,9 +283,7 @@ test.describe("Meter Replacement Submission History API - Negative", () => {
         submissionHistoryData.invalidStatus,
       );
 
-      validation.execute("Status", () =>
-        assert.validateStatusCode(rawResponse, 200, responseBody),
-      );
+      validation.execute("Status", () => assert.validateStatusCode(rawResponse, 200, responseBody));
 
       validation.execute("Empty items", () => {
         expect(responseBody.data.items.length).toBe(0);
@@ -343,16 +296,11 @@ test.describe("Meter Replacement Submission History API - Negative", () => {
   test(
     "Injection-like search does not 500",
     {
-      tag: [
-        "@meter-replacement",
-        "@submission-history",
-        "@negative",
-        "@security",
-      ],
+      tag: ["@meter-replacement", "@submission-history", "@negative", "@security"],
     },
     async ({ authenticatedApi }) => {
       const api = new SubmissionHistoryApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
       for (const search of [
         submissionHistoryData.sqlInjection,
@@ -371,9 +319,7 @@ test.describe("Meter Replacement Submission History API - Negative", () => {
         });
 
         validation.execute(`Handled (${search.slice(0, 12)})`, () => {
-          expect(
-            rawResponse.status() === 200 || responseBody.success === false,
-          ).toBeTruthy();
+          expect(rawResponse.status() === 200 || responseBody.success === false).toBeTruthy();
         });
 
         await pauseMs(600);
@@ -390,7 +336,7 @@ test.describe("Meter Replacement Submission History API - Negative", () => {
     },
     async ({ authenticatedApi }) => {
       const api = new SubmissionHistoryApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
       const { rawResponse, responseBody } = await getHistoryWithRetry(
         api,
@@ -420,8 +366,8 @@ test.describe("Meter Replacement Submission History API - Negative", () => {
     },
     async ({ authenticatedApi }) => {
       const api = new SubmissionHistoryApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
 
       const { rawResponse, responseBody } = await getHistoryWithRetry(
         api,
@@ -429,9 +375,7 @@ test.describe("Meter Replacement Submission History API - Negative", () => {
         submissionHistoryData.minimumLimit,
       );
 
-      validation.execute("Status", () =>
-        assert.validateStatusCode(rawResponse, 200, responseBody),
-      );
+      validation.execute("Status", () => assert.validateStatusCode(rawResponse, 200, responseBody));
 
       validation.execute("Empty or short page", () => {
         expect(responseBody.data.items.length).toBeLessThanOrEqual(
@@ -457,25 +401,21 @@ authTest.describe("Meter Replacement Submission History API - Auth Negative", ()
       tag: ["@meter-replacement", "@submission-history", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
-      const rawResponse =
-        await MeterReplacementCommonValidator.getUnauthenticated(
-          unauthenticatedApi,
-          meterReplacementPaths.submissionHistory,
-          {
-            params: {
-              page: submissionHistoryData.page,
-              limit: submissionHistoryData.limit,
-            },
+      const validation = new ApiValidationHelper();
+      const rawResponse = await MeterReplacementCommonValidator.getUnauthenticated(
+        unauthenticatedApi,
+        meterReplacementPaths.submissionHistory,
+        {
+          params: {
+            page: submissionHistoryData.page,
+            limit: submissionHistoryData.limit,
           },
-        );
+        },
+      );
       const body = await rawResponse.json().catch(() => ({}));
 
       validation.execute("Unauthorized", () =>
-        MeterReplacementCommonValidator.validateUnauthorizedError(
-          rawResponse.status(),
-          body,
-        ),
+        MeterReplacementCommonValidator.validateUnauthorizedError(rawResponse.status(), body),
       );
       validation.printSummary("Submission History - Missing Auth", 0);
     },
@@ -487,32 +427,28 @@ authTest.describe("Meter Replacement Submission History API - Auth Negative", ()
       tag: ["@meter-replacement", "@submission-history", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
       for (const authorization of [
         meterReplacementAuthData.invalidBearerToken,
         meterReplacementAuthData.malformedBearerToken,
         meterReplacementAuthData.emptyBearerToken,
       ]) {
-        const rawResponse =
-          await MeterReplacementCommonValidator.getUnauthenticated(
-            unauthenticatedApi,
-            meterReplacementPaths.submissionHistory,
-            {
-              params: {
-                page: submissionHistoryData.page,
-                limit: submissionHistoryData.limit,
-              },
-              headers: { Authorization: authorization },
+        const rawResponse = await MeterReplacementCommonValidator.getUnauthenticated(
+          unauthenticatedApi,
+          meterReplacementPaths.submissionHistory,
+          {
+            params: {
+              page: submissionHistoryData.page,
+              limit: submissionHistoryData.limit,
             },
-          );
+            headers: { Authorization: authorization },
+          },
+        );
         const body = await rawResponse.json().catch(() => ({}));
 
         validation.execute(`Unauthorized (${authorization.slice(0, 18)})`, () =>
-          MeterReplacementCommonValidator.validateUnauthorizedError(
-            rawResponse.status(),
-            body,
-          ),
+          MeterReplacementCommonValidator.validateUnauthorizedError(rawResponse.status(), body),
         );
 
         await pauseMs(400);
@@ -528,19 +464,16 @@ authTest.describe("Meter Replacement Submission History API - Auth Negative", ()
       tag: ["@meter-replacement", "@submission-history", "@negative"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
-      const callers =
-        MeterReplacementCommonValidator.getDisallowedMethodCallers(
-          unauthenticatedApi,
-          meterReplacementPaths.submissionHistory,
-        );
+      const validation = new ApiValidationHelper();
+      const callers = MeterReplacementCommonValidator.getDisallowedMethodCallers(
+        unauthenticatedApi,
+        meterReplacementPaths.submissionHistory,
+      );
 
       for (const method of meterReplacementAuthData.disallowedMethods) {
         const rawResponse = await callers[method]();
         validation.execute(`${method} status`, () =>
-          MeterReplacementCommonValidator.validateDisallowedMethodRejected(
-            rawResponse.status(),
-          ),
+          MeterReplacementCommonValidator.validateDisallowedMethodRejected(rawResponse.status()),
         );
         await pauseMs(300);
       }

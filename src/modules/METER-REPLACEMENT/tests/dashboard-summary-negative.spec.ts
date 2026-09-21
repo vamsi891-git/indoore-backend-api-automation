@@ -3,13 +3,12 @@ import { test } from "../../../fixtures/api.fixture";
 import { test as authTest } from "../../../fixtures/auth.fixture";
 import { DashboardSummaryApi } from "../Api/dashboard-summary.api";
 import { DashboardSummaryMapper } from "../Mapper/dashboard-summary.mapper";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import {
   MeterReplacementCommonValidator,
   meterReplacementAuthData,
   meterReplacementPaths,
 } from "../Validator/meter-replacement-common.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Meter Replacement Dashboard Summary API — Negative & Edge", () => {
   test(
@@ -19,19 +18,16 @@ test.describe("Meter Replacement Dashboard Summary API — Negative & Edge", () 
     },
     async ({ authenticatedApi }) => {
       const api = new DashboardSummaryApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
 
-      const { rawResponse, responseBody, responseTime } =
-        await api.getDashboardSummary({
-          foo: "bar",
-          period: "weekly",
-          q: "' OR 1=1 --",
-        });
+      const { rawResponse, responseBody, responseTime } = await api.getDashboardSummary({
+        foo: "bar",
+        period: "weekly",
+        q: "' OR 1=1 --",
+      });
 
-      validation.execute("Status", () =>
-        assert.validateStatusCode(rawResponse, 200, responseBody),
-      );
+      validation.execute("Status", () => assert.validateStatusCode(rawResponse, 200, responseBody));
 
       const mapped = DashboardSummaryMapper.map(responseBody);
 
@@ -41,10 +37,7 @@ test.describe("Meter Replacement Dashboard Summary API — Negative & Edge", () 
         expect(mapped.myWork).toBeDefined();
       });
 
-      validation.printSummary(
-        "Dashboard Summary — Query Pollution",
-        responseTime,
-      );
+      validation.printSummary("Dashboard Summary — Query Pollution", responseTime);
     },
   );
 
@@ -55,15 +48,13 @@ test.describe("Meter Replacement Dashboard Summary API — Negative & Edge", () 
     },
     async ({ authenticatedApi }) => {
       const api = new DashboardSummaryApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
 
       const { rawResponse, responseBody, responseTime } =
         await api.getDashboardSummaryWithTrailingSlash();
 
-      validation.execute("Status", () =>
-        assert.validateStatusCode(rawResponse, 200, responseBody),
-      );
+      validation.execute("Status", () => assert.validateStatusCode(rawResponse, 200, responseBody));
 
       validation.execute("Envelope", () => {
         expect(responseBody.success).toBeTruthy();
@@ -71,10 +62,7 @@ test.describe("Meter Replacement Dashboard Summary API — Negative & Edge", () 
         expect(responseBody.data?.myWork).toBeDefined();
       });
 
-      validation.printSummary(
-        "Dashboard Summary — Trailing Slash",
-        responseTime,
-      );
+      validation.printSummary("Dashboard Summary — Trailing Slash", responseTime);
     },
   );
 });
@@ -86,19 +74,15 @@ authTest.describe("Meter Replacement Dashboard Summary API — Auth Negative", (
       tag: ["@meter-replacement", "@dashboard-summary", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
-      const rawResponse =
-        await MeterReplacementCommonValidator.getUnauthenticated(
-          unauthenticatedApi,
-          meterReplacementPaths.dashboardSummary,
-        );
+      const validation = new ApiValidationHelper();
+      const rawResponse = await MeterReplacementCommonValidator.getUnauthenticated(
+        unauthenticatedApi,
+        meterReplacementPaths.dashboardSummary,
+      );
       const body = await rawResponse.json().catch(() => ({}));
 
       validation.execute("Unauthorized", () =>
-        MeterReplacementCommonValidator.validateUnauthorizedError(
-          rawResponse.status(),
-          body,
-        ),
+        MeterReplacementCommonValidator.validateUnauthorizedError(rawResponse.status(), body),
       );
       validation.printSummary("Dashboard Summary — Missing Auth", 0);
     },
@@ -110,26 +94,22 @@ authTest.describe("Meter Replacement Dashboard Summary API — Auth Negative", (
       tag: ["@meter-replacement", "@dashboard-summary", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
       for (const authorization of [
         meterReplacementAuthData.invalidBearerToken,
         meterReplacementAuthData.malformedBearerToken,
         meterReplacementAuthData.emptyBearerToken,
       ]) {
-        const rawResponse =
-          await MeterReplacementCommonValidator.getUnauthenticated(
-            unauthenticatedApi,
-            meterReplacementPaths.dashboardSummary,
-            { headers: { Authorization: authorization } },
-          );
+        const rawResponse = await MeterReplacementCommonValidator.getUnauthenticated(
+          unauthenticatedApi,
+          meterReplacementPaths.dashboardSummary,
+          { headers: { Authorization: authorization } },
+        );
         const body = await rawResponse.json().catch(() => ({}));
 
         validation.execute(`Unauthorized (${authorization.slice(0, 18)})`, () =>
-          MeterReplacementCommonValidator.validateUnauthorizedError(
-            rawResponse.status(),
-            body,
-          ),
+          MeterReplacementCommonValidator.validateUnauthorizedError(rawResponse.status(), body),
         );
       }
 
@@ -143,19 +123,16 @@ authTest.describe("Meter Replacement Dashboard Summary API — Auth Negative", (
       tag: ["@meter-replacement", "@dashboard-summary", "@negative"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
-      const callers =
-        MeterReplacementCommonValidator.getDisallowedMethodCallers(
-          unauthenticatedApi,
-          meterReplacementPaths.dashboardSummary,
-        );
+      const validation = new ApiValidationHelper();
+      const callers = MeterReplacementCommonValidator.getDisallowedMethodCallers(
+        unauthenticatedApi,
+        meterReplacementPaths.dashboardSummary,
+      );
 
       for (const method of meterReplacementAuthData.disallowedMethods) {
         const rawResponse = await callers[method]();
         validation.execute(`${method} status`, () =>
-          MeterReplacementCommonValidator.validateDisallowedMethodRejected(
-            rawResponse.status(),
-          ),
+          MeterReplacementCommonValidator.validateDisallowedMethodRejected(rawResponse.status()),
         );
       }
 

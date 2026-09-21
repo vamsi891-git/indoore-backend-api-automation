@@ -1,6 +1,5 @@
 import type pg from "pg";
 import type { APIRequestContext } from "@playwright/test";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ConsumerProfileApi } from "../Api/consumerprofile.api";
 import { ValidateMeterApi } from "../Api/validatemeter.api";
 import { CommunicationStatusApi } from "../Api/communicationstatus.api";
@@ -18,14 +17,8 @@ import {
   resolveCommunicationStatusQuery,
   resolveCommunicationStatusRef,
 } from "../Data/communicationstatus.data";
-import {
-  resolveRealTimePowerQuery,
-  resolveRealTimePowerRef,
-} from "../Data/realtimepower.data";
-import {
-  resolvePowerQualityQuery,
-  resolvePowerQualityRef,
-} from "../Data/powerquality.data";
+import { resolveRealTimePowerQuery, resolveRealTimePowerRef } from "../Data/realtimepower.data";
+import { resolvePowerQualityQuery, resolvePowerQualityRef } from "../Data/powerquality.data";
 import { ConsumerProfileMapper } from "../Mapper/consumerprofile.mapper";
 import { ValidateMeterMapper } from "../Mapper/validatemeter.mapper";
 import { CommunicationStatusMapper } from "../Mapper/communicationstatus.mapper";
@@ -53,6 +46,7 @@ import {
   ConsumersDbValidator,
   logConsumersDataQualityFindings,
 } from "../Db/consumers-db.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 const RTP_IVRS_DEFAULT = "1019258045";
 const PQ_IVRS_DEFAULT = "1019258045";
@@ -62,9 +56,7 @@ async function sleepMs(ms: number): Promise<void> {
 }
 
 /** Mirrors ConsumersRepository.getMeterPhaseKind for profile meterPhase labels. */
-function resolveMeterPhaseKind(
-  meterPhase: string | null | undefined,
-): "SP" | "TP" | null {
+function resolveMeterPhaseKind(meterPhase: string | null | undefined): "SP" | "TP" | null {
   const label = String(meterPhase ?? "")
     .trim()
     .toUpperCase()
@@ -88,13 +80,15 @@ function resolveMeterPhaseKind(
   return null;
 }
 
-function isEmptyPowerQualityMetrics(data: {
-  overallPf?: { value: number | null } | null;
-  frequency?: { value: number | null } | null;
-  neutralCurrent?: { value: number | null } | null;
-  mdKw?: { value: number | null } | null;
-  mdKva?: { value: number | null } | null;
-} | null): boolean {
+function isEmptyPowerQualityMetrics(
+  data: {
+    overallPf?: { value: number | null } | null;
+    frequency?: { value: number | null } | null;
+    neutralCurrent?: { value: number | null } | null;
+    mdKw?: { value: number | null } | null;
+    mdKva?: { value: number | null } | null;
+  } | null,
+): boolean {
   if (data == null) return true;
   return (
     data.overallPf?.value == null &&
@@ -111,7 +105,7 @@ function isEmptyPowerQualityMetrics(data: {
 async function runRealTimePowerDbCompare(options: {
   authenticatedApi: APIRequestContext;
   db: pg.Pool;
-  validation: ValidationEngine;
+  validation: ApiValidationHelper;
 }): Promise<void> {
   const { authenticatedApi, db, validation } = options;
   const rtpApi = new RealTimePowerApi(authenticatedApi);
@@ -130,9 +124,7 @@ async function runRealTimePowerDbCompare(options: {
   }
 
   const tpDbRow = await getLatestTpRealTimePower(db, rtpMeterLookupId);
-  const spDbRow = tpDbRow
-    ? null
-    : await getLatestSpRealTimePower(db, rtpMeterLookupId);
+  const spDbRow = tpDbRow ? null : await getLatestSpRealTimePower(db, rtpMeterLookupId);
   const phaseKind: "SP" | "TP" = tpDbRow ? "TP" : "SP";
   const dbRow = tpDbRow ?? spDbRow;
 
@@ -172,17 +164,14 @@ async function runRealTimePowerDbCompare(options: {
     return;
   }
 
-  validation.execute(
-    `Real-time-power ${phaseKind} voltage/current/PF vs DB (${rtpRef})`,
-    () => {
-      compareRealTimePowerToDb({
-        api: rtpMapped.data,
-        dbRow,
-        meterLookupId: rtpMeterLookupId,
-        phaseKind,
-      });
-    },
-  );
+  validation.execute(`Real-time-power ${phaseKind} voltage/current/PF vs DB (${rtpRef})`, () => {
+    compareRealTimePowerToDb({
+      api: rtpMapped.data,
+      dbRow,
+      meterLookupId: rtpMeterLookupId,
+      phaseKind,
+    });
+  });
 }
 
 /**
@@ -191,15 +180,13 @@ async function runRealTimePowerDbCompare(options: {
 async function runPowerQualityDbCompare(options: {
   authenticatedApi: APIRequestContext;
   db: pg.Pool;
-  validation: ValidationEngine;
+  validation: ApiValidationHelper;
 }): Promise<void> {
   const { authenticatedApi, db, validation } = options;
   const pqApi = new PowerQualityApi(authenticatedApi);
   const profileApi = new ConsumerProfileApi(authenticatedApi);
   const pqRef =
-    process.env.CONSUMER_PQ_IVRS?.trim() ||
-    resolvePowerQualityRef("pq_by_ivrs") ||
-    PQ_IVRS_DEFAULT;
+    process.env.CONSUMER_PQ_IVRS?.trim() || resolvePowerQualityRef("pq_by_ivrs") || PQ_IVRS_DEFAULT;
 
   const pqProfile = await getConsumerProfileByRef(db, pqRef);
   const pqMeterLookupId = pqProfile?.meterLookupTblRefId;
@@ -229,10 +216,7 @@ async function runPowerQualityDbCompare(options: {
 
   let pqMapped = PowerQualityMapper.map({ success: true, data: null });
   for (let attempt = 1; attempt <= 5; attempt++) {
-    const pqBody = await pqApi.getPowerQuality(
-      pqRef,
-      resolvePowerQualityQuery("pq_by_ivrs"),
-    );
+    const pqBody = await pqApi.getPowerQuality(pqRef, resolvePowerQualityQuery("pq_by_ivrs"));
     pqMapped = PowerQualityMapper.map(pqBody.responseBody);
     if (pqMapped.data != null && !isEmptyPowerQualityMetrics(pqMapped.data)) {
       break;
@@ -263,17 +247,14 @@ async function runPowerQualityDbCompare(options: {
     return;
   }
 
-  validation.execute(
-    `Power-quality ${phaseKind} PF/Hz/neutral/MD vs DB (${pqRef})`,
-    () => {
-      comparePowerQualityToDb({
-        api: pqMapped.data,
-        dbRow,
-        meterLookupId: pqMeterLookupId,
-        phaseKind,
-      });
-    },
-  );
+  validation.execute(`Power-quality ${phaseKind} PF/Hz/neutral/MD vs DB (${pqRef})`, () => {
+    comparePowerQualityToDb({
+      api: pqMapped.data,
+      dbRow,
+      meterLookupId: pqMeterLookupId,
+      phaseKind,
+    });
+  });
 }
 
 /**
@@ -285,7 +266,7 @@ export async function runConsumersDbCoverage(
   db: pg.Pool,
   _archiveDb?: pg.Pool | null,
 ): Promise<void> {
-  const validation = new ValidationEngine();
+  const validation = new ApiValidationHelper();
   const profileApi = new ConsumerProfileApi(authenticatedApi);
   const meterApi = new ValidateMeterApi(authenticatedApi);
   const communicationApi = new CommunicationStatusApi(authenticatedApi);
@@ -331,10 +312,7 @@ export async function runConsumersDbCoverage(
   });
 
   if (accountMapped.meterSerialNumber?.trim()) {
-    const meterRow = await getMeterBySerial(
-      db,
-      accountMapped.meterSerialNumber,
-    );
+    const meterRow = await getMeterBySerial(db, accountMapped.meterSerialNumber);
     validation.execute("Profile meter serial exists in L_Meter_Lookup", () => {
       compareMeterSerialExists({
         apiSerial: accountMapped.meterSerialNumber,
@@ -343,26 +321,20 @@ export async function runConsumersDbCoverage(
     });
 
     // Assigned meter from profile — ConsumersService.validateMeter → METER_ALREADY_ASSIGNED
-    const assignedBody = await meterApi.validateMeter(
-      accountMapped.meterSerialNumber,
-    );
+    const assignedBody = await meterApi.validateMeter(accountMapped.meterSerialNumber);
     const assignedData = ValidateMeterMapper.mapData(assignedBody.responseBody);
-    validation.execute(
-      "Validate-meter assigned serial vs DB (service-point link)",
-      () => {
-        compareValidateMeterToDb({
-          api: {
-            valid: assignedData.valid,
-            meterExists: assignedData.meterExists,
-            reason: assignedData.reason,
-            meterSerialNumber:
-              assignedData.meterSerialNumber ?? accountMapped.meterSerialNumber,
-            meterLookupId: assignedData.meterLookupId,
-          },
-          dbRow: meterRow,
-        });
-      },
-    );
+    validation.execute("Validate-meter assigned serial vs DB (service-point link)", () => {
+      compareValidateMeterToDb({
+        api: {
+          valid: assignedData.valid,
+          meterExists: assignedData.meterExists,
+          reason: assignedData.reason,
+          meterSerialNumber: assignedData.meterSerialNumber ?? accountMapped.meterSerialNumber,
+          meterLookupId: assignedData.meterLookupId,
+        },
+        dbRow: meterRow,
+      });
+    });
   }
 
   const ivrsBody = await profileApi.getConsumerProfile(
@@ -388,8 +360,7 @@ export async function runConsumersDbCoverage(
   });
 
   const missingSerial =
-    resolveValidateConsumerMeterSerial("meter_not_in_system") ||
-    validateMeterNotInSystemSerial;
+    resolveValidateConsumerMeterSerial("meter_not_in_system") || validateMeterNotInSystemSerial;
   const missingBody = await meterApi.validateMeter(missingSerial);
   const missingData = ValidateMeterMapper.mapData(missingBody.responseBody);
   const missingDb = await getMeterBySerial(db, missingSerial);
@@ -408,11 +379,7 @@ export async function runConsumersDbCoverage(
 
   const dbAccountUniverse = await countConsumerAccounts(db);
   validation.execute("DB consumer account universe is non-empty", () => {
-    ConsumersDbValidator.assertApiLteDb(
-      "profile spot-check count",
-      1,
-      dbAccountUniverse,
-    );
+    ConsumersDbValidator.assertApiLteDb("profile spot-check count", 1, dbAccountUniverse);
   });
 
   // Billing-history archive COUNT(*) on D1/D3 is a full-table scan — skip (GET-only widgets).
@@ -421,10 +388,8 @@ export async function runConsumersDbCoverage(
   );
 
   // --- Communication lastSeen vs general.meter_last_seen ---
-  const commRef =
-    resolveCommunicationStatusRef("status_default_today") || accountRef;
-  const meterLookupId =
-    dbByAccount?.meterLookupTblRefId ?? dbByIvrs?.meterLookupTblRefId;
+  const commRef = resolveCommunicationStatusRef("status_default_today") || accountRef;
+  const meterLookupId = dbByAccount?.meterLookupTblRefId ?? dbByIvrs?.meterLookupTblRefId;
   if (meterLookupId != null && Number.isFinite(meterLookupId)) {
     const commBody = await communicationApi.getCommunicationStatus(
       commRef,
@@ -432,16 +397,13 @@ export async function runConsumersDbCoverage(
     );
     const commMapped = CommunicationStatusMapper.map(commBody.responseBody);
     const lastSeenRow = await getMeterLastSeen(db, meterLookupId);
-    validation.execute(
-      "Communication lastSeen vs general.meter_last_seen",
-      () => {
-        compareCommunicationLastSeenToDb({
-          apiHasLastSeen: Boolean(commMapped.delayed?.lastSeen?.trim()),
-          dbLastSeen: lastSeenRow?.lastSeen,
-          meterLookupId,
-        });
-      },
-    );
+    validation.execute("Communication lastSeen vs general.meter_last_seen", () => {
+      compareCommunicationLastSeenToDb({
+        apiHasLastSeen: Boolean(commMapped.delayed?.lastSeen?.trim()),
+        dbLastSeen: lastSeenRow?.lastSeen,
+        meterLookupId,
+      });
+    });
   }
 
   validation.printSummary("Consumers DB Coverage", 0);

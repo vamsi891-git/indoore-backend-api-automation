@@ -1,7 +1,5 @@
-export const dtrLoadDefaultFromDate =
-  process.env.DTR_LOAD_FROM_DATE?.trim() || "2025-10-01";
-export const dtrLoadDefaultToDate =
-  process.env.DTR_LOAD_TO_DATE?.trim() || "2025-10-30";
+export const dtrLoadDefaultFromDate = process.env.DTR_LOAD_FROM_DATE?.trim() || "2025-10-01";
+export const dtrLoadDefaultToDate = process.env.DTR_LOAD_TO_DATE?.trim() || "2025-10-30";
 export const dtrLoadDefaultPage = 1;
 export const dtrLoadDefaultLimit = 10;
 export const dtrLoadBeyondPage = 99999;
@@ -207,138 +205,188 @@ export interface DtrLoadTestCase {
   tags: string[];
   isContractFixture?: boolean;
   expectedStatus?: number;
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export const dtrLoadTestCases: DtrLoadTestCase[] = [
   {
-    testName:
-      "Transformer load — October 2025 first page lists each transformer’s load by hour",
+    testName: "Transformer load — October 2025 first page lists each transformer’s load by hour",
     scenario: "live_hourly_actual",
     tags: ["@smoke", "@dtr-load"],
+    nonEmptyExpected: true,
   },
   {
-    testName:
-      "Transformer load — first page shows load as a percent of the transformer size",
+    testName: "Transformer load — first page shows load as a percent of the transformer size",
     scenario: "live_hourly_percentage",
     tags: ["@dtr-load"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Transformer load — first page lists how much energy each transformer used by hour",
+    testName: "Transformer load — first page lists how much energy each transformer used by hour",
     scenario: "live_consumption",
     tags: ["@dtr-load"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Transformer load — first page lists how heavily each transformer is loaded",
+    testName: "Transformer load — first page lists how heavily each transformer is loaded",
     scenario: "live_loading",
     tags: ["@dtr-load"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Transformer load — first page lists how uneven the three phases are",
+    testName: "Transformer load — first page lists how uneven the three phases are",
     scenario: "live_unbalance",
     tags: ["@dtr-load"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Transformer load — first page lists average, highest, and lowest load",
+    testName: "Transformer load — first page lists average, highest, and lowest load",
     scenario: "live_summary",
     tags: ["@dtr-load"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Transformer load — asking for one transformer at a time still returns a row",
+    testName: "Transformer load — asking for one transformer at a time still returns a row",
     scenario: "live_limit_one",
     tags: ["@dtr-load", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Transformer load — page 2 continues the list without repeating a transformer",
+    testName: "Transformer load — page 2 continues the list without repeating a transformer",
     scenario: "live_page_two",
     tags: ["@dtr-load", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Transformer load — a page far past the end of the list is empty",
     scenario: "live_beyond",
     tags: ["@dtr-load", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Transformer load — leftover unused filters are ignored",
     scenario: "live_unknown_query",
     tags: ["@dtr-load", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Transformer load — October 2025 sample row matches the live layout",
+    testName: "Transformer load — October 2025 sample row matches the live layout",
     scenario: "contract_hourly",
     isContractFixture: true,
     tags: ["@dtr-load", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Transformer load — a transformer with almost no load is still a valid row",
+    testName: "Transformer load — a transformer with almost no load is still a valid row",
     scenario: "contract_zero_hours",
     isContractFixture: true,
     tags: ["@dtr-load", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Transformer load — energy-use sample shows a start/end date and a unit",
+    testName: "Transformer load — energy-use sample shows a start/end date and a unit",
     scenario: "contract_consumption",
     isContractFixture: true,
     tags: ["@dtr-load", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Transformer load — an unknown report type is rejected",
     scenario: "invalid_type",
     expectedStatus: 400,
     tags: ["@dtr-load", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Transformer load — start date after end date is rejected",
     scenario: "from_after_to",
     expectedStatus: 400,
     tags: ["@dtr-load", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Transformer load — leaving out the start date is rejected",
     scenario: "missing_from",
     expectedStatus: 400,
     tags: ["@dtr-load", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Transformer load — leaving out the end date is rejected",
     scenario: "missing_to",
     expectedStatus: 400,
     tags: ["@dtr-load", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Transformer load — page numbering must start at 1",
     scenario: "invalid_page",
     expectedStatus: 400,
     tags: ["@dtr-load", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Transformer load — asking for zero rows per page is rejected",
     scenario: "invalid_limit",
     expectedStatus: 400,
     tags: ["@dtr-load", "@negative"],
+    nonEmptyExpected: false,
   },
 ];
 
 const hourlyH = {
-  H1: 8.33, H2: 7.67, H3: 7.27, H4: 7.14, H5: 7.28, H6: 7.46,
-  H7: 8.75, H8: 9.2, H9: 8.95, H10: 7.94, H11: 7.79, H12: 7.33,
-  H13: 7.99, H14: 7.74, H15: 7.67, H16: 7.73, H17: 8.16, H18: 8.46,
-  H19: 9.34, H20: 9.91, H21: 9.4, H22: 8.97, H23: 8.56, H24: 8.75,
+  H1: 8.33,
+  H2: 7.67,
+  H3: 7.27,
+  H4: 7.14,
+  H5: 7.28,
+  H6: 7.46,
+  H7: 8.75,
+  H8: 9.2,
+  H9: 8.95,
+  H10: 7.94,
+  H11: 7.79,
+  H12: 7.33,
+  H13: 7.99,
+  H14: 7.74,
+  H15: 7.67,
+  H16: 7.73,
+  H17: 8.16,
+  H18: 8.46,
+  H19: 9.34,
+  H20: 9.91,
+  H21: 9.4,
+  H22: 8.97,
+  H23: 8.56,
+  H24: 8.75,
 };
 
 const zeroH = {
-  H1: 0, H2: 0.01, H3: 0.02, H4: 0.01, H5: 0.01, H6: 0.01,
-  H7: 0.01, H8: 0.01, H9: 0.01, H10: 0, H11: 0, H12: 0,
-  H13: 0, H14: 0, H15: 0, H16: 0, H17: 0, H18: 0,
-  H19: 0, H20: 0, H21: 0, H22: 0, H23: 0, H24: 0,
+  H1: 0,
+  H2: 0.01,
+  H3: 0.02,
+  H4: 0.01,
+  H5: 0.01,
+  H6: 0.01,
+  H7: 0.01,
+  H8: 0.01,
+  H9: 0.01,
+  H10: 0,
+  H11: 0,
+  H12: 0,
+  H13: 0,
+  H14: 0,
+  H15: 0,
+  H16: 0,
+  H17: 0,
+  H18: 0,
+  H19: 0,
+  H20: 0,
+  H21: 0,
+  H22: 0,
+  H23: 0,
+  H24: 0,
 };
 
 export const dtrLoadHourlyFixture = {

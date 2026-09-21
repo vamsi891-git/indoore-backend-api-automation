@@ -1,13 +1,9 @@
 import type pg from "pg";
 import type { APIRequestContext } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { logDbVsApiSection } from "../../../core/db/db-compare.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { logDbVsApiSection } from "../../../extras/db/db-compare.engine";
 import { LossAnalysisApi } from "../Api/loss-analysis.api";
-import {
-  buildLossAnalysisQuery,
-  feederNetworkLookupId,
-} from "../Data/loss-analysis.data";
+import { buildLossAnalysisQuery, feederNetworkLookupId } from "../Data/loss-analysis.data";
 import { getLossAnalysisPaginatedView } from "../Mapper/loss-analysis.mapper";
 import {
   compareEnergyAuditDtrSpotToDb,
@@ -18,6 +14,7 @@ import {
   getEnergyAuditDtrByNameUnderRoot,
 } from "../Db/energy-audits.db";
 import { logEnergyAuditsDataQualityFindings } from "../Db/energy-audits-db.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 const SPOT_SAMPLE_SIZE = 3;
 
@@ -36,7 +33,7 @@ export async function runEnergyAuditsDbCoverage(
   authenticatedApi: APIRequestContext,
   db: pg.Pool,
 ): Promise<void> {
-  const validation = new ValidationEngine();
+  const validation = new ApiValidationHelper();
   const networkLookupId = feederNetworkLookupId;
   // DP uses lookup-id archive paths; still returns the same DTR page grain as billing.
   const query = buildLossAnalysisQuery("dp", "feeder", networkLookupId, {
@@ -67,17 +64,14 @@ export async function runEnergyAuditsDbCoverage(
     { totalMode: "exact" },
   );
 
-  validation.execute(
-    "Loss-analysis total equals DTR count under feeder root",
-    () => {
-      expect(view.totalCount).toBe(dbCount);
-      compareEnergyAuditsCountLteDb({
-        label: "energy-audit.loss-analysis.total",
-        apiCount: view.totalCount,
-        dbCount,
-      });
-    },
-  );
+  validation.execute("Loss-analysis total equals DTR count under feeder root", () => {
+    expect(view.totalCount).toBe(dbCount);
+    compareEnergyAuditsCountLteDb({
+      label: "energy-audit.loss-analysis.total",
+      apiCount: view.totalCount,
+      dbCount,
+    });
+  });
 
   const named = view.rows.filter((row) => trimText(row.dtrName).length > 0);
   expect(
@@ -87,24 +81,17 @@ export async function runEnergyAuditsDbCoverage(
 
   for (const apiRow of named.slice(0, SPOT_SAMPLE_SIZE)) {
     const dtrName = trimText(apiRow.dtrName);
-    const dbRow = await getEnergyAuditDtrByNameUnderRoot(
-      db,
-      networkLookupId,
-      dtrName,
-    );
-    validation.execute(
-      `Energy-audit DTR identity vs DB (${dtrName})`,
-      () => {
-        expect(dbRow, `DB DTR row missing for name=${dtrName}`).toBeTruthy();
-        compareEnergyAuditDtrSpotToDb({
-          api: {
-            dtrName,
-            consumerCount: apiRow.consumerCount,
-          },
-          dbRow: dbRow!,
-        });
-      },
-    );
+    const dbRow = await getEnergyAuditDtrByNameUnderRoot(db, networkLookupId, dtrName);
+    validation.execute(`Energy-audit DTR identity vs DB (${dtrName})`, () => {
+      expect(dbRow, `DB DTR row missing for name=${dtrName}`).toBeTruthy();
+      compareEnergyAuditDtrSpotToDb({
+        api: {
+          dtrName,
+          consumerCount: apiRow.consumerCount,
+        },
+        dbRow: dbRow!,
+      });
+    });
   }
 
   validation.printSummary("ENERGY-AUDITS DB Coverage", 0);

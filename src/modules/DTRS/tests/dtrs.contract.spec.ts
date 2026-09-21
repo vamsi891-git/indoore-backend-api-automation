@@ -2,14 +2,12 @@ import { test, expect } from "../../../fixtures/observability.fixture";
 import {
   assertContractSnapshot,
   buildLookupItemsContractSnapshot,
-} from "../../../core/contract/contract-snapshot.helper";
+} from "../../../extras/contract/contract-snapshot.helper";
 import { DtrProfileApi } from "../Api/dtrprofile.api";
 import { dtrProfileDefaultCode } from "../Data/dtrprofile.data";
 
 function asRecord(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === "object"
-    ? (value as Record<string, unknown>)
-    : {};
+  return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
 test.describe("DTR saved field list", () => {
@@ -30,9 +28,10 @@ test.describe("DTR saved field list", () => {
         buildLookupItemsContractSnapshot({
           pathPattern: "/indore/dtr/{dtrCode}/profile",
           dataKeys: Object.keys(data).sort(),
-          itemKeys: Array.isArray(data.overview) && data.overview.length > 0
-            ? Object.keys(asRecord(data.overview[0])).sort()
-            : Object.keys(data).sort(),
+          itemKeys:
+            Array.isArray(data.overview) && data.overview.length > 0
+              ? Object.keys(asRecord(data.overview[0])).sort()
+              : Object.keys(data).sort(),
         }),
       );
     },
