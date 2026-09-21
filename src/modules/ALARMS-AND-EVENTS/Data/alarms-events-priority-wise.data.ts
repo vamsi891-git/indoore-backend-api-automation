@@ -35,47 +35,44 @@ export type AlarmsEventsPriorityWiseTestCase = {
   expectedCurrentDate?: string;
   expectedPriorityIds?: readonly number[];
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 };
 
 const tags = ["@alarms-events", "@alarms-events-priority-wise", "@edge"];
 const smoke = ["@smoke", "@alarms-events", "@alarms-events-priority-wise"];
 
-export const alarmsEventsPriorityWiseTestCases: AlarmsEventsPriorityWiseTestCase[] =
-  [
-    {
-      testName: "GET /alarms-events/priority-wise - priority day compare loads",
-      expectedStatus: 200,
-      expectedPriorityIds: EXPECTED_PRIORITY_WISE_ROWS.map(
-        (row) => row.priorityId,
-      ),
-      tags: smoke,
-    },
-    {
-      testName: "GET /alarms-events/priority-wise - extra unused query is ignored",
-      params: { foo: "1" },
-      expectedStatus: 200,
-      expectedPriorityIds: EXPECTED_PRIORITY_WISE_ROWS.map(
-        (row) => row.priorityId,
-      ),
-      tags,
-    },
-    {
-      testName: `GET /alarms-events/priority-wise - date ${alarmsEventsPriorityWiseData.date}`,
-      params: { date: alarmsEventsPriorityWiseData.date },
-      expectedStatus: 200,
-      expectedCurrentDate: alarmsEventsPriorityWiseData.date,
-      tags,
-    },
-    {
-      testName: "GET /alarms-events/priority-wise - invalid date is rejected",
-      params: { date: "23-08-2025" },
-      expectedStatus: 400,
-      tags,
-    },
-    {
-      testName: "GET /alarms-events/priority-wise - blank date is rejected",
-      params: { date: "" },
-      expectedStatus: 400,
-      tags,
-    },
-  ];
+export const alarmsEventsPriorityWiseTestCases: AlarmsEventsPriorityWiseTestCase[] = [
+  {
+    testName: "GET /alarms-events/priority-wise - priority day compare loads",
+    expectedStatus: 200,
+    expectedPriorityIds: EXPECTED_PRIORITY_WISE_ROWS.map((row) => row.priorityId),
+    tags: smoke,
+  },
+  {
+    testName: "GET /alarms-events/priority-wise - extra unused query is ignored",
+    params: { foo: "1" },
+    expectedStatus: 200,
+    expectedPriorityIds: EXPECTED_PRIORITY_WISE_ROWS.map((row) => row.priorityId),
+    tags,
+  },
+  {
+    testName: `GET /alarms-events/priority-wise - date ${alarmsEventsPriorityWiseData.date}`,
+    params: { date: alarmsEventsPriorityWiseData.date },
+    expectedStatus: 200,
+    expectedCurrentDate: alarmsEventsPriorityWiseData.date,
+    tags,
+  },
+  {
+    testName: "GET /alarms-events/priority-wise - invalid date is rejected",
+    params: { date: "23-08-2025" },
+    expectedStatus: 400,
+    tags,
+  },
+  {
+    testName: "GET /alarms-events/priority-wise - blank date is rejected",
+    params: { date: "" },
+    expectedStatus: 400,
+    tags,
+  },
+];

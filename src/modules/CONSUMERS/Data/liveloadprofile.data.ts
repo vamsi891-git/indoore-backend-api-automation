@@ -1,6 +1,9 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { LiveLoadProfileQuery } from "../Api/liveloadprofile.api";
-import type {LiveLoadProfileResponse,LiveLoadProfileScenario,} from "../Mapper/liveloadprofile.mapper";
+import type {
+  LiveLoadProfileResponse,
+  LiveLoadProfileScenario,
+} from "../Mapper/liveloadprofile.mapper";
 import {
   CONSUMERS_LIVE_IVRS,
   CONSUMERS_LIVE_METER_ROUTE,
@@ -61,10 +64,10 @@ export interface LiveLoadProfileTestCase {
   expectedStatus?: number;
   isContractFixture?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
-export function resolveLiveLoadProfileRef(
-  scenario: LiveLoadProfileScenario,
-): string | undefined {
+export function resolveLiveLoadProfileRef(scenario: LiveLoadProfileScenario): string | undefined {
   switch (scenario) {
     case "llp_by_ivrs":
     case "llp_ignore_unknown_query":
@@ -127,68 +130,68 @@ export function resolveLiveLoadProfileContractBody(
 }
 export const liveLoadProfileTestCases: LiveLoadProfileTestCase[] = [
   {
-    testName:
-      "Live load — current load for the consumer",
+    testName: "Live load — current load for the consumer",
     scenario: "llp_by_ivrs",
     tags: ["@smoke", "@consumer", "@live-load-profile"],
+    nonEmptyExpected: true,
   },
   {
-    testName:
-      "Live load — opens using the account number",
+    testName: "Live load — opens using the account number",
     scenario: "llp_by_account",
     tags: ["@consumer", "@live-load-profile", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Live load — opens using the meter",
+    testName: "Live load — opens using the meter",
     scenario: "llp_by_meter",
     tags: ["@consumer", "@live-load-profile", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Live load — extra unused options are ignored",
+    testName: "Live load — extra unused options are ignored",
     scenario: "llp_ignore_unknown_query",
     tags: ["@consumer", "@live-load-profile", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Live load — sample: no live reading yet",
+    testName: "Live load — sample: no live reading yet",
     scenario: "contract_null_data",
     isContractFixture: true,
     tags: ["@consumer", "@live-load-profile", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Live load — sample: three-phase load",
+    testName: "Live load — sample: three-phase load",
     scenario: "contract_tp_metrics",
     isContractFixture: true,
     tags: ["@consumer", "@live-load-profile", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Live load — sample: single-phase load",
+    testName: "Live load — sample: single-phase load",
     scenario: "contract_sp_metrics",
     isContractFixture: true,
     tags: ["@consumer", "@live-load-profile", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Live load — unknown consumer is not found",
+    testName: "Live load — unknown consumer is not found",
     scenario: "consumer_not_found",
     expectedStatus: 200,
     tags: ["@consumer", "@live-load-profile", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Live load — unknown meter is empty or not found",
+    testName: "Live load — unknown meter is empty or not found",
     scenario: "meter_not_found",
     tags: ["@consumer", "@live-load-profile", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Live load — blank consumer number is rejected",
+    testName: "Live load — blank consumer number is rejected",
     scenario: "empty_consumer_ref",
     expectedStatus: 400,
     tags: ["@consumer", "@live-load-profile", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

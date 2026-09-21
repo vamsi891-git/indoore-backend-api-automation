@@ -1,5 +1,5 @@
 import { test as apiDbTest } from "../../../fixtures/api-db.fixture";
-import { isDbConfigured } from "../../../core/db/postgres.client";
+import { isDbConfigured } from "../../../extras/db/postgres.client";
 import { isTechnicalAnalysisDbSqlReady } from "../Db/technical-analysis.db";
 import { runTechnicalAnalysisDbCoverage } from "./technical-analysis-db.harness";
 

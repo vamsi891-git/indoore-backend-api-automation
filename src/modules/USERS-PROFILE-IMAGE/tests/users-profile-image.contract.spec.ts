@@ -2,14 +2,12 @@ import { test, expect } from "../../../fixtures/observability.fixture";
 import {
   assertContractSnapshot,
   buildLookupItemsContractSnapshot,
-} from "../../../core/contract/contract-snapshot.helper";
+} from "../../../extras/contract/contract-snapshot.helper";
 import { ProfileImageApi } from "../Api/profileimage.api";
 import { ProfileImageData } from "../Data/profileimage.data";
 
 function asRecord(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === "object"
-    ? (value as Record<string, unknown>)
-    : {};
+  return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
 test.describe("USERS-PROFILE-IMAGE — Contract Snapshots", () => {
@@ -19,9 +17,9 @@ test.describe("USERS-PROFILE-IMAGE — Contract Snapshots", () => {
     "Profile Image Upload-URL Contract Snapshot",
     { tag: ["@contract-snapshot", "@users-profile-image"] },
     async ({ authenticatedApi }) => {
-      const result = await new ProfileImageApi(
-        authenticatedApi,
-      ).getProfileImageUploadUrl(ProfileImageData.buildUploadRequest());
+      const result = await new ProfileImageApi(authenticatedApi).getProfileImageUploadUrl(
+        ProfileImageData.buildUploadRequest(),
+      );
       expect(result.rawResponse.status()).toBe(200);
       const body = asRecord(result.responseBody);
       expect(body.success).toBe(true);

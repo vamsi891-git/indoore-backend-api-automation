@@ -5,18 +5,14 @@ import {
   assertDbVsApiScalar,
   compareApiToDb,
   logDbVsApiSection,
-} from "../../../core/db/db-compare.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
+} from "../../../extras/db/db-compare.engine";
 import { MeterMasterApi } from "../Api/meter-master.api";
 import { DtrMasterApi } from "../Api/dtr-master.api";
 import { ConsumerMasterApi } from "../Api/consumer-master.api";
 import { FeederMasterApi } from "../Api/feeder-master.api";
 import { SubstationMasterApi } from "../Api/substation-master.api";
 import { MeterCommunicationStatusApi } from "../Api/meter-communication-status.api";
-import {
-  masterDataDefaultQuery,
-  meterMasterDefaultQuery,
-} from "../Data/master-data.common.data";
+import { masterDataDefaultQuery, meterMasterDefaultQuery } from "../Data/master-data.common.data";
 import {
   countActiveMeters,
   countConsumerMasterRows,
@@ -40,6 +36,7 @@ import {
   compareSubstationMasterSpotToDb,
 } from "../Db/master-data-db-compare";
 import { logMasterDataDataQualityFindings } from "../Db/master-data-db.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 /**
  * Part 4 harness — aligned with MasterDataRepository SQL paste
@@ -49,21 +46,20 @@ export async function runMasterDataDbCoverage(
   authenticatedApi: APIRequestContext,
   db: pg.Pool,
 ): Promise<void> {
-  const validation = new ValidationEngine();
+  const validation = new ApiValidationHelper();
   const listQuery = { ...masterDataDefaultQuery };
   const meterQuery = { ...meterMasterDefaultQuery };
 
   // --- Meter master ---
   {
-    const { responseBody } = await new MeterMasterApi(
-      authenticatedApi,
-    ).getMeterMasterData(meterQuery);
+    const { responseBody } = await new MeterMasterApi(authenticatedApi).getMeterMasterData(
+      meterQuery,
+    );
     await logMasterDataDataQualityFindings(
       "meter-master",
       responseBody.data as unknown as Record<string, unknown>,
     );
-    const apiTotal =
-      responseBody.data?.pagination?.total ?? responseBody.data?.total ?? 0;
+    const apiTotal = responseBody.data?.pagination?.total ?? responseBody.data?.total ?? 0;
     const dbTotal = await countActiveMeters(db);
     logDbVsApiSection(
       "Meter Master",
@@ -85,14 +81,9 @@ export async function runMasterDataDbCoverage(
       );
     });
 
-    const apiRow = (responseBody.data?.rows ?? []).find((row) =>
-      row.meterSerialNumber?.trim(),
-    );
+    const apiRow = (responseBody.data?.rows ?? []).find((row) => row.meterSerialNumber?.trim());
     if (apiRow?.meterSerialNumber?.trim()) {
-      const dbRow = await getActiveMeterBySerial(
-        db,
-        apiRow.meterSerialNumber.trim(),
-      );
+      const dbRow = await getActiveMeterBySerial(db, apiRow.meterSerialNumber.trim());
       validation.execute("Meter Master spot serial vs DB", () => {
         expect(dbRow, "DB row for API meter serial").toBeTruthy();
         compareMeterMasterSpotToDb({
@@ -109,15 +100,12 @@ export async function runMasterDataDbCoverage(
 
   // --- DTR master ---
   {
-    const { responseBody } = await new DtrMasterApi(
-      authenticatedApi,
-    ).getDtrMasterData(listQuery);
+    const { responseBody } = await new DtrMasterApi(authenticatedApi).getDtrMasterData(listQuery);
     await logMasterDataDataQualityFindings(
       "dtr-master",
       responseBody.data as unknown as Record<string, unknown>,
     );
-    const apiTotal =
-      responseBody.data?.pagination?.total ?? responseBody.data?.total ?? 0;
+    const apiTotal = responseBody.data?.pagination?.total ?? responseBody.data?.total ?? 0;
     const dbTotal = await countDtrMasterRows(db);
     logDbVsApiSection(
       "DTR Master",
@@ -164,15 +152,15 @@ export async function runMasterDataDbCoverage(
 
   // --- Consumer master ---
   {
-    const { responseBody } = await new ConsumerMasterApi(
-      authenticatedApi,
-    ).getConsumerMasterData({ ...listQuery, meterType: "all" });
+    const { responseBody } = await new ConsumerMasterApi(authenticatedApi).getConsumerMasterData({
+      ...listQuery,
+      meterType: "all",
+    });
     await logMasterDataDataQualityFindings(
       "consumer-master",
       responseBody.data as unknown as Record<string, unknown>,
     );
-    const apiTotal =
-      responseBody.data?.pagination?.total ?? responseBody.data?.total ?? 0;
+    const apiTotal = responseBody.data?.pagination?.total ?? responseBody.data?.total ?? 0;
     const dbTotal = await countConsumerMasterRows(db);
     logDbVsApiSection(
       "Consumer Master",
@@ -195,8 +183,7 @@ export async function runMasterDataDbCoverage(
     });
 
     const apiRow = (responseBody.data?.rows ?? []).find(
-      (row) =>
-        (row.meterLookupTblRefId ?? 0) > 0 && row.meterSerialNumber?.trim(),
+      (row) => (row.meterLookupTblRefId ?? 0) > 0 && row.meterSerialNumber?.trim(),
     );
     if (apiRow?.meterLookupTblRefId) {
       const lookupId = apiRow.meterLookupTblRefId;
@@ -217,15 +204,14 @@ export async function runMasterDataDbCoverage(
 
   // --- Feeder master ---
   {
-    const { responseBody } = await new FeederMasterApi(
-      authenticatedApi,
-    ).getFeederMasterData(listQuery);
+    const { responseBody } = await new FeederMasterApi(authenticatedApi).getFeederMasterData(
+      listQuery,
+    );
     await logMasterDataDataQualityFindings(
       "feeder-master",
       responseBody.data as unknown as Record<string, unknown>,
     );
-    const apiTotal =
-      responseBody.data?.pagination?.total ?? responseBody.data?.total ?? 0;
+    const apiTotal = responseBody.data?.pagination?.total ?? responseBody.data?.total ?? 0;
     const dbTotal = await countFeederMasterRows(db);
     logDbVsApiSection(
       "Feeder Master",
@@ -247,9 +233,7 @@ export async function runMasterDataDbCoverage(
       );
     });
 
-    const apiRow = (responseBody.data?.rows ?? []).find((row) =>
-      row.feederName?.trim(),
-    );
+    const apiRow = (responseBody.data?.rows ?? []).find((row) => row.feederName?.trim());
     if (apiRow?.feederName?.trim()) {
       const dbRow = await getFeederByName(db, apiRow.feederName.trim());
       validation.execute("Feeder Master spot name vs DB", () => {
@@ -275,8 +259,7 @@ export async function runMasterDataDbCoverage(
       "substation-master",
       responseBody.data as unknown as Record<string, unknown>,
     );
-    const apiTotal =
-      responseBody.data?.pagination?.total ?? responseBody.data?.total ?? 0;
+    const apiTotal = responseBody.data?.pagination?.total ?? responseBody.data?.total ?? 0;
     const dbTotal = await countSubstationMasterRows(db);
     logDbVsApiSection(
       "Substation Master",
@@ -289,21 +272,16 @@ export async function runMasterDataDbCoverage(
       { total: dbTotal },
       { totalMode: "exact" },
     );
-    validation.execute(
-      "Substation Master total vs substationMasterDataBaseSql",
-      () => {
-        assertDbVsApiScalar(
-          "total substation master rows",
-          apiTotal,
-          dbTotal,
-          "DB vs API — Substation Master total",
-        );
-      },
-    );
+    validation.execute("Substation Master total vs substationMasterDataBaseSql", () => {
+      assertDbVsApiScalar(
+        "total substation master rows",
+        apiTotal,
+        dbTotal,
+        "DB vs API — Substation Master total",
+      );
+    });
 
-    const apiRow = (responseBody.data?.rows ?? []).find((row) =>
-      row.substationCode?.trim(),
-    );
+    const apiRow = (responseBody.data?.rows ?? []).find((row) => row.substationCode?.trim());
     if (apiRow?.substationCode?.trim()) {
       const dbRow = await getSubstationByCode(db, apiRow.substationCode.trim());
       validation.execute("Substation Master spot code vs DB", () => {

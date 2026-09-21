@@ -1,10 +1,8 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
 import { HES_COMMANDS_E2E_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { CommandsProfileConfigApi } from "../Api/commands-profile-config.api";
 import { CommandsQueryMeterJobApi } from "../Api/commands-query-meter-job.api";
@@ -22,7 +20,11 @@ import {
   CommandsJobInitMapper,
   extractJobNamesFromInitResponse,
 } from "../shared/commands-job-init.mapper";
-import { pollQueryMeterJob, softSkipHesE2eInfraFailure, assertHesE2eQueryPhase } from "../utils/commands-job-e2e.helper";
+import {
+  pollQueryMeterJob,
+  softSkipHesE2eInfraFailure,
+  assertHesE2eQueryPhase,
+} from "../utils/commands-job-e2e.helper";
 import { waitForHesJobQueueSlot } from "../utils/commands-hes-queue.helper";
 
 test.describe("HES Commands — Profile Config (E2E)", () => {
@@ -32,13 +34,7 @@ test.describe("HES Commands — Profile Config (E2E)", () => {
   test(
     "Validate POST /commands/profile-config → query-meter-job — profile_capture_period_get E2E",
     {
-      tag: [
-        "@smoke",
-        "@commands",
-        "@hes",
-        "@commands-profile-config",
-        "@e2e",
-      ],
+      tag: ["@smoke", "@commands", "@hes", "@commands-profile-config", "@e2e"],
     },
     async ({ authenticatedApi }, testInfo) => {
       await waitForHesJobQueueSlot();
@@ -46,8 +42,8 @@ test.describe("HES Commands — Profile Config (E2E)", () => {
       const requestedMeters = normalizeMeters(body.meters);
       const profileApi = new CommandsProfileConfigApi(authenticatedApi);
       const queryApi = new CommandsQueryMeterJobApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const initValidator = new CommandsJobInitValidator();
       const queryValidator = new CommandsQueryMeterJobValidator();
       const profileValidator = new CommandsProfileConfigValidator();
@@ -62,7 +58,7 @@ test.describe("HES Commands — Profile Config (E2E)", () => {
         postRaw,
         "Commands Profile Config — Init Job",
         postRaw.url(),
-        postTime
+        postTime,
       );
 
       const postStatus = postRaw.status();
@@ -76,23 +72,19 @@ test.describe("HES Commands — Profile Config (E2E)", () => {
         validation.execute("Error Response (500 backend defect)", () =>
           initValidator.validateErrorResponse(postBody),
         );
-        validation.printSummary(
-          "Commands Profile Config — Init Job",
-          postTime,
-          {
-            testInfo,
-            defectContext: {
-              module: "HES-COMMANDS",
-              endpoint: postRaw.url(),
-              method: "POST",
-              requestParams: body,
-              responseStatus: postStatus,
-              responseBody: postBody,
-              expectedBehavior:
-                "200 with jobName in meterResults for profile_capture_period_get (backend intermittently returns 500).",
-            },
+        validation.printSummary("Commands Profile Config — Init Job", postTime, {
+          testInfo,
+          defectContext: {
+            module: "HES-COMMANDS",
+            endpoint: postRaw.url(),
+            method: "POST",
+            requestParams: body,
+            responseStatus: postStatus,
+            responseBody: postBody,
+            expectedBehavior:
+              "200 with jobName in meterResults for profile_capture_period_get (backend intermittently returns 500).",
           },
-        );
+        });
         return;
       }
 
@@ -104,9 +96,7 @@ test.describe("HES Commands — Profile Config (E2E)", () => {
         maxResponseTimeMs: commandsProfileConfigData.maxResponseTimeMs,
       });
 
-      validation.execute("Init Success Response", () =>
-        initValidator.validateResponse(postBody),
-      );
+      validation.execute("Init Success Response", () => initValidator.validateResponse(postBody));
 
       const mappedInit = CommandsJobInitMapper.mapResponse(postBody);
 
@@ -131,9 +121,7 @@ test.describe("HES Commands — Profile Config (E2E)", () => {
       validation.execute("Init IN_PROGRESS Status", () =>
         profileValidator.validateInitInProgressStatus(mappedInit),
       );
-      validation.execute("Init Message", () =>
-        profileValidator.validateInitMessage(mappedInit),
-      );
+      validation.execute("Init Message", () => profileValidator.validateInitMessage(mappedInit));
       validation.execute("Init Full Contract", () =>
         initValidator.validateFullInitContract(mappedInit, requestedMeters),
       );
@@ -161,7 +149,7 @@ test.describe("HES Commands — Profile Config (E2E)", () => {
         pollResult.rawResponse,
         "Commands Profile Config — Query Meter Job",
         pollResult.rawResponse.url(),
-        pollResult.responseTime
+        pollResult.responseTime,
       );
 
       ApiValidationHelper.runStandardChecks(validation, assert, {
@@ -180,9 +168,7 @@ test.describe("HES Commands — Profile Config (E2E)", () => {
         meterId: requestedMeters[0],
         onFinished: () => {
           validation.execute("Query Finished Message", () =>
-            profileValidator.validateQueryFinishedMessage(
-              pollResult.mapped.message,
-            ),
+            profileValidator.validateQueryFinishedMessage(pollResult.mapped.message),
           );
           validation.execute("Query HES Job Status FINISHED", () => {
             expect(pollResult.mapped.job.hesJobStatus).toBe("FINISHED");
@@ -191,9 +177,7 @@ test.describe("HES Commands — Profile Config (E2E)", () => {
             queryValidator.validateSummaryCounts(pollResult.mapped.job.summary),
           );
           validation.execute("Query All Meter Results", () =>
-            queryValidator.validateAllMeterResults(
-              pollResult.mapped.job.meterResults,
-            ),
+            queryValidator.validateAllMeterResults(pollResult.mapped.job.meterResults),
           );
           validation.execute("Query Profile Capture Period HES Response", () =>
             profileValidator.validateProfileConfigQueryMeterResults(
@@ -202,11 +186,7 @@ test.describe("HES Commands — Profile Config (E2E)", () => {
             ),
           );
           validation.execute("Query Full Contract", () =>
-            queryValidator.validateFullContract(
-              pollResult.mapped,
-              jobName,
-              requestedMeters[0],
-            ),
+            queryValidator.validateFullContract(pollResult.mapped, jobName, requestedMeters[0]),
           );
         },
       });
@@ -248,24 +228,19 @@ test.describe("HES Commands — Profile Config (E2E)", () => {
       };
 
       const api = new CommandsProfileConfigApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const initValidator = new CommandsJobInitValidator();
 
-      const { rawResponse, responseBody, responseTime } =
-        await api.postProfileConfig(
-          body as Parameters<CommandsProfileConfigApi["postProfileConfig"]>[0],
-        );
+      const { rawResponse, responseBody, responseTime } = await api.postProfileConfig(
+        body as Parameters<CommandsProfileConfigApi["postProfileConfig"]>[0],
+      );
 
       validation.execute("Status (validation error)", () =>
         assert.validateStatusCode(rawResponse, 400, responseBody),
       );
-      validation.execute("Content Type", () =>
-        assert.validateContentType(rawResponse),
-      );
-      validation.execute("Error Response", () =>
-        initValidator.validateErrorResponse(responseBody),
-      );
+      validation.execute("Content Type", () => assert.validateContentType(rawResponse));
+      validation.execute("Error Response", () => initValidator.validateErrorResponse(responseBody));
 
       ApiValidationHelper.finalize(validation, {
         apiName: "Commands Profile Config — Invalid Type",
@@ -278,8 +253,7 @@ test.describe("HES Commands — Profile Config (E2E)", () => {
           requestParams: body,
           responseStatus: rawResponse.status(),
           responseBody,
-          expectedBehavior:
-            "Invalid profile config type returns 400 VALIDATION_ERROR.",
+          expectedBehavior: "Invalid profile config type returns 400 VALIDATION_ERROR.",
         },
       });
     },

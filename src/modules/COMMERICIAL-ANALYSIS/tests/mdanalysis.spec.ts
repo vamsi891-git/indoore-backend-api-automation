@@ -3,12 +3,23 @@ import { test } from "../../../fixtures/api.fixture";
 import { MdAnalysisApi } from "../Api/mdanalysis.api";
 import { mapMdAnalysisResponse } from "../Mapper/mdanalysis.mapper";
 import { MdAnalysisValidator } from "../Validator/mdanalysis.validator";
-import {mdAnalysisImproperData,mdConnectionCategoryCases,mdSmokeQueries,mdTypeSplitCases,} from "../Data/mdanalysis.data";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
+import {
+  mdAnalysisImproperData,
+  mdConnectionCategoryCases,
+  mdSmokeQueries,
+  mdTypeSplitCases,
+} from "../Data/mdanalysis.data";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
-import {expectedCommercialPageRecordCount,getCommercialPaginatedView,logCommercialCategorySplit,logCommercialPageCounts,} from "../Validator/commercial-analysis.shared";
-import {isConnectionCategoryFilterIgnored,shouldSkipCommercialResponse,} from "../utils/commercial-request.helper";
+import {
+  expectedCommercialPageRecordCount,
+  getCommercialPaginatedView,
+  logCommercialCategorySplit,
+  logCommercialPageCounts,
+} from "../Validator/commercial-analysis.shared";
+import {
+  isConnectionCategoryFilterIgnored,
+  shouldSkipCommercialResponse,
+} from "../utils/commercial-request.helper";
 function expectedMdBehavior(type: string): string {
   if (type === "Improper MD") {
     return "Grid includes subStation and mdDate (no numeric md). connectionCategory is stripped. Unique meterLookupId. No duplicate records.";
@@ -18,17 +29,14 @@ function expectedMdBehavior(type: string): string {
 test.describe("Maximum Demand report", () => {
   test.setTimeout(180_000);
   for (const query of mdSmokeQueries) {
-    test(`${query.type} — report opens and demand is above sanctioned load`,
+    test(
+      `${query.type} — report opens and demand is above sanctioned load`,
       { tag: ["@smoke", "@md-analysis"] },
       async ({ authenticatedApi }, testInfo) => {
         const api = new MdAnalysisApi(authenticatedApi);
-        const { rawResponse, responseBody, responseTime } =
-          await api.getMdAnalysis(query);
+        const { rawResponse, responseBody, responseTime } = await api.getMdAnalysis(query);
         if (shouldSkipCommercialResponse(rawResponse.status(), responseBody)) {
-          test.skip(
-            true,
-            `MD ${query.type} unavailable (HTTP ${rawResponse.status()})`,
-          );
+          test.skip(true, `MD ${query.type} unavailable (HTTP ${rawResponse.status()})`);
           return;
         }
         const defectContext = {
@@ -39,8 +47,8 @@ test.describe("Maximum Demand report", () => {
           responseBody,
           expectedBehavior: expectedMdBehavior(query.type),
         };
-        const assert = new AssertionEngine();
-        const validation = new ValidationEngine();
+        const assert = new ApiValidationHelper();
+        const validation = new ApiValidationHelper();
         const validator = new MdAnalysisValidator();
         try {
           validation.execute("Status Code Validation", () =>
@@ -61,9 +69,7 @@ test.describe("Maximum Demand report", () => {
           }
           const rows = mapMdAnalysisResponse(responseBody);
 
-          validation.execute("Response Validation", () =>
-            validator.validateResponse(responseBody),
-          );
+          validation.execute("Response Validation", () => validator.validateResponse(responseBody));
           validation.execute("Grid Columns", () =>
             validator.validateGridColumns(responseBody, query.type),
           );
@@ -100,7 +106,8 @@ test.describe("Maximum Demand report", () => {
     );
   }
 
-  test("Improper MD — household and non-household lists are the same (connection type filter is not applied)",
+  test(
+    "Improper MD — household and non-household lists are the same (connection type filter is not applied)",
     { tag: ["@md-analysis", "@commercial"] },
     async ({ authenticatedApi }, testInfo) => {
       const api = new MdAnalysisApi(authenticatedApi);
@@ -128,10 +135,7 @@ test.describe("Maximum Demand report", () => {
         return;
       }
 
-      const responseTime = Math.max(
-        domesticRes.responseTime,
-        nonDomesticRes.responseTime,
-      );
+      const responseTime = Math.max(domesticRes.responseTime, nonDomesticRes.responseTime);
       const defectContext = {
         module: "COMMERICIAL-ANALYSIS",
         endpoint: domesticRes.rawResponse.url(),
@@ -145,18 +149,12 @@ test.describe("Maximum Demand report", () => {
           "Improper MD uses commercialFilterWithoutConnectionCategory. domestic pagination.total must equal non-domestic pagination.total.",
       };
 
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       try {
-        const statuses = [
-          domesticRes.rawResponse.status(),
-          nonDomesticRes.rawResponse.status(),
-        ];
+        const statuses = [domesticRes.rawResponse.status(), nonDomesticRes.rawResponse.status()];
         if (
           statuses.some((status, i) =>
-            shouldSkipCommercialResponse(
-              status,
-              [domesticRes, nonDomesticRes][i]!.responseBody,
-            ),
+            shouldSkipCommercialResponse(status, [domesticRes, nonDomesticRes][i]!.responseBody),
           )
         ) {
           test.skip(
@@ -214,23 +212,16 @@ test.describe("Maximum Demand report", () => {
           ),
         });
 
-        validation.execute(
-          "Domestic pagination.total equals non-domestic total",
-          () => {
-            expect(domesticView.totalCount).toBeGreaterThan(0);
-            expect(nonDomesticView.totalCount).toBe(domesticView.totalCount);
-          },
-        );
+        validation.execute("Domestic pagination.total equals non-domestic total", () => {
+          expect(domesticView.totalCount).toBeGreaterThan(0);
+          expect(nonDomesticView.totalCount).toBe(domesticView.totalCount);
+        });
         const mdValidator = new MdAnalysisValidator();
         validation.execute("Improper MD duplicate contract", () => {
-          mdValidator.validateDuplicateContract(
-            mapMdAnalysisResponse(domesticRes.responseBody),
-          );
+          mdValidator.validateDuplicateContract(mapMdAnalysisResponse(domesticRes.responseBody));
         });
         validation.execute("Improper MD non-domestic duplicate contract", () => {
-          mdValidator.validateDuplicateContract(
-            mapMdAnalysisResponse(nonDomesticRes.responseBody),
-          );
+          mdValidator.validateDuplicateContract(mapMdAnalysisResponse(nonDomesticRes.responseBody));
         });
       } finally {
         ApiValidationHelper.finalize(validation, {
@@ -243,28 +234,21 @@ test.describe("Maximum Demand report", () => {
     },
   );
   for (const categoryCase of mdConnectionCategoryCases) {
-    test(`${categoryCase.type} — ${categoryCase.connectionCategory === "domestic" ? "household" : "non-household"} connections: meter count matches the total`,
+    test(
+      `${categoryCase.type} — ${categoryCase.connectionCategory === "domestic" ? "household" : "non-household"} connections: meter count matches the total`,
       {
-        tag: [
-          "@md-analysis",
-          "@commercial",
-          `@md-${categoryCase.connectionCategory}`,
-        ],
+        tag: ["@md-analysis", "@commercial", `@md-${categoryCase.connectionCategory}`],
       },
       async ({ authenticatedApi }, testInfo) => {
         const api = new MdAnalysisApi(authenticatedApi);
-        const assert = new AssertionEngine();
-        const validation = new ValidationEngine();
+        const assert = new ApiValidationHelper();
+        const validation = new ApiValidationHelper();
         const validator = new MdAnalysisValidator();
         const query = categoryCase.query;
-        const { rawResponse, responseBody, responseTime } =
-          await api.getMdAnalysis(query);
+        const { rawResponse, responseBody, responseTime } = await api.getMdAnalysis(query);
 
         if (shouldSkipCommercialResponse(rawResponse.status(), responseBody)) {
-          test.skip(
-            true,
-            `MD ${categoryCase.label} unavailable (HTTP ${rawResponse.status()})`,
-          );
+          test.skip(true, `MD ${categoryCase.label} unavailable (HTTP ${rawResponse.status()})`);
           return;
         }
 
@@ -318,9 +302,7 @@ test.describe("Maximum Demand report", () => {
           validation.execute("MD Business Rules", () =>
             validator.validateBusinessRules(rows, categoryCase.type),
           );
-          validation.execute("Duplicate contract", () =>
-            validator.validateDuplicateContract(rows),
-          );
+          validation.execute("Duplicate contract", () => validator.validateDuplicateContract(rows));
         } finally {
           ApiValidationHelper.finalize(validation, {
             apiName: `MD Analysis API (${categoryCase.label})`,
@@ -339,7 +321,7 @@ test.describe("Maximum Demand report", () => {
       { tag: ["@md-analysis", "@commercial", "@md-category-split"] },
       async ({ authenticatedApi }, testInfo) => {
         const api = new MdAnalysisApi(authenticatedApi);
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const validator = new MdAnalysisValidator();
 
         const [allRes, domesticRes, nonDomesticRes] = await Promise.all([
@@ -478,46 +460,29 @@ test.describe("Maximum Demand report", () => {
           }
 
           validation.execute("Unfiltered pagination counts", () =>
-            validator.validateTotalCount(
-              allRes.responseBody,
-              splitCase.unfilteredQuery,
-            ),
+            validator.validateTotalCount(allRes.responseBody, splitCase.unfilteredQuery),
           );
           validation.execute("Domestic pagination counts", () =>
-            validator.validateTotalCount(
-              domesticRes.responseBody,
-              splitCase.domesticQuery,
-            ),
+            validator.validateTotalCount(domesticRes.responseBody, splitCase.domesticQuery),
           );
           validation.execute("Non-domestic pagination counts", () =>
-            validator.validateTotalCount(
-              nonDomesticRes.responseBody,
-              splitCase.nonDomesticQuery,
-            ),
+            validator.validateTotalCount(nonDomesticRes.responseBody, splitCase.nonDomesticQuery),
           );
-          validation.execute(
-            "Domestic + non-domestic = unfiltered total",
-            () =>
-              validator.validateDomesticNonDomesticTotals({
-                allTotal: allView.totalCount,
-                domesticTotal: domesticView.totalCount,
-                nonDomesticTotal: nonDomesticView.totalCount,
-              }),
+          validation.execute("Domestic + non-domestic = unfiltered total", () =>
+            validator.validateDomesticNonDomesticTotals({
+              allTotal: allView.totalCount,
+              domesticTotal: domesticView.totalCount,
+              nonDomesticTotal: nonDomesticView.totalCount,
+            }),
           );
           validation.execute("Unfiltered page uniqueness", () => {
-            validator.validateDuplicateContract(
-              mapMdAnalysisResponse(allRes.responseBody),
-            );
+            validator.validateDuplicateContract(mapMdAnalysisResponse(allRes.responseBody));
           });
           validation.execute("Domestic page uniqueness", () => {
-            validator.validateDuplicateContract(
-              mapMdAnalysisResponse(domesticRes.responseBody),
-            );
+            validator.validateDuplicateContract(mapMdAnalysisResponse(domesticRes.responseBody));
           });
           validation.execute("Non-domestic page uniqueness", () => {
-            validator.validateDuplicateContract(
-              mapMdAnalysisResponse(nonDomesticRes.responseBody),
-            );
+            validator.validateDuplicateContract(mapMdAnalysisResponse(nonDomesticRes.responseBody));
           });
         } finally {
           ApiValidationHelper.finalize(validation, {
@@ -540,7 +505,7 @@ test.describe("Maximum Demand report", () => {
         async ({ authenticatedApi }, testInfo) => {
           const api = new MdAnalysisApi(authenticatedApi);
           const validator = new MdAnalysisValidator();
-          const validation = new ValidationEngine();
+          const validation = new ApiValidationHelper();
           const first = await api.getMdAnalysis(query);
           if (shouldSkipCommercialResponse(first.rawResponse.status(), first.responseBody)) {
             test.skip(
@@ -572,14 +537,14 @@ test.describe("Maximum Demand report", () => {
           ]);
           expect(domesticFirst.rawResponse.status()).toBe(200);
           expect(nonDomesticFirst.rawResponse.status()).toBe(200);
-          const domesticView = getCommercialPaginatedView(
-            domesticFirst.responseBody.data,
-            { ...pageQuery, page: 1 },
-          );
-          const nonDomesticView = getCommercialPaginatedView(
-            nonDomesticFirst.responseBody.data,
-            { ...pageQuery, page: 1 },
-          );
+          const domesticView = getCommercialPaginatedView(domesticFirst.responseBody.data, {
+            ...pageQuery,
+            page: 1,
+          });
+          const nonDomesticView = getCommercialPaginatedView(nonDomesticFirst.responseBody.data, {
+            ...pageQuery,
+            page: 1,
+          });
           const domesticLastPage = Math.max(1, domesticView.totalPages);
           const nonDomesticLastPage = Math.max(1, nonDomesticView.totalPages);
           const [last, domesticLast, nonDomesticLast] = await Promise.all([
@@ -607,38 +572,25 @@ test.describe("Maximum Demand report", () => {
           validation.execute("Unfiltered page 1 uniqueness", () => {
             validator.validateDuplicateContract(mapMdAnalysisResponse(first.responseBody));
           });
-          validation.execute(
-            `Unfiltered last page ${unfilteredLastPage} uniqueness`,
-            () => {
-              validator.validateDuplicateContract(mapMdAnalysisResponse(last.responseBody));
-            },
-          );
-          validation.execute("Domestic page 1 uniqueness", () => {
-            validator.validateDuplicateContract(
-              mapMdAnalysisResponse(domesticFirst.responseBody),
-            );
+          validation.execute(`Unfiltered last page ${unfilteredLastPage} uniqueness`, () => {
+            validator.validateDuplicateContract(mapMdAnalysisResponse(last.responseBody));
           });
-          validation.execute(
-            `Domestic last page ${domesticLastPage} uniqueness`,
-            () => {
-              validator.validateDuplicateContract(
-                mapMdAnalysisResponse(domesticLast.responseBody),
-              );
-            },
-          );
+          validation.execute("Domestic page 1 uniqueness", () => {
+            validator.validateDuplicateContract(mapMdAnalysisResponse(domesticFirst.responseBody));
+          });
+          validation.execute(`Domestic last page ${domesticLastPage} uniqueness`, () => {
+            validator.validateDuplicateContract(mapMdAnalysisResponse(domesticLast.responseBody));
+          });
           validation.execute("Non-domestic page 1 uniqueness", () => {
             validator.validateDuplicateContract(
               mapMdAnalysisResponse(nonDomesticFirst.responseBody),
             );
           });
-          validation.execute(
-            `Non-domestic last page ${nonDomesticLastPage} uniqueness`,
-            () => {
-              validator.validateDuplicateContract(
-                mapMdAnalysisResponse(nonDomesticLast.responseBody),
-              );
-            },
-          );
+          validation.execute(`Non-domestic last page ${nonDomesticLastPage} uniqueness`, () => {
+            validator.validateDuplicateContract(
+              mapMdAnalysisResponse(nonDomesticLast.responseBody),
+            );
+          });
           ApiValidationHelper.finalize(validation, {
             apiName: `MD Analysis first/last uniqueness (${query.type})`,
             responseTime: first.responseTime,
@@ -654,8 +606,7 @@ test.describe("Maximum Demand report", () => {
               },
               responseStatus: first.rawResponse.status(),
               responseBody: first.responseBody,
-              expectedBehavior:
-                "meterLookupId unique. This report has no duplicate records.",
+              expectedBehavior: "meterLookupId unique. This report has no duplicate records.",
             },
           });
         },

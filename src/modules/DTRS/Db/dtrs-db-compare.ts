@@ -1,4 +1,4 @@
-﻿import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
+﻿import { compareApiToDb, type DbCompareObs } from "../../../extras/db/db-compare.engine";
 import type { DbDtrBaseRow } from "./dtrs.db";
 
 export function compareDtrsCountLteDb(options: {

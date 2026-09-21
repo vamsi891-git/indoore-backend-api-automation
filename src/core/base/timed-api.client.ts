@@ -1,66 +1,37 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
 import { DEFAULT_REQUEST_TIMEOUT_MS } from "../constants/api-timeouts";
 import { ApiCallResult } from "../models/api-result.model";
-import { appendEvent } from "../../observability/logger";
-import { getCurrentContext } from "../../observability/context";
+import { RetryEngine } from "../engine/retry.engine";
+import { LoggerEngine } from "../engine/logger.engine";
+import {
+  computeBackoffMs,
+  HTTP_RETRY_COUNT,
+  isRetryableHttpStatus,
+  parseRetryAfterMs,
+} from "../engine/http-retry.policy";
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 type RequestOptions = NonNullable<Parameters<APIRequestContext["get"]>[1]>;
 
-const TRANSIENT_HTTP_STATUSES = new Set([429, 500, 502, 503, 504]);
-const MAX_REQUEST_ATTEMPTS = 4;
-const REQUEST_RETRY_DELAY_MS = 4_000;
+type AttemptResult = {
+  rawResponse: APIResponse;
+  text: string;
+};
 
-async function sleep(ms: number): Promise<void> {
-  await new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function emitHttpRetry(
-  attempt: number,
-  reason: string,
-  succeeded: boolean,
-  target: string,
-): void {
-  const ctx = getCurrentContext();
-  if (!ctx) {
-    return;
+async function noteRetry(detail: {
+  method: string;
+  url: string;
+  status: number;
+  attempt: number;
+}): Promise<void> {
+  const line = `${detail.method} ${detail.url} status=${detail.status} attempt=${detail.attempt}`;
+  LoggerEngine.warn(`[retry] ${line}`);
+  try {
+    const { attachment } = await import("allure-js-commons");
+    await attachment("retried", line, "text/plain");
+  } catch {
+    // Unit tests and non-Allure runs still retry; the note is best-effort.
   }
-  appendEvent({
-    kind: "retry",
-    runId: ctx.runId,
-    testId: ctx.testId,
-    module: ctx.module,
-    outcome: succeeded ? "pass" : "warn",
-    layer: "http",
-    attempt,
-    maxAttempts: MAX_REQUEST_ATTEMPTS,
-    reason,
-    succeeded,
-    target,
-  });
-}
-
-function isTransientResponseBody(text: string): boolean {
-  const trimmed = text.trim().toLowerCase();
-  return trimmed.startsWith("<html") || trimmed.includes("too many request");
-}
-
-function shouldRetryRequest(
-  status: number,
-  bodyText: string,
-  attempt: number,
-): boolean {
-  if (attempt >= MAX_REQUEST_ATTEMPTS) {
-    return false;
-  }
-  // Application INTERNAL_ERROR is not transient — retrying 4x just burns minutes.
-  if (status === 500 && bodyText.includes("INTERNAL_ERROR")) {
-    return false;
-  }
-  if (TRANSIENT_HTTP_STATUSES.has(status)) {
-    return true;
-  }
-  return isTransientResponseBody(bodyText);
 }
 
 export class TimedApiClient {
@@ -68,95 +39,107 @@ export class TimedApiClient {
 
   protected getJson<T = any>(
     path: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<ApiCallResult<T>> {
     return this.requestJson<T>("GET", path, options);
   }
 
   protected postJson<T = any>(
     path: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<ApiCallResult<T>> {
     return this.requestJson<T>("POST", path, options);
   }
 
   protected putJson<T = any>(
     path: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<ApiCallResult<T>> {
     return this.requestJson<T>("PUT", path, options);
   }
 
   protected patchJson<T = any>(
     path: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<ApiCallResult<T>> {
     return this.requestJson<T>("PATCH", path, options);
   }
 
   protected deleteJson<T = any>(
     path: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<ApiCallResult<T>> {
     return this.requestJson<T>("DELETE", path, options);
   }
 
+  /**
+   * GET retries live only here (429, 502, 503, 504). POST/PUT/PATCH/DELETE
+   * do not retry — writes are skipped on production and must not hide 5xx.
+   */
   protected async requestJson<T = any>(
     method: HttpMethod,
     path: string,
-    options: RequestOptions = {}
+    options: RequestOptions = {},
   ): Promise<ApiCallResult<T>> {
     const requestOptions = { timeout: DEFAULT_REQUEST_TIMEOUT_MS, ...options };
     const start = Date.now();
-    let rawResponse!: APIResponse;
-    let text = "";
-    let retried = false;
+    const label = `${method} ${path}`;
 
-    for (let attempt = 1; attempt <= MAX_REQUEST_ATTEMPTS; attempt++) {
-      rawResponse = await this.dispatch(method, path, requestOptions);
-      text = await rawResponse.text();
+    const runOnce = async (): Promise<AttemptResult> => {
+      const rawResponse = await this.dispatch(method, path, requestOptions);
+      const text = await rawResponse.text();
+      return { rawResponse, text };
+    };
 
-      if (shouldRetryRequest(rawResponse.status(), text, attempt)) {
-        emitHttpRetry(
-          attempt,
-          `transient response (status ${rawResponse.status()})`,
-          false,
-          `${method} ${path}`,
-        );
-        retried = true;
-        await sleep(REQUEST_RETRY_DELAY_MS * attempt);
-        continue;
-      }
-
-      if (retried) {
-        emitHttpRetry(attempt, "recovered after retry", true, `${method} ${path}`);
-      }
-      break;
+    let last: AttemptResult;
+    if (method === "GET") {
+      last = await RetryEngine.execute(
+        async () => runOnce(),
+        (result): boolean => result != null && isRetryableHttpStatus(result.rawResponse.status()),
+        {
+          retries: HTTP_RETRY_COUNT,
+          label,
+          delayMs: (failedAttempt, result) => {
+            const retryAfter = parseRetryAfterMs(result?.rawResponse.headers()["retry-after"]);
+            return computeBackoffMs(failedAttempt, retryAfter);
+          },
+          onRetry: async ({ failedAttempt, result }) => {
+            await noteRetry({
+              method,
+              url: path,
+              status: result?.rawResponse.status() ?? 0,
+              attempt: failedAttempt,
+            });
+          },
+        },
+      );
+    } else {
+      last = await runOnce();
     }
 
     let responseBody: T;
-    if (!text) {
+    if (!last.text) {
       responseBody = null as T;
     } else {
       try {
-        responseBody = JSON.parse(text) as T;
+        responseBody = JSON.parse(last.text) as T;
       } catch {
         throw new Error(
-          `${method} ${path} returned non-JSON (${rawResponse.status()}): ${text.slice(0, 200)}`
+          `${label} returned non-JSON (${last.rawResponse.status()}): ${last.text.slice(0, 200)}`,
         );
       }
     }
     return {
-      rawResponse,
+      rawResponse: last.rawResponse,
       responseBody,
-      responseTime: Date.now() - start
+      responseTime: Date.now() - start,
     };
   }
 
   private dispatch(
     method: HttpMethod,
     path: string,
-    options: RequestOptions
+    options: RequestOptions,
   ): Promise<APIResponse> {
     switch (method) {
       case "GET":

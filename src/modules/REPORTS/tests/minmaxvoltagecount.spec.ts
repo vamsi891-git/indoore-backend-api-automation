@@ -1,7 +1,5 @@
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { MinMaxVoltageApi } from "../Api/minmaxvoltage.api";
 import { MinMaxVoltageCountApi } from "../Api/minmaxvoltagecount.api";
@@ -18,6 +16,7 @@ import {
 import { MinMaxVoltageMapper } from "../Mapper/minmaxvoltage.mapper";
 import { MinMaxVoltageCountValidator } from "../Validator/minmaxvoltagecount.validator";
 import { skipIfReportsInternalError } from "../utils/reports-env.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 const LIVE_LIST_SCENARIOS = new Set([
   "dev_live_primary",
@@ -39,8 +38,8 @@ test.describe("Min-max voltage count", () => {
       async ({ authenticatedApi }) => {
         const expectedStatus = testCase.expectedStatus ?? 200;
         const validator = new MinMaxVoltageCountValidator();
-        const assert = new AssertionEngine();
-        const validation = new ValidationEngine();
+        const assert = new ApiValidationHelper();
+        const validation = new ApiValidationHelper();
 
         if (testCase.isContractFixture) {
           const fixtureBody = resolveMinMaxVoltageCountContractBody(

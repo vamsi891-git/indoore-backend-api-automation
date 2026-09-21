@@ -7,16 +7,14 @@ import { test, expect } from "../../../fixtures/observability.fixture";
 import {
   assertContractSnapshot,
   buildLookupItemsContractSnapshot,
-} from "../../../core/contract/contract-snapshot.helper";
+} from "../../../extras/contract/contract-snapshot.helper";
 import { BillingDataApi } from "../Api/billingdata.api";
 import { DaywiseBillingApi } from "../Api/daywisebilling.api";
 import { BillingDataTestData } from "../Data/billingdata.data";
 import { DaywiseBillingTestData } from "../Data/daywisebilling.data";
 
 function asRecord(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === "object"
-    ? (value as Record<string, unknown>)
-    : {};
+  return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
 test.describe("Billing — column names stay stable", () => {
@@ -26,9 +24,7 @@ test.describe("Billing — column names stay stable", () => {
     "Monthly billing — column headings and field names stay the same",
     { tag: ["@contract-snapshot", "@billing", "@billing-data"] },
     async ({ authenticatedApi }) => {
-      const { responseBody } = await new BillingDataApi(
-        authenticatedApi,
-      ).getBillingData({
+      const { responseBody } = await new BillingDataApi(authenticatedApi).getBillingData({
         month: BillingDataTestData.month,
         year: BillingDataTestData.year,
         page: BillingDataTestData.page,
@@ -56,9 +52,7 @@ test.describe("Billing — column names stay stable", () => {
     "Day-by-day billing — column headings and field names stay the same",
     { tag: ["@contract-snapshot", "@billing", "@daywise-billing"] },
     async ({ authenticatedApi }) => {
-      const { responseBody } = await new DaywiseBillingApi(
-        authenticatedApi,
-      ).getDaywiseBillingData({
+      const { responseBody } = await new DaywiseBillingApi(authenticatedApi).getDaywiseBillingData({
         month: DaywiseBillingTestData.month,
         year: DaywiseBillingTestData.year,
         includeTotal: DaywiseBillingTestData.includeTotal,

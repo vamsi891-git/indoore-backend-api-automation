@@ -1,5 +1,5 @@
 import type pg from "pg";
-import { queryReadOnly, queryScalar } from "../../../core/db/postgres.client";
+import { queryReadOnly, queryScalar } from "../../../extras/db/postgres.client";
 import {
   ACTIVE_DTR_NETWORK_COUNT_SQL,
   DTR_CONSUMER_SPOT_CHECK_SQL,
@@ -31,10 +31,9 @@ export async function getDtrConsumerSpotCheck(
   dtrNetworkLookupId: number,
   consumerTblRefId: number,
 ): Promise<DbDtrConsumerSpotRow | null> {
-  const rows = await queryReadOnly<DbDtrConsumerSpotRow>(
-    pool,
-    DTR_CONSUMER_SPOT_CHECK_SQL,
-    [dtrNetworkLookupId, consumerTblRefId],
-  );
+  const rows = await queryReadOnly<DbDtrConsumerSpotRow>(pool, DTR_CONSUMER_SPOT_CHECK_SQL, [
+    dtrNetworkLookupId,
+    consumerTblRefId,
+  ]);
   return rows[0] ?? null;
 }

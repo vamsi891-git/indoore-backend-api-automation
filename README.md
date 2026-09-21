@@ -1,452 +1,101 @@
 # Indoore Backend API Automation
 
-Backend API test automation with [Playwright Test](https://playwright.dev/) and TypeScript. Tests use a shared authenticated API fixture; login runs once in global setup and writes tokens under `playwright/.auth/` (gitignored).
+Playwright + TypeScript suite that proves Indoore MDMS **GET** APIs return a complete, stable payload. One shared login session. **No writes on production.**
 
-**Who maintains this:** one QA engineer. Start with [docs/SOLO-QA.md](./docs/SOLO-QA.md) — read that before the longer docs.
+Maintained by one QA engineer — prefer copying an existing module over inventing new layers. See [docs/SOLO-QA.md](./docs/SOLO-QA.md).
 
-**Framework phase:** architecture is **complete**. Focus is **maintenance and expansion** (new APIs, four pillars, CI reliability, docs) — not redesigning core layers.
+## Architecture
 
-## Documentation
+```mermaid
+flowchart TD
+  boot[global.setup.ts<br/>loadEnv + login once] --> fixtures
+  fixtures[fixtures/api.fixture<br/>authenticatedApi] --> spec
+  spec[modules/*/tests/*.spec.ts] --> api
+  api[modules/*/Api<br/>TimedApiClient GET] --> assert
+  assert[ApiValidationHelper<br/>status · schema · columns] --> data
+  data[modules/*/Data<br/>EXPECTED_*_COLUMNS]
+  assert -.->|on failure| defect[extras/ai<br/>defect report]
+  spec -.->|@db only| db[extras/db]
+  spec -.->|@contract-snapshot| snap[extras/contract]
+```
 
-| Doc | Purpose |
-|-----|---------|
-| [docs/API-COVERAGE.md](./docs/API-COVERAGE.md) | Every API: what we check, ON vs skipped, gaps |
-| [CONTRIBUTING.md](./CONTRIBUTING.md) | Coding standards, PR checklist, branch flow |
-| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | Layered design, engines, request flow, pillars |
-| [docs/MODULE_GUIDE.md](./docs/MODULE_GUIDE.md) | How to add a module in ~30 minutes |
-| [docs/HARDENING-STATUS.md](./docs/HARDENING-STATUS.md) | Module × Zod / contract / mutation / DB status |
-| [docs/ENTERPRISE-HANDBOOK.md](./docs/ENTERPRISE-HANDBOOK.md) | Enterprise handbook v2.0 (source) |
-| [docs/Indoore-Backend-API-Automation-Framework-Enterprise-Handbook-v2.pdf](./docs/Indoore-Backend-API-Automation-Framework-Enterprise-Handbook-v2.pdf) | Enterprise handbook v2.0 (PDF) |
-| [docs/MDM-PRESENTATION-COVERAGE.md](./docs/MDM-PRESENTATION-COVERAGE.md) | Followed `MDM Presentation_23.12.2025.pdf`? Slide → API gap analysis |
-| [docs/FRAMEWORK-NOTES.md](./docs/FRAMEWORK-NOTES.md) | Living deep inventory and operational notes |
+| Layer        | Role                                                  |
+| ------------ | ----------------------------------------------------- |
+| `Api/`       | HTTP GET only — no assertions                         |
+| `Data/`      | Paths, tags, `EXPECTED_*_COLUMNS`, `nonEmptyExpected` |
+| `Mapper/`    | Raw JSON → stable mapped types                        |
+| `Validator/` | Business `expect` checks                              |
+| `schemas/`   | Zod shape                                             |
+| `tests/`     | Specs call helper + validator                         |
 
-## Prerequisites
+Optional subsystems live under [`src/extras/`](./src/extras/index.ts) (`@db`, `@contract-snapshot`, observability, defect LLM).
 
-- Node.js (LTS recommended)
-- npm
+## Add an endpoint in 5 steps
 
-## Setup
-
-1. Install dependencies:
+1. **Scaffold** (or copy a sibling endpoint in the same module):
 
    ```bash
-   npm install
+   npm run scaffold -- --module DASHBOARD --endpoint my-widget --path /indore/dashboard/my-widget
    ```
 
-2. Create your environment file:
+2. **Call the live API** (Swagger / Postman) with a real token; paste a sample 200 into notes.
+3. **Update `Data/*.data.ts`**: set `EXPECTED_*_COLUMNS` to the **exact** table headers the API returns. If headers change later, update only this list.
+4. **Tighten Zod** in `schemas/` and mapping in `Mapper/` against that sample (no hardcoded live totals).
+5. **Run**:
 
    ```bash
-   copy .env.example .env
+   npx playwright test src/modules/DASHBOARD/tests/my-widget.spec.ts --workers=1
    ```
 
-   | Variable   | Required | Description |
-   |------------|----------|-------------|
-   | `BASE_URL` | Yes      | API base URL (used by Playwright config, global setup, and tests). |
-   | `EMAIL`    | Yes      | Login email for `POST /indore/auth/login`. |
-   | `PASSWORD` | Yes      | Login password for global setup. |
+   Smoke cases set `nonEmptyExpected: true`. Regression keeps empty lists valid.
 
-3. Run tests (global setup runs first and creates `playwright/.auth/token.json`):
+## Tag strategy
 
-   ```bash
-   npm test
-   ```
+| Tag                    | Meaning                                                    | Default module command                                        |
+| ---------------------- | ---------------------------------------------------------- | ------------------------------------------------------------- |
+| `@smoke`               | Critical path; expects non-empty primary data when flagged | Included                                                      |
+| _(none / module tags)_ | Regression GET — **empty list is valid**                   | Included                                                      |
+| `@db`                  | Read-only Postgres compare                                 | **Excluded** (`--grep-invert @db`)                            |
+| `@contract-snapshot`   | Column/header snapshot drift                               | Separate `test:<slug>:contract`                               |
+| `@mutation-proof`      | Zod rejects broken fixtures                                | **Excluded** unless `INCLUDE_MUTATION_PROOF` or explicit grep |
 
-Do not commit `.env` or anything under `playwright/.auth/`.
-
-## Local Dev
-
-### Swagger / API docs
-
-The Swagger UI URL is derived from your environment — not hardcoded to `localhost`:
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `BASE_URL` | (required) | API base; Swagger defaults to `{BASE_URL}/indore/api-docs/` |
-| `SWAGGER_URL` | — | Full override, e.g. `http://localhost:3000/indore/api-docs/` |
-| `SWAGGER_PATH` | `/indore/api-docs/` | Path appended to `BASE_URL` when `SWAGGER_URL` is unset |
+## How to run
 
 ```bash
-# Print resolved URL (uses .env BASE_URL)
-npm run docs:swagger
-
-# Open in default browser (Windows/macOS/Linux)
-npm run docs:swagger:open
+npm install
+copy .env.example .env   # set BASE_URL, EMAIL/USERNAME, PASSWORD, TOTP_SECRET
 ```
 
-For local backend on port 3000, set in `.env`:
-
-```bash
-BASE_URL=http://localhost:3000
-# or override explicitly:
-SWAGGER_URL=http://localhost:3000/indore/api-docs/
-```
-
-## Commands
-
-| Command | Description |
-|---------|-------------|
-| `npm test` | Run all tests |
-| `npm run test:smoke` | Run tests tagged `@smoke` |
-| `npm run test:module -- <slug>` | Run **all** tests for one module |
-| `npm run test:module -- <slug> --smoke` | Run **@smoke** tests for one module |
-| `npm run test:module -- <slug> --api` | Run module tests excluding `@db` |
-| `npm run test:module -- <slug> --db` | Run **@db** tests for one module |
-| `npm run test:<slug>:contract` | Contract snapshots for one module |
-| `npm run test:<slug>:mutation-proof` | Mutation-proof suite for one module |
-| `npm run test:modules:list` | List module slugs (for local runs) |
-| `npm run test:ui` | Playwright UI mode |
-| `npm run report` | Open the last HTML report |
-| `npm run typecheck` | TypeScript check (`tsc --noEmit`) |
-
-### Run one module (full suite)
-
-When a developer finishes a module, run the **entire** test folder for that module:
-
-```bash
-npm run test:modules:list
-npm run test:module -- energy-audits
-npm run test:module -- utils-lookup
-npm run test:module -- hes-commands --smoke
-npm run test:module -- revenue-protection --api
-```
-
-Slug = folder name lowercased, spaces → hyphens (`ENERGY-AUDITS` → `energy-audits`, `REVENUE-PROTECTION` → `revenue-protection`).
-
-### Run by tag or path
-
-```bash
-npx playwright test --grep @dashboard
-npx playwright test src/modules/REPORTS
-```
-
-## Authentication
-
-- **Global setup:** `src/global.setup.ts` (configured in `playwright.config.ts`)
-- **Flow:** API login via `POST /indore/auth/login` using `BASE_URL`, `EMAIL`/`USERNAME`, and `PASSWORD` (plus CSRF; optional `DEVICE_ID`)
-- **Output:** `playwright/.auth/token.json` (`accessToken`, `expiresAt`, optional `csrfToken`)
-- **Tests:** `src/fixtures/api.fixture.ts` provides `authenticatedApi`; request wrappers inject Bearer/CSRF and refresh on 401
-
-## Project layout
-
-```
-src/
-  core/                 # Shared client, assertion/validation engines, models
-  fixtures/             # Playwright test extensions (authenticated API)
-  global.setup.ts       # One-time API login before tests
-  modules/               # Business modules — run `npm run test:modules:list` for slugs
-    ASSET-MANAGEMENT/
-    AUDIT-LOGS/
-    AUTH/
-    BILLING/
-    COMMERICIAL-ANALYSIS/
-    CONSUMERS/
-    CONSUMPTION/
-    DASHBOARD/
-    DTRS/
-    ENERGY-AUDITS/
-    FEEDER/
-    HES-COMMANDS/
-    MASTER-DATA/
-    METER-REPLACEMENT/
-    MIS-DASHBOARD/
-    MODULES-PERMISSIONS/
-    NOTIFICATIONS/
-    OVERALL-DASHBOARD/
-    REPORTS/
-    REVENUE-PROTECTION/
-    ROLE-PERMISSIONS/
-    TECHNICAL-ANALYSIS/
-    USERS-ADMIN/
-    USERS-PROFILE-IMAGE/
-    UTILS-LOOKUP/
-```
-
-Module folder names use hyphens (e.g. `ASSET-MANAGEMENT`, not `ASSET MANAGEMENT`). Older docs or reports may still show the previous spaced names.
-
-Typical module folders:
-
-- `Api/` — HTTP calls, timing, typed responses (no assertions)
-- `Data/` — Query/body payloads (report modules)
-- `Mapper/` — Response types and normalization
-- `Validator/` — Business rules and field checks
-- `schemas/` — Zod contracts
-- `Db/` — Read-only SQL + gated API↔DB compare
-- `tests/` — `*.spec.ts` (smoke, negative, contract, mutation, db, e2e)
-
-See [docs/MODULE_GUIDE.md](./docs/MODULE_GUIDE.md) to add a new module.
-
-## Four quality pillars
-
-1. **Zod schemas** — response shape contracts under `schemas/`  
-2. **Contract snapshots** — `contract-snapshots/<slug>/` via `@contract-snapshot`  
-3. **Mutation-proof** — broken fixtures must fail validators (`@mutation-proof`)  
-4. **Gated DB cross-validation** — read-only SQL vs API when `*_DB_SQL_READY=true`
-
-Status matrix: [docs/HARDENING-STATUS.md](./docs/HARDENING-STATUS.md).
-
-```bash
-UPDATE_CONTRACT_SNAPSHOTS=true npm run test:<slug>:contract
-npm run test:<slug>:mutation-proof
-<MODULE>_DB_SQL_READY=true npm run test:<slug>:db
-```
-
-## Framework flow
-
-```
-Spec (test)
-  → API layer
-  → Mapper
-  → Validator
-  → ValidationEngine / AssertionEngine
-  → Summary (console)
-```
-
-## Naming convention
-
-| Layer     | Example |
-|-----------|---------|
-| API       | `consumer-search.api.ts` |
-| Mapper    | `consumer-search.mapper.ts` |
-| Validator | `consumer-search.validator.ts` |
-| Test      | `consumer-search.spec.ts` |
-
-## Tags
-
-Tests use Playwright tags on individual cases. Common patterns:
-
-| Tag | Usage |
-|-----|--------|
-| `@smoke` | Included in `npm run test:smoke` |
-| `@dashboard`, `@event-report`, `@consumer-master`, … | Feature-specific filters via `--grep` |
-
-Example:
-
-```bash
-npm run test:smoke
-npx playwright test --grep "@event-report"
-```
-
-## Validation rules
-
-**Validate:**
-
-- Backend behavior and response structure
-- Hierarchy, aggregation, and pagination where applicable
-
-**Avoid:**
-
-- Duplicating backend logic unnecessarily
-- Hardcoded row counts unless required
-- Reimplementing SQL sort/filter in JavaScript
-- Frontend-only expectations
-
-## CI (GitHub Actions)
-
-Module-wise GitHub Actions (QA module gate, manual module dropdown, reusable module workflow) are **removed for now**. Run modules locally with `npm run test:<slug>`. They can be added back after the framework is organized.
-
-### Promotion flow
-
-```text
-feature-branch ──PR──► QA ──PR──► main ──push──► full regression
-```
-
-1. Open a pull request into `QA`.
-2. Merge into `QA`.
-3. Open a pull request from `QA` → `main`. **Main Promotion Policy** requires the source branch to be exactly `QA`.
-4. After merge to `main`, `playwright.yml` runs the full suite.
-
-### Workflows
-
-| Workflow | File | When |
-|----------|------|------|
-| **Main Promotion Policy** | [main-promotion-policy.yml](.github/workflows/main-promotion-policy.yml) | PR → `main`/`master` — source must be `QA` |
-| **Playwright API Tests** | [playwright.yml](.github/workflows/playwright.yml) | Push to `main`/`master` (full), manual smoke/full |
-
-### Required GitHub branch protection / rulesets
-
-Configure under **Settings → Rules → Rulesets** (or classic branch protection):
-
-**Ruleset for `QA`**
-
-- Require a pull request before merging
-- Require approvals (at least 1)
-- Require branches to be up to date before merging (optional but recommended)
-- Block force pushes and deletions
-- Restrict direct pushes
-
-**Ruleset for `main` (and `master` if used)**
-
-- Require a pull request before merging
-- Require approvals (at least 1)
-- Require status checks to pass: **`Main Promotion Policy`**
-- Require branches to be up to date before merging
-- Block force pushes and deletions
-- Restrict direct pushes
-- Only `QA` → `main` PRs satisfy the policy job
-
-Set `PLAYWRIGHT_WORKERS=1` in `.env` if you see token refresh races locally.
-
-### Allure reports (local)
-
-```bash
-npm test
-npm run report:allure
-```
-
-`report:allure` generates `allure-report/` and opens it in the browser. Raw results are stored in `allure-results/` during the test run.
-
-| Script | Purpose |
-|--------|---------|
-| `npm run allure:generate` | Build HTML from `allure-results/` |
-| `npm run allure:open` | Open existing Allure report |
-| `npm run report:allure` | Generate + open |
-
-**Module-wise report:** Open the **Suites** or **Behaviors** tab (not Overview). Tests are grouped as:
-
-| Level | Suites tab | Behaviors tab | Example |
-|-------|------------|---------------|---------|
-| Module | `parentSuite` | `Epic` | `hes-commands` |
-| API group | `suite` | `Feature` | `HES Commands — History` |
-| Test case | `subSuite` | `Story` | individual test (pass/fail badge) |
-
-Click a module (e.g. **hes-commands**) to expand all specs and tests inside it with passed/failed status. Slugs match `npm run test:modules:list` (`energy-audits`, `hes-commands`, …).
-
-`npm run allure:generate` runs `scripts/patch-allure-module-labels.mjs` so grouping stays correct even when the Playwright reporter writes file paths.
-
-**Note:** Allure CLI requires **Java 17+** locally (`java -version`). GitHub Actions installs Java automatically.
-
-**Do not double-click `index.html`** — browsers show `500 Failed to fetch` when opening Allure via `file://`. Serve it over HTTP instead:
-
-```bash
-# After unzip of CI artifact (open the folder that contains index.html + data/)
-cd path/to/allure-report
-npx allure open .
-# or from project root after local generate:
-npm run allure:open
-```
-
-This starts a local server (e.g. `http://127.0.0.1:xxxx`) and opens the report correctly.
-
-### Repository secrets (required for CI)
-
-CI does **not** use your local `.env` file. You must add secrets on GitHub:
-
-**Repository → Settings → Secrets and variables → Actions → Repository secrets → New repository secret**
-
-| Secret name | Required | Example value |
-|-------------|----------|----------------|
-| `BASE_URL` | **Yes** | `https://api.mdm.mppkvvcl.bestinfra.app` (API origin — not the dashboard URL, no `/auth/login`) |
-| `PASSWORD` | **Yes** | Same as local `.env` |
-| `EMAIL` | Yes* | Same as local `.env` |
-| `USERNAME` | Yes* | Use instead of `EMAIL` if that is what you use locally |
-| `TOTP_SECRET` | If login uses 2FA | Base32 secret from **this live account's** authenticator enrollment on the MPPKVVCL dashboard — **not** the 6-digit code, and not a secret from localhost |
-| `DEVICE_ID` | No | Only if login requires device selection |
-| `GMAIL_IMAP_USER` | No | Invite E2E auto-capture in CI |
-| `GMAIL_IMAP_APP_PASSWORD` | No | Gmail app password for invite tests |
-| `INVITE_INBOX_EMAIL` | No | Invite delivery inbox override |
-| `INVITE_ACCEPT_TOKEN` | No | Manual invite token (skips Gmail IMAP when set with E2E vars) |
-| `INVITE_E2E_EMAIL` | No | Paired with `INVITE_ACCEPT_TOKEN` for invite read-only specs |
-| `INVITE_E2E_INVITATION_ID` | No | Paired with `INVITE_ACCEPT_TOKEN` for invite E2E steps 3–5 |
-
-### Optional secrets (reduce skipped tests)
-
-Master Data onboarding tests skip when hierarchy env vars are unset. The workflow **defaults** these from `.env.example` (no secret required unless your QA values differ):
-
-| Variable | Workflow default |
-|----------|------------------|
-| `BULK_DTR_ZONE_NAME` | `Hawabangla` |
-| `BULK_DTR_SUBSTATION_NAME` | `PragatiNagar` |
-| `BULK_DTR_FEEDER_NAME` | `PARMANU NAGAR(CHQ)` |
-| `BULK_METER_MANUFACTURER_NAME` | `L&T` |
-| `CREATE_DTR_ORGANISATION_LOOKUP_ID` | `30` |
-| `CREATE_DTR_SUBSTATION_NETWORK_LOOKUP_ID` | `3` |
-| `CREATE_DTR_FEEDER_NETWORK_LOOKUP_ID` | `4` |
-
-Add these **repository secrets** to unlock remaining skipped suites (~20 tests):
-
-| Secret name | Unlocks |
-|-------------|---------|
-| `DB_HOST`, `DB_USER`, `DB_PASSWORD` | API-vs-DB specs (`@db`) — 11 tests |
-| `DB_NAME` | Optional; defaults to `mdms_indore` |
-| `VALIDATE_DTR_METER_VALID_SERIAL` | validate-dtr-meter positive case |
-| `VALIDATE_DTR_METER_ON_DTR_SERIAL` | DTR meter already mapped negative |
-| `VALIDATE_DTR_METER_INACTIVE_SERIAL` | inactive meter negative cases |
-| `VALIDATE_DTR_METER_ASSIGNED_SERIAL` | assigned meter negative cases |
-| `VALIDATE_ADD_METER_VALID_SERIAL` | validate-add-meter positive case |
-| `VALIDATE_ADD_METER_EXISTS_SERIAL` | create-meter duplicate + validate-add-meter negative |
-
-Override any Master Data default by setting the matching secret name (e.g. `BULK_DTR_ZONE_NAME` if your QA zone differs).
-
-### Email report (Allure)
-
-After each workflow run, the **Allure report zip** is sent to:
-
-**`vamsibst@gmail.com`** (configured in `.github/workflows/playwright.yml`)
-
-Add these **SMTP secrets** on GitHub to enable sending:
-
-| Secret name | Required for email | Example |
-|-------------|-------------------|---------|
-| `SMTP_SERVER` | **Yes** | `smtp.gmail.com` |
-| `SMTP_PORT` | **Yes** | `465` |
-| `SMTP_USERNAME` | **Yes** | `automation@bestinfra.tech` |
-| `SMTP_PASSWORD` | **Yes** | SMTP / app password |
-| `REPORT_MAIL_FROM` | No | Defaults to `SMTP_USERNAME` |
-
-If SMTP secrets are missing, the workflow still uploads the `allure-report` artifact from the Actions run page.
-
-**Gmail note:** Gmail SMTP often blocks zip attachments from CI (error `552`). The email includes a **live Allure URL on GitHub Pages** — open that link in the browser (do not double-click downloaded `index.html`).
-
-### One-time: enable GitHub Pages (fixes 404)
-
-The CI job already publishes Allure to the **`gh-pages`** branch (`index.html`, `data/`, `widgets/`).  
-A **404** at `https://vamsi891-git.github.io/indoore-backend-api-automation/` means **Pages is not enabled** in repo settings — not a missing report.
-
-1. Open: `https://github.com/vamsi891-git/indoore-backend-api-automation/settings/pages`
-2. **Build and deployment** → Source: **Deploy from a branch**
-3. Branch: **`gh-pages`** (should appear in the dropdown now)
-4. Folder: **`/ (root)`**
-5. Click **Save**
-6. Wait **2–5 minutes**, then open:
-
-   `https://vamsi891-git.github.io/indoore-backend-api-automation/`
-
-**Also required once:** **Settings** → **Actions** → **General** → **Workflow permissions** → **Read and write permissions** → **Save**
-
-**If `gh-pages` is missing from the dropdown:** run **Actions** → **Playwright API Tests** → **Run workflow**, wait for **Deploy Allure to gh-pages branch** to turn green, then repeat the steps above.
-
-**Private repo:** GitHub Pages on private repos needs **GitHub Pro/Enterprise**. Use a **public** repo or download the **allure-report** artifact instead.
-
-The email **View Allure Report Online** button opens this URL. Do not double-click downloaded `index.html` (shows empty dashboard).
-
-\* At least one of `EMAIL` or `USERNAME` must be set (same as `src/global.setup.ts`).
-
-Secret names are **case-sensitive** — use `BASE_URL`, not `base_url`.
-
-If `BASE_URL` is missing, the workflow fails with: `Missing required environment variable: BASE_URL`.
-
-### Create the GitHub repository
-
-From the project root (first time only):
-
-```bash
-git init
-git add .
-git commit -m "Add Indoore backend API automation and CI workflow"
-git branch -M main
-git remote add origin https://github.com/YOUR_ORG/indoore_backend_testing.git
-git push -u origin main
-```
-
-Or create an empty repo on GitHub, then push the local branch as above.
-
-**Note:** Failures with HTTP `500` or `INTERNAL_ERROR` come from the API environment, not from the workflow. Fix the backend or test data; the workflow only runs the same commands as locally.
-
-## Configuration files
-
-| File | Purpose |
-|------|---------|
-| `playwright.config.ts` | Test runner, retries, HTML + Allure reporters, `globalSetup` |
-| `tsconfig.json` | TypeScript compiler options |
-| `.env.example` | Environment template (safe to commit) |
-| `.gitignore` | Ignored artifacts and secrets |
+| Command                             | What it runs                    |
+| ----------------------------------- | ------------------------------- |
+| `npm run test:smoke`                | All `@smoke` (workers=1)        |
+| `npm run test:dashboard`            | One module, GET only (no `@db`) |
+| `npm run test:shard -- --shard=1/4` | Sharded GET suite               |
+| `npm run test:dashboard:db`         | `@db` for that module           |
+| `npm run test:dashboard:contract`   | Contract snapshots              |
+| `npm run typecheck`                 | `tsc --noEmit`                  |
+| `npm run prove:optional-fence`      | Extras fence check              |
+
+Workers default to **1** (`WORKERS` / `PLAYWRIGHT_WORKERS`). Module scripts force `--workers=1`.
+
+## Deliberately not tested
+
+- **UI / browser flows** — we validate APIs that feed dashboards, not the React UI.
+- **Production writes** — POST/PUT/PATCH create meter/DTR/consumer stay in `skippedWriteSpecs`; never set `ALLOW_WRITE_TESTS=true` on prod.
+- **Mutation-proof** in the default module command — opt-in only.
+- **DB compare** unless `@db` and `DB_*` are configured.
+- **Live totals / counts hardcoded in assertions** — Zod shape + columns; totals only when the API returns them for cross-check.
+- **Captcha OCR accuracy as a product test** — login helper only; flaky OCR is infra, not a dashboard defect.
+- **Third-party HES callback timing SLAs** beyond documented poll windows.
+
+## Decisions & deeper docs
+
+- **[DECISIONS.md](./DECISIONS.md)** — why one session, GET-only, Zod + snapshots, retry ownership, extras fence
+- [docs/ASSERTIONS.md](./docs/ASSERTIONS.md) — canonical assertion flow
+- [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) — full layered design
+- [docs/MODULE_GUIDE.md](./docs/MODULE_GUIDE.md) — longer module walkthrough
+- [docs/SOLO-QA.md](./docs/SOLO-QA.md) — day-to-day solo maintainer guide
+
+## CI
+
+GitHub Actions (`.github/workflows/playwright.yml`): nightly + push + manual — **smoke first**, then one job per module. Artifacts: HTML report, Allure, `reports/defects/`.

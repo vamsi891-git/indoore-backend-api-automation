@@ -1,8 +1,6 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { CreateMeterApi } from "../Api/create-meter.api";
 import { CreateDtrApi } from "../Api/create-dtr.api";
@@ -12,14 +10,8 @@ import { ValidateMeterApi } from "../../CONSUMERS/Api/validatemeter.api";
 import { ConsumerProfileApi } from "../../CONSUMERS/Api/consumerprofile.api";
 import { ValidateMeterMapper } from "../../CONSUMERS/Mapper/validatemeter.mapper";
 import { ValidateMeterValidator } from "../../CONSUMERS/Validator/validatemeter.validator";
-import {
-  buildCreateMeterRequest,
-  createMeterMaxResponseTimeMs,
-} from "../Data/create-meter.data";
-import {
-  buildCreateDtrRequest,
-  createDtrMaxResponseTimeMs,
-} from "../Data/create-dtr.data";
+import { buildCreateMeterRequest, createMeterMaxResponseTimeMs } from "../Data/create-meter.data";
+import { buildCreateDtrRequest, createDtrMaxResponseTimeMs } from "../Data/create-dtr.data";
 import {
   buildValidCreateConsumerRequest,
   createConsumerData,
@@ -46,6 +38,7 @@ import {
   ensureNetworkHierarchyCascadeContext,
   getNetworkHierarchyCascade,
 } from "../utils/network-hierarchy-cascade.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 /**
  * Full master-data chain:
@@ -55,8 +48,7 @@ import {
  *
  * Two meters are required: a DTR-bound meter cannot also be assigned to a consumer.
  */
-const E2E_LABEL =
-  "Add meters, assign one to a DTR and one to a consumer, then open the profile";
+const E2E_LABEL = "Add meters, assign one to a DTR and one to a consumer, then open the profile";
 const VALIDATE_SETTLE_MS = 1500;
 const VALIDATE_RETRIES = 6;
 
@@ -92,27 +84,18 @@ test.describe.skip("Master data — add meters, a DTR, and a consumer", () => {
     },
     async ({ authenticatedApi }) => {
       if (!hasBulkConsumerNearestAcctId()) {
-        test.skip(
-          true,
-          "No valid Nearest Acct. ID resolved from consumer master or env",
-        );
+        test.skip(true, "No valid Nearest Acct. ID resolved from consumer master or env");
         return;
       }
 
       const cascade = getNetworkHierarchyCascade();
-      if (
-        !cascade?.subStationNetworkLookupId ||
-        !cascade?.feederNetworkLookupId
-      ) {
-        test.skip(
-          true,
-          "Could not resolve Sub Station → Feeder cascade for create-dtr",
-        );
+      if (!cascade?.subStationNetworkLookupId || !cascade?.feederNetworkLookupId) {
+        test.skip(true, "Could not resolve Sub Station → Feeder cascade for create-dtr");
         return;
       }
 
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const meterValidator = new CreateMeterValidator();
       const validateDtrMeterValidator = new ValidateDtrMeterValidator();
       const validateMeterValidator = new ValidateMeterValidator();
@@ -149,11 +132,7 @@ test.describe.skip("Master data — add meters, a DTR, and a consumer", () => {
         ),
       );
       validation.execute("Create DTR Meter Backend Rules", () =>
-        meterValidator.validateScenario(
-          dtrMeterMapped,
-          "success",
-          dtrMeterPayload,
-        ),
+        meterValidator.validateScenario(dtrMeterMapped, "success", dtrMeterPayload),
       );
 
       const validateDtrMeterApi = new ValidateDtrMeterApi(authenticatedApi);
@@ -214,9 +193,7 @@ test.describe.skip("Master data — add meters, a DTR, and a consumer", () => {
       let dtrResult = await createDtrApi.createDtr(dtrPayload);
 
       if (dtrResult.rawResponse.status() === 409) {
-        console.warn(
-          "[meter-dtr-consumer-e2e] create-dtr got 409 — rebuilding modem fields",
-        );
+        console.warn("[meter-dtr-consumer-e2e] create-dtr got 409 — rebuilding modem fields");
         dtrPayload = {
           ...buildCreateDtrRequest("chain-e2e-retry", {
             msn: dtrMeterSerial,
@@ -245,10 +222,7 @@ test.describe.skip("Master data — add meters, a DTR, and a consumer", () => {
         expect(dtrResult.rawResponse.status()).toBe(201),
       );
       validation.execute("Create DTR Response Time", () =>
-        assert.validateResponseTime(
-          dtrResult.responseTime,
-          createDtrMaxResponseTimeMs,
-        ),
+        assert.validateResponseTime(dtrResult.responseTime, createDtrMaxResponseTimeMs),
       );
       validation.execute("Create DTR Schema", () =>
         MasterDataCommonValidator.validateZodResponseSchema(
@@ -264,9 +238,7 @@ test.describe.skip("Master data — add meters, a DTR, and a consumer", () => {
       const createdDtrNetworkLookupId = dtrMapped.data!.networkLookupId;
       // Consumer create echoes DTR Code (not Name) when resolved via networkLookupId.
       const createdDtrCode = String(dtrMapped.data!["DTR Code"] ?? "").trim();
-      const createdDtrName = String(
-        dtrMapped.data!["DTR Name"] ?? shortDtrName,
-      ).trim();
+      const createdDtrName = String(dtrMapped.data!["DTR Name"] ?? shortDtrName).trim();
       const createdDtrOrgId = dtrMapped.data!.organisationLookupId;
 
       // ════════════════════════════════════════════════════════════════════
@@ -277,12 +249,9 @@ test.describe.skip("Master data — add meters, a DTR, and a consumer", () => {
         meterStatus: true,
       };
       const consumerMeterSerial = consumerMeterPayload.meterSerialNumber;
-      const consumerMeterResult =
-        await createMeterApi.createMeter(consumerMeterPayload);
+      const consumerMeterResult = await createMeterApi.createMeter(consumerMeterPayload);
       console.log(JSON.stringify(consumerMeterResult.responseBody, null, 2));
-      const consumerMeterMapped = CreateMeterMapper.map(
-        consumerMeterResult.responseBody,
-      );
+      const consumerMeterMapped = CreateMeterMapper.map(consumerMeterResult.responseBody);
 
       await PerformanceTracker.track(
         consumerMeterResult.rawResponse,
@@ -295,37 +264,24 @@ test.describe.skip("Master data — add meters, a DTR, and a consumer", () => {
         expect(consumerMeterResult.rawResponse.status()).toBe(201),
       );
       validation.execute("Create Consumer Meter Backend Rules", () =>
-        meterValidator.validateScenario(
-          consumerMeterMapped,
-          "success",
-          consumerMeterPayload,
-        ),
+        meterValidator.validateScenario(consumerMeterMapped, "success", consumerMeterPayload),
       );
       validation.execute("Create Consumer Meter Response Time", () =>
-        assert.validateResponseTime(
-          consumerMeterResult.responseTime,
-          createMeterMaxResponseTimeMs,
-        ),
+        assert.validateResponseTime(consumerMeterResult.responseTime, createMeterMaxResponseTimeMs),
       );
 
       const validateMeterApi = new ValidateMeterApi(authenticatedApi);
-      const orgLookupId =
-        createdDtrOrgId || createConsumerData.organisationLookupId || undefined;
+      const orgLookupId = createdDtrOrgId || createConsumerData.organisationLookupId || undefined;
       let consumerValidateResult = await validateMeterApi.validateMeter(
         consumerMeterSerial,
         orgLookupId,
       );
-      let consumerValidateData = ValidateMeterMapper.mapData(
-        consumerValidateResult.responseBody,
-      );
+      let consumerValidateData = ValidateMeterMapper.mapData(consumerValidateResult.responseBody);
 
       for (
         let attempt = 0;
         attempt < VALIDATE_RETRIES &&
-        !(
-          consumerValidateData.valid === true &&
-          consumerValidateData.meterExists === true
-        );
+        !(consumerValidateData.valid === true && consumerValidateData.meterExists === true);
         attempt += 1
       ) {
         await sleep(VALIDATE_SETTLE_MS);
@@ -333,9 +289,7 @@ test.describe.skip("Master data — add meters, a DTR, and a consumer", () => {
           consumerMeterSerial,
           orgLookupId,
         );
-        consumerValidateData = ValidateMeterMapper.mapData(
-          consumerValidateResult.responseBody,
-        );
+        consumerValidateData = ValidateMeterMapper.mapData(consumerValidateResult.responseBody);
       }
 
       await PerformanceTracker.track(
@@ -370,8 +324,7 @@ test.describe.skip("Master data — add meters, a DTR, and a consumer", () => {
       // Pin hierarchy IDs to the DTR we just created (not cascade's existing DTR).
       consumerPayload.organisationLookupId = createdDtrOrgId;
       consumerPayload.networkLookupId = createdDtrNetworkLookupId;
-      consumerPayload.subStationNetworkLookupId =
-        cascade.subStationNetworkLookupId;
+      consumerPayload.subStationNetworkLookupId = cascade.subStationNetworkLookupId;
       consumerPayload.feederNetworkLookupId = cascade.feederNetworkLookupId;
       consumerPayload.DTR = createdDtrCode || createdDtrName;
       consumerPayload.MSN = consumerMeterSerial;
@@ -380,19 +333,15 @@ test.describe.skip("Master data — add meters, a DTR, and a consumer", () => {
       expect(String(consumerPayload.MSN ?? "")).toBe(consumerMeterSerial);
 
       const createConsumerApi = new CreateConsumerApi(authenticatedApi);
-      let consumerResult =
-        await createConsumerApi.createConsumer(consumerPayload);
+      let consumerResult = await createConsumerApi.createConsumer(consumerPayload);
 
       if ([400, 409].includes(consumerResult.rawResponse.status())) {
         await sleep(2000);
-        consumerResult =
-          await createConsumerApi.createConsumer(consumerPayload);
+        consumerResult = await createConsumerApi.createConsumer(consumerPayload);
       }
       console.log(JSON.stringify(consumerResult.responseBody, null, 2));
 
-      const consumerMapped = CreateConsumerMapper.map(
-        consumerResult.responseBody,
-      );
+      const consumerMapped = CreateConsumerMapper.map(consumerResult.responseBody);
 
       await PerformanceTracker.track(
         consumerResult.rawResponse,
@@ -405,21 +354,12 @@ test.describe.skip("Master data — add meters, a DTR, and a consumer", () => {
         expect(consumerResult.rawResponse.status()).toBe(201),
       );
       validation.execute("Create Consumer Response Time", () =>
-        assert.validateResponseTime(
-          consumerResult.responseTime,
-          createConsumerMaxResponseTimeMs,
-        ),
+        assert.validateResponseTime(consumerResult.responseTime, createConsumerMaxResponseTimeMs),
       );
       validation.execute("Create Consumer Backend Rules", () =>
-        consumerValidator.validateScenario(
-          consumerMapped,
-          "create_success",
-          consumerPayload,
-        ),
+        consumerValidator.validateScenario(consumerMapped, "create_success", consumerPayload),
       );
-      expect(String(consumerMapped.data?.MSN ?? "").trim()).toBe(
-        consumerMeterSerial,
-      );
+      expect(String(consumerMapped.data?.MSN ?? "").trim()).toBe(consumerMeterSerial);
 
       // ════════════════════════════════════════════════════════════════════
       // Phase 3 — Profile persistence
@@ -438,11 +378,7 @@ test.describe.skip("Master data — add meters, a DTR, and a consumer", () => {
       );
 
       validation.execute("Profile Status", () =>
-        assert.validateStatusCode(
-          profileResult.rawResponse,
-          200,
-          profileResult.responseBody,
-        ),
+        assert.validateStatusCode(profileResult.rawResponse, 200, profileResult.responseBody),
       );
       validation.execute("Profile Matches Create Request", () =>
         consumerValidator.validatePostCreateProfileBackendRules(

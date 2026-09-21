@@ -1,21 +1,18 @@
 import type pg from "pg";
 import type { APIRequestContext } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { TokenManager } from "../../../core/utils/token-manager";
 import { NotificationsApi } from "../Api/notifications.api";
 import { NotificationsData } from "../Data/notifications.data";
 import { NotificationsMapper } from "../Mapper/notifications.mapper";
-import {
-  getNotificationByIdForUser,
-  getNotificationStatsForUser,
-} from "../Db/notifications.db";
+import { getNotificationByIdForUser, getNotificationStatsForUser } from "../Db/notifications.db";
 import {
   compareNotificationSpotToDb,
   compareNotificationStatsToDb,
   compareNotificationsCountLteDb,
 } from "../Db/notifications-db-compare";
 import { logNotificationsDataQualityFindings } from "../Db/notifications-db.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 /**
  * Part 4 harness — inbox stats + list total + optional row spot
@@ -25,20 +22,13 @@ export async function runNotificationsDbCoverage(
   authenticatedApi: APIRequestContext,
   db: pg.Pool,
 ): Promise<void> {
-  const validation = new ValidationEngine();
+  const validation = new ApiValidationHelper();
   const api = new NotificationsApi(authenticatedApi);
-  const userId = NotificationsMapper.getUserIdFromAccessToken(
-    await TokenManager.getToken(),
-  );
+  const userId = NotificationsMapper.getUserIdFromAccessToken(await TokenManager.getToken());
 
-  const listResult = await api.getNotifications(
-    NotificationsData.page,
-    NotificationsData.limit,
-  );
+  const listResult = await api.getNotifications(NotificationsData.page, NotificationsData.limit);
   expect(listResult.rawResponse.status()).toBe(200);
-  const listMapped = NotificationsMapper.mapNotificationsList(
-    listResult.responseBody,
-  );
+  const listMapped = NotificationsMapper.mapNotificationsList(listResult.responseBody);
   await logNotificationsDataQualityFindings(
     "list",
     listResult.responseBody.data as unknown as Record<string, unknown>,
@@ -64,9 +54,7 @@ export async function runNotificationsDbCoverage(
 
   const spot = listMapped.notifications[0];
   if (!spot?.id) {
-    console.warn(
-      "[BACKEND FINDING] notification spot skipped — inbox empty for JWT user",
-    );
+    console.warn("[BACKEND FINDING] notification spot skipped — inbox empty for JWT user");
   } else {
     const dbRow = await getNotificationByIdForUser(db, spot.id, userId);
     validation.execute(`Notification spot vs DB (${spot.id})`, () => {

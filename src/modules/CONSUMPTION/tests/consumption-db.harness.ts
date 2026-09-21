@@ -1,9 +1,8 @@
 import type pg from "pg";
 import type { APIRequestContext } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { logDbVsApiSection } from "../../../core/db/db-compare.engine";
-import { isArchiveDbConfigured } from "../../../core/db/postgres.client";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { logDbVsApiSection } from "../../../extras/db/db-compare.engine";
+import { isArchiveDbConfigured } from "../../../extras/db/postgres.client";
 import { DailyConsumptionApi } from "../Api/dailyconsumption.api";
 import { MonthlyNetMeterApi } from "../Api/monthlynetmeter.api";
 import { PatternConsumptionApi } from "../Api/patternconsumption.api";
@@ -27,6 +26,7 @@ import {
   getConsumptionDailyReadingAgg,
 } from "../Db/consumption.db";
 import { logConsumptionDataQualityFindings } from "../Db/consumption-db.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 const SPOT_SAMPLE_SIZE = 3;
 
@@ -44,7 +44,7 @@ export async function runConsumptionDbCoverage(
   db: pg.Pool,
   archiveDb?: pg.Pool | null,
 ): Promise<void> {
-  const validation = new ValidationEngine();
+  const validation = new ApiValidationHelper();
   const api = new DailyConsumptionApi(authenticatedApi);
   const { rawResponse, responseBody } = await api.getDailyReport(
     dailyConsumptionData.page,
@@ -76,16 +76,13 @@ export async function runConsumptionDbCoverage(
     { totalMode: "lte" },
   );
 
-  validation.execute(
-    "Consumption daily total ≤ unscoped consumer-master count",
-    () => {
-      compareConsumptionCountLteDb({
-        label: "consumption.daily.total",
-        apiCount: mapped.total,
-        dbCount,
-      });
-    },
-  );
+  validation.execute("Consumption daily total ≤ unscoped consumer-master count", () => {
+    compareConsumptionCountLteDb({
+      label: "consumption.daily.total",
+      apiCount: mapped.total,
+      dbCount,
+    });
+  });
 
   const withMsn = mapped.items.filter((row) => trimText(row.msn).length > 0);
   expect(
@@ -95,11 +92,7 @@ export async function runConsumptionDbCoverage(
 
   for (const apiRow of withMsn.slice(0, SPOT_SAMPLE_SIZE)) {
     const msn = trimText(apiRow.msn);
-    const dbRow = await getConsumptionConsumerByMsn(
-      db,
-      msn,
-      apiRow.ivrsNumber,
-    );
+    const dbRow = await getConsumptionConsumerByMsn(db, msn, apiRow.ivrsNumber);
     validation.execute(`Consumption consumer identity vs DB (${msn})`, () => {
       expect(dbRow, `DB consumer row missing for msn=${msn}`).toBeTruthy();
       compareConsumptionConsumerSpotToDb({
@@ -116,20 +109,14 @@ export async function runConsumptionDbCoverage(
 
   // --- Archive daily IR/FR/kWh (fast path: only when page already has readings) ---
   if (archiveDb && isArchiveDbConfigured()) {
-    const withReadings = withMsn.find(
-      (row) => row.ir != null && row.fr != null,
-    );
+    const withReadings = withMsn.find((row) => row.ir != null && row.fr != null);
     if (!withReadings) {
       console.warn(
         `[BACKEND FINDING] daily IR/FR spot skipped — no page row with ir/fr in ${dailyConsumptionData.fromDate}..${dailyConsumptionData.toDate} (archive SQL ready for when readings exist)`,
       );
     } else {
       const msn = trimText(withReadings.msn);
-      const identity = await getConsumptionConsumerByMsn(
-        db,
-        msn,
-        withReadings.ivrsNumber,
-      );
+      const identity = await getConsumptionConsumerByMsn(db, msn, withReadings.ivrsNumber);
       if (!identity?.meterLookupTblRefId) {
         console.warn(
           `[BACKEND FINDING] daily IR/FR spot skipped — no meterLookupId for msn=${msn}`,
@@ -141,26 +128,21 @@ export async function runConsumptionDbCoverage(
           dailyConsumptionData.fromDate,
           dailyConsumptionData.toDate,
         );
-        validation.execute(
-          `Daily IR/FR/kWh vs archive T_DPData_CateSP (${msn})`,
-          () => {
-            compareConsumptionDailyReadingToDb({
-              api: {
-                msn,
-                ir: withReadings.ir,
-                fr: withReadings.fr,
-                kwh: withReadings.kwh,
-              },
-              dbRow: reading,
-            });
-          },
-        );
+        validation.execute(`Daily IR/FR/kWh vs archive T_DPData_CateSP (${msn})`, () => {
+          compareConsumptionDailyReadingToDb({
+            api: {
+              msn,
+              ir: withReadings.ir,
+              fr: withReadings.fr,
+              kwh: withReadings.kwh,
+            },
+            dbRow: reading,
+          });
+        });
       }
     }
   } else {
-    console.warn(
-      "[BACKEND FINDING] daily IR/FR DB check skipped — archive DB not configured",
-    );
+    console.warn("[BACKEND FINDING] daily IR/FR DB check skipped — archive DB not configured");
   }
 
   // --- Soft: monthly-net-meter total ≤ active isnetmeter count ---
@@ -186,16 +168,13 @@ export async function runConsumptionDbCoverage(
         { total: netDbCount },
         { totalMode: "lte" },
       );
-      validation.execute(
-        "Monthly net-meter total ≤ unscoped isnetmeter count",
-        () => {
-          compareConsumptionCountLteDb({
-            label: "consumption.monthly-net-meter.total",
-            apiCount: netMapped.total,
-            dbCount: netDbCount,
-          });
-        },
-      );
+      validation.execute("Monthly net-meter total ≤ unscoped isnetmeter count", () => {
+        compareConsumptionCountLteDb({
+          label: "consumption.monthly-net-meter.total",
+          apiCount: netMapped.total,
+          dbCount: netDbCount,
+        });
+      });
     } else {
       console.warn(
         `[BACKEND FINDING] monthly-net-meter DB check skipped — API status ${netRes.rawResponse.status()}`,
@@ -231,13 +210,7 @@ export async function runConsumptionDbCoverage(
     );
 
     for (const { type, label } of patternTypes) {
-      const patternRes = await patternApi.getPatternConsumption(
-        type,
-        page,
-        limit,
-        month,
-        year,
-      );
+      const patternRes = await patternApi.getPatternConsumption(type, page, limit, month, year);
       if (patternRes.rawResponse.status() !== 200) {
         console.warn(
           `[BACKEND FINDING] pattern ${label} DB check skipped — API status ${patternRes.rawResponse.status()}`,
@@ -272,44 +245,31 @@ export async function runConsumptionDbCoverage(
         ),
       );
 
-      validation.execute(
-        `Pattern ${label} totalCount vs DB page-key count`,
-        () => {
-          compareConsumptionPatternTotalToDb({
-            label: `consumption.pattern.${label}.totalCount`,
-            apiCount: mapped.pagination.totalCount,
-            dbCount: dbPageKeyCount,
-          });
-        },
-      );
+      validation.execute(`Pattern ${label} totalCount vs DB page-key count`, () => {
+        compareConsumptionPatternTotalToDb({
+          label: `consumption.pattern.${label}.totalCount`,
+          apiCount: mapped.pagination.totalCount,
+          dbCount: dbPageKeyCount,
+        });
+      });
 
-      const msnField =
-        label === "comparison" ? "meterSerialNo" : "msn";
-      const withMsn = mapped.rows.filter(
-        (row) => trimText(row[msnField]).length > 0,
-      );
+      const msnField = label === "comparison" ? "meterSerialNo" : "msn";
+      const withMsn = mapped.rows.filter((row) => trimText(row[msnField]).length > 0);
       for (const apiRow of withMsn.slice(0, SPOT_SAMPLE_SIZE)) {
         const msn = trimText(apiRow[msnField]);
-        const dbRow = await getConsumptionConsumerByMsn(
-          db,
-          msn,
-          String(apiRow.ivrsNumber ?? ""),
-        );
-        validation.execute(
-          `Pattern ${label} consumer identity vs DB (${msn})`,
-          () => {
-            expect(dbRow, `DB consumer row missing for msn=${msn}`).toBeTruthy();
-            compareConsumptionConsumerSpotToDb({
-              api: {
-                msn,
-                name: String(apiRow.name ?? ""),
-                ivrsNumber: String(apiRow.ivrsNumber ?? ""),
-                phase: String(apiRow.phase ?? ""),
-              },
-              dbRow: dbRow!,
-            });
-          },
-        );
+        const dbRow = await getConsumptionConsumerByMsn(db, msn, String(apiRow.ivrsNumber ?? ""));
+        validation.execute(`Pattern ${label} consumer identity vs DB (${msn})`, () => {
+          expect(dbRow, `DB consumer row missing for msn=${msn}`).toBeTruthy();
+          compareConsumptionConsumerSpotToDb({
+            api: {
+              msn,
+              name: String(apiRow.name ?? ""),
+              ivrsNumber: String(apiRow.ivrsNumber ?? ""),
+              phase: String(apiRow.phase ?? ""),
+            },
+            dbRow: dbRow!,
+          });
+        });
       }
     }
   } catch (err) {

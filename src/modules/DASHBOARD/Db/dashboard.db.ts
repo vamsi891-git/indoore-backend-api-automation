@@ -1,5 +1,5 @@
 import type pg from "pg";
-import { queryReadOnly, queryScalar } from "../../../core/db/postgres.client";
+import { queryReadOnly, queryScalar } from "../../../extras/db/postgres.client";
 import {
   DASHBOARD_ACTIVE_DTR_COUNT_SQL,
   DASHBOARD_ACTIVE_FEEDER_COUNT_SQL,
@@ -49,23 +49,16 @@ export async function countDtrFleetTotal(pool: pg.Pool): Promise<number> {
 }
 
 export async function countActiveFeeders(pool: pg.Pool): Promise<number> {
-  return (
-    (await queryScalar<number>(pool, DASHBOARD_ACTIVE_FEEDER_COUNT_SQL)) ?? 0
-  );
+  return (await queryScalar<number>(pool, DASHBOARD_ACTIVE_FEEDER_COUNT_SQL)) ?? 0;
 }
 
 export async function countActiveSubstations(pool: pg.Pool): Promise<number> {
-  return (
-    (await queryScalar<number>(pool, DASHBOARD_ACTIVE_SUBSTATION_COUNT_SQL)) ??
-    0
-  );
+  return (await queryScalar<number>(pool, DASHBOARD_ACTIVE_SUBSTATION_COUNT_SQL)) ?? 0;
 }
 
 /** Distinct IVRS on the consumer-meter subquery (`totalMeterCount`). */
 export async function countActiveMeters(pool: pg.Pool): Promise<number> {
-  return (
-    (await queryScalar<number>(pool, DASHBOARD_ACTIVE_METER_COUNT_SQL)) ?? 0
-  );
+  return (await queryScalar<number>(pool, DASHBOARD_ACTIVE_METER_COUNT_SQL)) ?? 0;
 }
 
 export async function getConnectionStatusCounts(
@@ -86,9 +79,7 @@ export async function getConnectionStatusCounts(
   };
 }
 
-export async function getCategoryWiseCounts(
-  pool: pg.Pool,
-): Promise<DashboardKeyedCount[]> {
+export async function getCategoryWiseCounts(pool: pg.Pool): Promise<DashboardKeyedCount[]> {
   const rows = await queryReadOnly<{ key: string; count: number }>(
     pool,
     DASHBOARD_CATEGORY_COUNTS_SQL,
@@ -99,9 +90,7 @@ export async function getCategoryWiseCounts(
   }));
 }
 
-export async function getPhaseWiseCounts(
-  pool: pg.Pool,
-): Promise<DashboardKeyedCount[]> {
+export async function getPhaseWiseCounts(pool: pg.Pool): Promise<DashboardKeyedCount[]> {
   const rows = await queryReadOnly<{ key: string; count: number }>(
     pool,
     DASHBOARD_PHASE_COUNTS_SQL,
@@ -112,13 +101,8 @@ export async function getPhaseWiseCounts(
   }));
 }
 
-export async function getOemWiseCounts(
-  pool: pg.Pool,
-): Promise<DashboardKeyedCount[]> {
-  const rows = await queryReadOnly<{ key: string; count: number }>(
-    pool,
-    DASHBOARD_OEM_COUNTS_SQL,
-  );
+export async function getOemWiseCounts(pool: pg.Pool): Promise<DashboardKeyedCount[]> {
+  const rows = await queryReadOnly<{ key: string; count: number }>(pool, DASHBOARD_OEM_COUNTS_SQL);
   return rows.map((row) => ({
     key: String(row.key ?? ""),
     count: Number(row.count ?? 0),
@@ -126,9 +110,7 @@ export async function getOemWiseCounts(
 }
 
 /** Active meters on an active DTR (no MeterType filter). */
-export async function countDtrMetersOnActiveDtrs(
-  pool: pg.Pool,
-): Promise<number> {
+export async function countDtrMetersOnActiveDtrs(pool: pg.Pool): Promise<number> {
   return (await queryScalar<number>(pool, DASHBOARD_DTR_METER_COUNT_SQL)) ?? 0;
 }
 
@@ -136,9 +118,7 @@ export async function countDtrMetersOnActiveDtrs(
  * Unscoped communication last-seen snapshot
  * (`queryDtrCommunicationCountsFromLastSeen`).
  */
-export async function getDtrCommLastSeenCounts(
-  pool: pg.Pool,
-): Promise<DtrCommLastSeenCounts> {
+export async function getDtrCommLastSeenCounts(pool: pg.Pool): Promise<DtrCommLastSeenCounts> {
   const rows = await queryReadOnly<{
     total_active_dtr_meters: number;
     communicating_meters: number;
@@ -165,11 +145,7 @@ export type ConsumerMeterStatusSql = {
   nonCommunicatedConsumerMeters: number;
 };
 
-async function tableExists(
-  pool: pg.Pool,
-  sql: string,
-  expected: string,
-): Promise<boolean> {
+async function tableExists(pool: pg.Pool, sql: string, expected: string): Promise<boolean> {
   const rows = await queryReadOnly<{ table_name: string | null }>(pool, sql);
   return String(rows[0]?.table_name ?? "").includes(expected);
 }
@@ -192,9 +168,7 @@ function mapEnergyPoints(
 }
 
 function pointsHaveEnergy(points: DashboardEnergyPoint[]): boolean {
-  return points.some(
-    (p) => Number(p.kwh) > 0 || Number(p.kvah) > 0 || Number(p.kvarh) > 0,
-  );
+  return points.some((p) => Number(p.kwh) > 0 || Number(p.kvah) > 0 || Number(p.kvarh) > 0);
 }
 
 async function hasDtrConsumptionRollup(pool: pg.Pool): Promise<boolean> {
@@ -216,13 +190,7 @@ async function hasDtrConsumptionRollup(pool: pg.Pool): Promise<boolean> {
 export async function getDtrConsumptionDailySqlPoints(
   pool: pg.Pool,
 ): Promise<{ points: DashboardEnergyPoint[]; source: string }> {
-  if (
-    await tableExists(
-      pool,
-      DASHBOARD_T_DTR_DAILY_EXISTS_SQL,
-      "T_DTR_DAILYData",
-    )
-  ) {
+  if (await tableExists(pool, DASHBOARD_T_DTR_DAILY_EXISTS_SQL, "T_DTR_DAILYData")) {
     const phase = mapEnergyPoints(
       await queryReadOnly<{
         bucket_label: string;
@@ -249,9 +217,7 @@ export async function getDtrConsumptionDailySqlPoints(
   return { points: [], source: "empty-calendar" };
 }
 
-export async function getConsumerMeterStatusCounts(
-  pool: pg.Pool,
-): Promise<ConsumerMeterStatusSql> {
+export async function getConsumerMeterStatusCounts(pool: pg.Pool): Promise<ConsumerMeterStatusSql> {
   const rows = await queryReadOnly<{
     total_consumer_meters: number;
     communicated_consumer_meters: number;
@@ -261,8 +227,6 @@ export async function getConsumerMeterStatusCounts(
   return {
     totalConsumerMeters: Number(row?.total_consumer_meters ?? 0),
     communicatedConsumerMeters: Number(row?.communicated_consumer_meters ?? 0),
-    nonCommunicatedConsumerMeters: Number(
-      row?.non_communicated_consumer_meters ?? 0,
-    ),
+    nonCommunicatedConsumerMeters: Number(row?.non_communicated_consumer_meters ?? 0),
   };
 }

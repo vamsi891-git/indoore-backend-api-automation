@@ -1,6 +1,5 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/observability.fixture";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { REVENUE_PROTECTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { assertZodSchema } from "../../../core/utils/zod-validation.helper";
 import { ApiErrorResponseSchema } from "../../../core/schemas/api-response.schemas";
@@ -18,6 +17,7 @@ import {
   buildRevenueProtectionUrl,
   getRevenueProtectionWithRetry,
 } from "../utils/revenue-protection-request.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 test.describe("Revenue Protection — Aberration Entry Negative", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(REVENUE_PROTECTION_TEST_TIMEOUT_MS);
@@ -30,7 +30,7 @@ test.describe("Revenue Protection — Aberration Entry Negative", () => {
       { tag: [...negativeCase.tags] },
       async ({ authenticatedApi, obs }) => {
         await applyAllureTestCaseId(negativeCase.testCaseId);
-        const validation = new ValidationEngine(obs);
+        const validation = new ApiValidationHelper(obs);
         const { response: rawResponse } = await getRevenueProtectionWithRetry(
           authenticatedApi,
           buildRevenueProtectionUrl(

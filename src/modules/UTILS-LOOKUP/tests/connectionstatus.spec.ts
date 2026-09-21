@@ -6,33 +6,24 @@ import { registerCatalogLookupTests } from "../utils/lookup-catalog.harness";
 import { getLookupResponseData } from "../utils/lookup-spec.harness";
 import type { CatalogScenario } from "../Data/lookup-catalogs.data";
 import type { ConnectionStatusData } from "../Mapper/connectionstatus.mapper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 function validateConnectionStatus(
   scenario: CatalogScenario,
   responseBody: unknown,
-  validation: import("../../../core/engine/validation.engine").ValidationEngine,
+  validation: ApiValidationHelper,
 ): void {
   const data = ConnectionStatusMapper.mapData(
     getLookupResponseData<ConnectionStatusData>(responseBody),
   );
   const validator = new ConnectionStatusValidator();
-  validation.execute("Response", () =>
-    validator.validateResponse(responseBody as never),
-  );
+  validation.execute("Response", () => validator.validateResponse(responseBody as never));
   validation.execute("Items", () => validator.validateItemsExist(data));
   validation.execute("Fields", () => validator.validateFields(data));
-  validation.execute("Duplicate IDs", () =>
-    validator.validateDuplicateIds(data),
-  );
-  validation.execute("Duplicate Names", () =>
-    validator.validateDuplicateNames(data),
-  );
-  validation.execute("Ascending Order", () =>
-    validator.validateAscendingOrder(data),
-  );
+  validation.execute("Duplicate IDs", () => validator.validateDuplicateIds(data));
+  validation.execute("Duplicate Names", () => validator.validateDuplicateNames(data));
+  validation.execute("Ascending Order", () => validator.validateAscendingOrder(data));
   if (scenario === "smoke") {
-    validation.execute("Expected Values", () =>
-      validator.validateExpectedValues(data),
-    );
+    validation.execute("Expected Values", () => validator.validateExpectedValues(data));
   }
 }
 

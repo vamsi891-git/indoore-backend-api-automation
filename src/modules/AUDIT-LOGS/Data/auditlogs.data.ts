@@ -84,38 +84,44 @@ export interface AuditLogsTestCase {
   tags: string[];
   sortDirection: "desc" | "asc";
   requireLogs?: boolean;
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export const auditLogsTestCases: AuditLogsTestCase[] = [
   {
-    testName:
-      "GET /users/audit-logs — default page (createdAt_desc)",
+    testName: "GET /users/audit-logs — default page (createdAt_desc)",
     query: { ...auditLogsDefaultQuery },
     tags: ["@smoke", "@audit-logs"],
+    nonEmptyExpected: true,
     sortDirection: "desc",
   },
   {
     testName: "GET /users/audit-logs — createdAt_asc",
     query: { ...auditLogsAscQuery },
     tags: ["@smoke", "@audit-logs"],
+    nonEmptyExpected: true,
     sortDirection: "asc",
   },
   {
     testName: "GET /users/audit-logs — page 2",
     query: { ...auditLogsPage2Query },
     tags: ["@smoke", "@audit-logs"],
+    nonEmptyExpected: true,
     sortDirection: "desc",
   },
   {
     testName: "GET /users/audit-logs — limit 10",
     query: { ...auditLogsSmallPageQuery },
     tags: ["@smoke", "@audit-logs"],
+    nonEmptyExpected: true,
     sortDirection: "desc",
   },
   {
     testName: "GET /users/audit-logs — page beyond total",
     query: { ...auditLogsBeyondQuery },
     tags: ["@smoke", "@audit-logs"],
+    nonEmptyExpected: true,
     sortDirection: "desc",
     requireLogs: false,
   },

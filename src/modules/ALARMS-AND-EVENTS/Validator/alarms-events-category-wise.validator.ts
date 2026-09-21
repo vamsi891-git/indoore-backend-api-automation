@@ -6,7 +6,7 @@ import {
 import {
   AlarmsEventsCategoryWiseData,
   AlarmsEventsCategoryWiseResponse,
-} from "../Mappper/alarms-events-category-wise.mapper";
+} from "../Mapper/alarms-events-category-wise.mapper";
 import { assertZodSchema } from "../../../core/utils/zod-validation.helper";
 import {
   AlarmsEventsCategoryWiseSuccessResponseSchema,
@@ -23,11 +23,7 @@ function addCalendarDay(ymd: string, delta: number): string {
 
 export class AlarmsEventsCategoryWiseValidator {
   validateResponse(response: AlarmsEventsCategoryWiseResponse) {
-    assertZodSchema(
-      AlarmsEventsCategoryWiseSuccessResponseSchema,
-      response,
-      "Zod Response Schema",
-    );
+    assertZodSchema(AlarmsEventsCategoryWiseSuccessResponseSchema, response, "Zod Response Schema");
   }
 
   validateDates(data: AlarmsEventsCategoryWiseData, expectedCurrentDate?: string) {
@@ -41,9 +37,7 @@ export class AlarmsEventsCategoryWiseValidator {
   validateColumns(data: AlarmsEventsCategoryWiseData) {
     expect(data.categories.length).toBeGreaterThan(0);
     for (const row of data.categories) {
-      expect(Object.keys(row).sort()).toEqual(
-        [...EXPECTED_CATEGORY_WISE_COLUMNS].sort(),
-      );
+      expect(Object.keys(row).sort()).toEqual([...EXPECTED_CATEGORY_WISE_COLUMNS].sort());
     }
   }
 
@@ -64,14 +58,8 @@ export class AlarmsEventsCategoryWiseValidator {
   }
 
   validateTotals(data: AlarmsEventsCategoryWiseData) {
-    const totalSum = data.categories.reduce(
-      (sum, row) => sum + row.totalCount,
-      0,
-    );
-    const previousSum = data.categories.reduce(
-      (sum, row) => sum + row.previousCount,
-      0,
-    );
+    const totalSum = data.categories.reduce((sum, row) => sum + row.totalCount, 0);
+    const previousSum = data.categories.reduce((sum, row) => sum + row.previousCount, 0);
     expect(totalSum).toBe(data.totalEvents);
     expect(previousSum).toBe(data.totalEventsPreviousDay);
     expect(data.totalEvents).toBeGreaterThanOrEqual(0);

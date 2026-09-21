@@ -1,5 +1,4 @@
 import type { APIRequestContext } from "@playwright/test";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { DtrDetailApi } from "../Api/DtrId.api";
 import { NetworkHierarchyApi } from "../Api/networkhierarchy.api";
 import { OrganisationHierarchyApi } from "../Api/organizationhierarchy.api";
@@ -26,6 +25,7 @@ import {
 import { runNetworkHierarchyValidation } from "./network-hierarchy.harness";
 import { runOrganisationHierarchyValidation } from "./organisation-hierarchy.harness";
 import { runDtrDetailValidation } from "./dtr-detail.harness";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 const hierarchyOptions = {
   maxResponseTimeMs: assetManagementHierarchyMaxResponseTimeMs,
@@ -38,7 +38,7 @@ const hierarchyOptions = {
 export async function runAssetManagementProductionCoverage(
   authenticatedApi: APIRequestContext,
 ): Promise<void> {
-  const crossChecks = new ValidationEngine();
+  const crossChecks = new ApiValidationHelper();
   const networkApi = new NetworkHierarchyApi(authenticatedApi);
   const orgApi = new OrganisationHierarchyApi(authenticatedApi);
   const dtrApi = new DtrDetailApi(authenticatedApi);
@@ -108,10 +108,7 @@ export async function runAssetManagementProductionCoverage(
 
   if (orgDtr && networkDtr) {
     crossChecks.execute("Network vs Organisation DTR Counts", () => {
-      AssetManagementCoverageValidator.validateOrgNetworkDtrCountsAlign(
-        networkDtr,
-        orgDtr,
-      );
+      AssetManagementCoverageValidator.validateOrgNetworkDtrCountsAlign(networkDtr, orgDtr);
     });
   }
 

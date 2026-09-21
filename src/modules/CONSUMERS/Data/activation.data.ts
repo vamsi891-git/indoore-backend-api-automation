@@ -1,10 +1,7 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { ConsumerActivationStatus } from "../Mapper/activation.mapper";
 import type { ActivationScenario } from "../Mapper/activation.mapper";
-import {
-  CONSUMERS_LIVE_ACCOUNT_ID,
-  resolveLiveAccountId,
-} from "./consumers-live-refs";
+import { CONSUMERS_LIVE_ACCOUNT_ID, resolveLiveAccountId } from "./consumers-live-refs";
 export const activationMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 export const activationDefaultConsumerId = CONSUMERS_LIVE_ACCOUNT_ID;
 export const activationNotFoundConsumerId = "INVALID_CONSUMER_XYZ";
@@ -18,9 +15,11 @@ export interface ActivationTestCase {
   invalidStatus?: string;
   restoreStatus?: ConsumerActivationStatus;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
-export function resolveActivationConsumerId(scenario: ActivationScenario,): string | undefined {
+export function resolveActivationConsumerId(scenario: ActivationScenario): string | undefined {
   switch (scenario) {
     case "activate":
     case "deactivate":
@@ -43,64 +42,64 @@ export function resolveActivationConsumerId(scenario: ActivationScenario,): stri
 
 export const activationTestCases: ActivationTestCase[] = [
   {
-    testName:
-      "Turn consumer on — active status is saved",
+    testName: "Turn consumer on — active status is saved",
     scenario: "activate",
     requestStatus: "active",
     tags: ["@smoke", "@consumer", "@activation"],
+    nonEmptyExpected: true,
   },
   {
-    testName:
-      "Turn consumer off — inactive status is saved",
+    testName: "Turn consumer off — inactive status is saved",
     scenario: "deactivate",
     requestStatus: "inactive",
     restoreStatus: "active",
     tags: ["@consumer", "@activation", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Turn consumer on — already active stays active",
+    testName: "Turn consumer on — already active stays active",
     scenario: "activate_idempotent",
     requestStatus: "active",
     tags: ["@consumer", "@activation", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Turn consumer on or off — unknown consumer is not found",
+    testName: "Turn consumer on or off — unknown consumer is not found",
     scenario: "consumer_not_found",
     requestStatus: "active",
     expectedStatus: 404,
     tags: ["@consumer", "@activation", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Turn consumer on or off — cannot use a meter number here",
+    testName: "Turn consumer on or off — cannot use a meter number here",
     scenario: "meter_route_rejected",
     requestStatus: "active",
     expectedStatus: 404,
     tags: ["@consumer", "@activation", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Turn consumer on or off — invalid status is rejected",
+    testName: "Turn consumer on or off — invalid status is rejected",
     scenario: "invalid_status",
     invalidStatus: "invalid",
     expectedStatus: 400,
     tags: ["@consumer", "@activation", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Turn consumer on or off — empty status is rejected",
+    testName: "Turn consumer on or off — empty status is rejected",
     scenario: "empty_status",
     invalidStatus: "",
     expectedStatus: 400,
     tags: ["@consumer", "@activation", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Turn consumer on or off — status is required",
+    testName: "Turn consumer on or off — status is required",
     scenario: "missing_status",
     expectedStatus: 400,
     tags: ["@consumer", "@activation", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

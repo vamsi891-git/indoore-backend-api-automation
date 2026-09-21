@@ -1,6 +1,4 @@
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { MeterCommunicationStatusApi } from "../Api/meter-communication-status.api";
 import {
   meterCommunicationDefaultQuery,
@@ -10,28 +8,24 @@ import {
 import { MasterDataCommonValidator } from "../Validator/master-data-common.validator";
 import { MasterDataErrorResponseSchema } from "../schemas/master-data.schemas";
 import { runMeterCommunicationValidation } from "./meter-communication-status.harness";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Master data — meter communication", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(180_000);
 
   for (const testCase of meterCommunicationTestCases) {
-    test(
-      testCase.testName,
-      { tag: testCase.tags },
-      async ({ authenticatedApi }) => {
-        const api = new MeterCommunicationStatusApi(authenticatedApi);
-        await runMeterCommunicationValidation({
-          api,
-          query: { ...testCase.query },
-          testLabel: testCase.testName,
-          searchTerm: testCase.searchTerm,
-          communicationStatusFilter: testCase.communicationStatusFilter,
-          skipCommunicatingTimestampCheck:
-            testCase.skipCommunicatingTimestampCheck === true,
-        });
-      },
-    );
+    test(testCase.testName, { tag: testCase.tags }, async ({ authenticatedApi }) => {
+      const api = new MeterCommunicationStatusApi(authenticatedApi);
+      await runMeterCommunicationValidation({
+        api,
+        query: { ...testCase.query },
+        testLabel: testCase.testName,
+        searchTerm: testCase.searchTerm,
+        communicationStatusFilter: testCase.communicationStatusFilter,
+        skipCommunicatingTimestampCheck: testCase.skipCommunicatingTimestampCheck === true,
+      });
+    });
   }
 
   test(
@@ -43,8 +37,8 @@ test.describe("Master data — meter communication", () => {
         meterCommunicationUnknownFilterQuery,
       );
 
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       validation.execute("Status Validation", () =>
         assert.validateStatusCode(rawResponse, 400, responseBody),
       );
@@ -54,13 +48,8 @@ test.describe("Master data — meter communication", () => {
           MasterDataErrorResponseSchema,
         ),
       );
-      validation.execute("Security Validation", () =>
-        assert.validateSensitiveData(responseBody),
-      );
-      validation.printSummary(
-        "Meter Communication Status API — Unknown Filter Rejected",
-        0,
-      );
+      validation.execute("Security Validation", () => assert.validateSensitiveData(responseBody));
+      validation.printSummary("Meter Communication Status API — Unknown Filter Rejected", 0);
     },
   );
 

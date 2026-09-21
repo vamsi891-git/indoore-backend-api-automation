@@ -1,6 +1,10 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { EventLogListQuery } from "../Api/eventloglist.api";
-import type {EventLogListResponse,EventLogListScenario,EventLogRow,} from "../Mapper/eventloglist.mapper";
+import type {
+  EventLogListResponse,
+  EventLogListScenario,
+  EventLogRow,
+} from "../Mapper/eventloglist.mapper";
 import {
   CONSUMERS_LIVE_IVRS,
   CONSUMERS_LIVE_METER_ROUTE,
@@ -36,18 +40,15 @@ export const eventLogListContractPaginationMeta = {
   expectedTotalPages: 3,
   expectedSerialStart: 11,
 };
-const contractPaginationRows: EventLogRow[] = Array.from(
-  { length: 5 },
-  (_, index) => ({
-    serialNo: eventLogListContractPaginationMeta.expectedSerialStart + index,
-    meterNo: "MSN-CONTRACT-001",
-    occurDateTime: `0${9 - index}-07-2026 12:0${index}:00`,
-    restoreDateTime: null,
-    description: `Event ${index + 1}`,
-    durationDisplay: null,
-    status: "Pending" as const,
-  }),
-);
+const contractPaginationRows: EventLogRow[] = Array.from({ length: 5 }, (_, index) => ({
+  serialNo: eventLogListContractPaginationMeta.expectedSerialStart + index,
+  meterNo: "MSN-CONTRACT-001",
+  occurDateTime: `0${9 - index}-07-2026 12:0${index}:00`,
+  restoreDateTime: null,
+  description: `Event ${index + 1}`,
+  durationDisplay: null,
+  status: "Pending" as const,
+}));
 
 export const eventLogListContractPaginationResponse: EventLogListResponse = {
   success: true,
@@ -95,10 +96,10 @@ export interface EventLogListTestCase {
   expectedStatus?: number;
   isContractFixture?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
-export function resolveEventLogListRef(
-  scenario: EventLogListScenario,
-): string | undefined {
+export function resolveEventLogListRef(scenario: EventLogListScenario): string | undefined {
   switch (scenario) {
     case "ell_by_ivrs":
     case "ell_page_2":
@@ -139,7 +140,7 @@ export function resolveEventLogListRef(
       return undefined;
   }
 }
-export function resolveEventLogListQuery(scenario: EventLogListScenario,): EventLogListQuery {
+export function resolveEventLogListQuery(scenario: EventLogListScenario): EventLogListQuery {
   switch (scenario) {
     case "ell_page_2":
       return { eventPage: 2, eventPageSize: 5 };
@@ -149,8 +150,7 @@ export function resolveEventLogListQuery(scenario: EventLogListScenario,): Event
         eventPageSize: 10,
         // Live descriptions are codes like METER_LAST_GASP; "power" matches nothing
         // and the API can leave totalCount unfiltered while returning zero rows.
-        eventSearch:
-          process.env.CONSUMER_ELL_EVENT_SEARCH?.trim() || "METER",
+        eventSearch: process.env.CONSUMER_ELL_EVENT_SEARCH?.trim() || "METER",
       };
     case "ell_ignore_unknown_query":
       return { eventPage: 1, eventPageSize: 10, foo: 1 };
@@ -184,79 +184,79 @@ export function resolveEventLogListContractBody(
 
 export const eventLogListTestCases: EventLogListTestCase[] = [
   {
-    testName:
-      "Event list — events for the consumer",
+    testName: "Event list — events for the consumer",
     scenario: "ell_by_ivrs",
     tags: ["@smoke", "@consumer", "@event-log", "@event-log-list"],
+    nonEmptyExpected: true,
   },
   {
-    testName:
-      "Event list — opens using the account number",
+    testName: "Event list — opens using the account number",
     scenario: "ell_by_account",
     tags: ["@consumer", "@event-log", "@event-log-list", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Event list — opens using the meter",
+    testName: "Event list — opens using the meter",
     scenario: "ell_by_meter",
     tags: ["@consumer", "@event-log", "@event-log-list", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Event list — page 2 of events loads",
+    testName: "Event list — page 2 of events loads",
     scenario: "ell_page_2",
     tags: ["@consumer", "@event-log", "@event-log-list", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Event list — search filter is accepted",
+    testName: "Event list — search filter is accepted",
     scenario: "ell_with_search",
     tags: ["@consumer", "@event-log", "@event-log-list", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Event list — extra unused options are ignored",
+    testName: "Event list — extra unused options are ignored",
     scenario: "ell_ignore_unknown_query",
     tags: ["@consumer", "@event-log", "@event-log-list", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Event list — sample: no events",
+    testName: "Event list — sample: no events",
     scenario: "contract_empty_list",
     isContractFixture: true,
     tags: ["@consumer", "@event-log", "@event-log-list", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Event list — sample: page count is correct",
+    testName: "Event list — sample: page count is correct",
     scenario: "contract_pagination",
     isContractFixture: true,
     tags: ["@consumer", "@event-log", "@event-log-list", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Event list — sample: resolved and pending events",
+    testName: "Event list — sample: resolved and pending events",
     scenario: "contract_resolved_pending_rows",
     isContractFixture: true,
     tags: ["@consumer", "@event-log", "@event-log-list", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Event list — unknown consumer is empty or not found",
+    testName: "Event list — unknown consumer is empty or not found",
     scenario: "consumer_not_found",
     tags: ["@consumer", "@event-log", "@event-log-list", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Event list — unknown meter is empty or not found",
+    testName: "Event list — unknown meter is empty or not found",
     scenario: "meter_not_found",
     tags: ["@consumer", "@event-log", "@event-log-list", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Event list — blank consumer number is rejected",
+    testName: "Event list — blank consumer number is rejected",
     scenario: "empty_consumer_ref",
     expectedStatus: 400,
     tags: ["@consumer", "@event-log", "@event-log-list", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

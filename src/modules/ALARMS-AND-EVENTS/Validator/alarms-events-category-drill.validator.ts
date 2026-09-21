@@ -6,7 +6,7 @@ import {
 import {
   AlarmsEventsCategoryDrillData,
   AlarmsEventsCategoryDrillResponse,
-} from "../Mappper/alarms-events-category-drill.mapper";
+} from "../Mapper/alarms-events-category-drill.mapper";
 import { assertZodSchema } from "../../../core/utils/zod-validation.helper";
 import {
   AlarmsEventsCategoryDrillSuccessResponseSchema,

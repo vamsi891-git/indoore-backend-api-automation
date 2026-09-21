@@ -6,7 +6,7 @@ import {
   createPgPool,
   isArchiveDbConfigured,
   isDbConfigured,
-} from "../core/db/postgres.client";
+} from "../extras/db/postgres.client";
 
 type ApiDbFixtures = {
   db: pg.Pool;
@@ -15,7 +15,7 @@ type ApiDbFixtures = {
 
 /** Authenticated API + optional read-only PostgreSQL (skips when DB_* unset / unreachable). */
 export const test = apiTest.extend<ApiDbFixtures>({
-  db: async ({}, use, testInfo) => {
+  db: async (_fixtures, use, testInfo) => {
     if (!isDbConfigured()) {
       testInfo.skip(true, "DB_* not configured in .env — API-only run");
       return;
@@ -42,7 +42,7 @@ export const test = apiTest.extend<ApiDbFixtures>({
     }
   },
 
-  archiveDb: async ({}, use) => {
+  archiveDb: async (_fixtures, use) => {
     if (!isArchiveDbConfigured()) {
       await use(null as unknown as pg.Pool);
       return;

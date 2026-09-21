@@ -1,7 +1,7 @@
 import { TimedApiClient } from "../../../core/base/timed-api.client";
 import { ApiCallResult } from "../../../core/models/api-result.model";
 import { alarmsEventsCategoryWiseData } from "../Data/alarms-events-category-wise.data";
-import { AlarmsEventsCategoryWiseResponse } from "../Mappper/alarms-events-category-wise.mapper";
+import { AlarmsEventsCategoryWiseResponse } from "../Mapper/alarms-events-category-wise.mapper";
 
 export class AlarmsEventsCategoryWiseApi extends TimedApiClient {
   getCategoryWise(

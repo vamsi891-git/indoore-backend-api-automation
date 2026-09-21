@@ -225,7 +225,8 @@ export interface BillingMdSnapshotTestCase {
   scenario: BillingMdSnapshotScenario;
   tags: string[];
   isContractFixture?: boolean;
-  expectedStatus?: number;
+  expectedStatus?: number;  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export function resolveBillingMdSnapshotQuery(
@@ -282,27 +283,32 @@ export const billingMdSnapshotTestCases: BillingMdSnapshotTestCase[] = [
       "Billing MD snapshot — Oct 2025 first page shows columns and meters",
     scenario: "dev_live_without_total",
     tags: ["@smoke", "@reports", "@billing-md-snapshot"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Billing MD snapshot — includeTotal still shows the same columns",
     scenario: "dev_live_include_total",
     tags: ["@reports", "@billing-md-snapshot", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Billing MD snapshot — showing 1 per page still lists a meter",
     scenario: "dev_limit_one",
     tags: ["@reports", "@billing-md-snapshot", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName:
       "Billing MD snapshot — a far page is empty or still consistent",
     scenario: "dev_live_page_beyond",
     tags: ["@reports", "@billing-md-snapshot", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Billing MD snapshot — unknown query params are ignored",
     scenario: "dev_ignore_unknown_query",
     tags: ["@reports", "@billing-md-snapshot", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName:
@@ -310,53 +316,62 @@ export const billingMdSnapshotTestCases: BillingMdSnapshotTestCase[] = [
     scenario: "contract_live_oct_2025",
     isContractFixture: true,
     tags: ["@reports", "@billing-md-snapshot", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Billing MD snapshot — sparse hierarchy fixture",
     scenario: "contract_sparse_hierarchy",
     isContractFixture: true,
     tags: ["@reports", "@billing-md-snapshot", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Billing MD snapshot — empty page fixture",
     scenario: "contract_empty_page",
     isContractFixture: true,
     tags: ["@reports", "@billing-md-snapshot", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Billing MD snapshot — invalid month is rejected",
     scenario: "invalid_month",
     expectedStatus: 400,
     tags: ["@reports", "@billing-md-snapshot", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Billing MD snapshot — invalid year is rejected",
     scenario: "invalid_year",
     expectedStatus: 400,
     tags: ["@reports", "@billing-md-snapshot", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Billing MD snapshot — missing year is rejected",
     scenario: "missing_year",
     expectedStatus: 400,
     tags: ["@reports", "@billing-md-snapshot", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Billing MD snapshot — missing month is rejected",
     scenario: "missing_month",
     expectedStatus: 400,
     tags: ["@reports", "@billing-md-snapshot", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Billing MD snapshot — page 0 is rejected (page must start at 1)",
     scenario: "invalid_page",
     expectedStatus: 400,
     tags: ["@reports", "@billing-md-snapshot", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Billing MD snapshot — limit 0 is rejected (limit must be at least 1)",
     scenario: "invalid_limit",
     expectedStatus: 400,
     tags: ["@reports", "@billing-md-snapshot", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

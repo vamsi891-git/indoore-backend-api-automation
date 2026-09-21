@@ -6,7 +6,7 @@ import {
 import {
   AlarmsEventsPriorityDrillData,
   AlarmsEventsPriorityDrillResponse,
-} from "../Mappper/alarms-events-priority-drill.mapper";
+} from "../Mapper/alarms-events-priority-drill.mapper";
 import { assertZodSchema } from "../../../core/utils/zod-validation.helper";
 import {
   AlarmsEventsPriorityDrillSuccessResponseSchema,
@@ -43,8 +43,7 @@ export class AlarmsEventsPriorityDrillValidator {
     },
   ) {
     const date = options.expectedDate ?? alarmsEventsPriorityDrillData.date;
-    const series =
-      options.expectedSeries ?? alarmsEventsPriorityDrillData.series;
+    const series = options.expectedSeries ?? alarmsEventsPriorityDrillData.series;
     expect(data.context.view).toBe("priority-wise");
     expect(data.context.groupBy).toBe("circle");
     expect(data.context.hierarchyLevel).toBe("circle");

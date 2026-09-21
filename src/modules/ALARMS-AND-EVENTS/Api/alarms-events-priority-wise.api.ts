@@ -1,7 +1,7 @@
 import { TimedApiClient } from "../../../core/base/timed-api.client";
 import { ApiCallResult } from "../../../core/models/api-result.model";
 import { alarmsEventsPriorityWiseData } from "../Data/alarms-events-priority-wise.data";
-import { AlarmsEventsPriorityWiseResponse } from "../Mappper/alarms-events-priority-wise.mapper";
+import { AlarmsEventsPriorityWiseResponse } from "../Mapper/alarms-events-priority-wise.mapper";
 
 export class AlarmsEventsPriorityWiseApi extends TimedApiClient {
   getPriorityWise(

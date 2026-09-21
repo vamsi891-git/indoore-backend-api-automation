@@ -7,13 +7,13 @@ import { lfAnalysisData } from "../Data/loadfactor.api";
 import { consumptionCompareLastMonthData } from "../Data/consumptioncompare.data";
 import { consumptionPatternData } from "../Data/consumptionpattern.data";
 import { dayNightZeroData } from "../Data/daynight.data";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import {
   CommercialCommonValidator,
   commercialAuthData,
   commercialPaths,
   type CommercialErrorBody,
 } from "../Validator/commercial-common.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 const authEndpoints: Array<{
   name: string;
@@ -76,20 +76,15 @@ authTest.describe("Commercial Analysis — cannot open reports without a valid l
       `${endpoint.name} — cannot open the report without logging in`,
       { tag: endpoint.tags },
       async ({ unauthenticatedApi }) => {
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const rawResponse = await CommercialCommonValidator.getUnauthenticated(
           unauthenticatedApi,
           endpoint.path,
           { params: endpoint.params },
         );
-        const body = (await rawResponse
-          .json()
-          .catch(() => ({}))) as CommercialErrorBody;
+        const body = (await rawResponse.json().catch(() => ({}))) as CommercialErrorBody;
         validation.execute("Unauthorized", () =>
-          CommercialCommonValidator.validateUnauthorizedError(
-            rawResponse.status(),
-            body,
-          ),
+          CommercialCommonValidator.validateUnauthorizedError(rawResponse.status(), body),
         );
         validation.printSummary(`${endpoint.name} — Missing Auth`, 0);
       },
@@ -99,16 +94,14 @@ authTest.describe("Commercial Analysis — cannot open reports without a valid l
       `${endpoint.name} — cannot open the report with an invalid login token`,
       { tag: endpoint.tags },
       async ({ unauthenticatedApi }) => {
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const rawResponse = await unauthenticatedApi.get(endpoint.path, {
           params: endpoint.params,
           headers: {
             Authorization: commercialAuthData.invalidBearerToken,
           },
         });
-        const body = (await rawResponse
-          .json()
-          .catch(() => ({}))) as CommercialErrorBody;
+        const body = (await rawResponse.json().catch(() => ({}))) as CommercialErrorBody;
         validation.execute("Unauthorized / invalid token", () => {
           expect(rawResponse.status()).toBe(401);
           expect(body.success).toBeFalsy();
@@ -128,7 +121,7 @@ authTest.describe("Commercial Analysis — cannot open reports without a valid l
       tag: ["@commercial", "@commercial-summary", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const callers = CommercialCommonValidator.getDisallowedMethodCallers(
         unauthenticatedApi,
         commercialPaths.summary,
@@ -136,9 +129,7 @@ authTest.describe("Commercial Analysis — cannot open reports without a valid l
       for (const method of commercialAuthData.disallowedMethods) {
         const response = await callers[method]();
         validation.execute(`${method} rejected`, () =>
-          CommercialCommonValidator.validateDisallowedMethodRejected(
-            response.status(),
-          ),
+          CommercialCommonValidator.validateDisallowedMethodRejected(response.status()),
         );
       }
       validation.printSummary("Summary — Disallowed Methods", 0);

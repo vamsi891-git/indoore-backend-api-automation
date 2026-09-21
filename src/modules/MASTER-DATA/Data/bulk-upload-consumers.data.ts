@@ -29,9 +29,7 @@ import {
   getTodBulkValue,
 } from "../utils/consumer-lookup.helper";
 import { resolveMasterDataEnv as envValue } from "../utils/master-data-env.helper";
-import {
-  ensureConsumerBulkHierarchyContext,
-} from "../utils/network-hierarchy-cascade.helper";
+import { ensureConsumerBulkHierarchyContext } from "../utils/network-hierarchy-cascade.helper";
 import { getValidateMeterSerial } from "../utils/validate-meter-runtime.helper";
 
 export {
@@ -42,8 +40,7 @@ export {
   hasBulkConsumerNearestAcctId,
 };
 
-export const bulkUploadConsumersMaxResponseTimeMs =
-  MASTER_DATA_MAX_RESPONSE_TIME_MS;
+export const bulkUploadConsumersMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 
 export const CONSUMER_BULK_UPLOAD_TEMPLATE_PATH = path.join(
   process.cwd(),
@@ -170,8 +167,7 @@ export function hasBulkConsumerMeterPool(): boolean {
   return hasConsumerAssignableMeterPool();
 }
 
-export const bulkUploadConsumerOrganisationLookupId =
-  createConsumerData.organisationLookupId;
+export const bulkUploadConsumerOrganisationLookupId = createConsumerData.organisationLookupId;
 
 function uniqueSuffix(): string {
   return String(Date.now());
@@ -185,7 +181,9 @@ let bulkConsumerIdSequence = 0;
 
 function uniqueConsumerId(): string {
   bulkConsumerIdSequence += 1;
-  const tail = `${Date.now()}${bulkConsumerIdSequence}${Math.floor(Math.random() * 100)}`.slice(-16);
+  const tail = `${Date.now()}${bulkConsumerIdSequence}${Math.floor(Math.random() * 100)}`.slice(
+    -16,
+  );
   return `CID${tail}`;
 }
 
@@ -232,10 +230,7 @@ function hashSeed(seed: string): number {
 }
 
 function uniqueFifteenDigitId(seed: string): string {
-  const digits = `${seed}${Date.now()}${Math.floor(Math.random() * 10000)}`.replace(
-    /\D/g,
-    "",
-  );
+  const digits = `${seed}${Date.now()}${Math.floor(Math.random() * 10000)}`.replace(/\D/g, "");
   return digits.padEnd(15, "7").slice(0, 15);
 }
 
@@ -264,7 +259,9 @@ function uniqueModemIdentity(seed: string): {
 
 function tenDigitMobile(seed: string): string {
   const hash = hashSeed(seed);
-  return `98${String((hash % 100_000_000) + bulkConsumerRowSequence).padStart(8, "0").slice(-8)}`;
+  return `98${String((hash % 100_000_000) + bulkConsumerRowSequence)
+    .padStart(8, "0")
+    .slice(-8)}`;
 }
 
 function mainSubMeterName(): string {
@@ -347,7 +344,11 @@ export function buildManualUiConsumerBulkRow(options?: {
       row["Connection Type"] = getConnectionTypeBulkValue();
     }
     // Sample used invalid dropdown codes / unknown DTR / possibly mapped MSN.
-    if (String(row["Consumer Category"] ?? "").trim().toUpperCase() === "SCH") {
+    if (
+      String(row["Consumer Category"] ?? "")
+        .trim()
+        .toUpperCase() === "SCH"
+    ) {
       row["Consumer Category"] = getConsumerCategoryBulkValue();
     }
     if (String(row["Meter Phase"] ?? "").includes("4CT")) {
@@ -380,10 +381,7 @@ export function buildManualUiConsumerBulkRow(options?: {
 
   row["Consumer ID"] = consumerId;
   row["Consumer Name"] = `Auto ${label}`.slice(0, 20);
-  row["Email ID"] = `auto.${label.replace(/[^a-zA-Z0-9]/g, ".")}@example.com`.slice(
-    0,
-    50,
-  );
+  row["Email ID"] = `auto.${label.replace(/[^a-zA-Z0-9]/g, ".")}@example.com`.slice(0, 50);
   row["Mobile No."] = tenDigitMobile(`${label}-${consumerId}`);
   row["IVRS Number"] = consumerId;
   row["Account ID"] = consumerId;
@@ -402,7 +400,11 @@ export function buildManualUiConsumerBulkRow(options?: {
   if (!String(row["Connection Type"] ?? "").trim()) {
     row["Connection Type"] = getConnectionTypeBulkValue();
   }
-  if (String(row["Consumer Category"] ?? "").trim().toUpperCase() === "SCH") {
+  if (
+    String(row["Consumer Category"] ?? "")
+      .trim()
+      .toUpperCase() === "SCH"
+  ) {
     row["Consumer Category"] = getConsumerCategoryBulkValue();
   }
   if (String(row["Meter Phase"] ?? "").includes("4CT")) {
@@ -449,17 +451,15 @@ export function buildValidConsumerBulkRows(
   );
 }
 
-export function buildValidConsumerBulkRow(
-  options?: {
-    meterSerial?: string;
-    consumerId?: string;
-    ivrsNumber?: string;
-    accountId?: string;
-    nearestAcctId?: string;
-    label?: string;
-    allocateMeter?: boolean;
-  },
-): ConsumerBulkUploadRow {
+export function buildValidConsumerBulkRow(options?: {
+  meterSerial?: string;
+  consumerId?: string;
+  ivrsNumber?: string;
+  accountId?: string;
+  nearestAcctId?: string;
+  label?: string;
+  allocateMeter?: boolean;
+}): ConsumerBulkUploadRow {
   const today = isoToday();
   const label = options?.label ?? uniqueSuffix();
   bulkConsumerRowSequence += 1;
@@ -467,9 +467,7 @@ export function buildValidConsumerBulkRow(
   const consumerId = options?.consumerId ?? uniqueConsumerId();
   const meterSerial =
     options?.meterSerial ??
-    (options?.allocateMeter
-      ? nextBulkConsumerMeterSerial()
-      : peekBulkConsumerMeterSerial());
+    (options?.allocateMeter ? nextBulkConsumerMeterSerial() : peekBulkConsumerMeterSerial());
   const modem = uniqueModemIdentity(`${label}-${meterSerial}-${stamp}`);
 
   return {
@@ -477,10 +475,7 @@ export function buildValidConsumerBulkRow(
     "Consumer ID": consumerId,
     "Consumer Name": `Auto ${label}`.slice(0, 20),
     "Father Name": "Suresh Kumar",
-    "Email ID": `auto.${label.replace(/[^a-zA-Z0-9]/g, ".")}@example.com`.slice(
-      0,
-      50,
-    ),
+    "Email ID": `auto.${label.replace(/[^a-zA-Z0-9]/g, ".")}@example.com`.slice(0, 50),
     "Mobile No.": tenDigitMobile(stamp),
     "Land Line No.": "07312551234",
     Address: "12 MG Road, Indore",
@@ -581,6 +576,8 @@ export interface BulkUploadConsumersTestCase {
   buildUpload: () => Promise<BulkUploadFileInput>;
   envKeys?: string[];
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 function xlsxUpload(
@@ -589,8 +586,7 @@ function xlsxUpload(
 ): BulkUploadFileInput {
   return {
     fileName,
-    mimeType:
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     buffer,
   };
 }
@@ -605,12 +601,10 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     buildUpload: async () => ({
       fileName: "consumers-invalid.csv",
       mimeType: "text/csv",
-      buffer: Buffer.from(
-        `${CONSUMER_BULK_UPLOAD_COLUMNS.join(",")}\nCID1,Test`,
-        "utf8",
-      ),
+      buffer: Buffer.from(`${CONSUMER_BULK_UPLOAD_COLUMNS.join(",")}\nCID1,Test`, "utf8"),
     }),
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — required Excel columns must be present",
@@ -618,9 +612,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
     expectedStatus: 400,
     envKeys: hierarchyEnvKeys,
     buildUpload: async () => {
-      const columns = CONSUMER_BULK_UPLOAD_COLUMNS.filter(
-        (c) => c !== "Consumer ID",
-      );
+      const columns = CONSUMER_BULK_UPLOAD_COLUMNS.filter((c) => c !== "Consumer ID");
       const buffer = await buildConsumerBulkUploadXlsx(
         [buildValidConsumerBulkRow({ label: "missing-col" })],
         { columns: [...columns] },
@@ -628,6 +620,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer, "consumer-bulk-missing-columns.xlsx");
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — duplicate column names are rejected",
@@ -642,6 +635,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer, "consumer-bulk-duplicate-columns.xlsx");
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — the file must contain at least one data row",
@@ -652,6 +646,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer, "consumer-bulk-header-only.xlsx");
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — zone must be a known value",
@@ -665,6 +660,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — consumer ID is required",
@@ -678,6 +674,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — the same consumer ID cannot appear twice in the file",
@@ -698,6 +695,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — a consumer ID that already exists is rejected",
@@ -713,6 +711,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — nearest account ID must be valid",
@@ -728,6 +727,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative", "@backend-defect"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — nearest account ID is required",
@@ -743,6 +743,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — bill day cannot be greater than 28",
@@ -756,6 +757,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — bill day cannot be less than 1",
@@ -769,6 +771,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — consumer category must be valid",
@@ -782,6 +785,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — billing cycle must be valid",
@@ -795,6 +799,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — connection type must be valid",
@@ -808,6 +813,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — connection status must be valid",
@@ -821,6 +827,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — TOD must be valid",
@@ -834,6 +841,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — substation must belong to the selected zone",
@@ -850,6 +858,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — feeder must belong to the selected network",
@@ -863,6 +872,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — DTR must be valid",
@@ -876,6 +886,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — meter serial is required",
@@ -889,6 +900,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — meter serial must already exist",
@@ -904,6 +916,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative", "@backend-defect"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — meter must be active",
@@ -919,6 +932,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative", "@backend-defect"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — meter cannot already be assigned to another consumer",
@@ -934,6 +948,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative", "@backend-defect"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — main/sub meter type must be valid",
@@ -947,6 +962,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — meter phase must be valid",
@@ -960,6 +976,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — service point ID is required",
@@ -973,6 +990,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — initial reading must be greater than zero",
@@ -986,6 +1004,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — SIM number is required",
@@ -999,6 +1018,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — IMSI must contain digits only",
@@ -1012,6 +1032,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — meter mobile number must be 10 digits",
@@ -1025,6 +1046,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — IP address must be valid",
@@ -1038,6 +1060,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — modem serial is required",
@@ -1051,6 +1074,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — modem IMEI must be 15 digits",
@@ -1064,6 +1088,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative", "@backend-defect"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — duplicate MSN within file",
@@ -1078,6 +1103,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — at least two consumers are created from the file",
@@ -1093,7 +1119,15 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       );
       return xlsxUpload(buffer);
     },
-    tags: ["@smoke", "@master-data", "@bulk-upload-consumers", "@consumer", "@positive", "@backend-defect"],
+    tags: [
+      "@smoke",
+      "@master-data",
+      "@bulk-upload-consumers",
+      "@consumer",
+      "@positive",
+      "@backend-defect",
+    ],
+    nonEmptyExpected: true,
   },
   {
     testName: "Excel upload (consumers) — more than five consumers are created from the file",
@@ -1110,6 +1144,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@consumer", "@positive", "@backend-defect"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — a full sample Excel row is accepted",
@@ -1130,6 +1165,7 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       "@manual-ui-sample",
       "@backend-defect",
     ],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (consumers) — blank rows are ignored",
@@ -1167,5 +1203,6 @@ export const bulkUploadConsumersTestCases: BulkUploadConsumersTestCase[] = [
       return xlsxUpload(Buffer.from(arrayBuffer));
     },
     tags: ["@master-data", "@bulk-upload-consumers", "@consumer", "@positive", "@backend-defect"],
+    nonEmptyExpected: false,
   },
 ];

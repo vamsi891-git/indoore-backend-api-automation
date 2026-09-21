@@ -45,6 +45,8 @@ export interface SubstationMasterTestCase {
   query: SubstationMasterQuery;
   tags: string[];
   searchTerm?: string;
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export const substationMasterTestCases: SubstationMasterTestCase[] = [
@@ -52,16 +54,19 @@ export const substationMasterTestCases: SubstationMasterTestCase[] = [
     testName: "Substation list — first page shows columns, records, and page numbers",
     query: { ...substationMasterDefaultQuery },
     tags: ["@smoke", "@master-data", "@substation-master"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Substation list — page 2 shows the next set of records",
     query: { ...substationMasterPage2Query },
     tags: ["@master-data", "@substation-master"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Substation list — a smaller page size shows fewer records",
     query: { ...substationMasterSmallPageQuery },
     tags: ["@master-data", "@substation-master"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Substation list — search finds the substation name",
@@ -70,16 +75,19 @@ export const substationMasterTestCases: SubstationMasterTestCase[] = [
       q: resolveSubstationMasterSearchTerm(),
     },
     tags: ["@master-data", "@substation-master"],
+    nonEmptyExpected: false,
     searchTerm: resolveSubstationMasterSearchTerm(),
   },
   {
     testName: "Substation list — an empty search shows the full list",
     query: { ...substationMasterDefaultQuery, q: "" },
     tags: ["@master-data", "@substation-master", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Substation list — a page past the last page shows no records",
     query: { page: 99999, limit: 20 },
     tags: ["@master-data", "@substation-master", "@edge"],
+    nonEmptyExpected: false,
   },
 ];

@@ -1,13 +1,9 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
 import { test as authTest } from "../../../fixtures/auth.fixture";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { CreateSubmissionApi } from "../Api/create-submission.api";
 import { ConsumerDetailApi } from "../Api/consumer-detail.api";
-import {
-  buildCreateSubmissionPayload,
-  createSubmissionData,
-} from "../Data/create-submission.data";
+import { buildCreateSubmissionPayload, createSubmissionData } from "../Data/create-submission.data";
 import {
   MeterReplacementCommonValidator,
   meterReplacementAuthData,
@@ -16,11 +12,8 @@ import {
 } from "../Validator/meter-replacement-common.validator";
 import { ensureUsableConsumer } from "../utils/create-submission.helper";
 import { resolveActiveReplacementNewMeter } from "../utils/meter-replacement-bulk-runtime.helper";
-import {
-  pauseMs,
-  safeResponseJson,
-  withRateLimitRetry,
-} from "../utils/response.helper";
+import { pauseMs, safeResponseJson, withRateLimitRetry } from "../utils/response.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 // SKIPPED: add consumer/DTR/meter/user/role/bulk-upload/meter-replacement create scenarios are commented out (mutating).
 test.describe.skip("Meter Replacement Create Submission API — Negative & Edge", () => {
@@ -31,7 +24,7 @@ test.describe.skip("Meter Replacement Create Submission API — Negative & Edge"
     },
     async ({ authenticatedApi }) => {
       const api = new CreateSubmissionApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
       const { rawResponse, responseBody } = await api.createSubmission({});
 
@@ -39,9 +32,7 @@ test.describe.skip("Meter Replacement Create Submission API — Negative & Edge"
         expect(rawResponse.status()).toBe(400);
       });
       validation.execute("Error", () =>
-        MeterReplacementCommonValidator.validateErrorEnvelope(responseBody, [
-          "VALIDATION_ERROR",
-        ]),
+        MeterReplacementCommonValidator.validateErrorEnvelope(responseBody, ["VALIDATION_ERROR"]),
       );
 
       validation.printSummary("Create Submission — Empty Body", 0);
@@ -55,7 +46,7 @@ test.describe.skip("Meter Replacement Create Submission API — Negative & Edge"
     },
     async ({ authenticatedApi }) => {
       const api = new CreateSubmissionApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
       const { rawResponse, responseBody } = await api.createSubmission(
         createSubmissionData.zeroIdsPayload,
@@ -65,9 +56,7 @@ test.describe.skip("Meter Replacement Create Submission API — Negative & Edge"
         expect(rawResponse.status()).toBe(400);
       });
       validation.execute("Error", () =>
-        MeterReplacementCommonValidator.validateErrorEnvelope(responseBody, [
-          "VALIDATION_ERROR",
-        ]),
+        MeterReplacementCommonValidator.validateErrorEnvelope(responseBody, ["VALIDATION_ERROR"]),
       );
 
       validation.printSummary("Create Submission — Zero IDs", 0);
@@ -81,7 +70,7 @@ test.describe.skip("Meter Replacement Create Submission API — Negative & Edge"
     },
     async ({ authenticatedApi }) => {
       const api = new CreateSubmissionApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
       const payload = buildCreateSubmissionPayload({
         consumerId: createSubmissionData.invalidConsumerId,
@@ -91,16 +80,13 @@ test.describe.skip("Meter Replacement Create Submission API — Negative & Edge"
         newMeterSerial: createSubmissionData.unknownNewMeterSerial,
       });
 
-      const { rawResponse, responseBody } =
-        await api.createSubmission(payload);
+      const { rawResponse, responseBody } = await api.createSubmission(payload);
 
       validation.execute("Status", () => {
         expect(rawResponse.status()).toBe(404);
       });
       validation.execute("Error", () =>
-        MeterReplacementCommonValidator.validateErrorEnvelope(responseBody, [
-          "CONSUMER_NOT_FOUND",
-        ]),
+        MeterReplacementCommonValidator.validateErrorEnvelope(responseBody, ["CONSUMER_NOT_FOUND"]),
       );
 
       validation.printSummary("Create Submission — Consumer Not Found", 0);
@@ -115,18 +101,14 @@ test.describe.skip("Meter Replacement Create Submission API — Negative & Edge"
     async ({ authenticatedApi }) => {
       const detailApi = new ConsumerDetailApi(authenticatedApi);
       const createApi = new CreateSubmissionApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
-      const detail = await detailApi.getConsumerDetail(
-        createSubmissionData.ineligibleConsumerId,
-      );
+      const detail = await detailApi.getConsumerDetail(createSubmissionData.ineligibleConsumerId);
       const d = detail.responseBody.data;
 
       // Must be a live ineligible consumer — never substitute an eligible one.
       test.skip(
-        detail.rawResponse.status() !== 200 ||
-          !d ||
-          d.replacementEligible === true,
+        detail.rawResponse.status() !== 200 || !d || d.replacementEligible === true,
         `Consumer ${createSubmissionData.ineligibleConsumerId} is eligible or missing — set METER_REPLACEMENT_PENDING_CONSUMER_OLD_SERIAL / a known ineligible id`,
       );
 
@@ -144,8 +126,7 @@ test.describe.skip("Meter Replacement Create Submission API — Negative & Edge"
         longitude: Number(d!.longitude) || createSubmissionData.defaultLongitude,
       });
 
-      const { rawResponse, responseBody } =
-        await createApi.createSubmission(payload);
+      const { rawResponse, responseBody } = await createApi.createSubmission(payload);
 
       validation.execute("Status", () => {
         expect(rawResponse.status()).toBe(409);
@@ -167,7 +148,7 @@ test.describe.skip("Meter Replacement Create Submission API — Negative & Edge"
     },
     async ({ authenticatedApi }) => {
       const api = new CreateSubmissionApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
       const consumer = await ensureUsableConsumer(authenticatedApi);
       const payload = buildCreateSubmissionPayload({
@@ -177,8 +158,7 @@ test.describe.skip("Meter Replacement Create Submission API — Negative & Edge"
         newMeterLookupId: 1,
         newMeterSerial: createSubmissionData.unknownNewMeterSerial,
         latitude: Number(consumer.latitude) || createSubmissionData.defaultLatitude,
-        longitude:
-          Number(consumer.longitude) || createSubmissionData.defaultLongitude,
+        longitude: Number(consumer.longitude) || createSubmissionData.defaultLongitude,
       });
 
       const { rawResponse, responseBody } = await api.createSubmission(payload);
@@ -187,15 +167,11 @@ test.describe.skip("Meter Replacement Create Submission API — Negative & Edge"
         expect(rawResponse.status()).toBe(400);
       });
       validation.execute("Error", () =>
-        MeterReplacementCommonValidator.validateErrorEnvelope(responseBody, [
-          "VALIDATION_ERROR",
-        ]),
+        MeterReplacementCommonValidator.validateErrorEnvelope(responseBody, ["VALIDATION_ERROR"]),
       );
       validation.execute("Message", () => {
         const err = responseBody as MeterReplacementErrorBody;
-        expect(String(err.error?.message ?? "")).toMatch(
-          /new meter not found/i,
-        );
+        expect(String(err.error?.message ?? "")).toMatch(/new meter not found/i);
       });
 
       validation.printSummary("Create Submission — New Meter Not Found", 0);
@@ -209,20 +185,17 @@ test.describe.skip("Meter Replacement Create Submission API — Negative & Edge"
     },
     async ({ authenticatedApi }) => {
       const api = new CreateSubmissionApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
       const consumer = await ensureUsableConsumer(authenticatedApi);
       const payload = buildCreateSubmissionPayload({
         consumerId: consumer.consumerId,
         oldMeterLookupId: consumer.oldMeterLookupId,
         oldMeterSerial: createSubmissionData.mismatchedOldMeterSerial,
-        newMeterLookupId:
-          createSubmissionData.activeReplacementNewMeter.newMeterLookupId,
-        newMeterSerial:
-          createSubmissionData.activeReplacementNewMeter.newMeterSerial,
+        newMeterLookupId: createSubmissionData.activeReplacementNewMeter.newMeterLookupId,
+        newMeterSerial: createSubmissionData.activeReplacementNewMeter.newMeterSerial,
         latitude: Number(consumer.latitude) || createSubmissionData.defaultLatitude,
-        longitude:
-          Number(consumer.longitude) || createSubmissionData.defaultLongitude,
+        longitude: Number(consumer.longitude) || createSubmissionData.defaultLongitude,
       });
 
       const { rawResponse, responseBody } = await api.createSubmission(payload);
@@ -231,15 +204,11 @@ test.describe.skip("Meter Replacement Create Submission API — Negative & Edge"
         expect(rawResponse.status()).toBe(400);
       });
       validation.execute("Error", () =>
-        MeterReplacementCommonValidator.validateErrorEnvelope(responseBody, [
-          "VALIDATION_ERROR",
-        ]),
+        MeterReplacementCommonValidator.validateErrorEnvelope(responseBody, ["VALIDATION_ERROR"]),
       );
       validation.execute("Message", () => {
         const err = responseBody as MeterReplacementErrorBody;
-        expect(String(err.error?.message ?? "")).toMatch(
-          /old meter not found/i,
-        );
+        expect(String(err.error?.message ?? "")).toMatch(/old meter not found/i);
       });
 
       validation.printSummary("Create Submission — Old Meter Mismatch", 0);
@@ -253,7 +222,7 @@ test.describe.skip("Meter Replacement Create Submission API — Negative & Edge"
     },
     async ({ authenticatedApi }) => {
       const api = new CreateSubmissionApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
       const activeNew = await resolveActiveReplacementNewMeter(authenticatedApi);
       test.skip(
@@ -269,8 +238,7 @@ test.describe.skip("Meter Replacement Create Submission API — Negative & Edge"
         newMeterLookupId: activeNew!.newMeterLookupId,
         newMeterSerial: activeNew!.newMeterSerial,
         latitude: Number(consumer.latitude) || createSubmissionData.defaultLatitude,
-        longitude:
-          Number(consumer.longitude) || createSubmissionData.defaultLongitude,
+        longitude: Number(consumer.longitude) || createSubmissionData.defaultLongitude,
       });
 
       const { rawResponse, responseBody } = await api.createSubmission(payload);
@@ -279,21 +247,14 @@ test.describe.skip("Meter Replacement Create Submission API — Negative & Edge"
         expect(rawResponse.status()).toBe(400);
       });
       validation.execute("Error", () =>
-        MeterReplacementCommonValidator.validateErrorEnvelope(responseBody, [
-          "VALIDATION_ERROR",
-        ]),
+        MeterReplacementCommonValidator.validateErrorEnvelope(responseBody, ["VALIDATION_ERROR"]),
       );
       validation.execute("Message", () => {
         const err = responseBody as MeterReplacementErrorBody;
-        expect(String(err.error?.message ?? "")).toMatch(
-          /already used in an active replacement/i,
-        );
+        expect(String(err.error?.message ?? "")).toMatch(/already used in an active replacement/i);
       });
 
-      validation.printSummary(
-        "Create Submission — New Meter In Active Replacement",
-        0,
-      );
+      validation.printSummary("Create Submission — New Meter In Active Replacement", 0);
     },
   );
 
@@ -303,7 +264,7 @@ test.describe.skip("Meter Replacement Create Submission API — Negative & Edge"
       tag: ["@meter-replacement", "@create-submission", "@negative"],
     },
     async ({ authenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const path = meterReplacementPaths.createSubmission;
 
       for (const method of ["GET", "PUT", "PATCH", "DELETE"] as const) {
@@ -321,9 +282,7 @@ test.describe.skip("Meter Replacement Create Submission API — Negative & Edge"
         });
 
         validation.execute(`${method} rejected`, () =>
-          MeterReplacementCommonValidator.validateDisallowedMethodRejected(
-            rawResponse.status(),
-          ),
+          MeterReplacementCommonValidator.validateDisallowedMethodRejected(rawResponse.status()),
         );
       }
 
@@ -336,24 +295,17 @@ authTest.describe("Meter Replacement Create Submission API — Auth Negative", (
   authTest(
     "Missing Authorization returns 401",
     {
-      tag: [
-        "@meter-replacement",
-        "@create-submission",
-        "@negative",
-        "@auth",
-      ],
+      tag: ["@meter-replacement", "@create-submission", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
       const rawResponse = await withRateLimitRetry(() =>
         unauthenticatedApi.post(meterReplacementPaths.createSubmission, {
           data: createSubmissionData.zeroIdsPayload,
         }),
       );
-      const responseBody = await safeResponseJson<MeterReplacementErrorBody>(
-        rawResponse,
-      );
+      const responseBody = await safeResponseJson<MeterReplacementErrorBody>(rawResponse);
 
       validation.execute("Unauthorized", () =>
         MeterReplacementCommonValidator.validateUnauthorizedError(
@@ -369,15 +321,10 @@ authTest.describe("Meter Replacement Create Submission API — Auth Negative", (
   authTest(
     "Invalid Bearer token returns 401",
     {
-      tag: [
-        "@meter-replacement",
-        "@create-submission",
-        "@negative",
-        "@auth",
-      ],
+      tag: ["@meter-replacement", "@create-submission", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
       const cases = [
         createSubmissionData.invalidBearerToken,
@@ -392,9 +339,7 @@ authTest.describe("Meter Replacement Create Submission API — Auth Negative", (
             data: createSubmissionData.zeroIdsPayload,
           }),
         );
-        const responseBody = await safeResponseJson<MeterReplacementErrorBody>(
-          rawResponse,
-        );
+        const responseBody = await safeResponseJson<MeterReplacementErrorBody>(rawResponse);
         validation.execute(`Unauthorized (${authorization.slice(0, 20)})`, () =>
           MeterReplacementCommonValidator.validateUnauthorizedError(
             rawResponse.status(),
@@ -413,15 +358,10 @@ authTest.describe("Meter Replacement Create Submission API — Auth Negative", (
   authTest(
     "Auth negatives reject with expected codes",
     {
-      tag: [
-        "@meter-replacement",
-        "@create-submission",
-        "@negative",
-        "@auth",
-      ],
+      tag: ["@meter-replacement", "@create-submission", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
 
       const rawResponse = await withRateLimitRetry(() =>
         unauthenticatedApi.post(meterReplacementPaths.createSubmission, {
@@ -431,9 +371,7 @@ authTest.describe("Meter Replacement Create Submission API — Auth Negative", (
           data: {},
         }),
       );
-      const responseBody = await safeResponseJson<MeterReplacementErrorBody>(
-        rawResponse,
-      );
+      const responseBody = await safeResponseJson<MeterReplacementErrorBody>(rawResponse);
 
       validation.execute("Unauthorized envelope", () =>
         MeterReplacementCommonValidator.validateUnauthorizedError(

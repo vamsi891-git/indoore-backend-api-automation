@@ -1,5 +1,4 @@
 import { test } from "../../../fixtures/observability.fixture";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { REVENUE_PROTECTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { assertZodSchema } from "../../../core/utils/zod-validation.helper";
 import { ApiErrorResponseSchema } from "../../../core/schemas/api-response.schemas";
@@ -12,6 +11,7 @@ import {
   type RevenueErrorBody,
 } from "../Validator/revenue-common.validator";
 import { resolveAberrationEntryIvrsForUpdate } from "../utils/aberration-entry-by-ivrs.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 test.describe("Revenue Protection — Aberration Entry By IVRS Negative", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(REVENUE_PROTECTION_TEST_TIMEOUT_MS);
@@ -26,12 +26,11 @@ test.describe("Revenue Protection — Aberration Entry By IVRS Negative", () => 
             ? negativeCase.ivrsNo
             : await resolveAberrationEntryIvrsForUpdate(authenticatedApi);
         const api = new AberrationEntryApi(authenticatedApi);
-        const validation = new ValidationEngine(obs);
-        const { rawResponse, responseBody } =
-          await api.patchAberrationEntryByIvrs(
-            ivrsNo,
-            negativeCase.payload as AberrationEntryUpdatePayload,
-          );
+        const validation = new ApiValidationHelper(obs);
+        const { rawResponse, responseBody } = await api.patchAberrationEntryByIvrs(
+          ivrsNo,
+          negativeCase.payload as AberrationEntryUpdatePayload,
+        );
         const body = responseBody as RevenueErrorBody;
         validation.execute("Expected status", () => {
           const allowed = negativeCase.expectedStatuses as readonly number[];
@@ -42,11 +41,9 @@ test.describe("Revenue Protection — Aberration Entry By IVRS Negative", () => 
           }
         });
         validation.execute("Rejected with error envelope", () =>
-          RevenueCommonValidator.validateErrorEnvelope(
-            rawResponse.status(),
-            body,
-            [negativeCase.expectedErrorCode],
-          ),
+          RevenueCommonValidator.validateErrorEnvelope(rawResponse.status(), body, [
+            negativeCase.expectedErrorCode,
+          ]),
         );
         validation.execute("ErrorResponseSchema", () =>
           assertZodSchema(ApiErrorResponseSchema, body),

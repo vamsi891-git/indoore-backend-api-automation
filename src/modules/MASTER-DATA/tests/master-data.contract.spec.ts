@@ -8,7 +8,7 @@ import { test, expect } from "../../../fixtures/observability.fixture";
 import {
   assertContractSnapshot,
   buildLookupItemsContractSnapshot,
-} from "../../../core/contract/contract-snapshot.helper";
+} from "../../../extras/contract/contract-snapshot.helper";
 import { MeterMasterApi } from "../Api/meter-master.api";
 import { DtrMasterApi } from "../Api/dtr-master.api";
 import { ConsumerMasterApi } from "../Api/consumer-master.api";
@@ -16,16 +16,11 @@ import { FeederMasterApi } from "../Api/feeder-master.api";
 import { SubstationMasterApi } from "../Api/substation-master.api";
 import { MeterCommunicationStatusApi } from "../Api/meter-communication-status.api";
 import { MasterDataAuditLogsApi } from "../Api/master-data-audit-logs.api";
-import {
-  masterDataDefaultQuery,
-  meterMasterDefaultQuery,
-} from "../Data/master-data.common.data";
+import { masterDataDefaultQuery, meterMasterDefaultQuery } from "../Data/master-data.common.data";
 import { masterDataAuditLogsDefaultQuery } from "../Data/master-data-audit-logs.data";
 
 function asRecord(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === "object"
-    ? (value as Record<string, unknown>)
-    : {};
+  return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
 function listRows(data: Record<string, unknown>): unknown[] {
@@ -141,10 +136,9 @@ test.describe("Master data — column names in the response", () => {
     "Meter communication — column names in the response stay the same",
     { tag: ["@contract-snapshot", "@master-data", "@meter-communication"] },
     async ({ authenticatedApi }) => {
-      const { responseBody, rawResponse } =
-        await new MeterCommunicationStatusApi(
-          authenticatedApi,
-        ).getMeterCommunicationStatus({ ...masterDataDefaultQuery });
+      const { responseBody, rawResponse } = await new MeterCommunicationStatusApi(
+        authenticatedApi,
+      ).getMeterCommunicationStatus({ ...masterDataDefaultQuery });
       expect(rawResponse.status()).toBe(200);
       await snapshotList(
         "master-data/meter-communication",
@@ -162,11 +156,7 @@ test.describe("Master data — column names in the response", () => {
         authenticatedApi,
       ).getAuditLogs({ ...masterDataAuditLogsDefaultQuery });
       expect(rawResponse.status()).toBe(200);
-      await snapshotList(
-        "master-data/audit-logs",
-        "/indore/master-data/audit-logs",
-        responseBody,
-      );
+      await snapshotList("master-data/audit-logs", "/indore/master-data/audit-logs", responseBody);
     },
   );
 });

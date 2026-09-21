@@ -6,11 +6,9 @@ import type {
   ConsumerPhaseDistributionScenario,
 } from "../Mapper/consumerphasedistribution.mapper";
 
-export const consumerPhaseDistributionMaxResponseTimeMs =
-  MASTER_DATA_MAX_RESPONSE_TIME_MS;
+export const consumerPhaseDistributionMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 
-export const consumerPhaseDistributionSuccessMessage =
-  "Data fetched successfully";
+export const consumerPhaseDistributionSuccessMessage = "Data fetched successfully";
 
 export {
   dtrUnbalanceUnauthorizedMessage as consumerPhaseDistributionUnauthorizedMessage,
@@ -32,10 +30,7 @@ export const CONSUMER_PHASE_DISTRIBUTION_COLUMN_KEYS = [
  * Query phase → metrics `phaseWiseConsumer` keys (dashboardmetrics live shape).
  * Backend: listPhaseDrilldownRows + phaseMetricsShortNamePredicate.
  */
-export const CONSUMER_PHASE_DISTRIBUTION_METRICS_KEY: Record<
-  ConsumerPhase,
-  string
-> = {
+export const CONSUMER_PHASE_DISTRIBUTION_METRICS_KEY: Record<ConsumerPhase, string> = {
   "1 PH": "1ph",
   "3 PH WC": "3 ph wc",
   "3 PH 4 CT": "3 ph ct",
@@ -53,12 +48,7 @@ const columns = [
 ];
 
 function sampleRow(phase: ConsumerPhase) {
-  const meterPhase =
-    phase === "3 PH WC"
-      ? "3PH WC"
-      : phase === "3 PH 4 CT"
-        ? "3PH 4CT"
-        : phase;
+  const meterPhase = phase === "3 PH WC" ? "3PH WC" : phase === "3 PH 4 CT" ? "3PH 4CT" : phase;
   return {
     id: "meter-10",
     slNo: 1,
@@ -75,9 +65,7 @@ function sampleRow(phase: ConsumerPhase) {
   };
 }
 
-function withRowsContract(
-  phase: ConsumerPhase,
-): ConsumerPhaseDistributionResponse {
+function withRowsContract(phase: ConsumerPhase): ConsumerPhaseDistributionResponse {
   return {
     success: true,
     data: {
@@ -90,19 +78,17 @@ function withRowsContract(
 }
 
 export const consumerPhaseDistributionContract1ph = withRowsContract("1 PH");
-export const consumerPhaseDistributionContract3phWc =
-  withRowsContract("3 PH WC");
+export const consumerPhaseDistributionContract3phWc = withRowsContract("3 PH WC");
 
-export const consumerPhaseDistributionContract1phEmpty: ConsumerPhaseDistributionResponse =
-  {
-    success: true,
-    data: {
-      columns: [...columns],
-      rows: [],
-      pagination: { page: 1, limit: 20, total: 0, totalPages: 0 },
-    },
-    message: consumerPhaseDistributionSuccessMessage,
-  };
+export const consumerPhaseDistributionContract1phEmpty: ConsumerPhaseDistributionResponse = {
+  success: true,
+  data: {
+    columns: [...columns],
+    rows: [],
+    pagination: { page: 1, limit: 20, total: 0, totalPages: 0 },
+  },
+  message: consumerPhaseDistributionSuccessMessage,
+};
 
 export interface ConsumerPhaseDistributionTestCase {
   testName: string;
@@ -110,11 +96,11 @@ export interface ConsumerPhaseDistributionTestCase {
   expectedStatus?: number;
   isContractFixture?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
-export function phaseForScenario(
-  scenario: ConsumerPhaseDistributionScenario,
-): ConsumerPhase {
+export function phaseForScenario(scenario: ConsumerPhaseDistributionScenario): ConsumerPhase {
   switch (scenario) {
     case "dev_live_3ph_wc":
     case "contract_3ph_wc":
@@ -157,54 +143,62 @@ export function resolveConsumerPhaseDistributionContractBody(
   }
 }
 
-export const consumerPhaseDistributionTestCases: ConsumerPhaseDistributionTestCase[] =
-  [
-    {
-      testName: "Consumers by meter phase — single-phase meters",
-      scenario: "dev_live_1ph",
-      tags: ["@smoke", "@dashboard", "@consumer-phase-distribution"],
-    },
-    {
-      testName: "Consumers by meter phase — three-phase whole-current meters",
-      scenario: "dev_live_3ph_wc",
-      tags: ["@dashboard", "@consumer-phase-distribution"],
-    },
-    {
-      testName: "Consumers by meter phase — three-phase CT meters",
-      scenario: "dev_live_3ph_4ct",
-      tags: ["@dashboard", "@consumer-phase-distribution"],
-    },
-    {
-      testName: "Consumers by meter phase — high-tension meters",
-      scenario: "dev_live_ht",
-      tags: ["@dashboard", "@consumer-phase-distribution"],
-    },
-    {
-      testName: "Consumers by meter phase — page 2 still shows a valid list",
-      scenario: "dev_live_page_limit",
-      tags: ["@dashboard", "@consumer-phase-distribution", "@edge"],
-    },
-    {
-      testName: "Consumers by meter phase — extra unused filters are ignored",
-      scenario: "dev_ignore_unknown_query",
-      tags: ["@dashboard", "@consumer-phase-distribution", "@edge"],
-    },
-    {
-      testName: "Saved example — 1 PH with rows (offline)",
-      scenario: "contract_1ph",
-      isContractFixture: true,
-      tags: ["@contract", "@dashboard", "@consumer-phase-distribution"],
-    },
-    {
-      testName: "Saved example — 3 PH WC with rows (offline)",
-      scenario: "contract_3ph_wc",
-      isContractFixture: true,
-      tags: ["@contract", "@dashboard", "@consumer-phase-distribution"],
-    },
-    {
-      testName: "Saved example — 1 PH empty page (offline)",
-      scenario: "contract_1ph_empty",
-      isContractFixture: true,
-      tags: ["@contract", "@dashboard", "@consumer-phase-distribution"],
-    },
-  ];
+export const consumerPhaseDistributionTestCases: ConsumerPhaseDistributionTestCase[] = [
+  {
+    testName: "Consumers by meter phase — single-phase meters",
+    scenario: "dev_live_1ph",
+    tags: ["@smoke", "@dashboard", "@consumer-phase-distribution"],
+    nonEmptyExpected: true,
+  },
+  {
+    testName: "Consumers by meter phase — three-phase whole-current meters",
+    scenario: "dev_live_3ph_wc",
+    tags: ["@dashboard", "@consumer-phase-distribution"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumers by meter phase — three-phase CT meters",
+    scenario: "dev_live_3ph_4ct",
+    tags: ["@dashboard", "@consumer-phase-distribution"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumers by meter phase — high-tension meters",
+    scenario: "dev_live_ht",
+    tags: ["@dashboard", "@consumer-phase-distribution"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumers by meter phase — page 2 still shows a valid list",
+    scenario: "dev_live_page_limit",
+    tags: ["@dashboard", "@consumer-phase-distribution", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumers by meter phase — extra unused filters are ignored",
+    scenario: "dev_ignore_unknown_query",
+    tags: ["@dashboard", "@consumer-phase-distribution", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Saved example — 1 PH with rows (offline)",
+    scenario: "contract_1ph",
+    isContractFixture: true,
+    tags: ["@contract", "@dashboard", "@consumer-phase-distribution"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Saved example — 3 PH WC with rows (offline)",
+    scenario: "contract_3ph_wc",
+    isContractFixture: true,
+    tags: ["@contract", "@dashboard", "@consumer-phase-distribution"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Saved example — 1 PH empty page (offline)",
+    scenario: "contract_1ph_empty",
+    isContractFixture: true,
+    tags: ["@contract", "@dashboard", "@consumer-phase-distribution"],
+    nonEmptyExpected: false,
+  },
+];

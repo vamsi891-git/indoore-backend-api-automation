@@ -1,5 +1,5 @@
 import type pg from "pg";
-import { queryReadOnly, queryScalar } from "../../../core/db/postgres.client";
+import { queryReadOnly, queryScalar } from "../../../extras/db/postgres.client";
 import {
   ENERGY_AUDIT_DTR_BY_NAME_UNDER_ROOT_SQL,
   ENERGY_AUDIT_DTR_COUNT_UNDER_ROOT_SQL,
@@ -13,9 +13,7 @@ const DEFAULT_DTR_METER_TYPE_TBL_REF_ID = 2;
 
 export function resolveDtrMeterTypeTblRefId(): number {
   const fromEnv = Number(process.env.DTR_METER_TYPE_TBL_REF_ID ?? "");
-  return Number.isFinite(fromEnv) && fromEnv > 0
-    ? fromEnv
-    : DEFAULT_DTR_METER_TYPE_TBL_REF_ID;
+  return Number.isFinite(fromEnv) && fromEnv > 0 ? fromEnv : DEFAULT_DTR_METER_TYPE_TBL_REF_ID;
 }
 
 export type DbEnergyAuditDtrRow = {
@@ -31,9 +29,7 @@ export async function countEnergyAuditDtrsUnderRoot(
   networkLookupId: number,
 ): Promise<number> {
   return (
-    (await queryScalar<number>(pool, ENERGY_AUDIT_DTR_COUNT_UNDER_ROOT_SQL, [
-      networkLookupId,
-    ])) ?? 0
+    (await queryScalar<number>(pool, ENERGY_AUDIT_DTR_COUNT_UNDER_ROOT_SQL, [networkLookupId])) ?? 0
   );
 }
 

@@ -1,15 +1,14 @@
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { REVENUE_PROTECTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { applyAllureTestCaseId } from "../../../core/utils/allure-test-case.helper";
 import {
   assertContractSnapshot,
   buildGridContractSnapshot,
-} from "../../../core/contract/contract-snapshot.helper";
+} from "../../../extras/contract/contract-snapshot.helper";
 import { AtrZoneApi } from "../Api/atr-zone.api";
 import { atrZoneDefaultQuery } from "../Data/atr-zone.data";
 import { AtrZoneMapper } from "../Mapper/atr-zone.mapper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 /**
  * Contract snapshot for ATR Zone column metadata.
@@ -30,10 +29,9 @@ test.describe("Revenue Protection — ATR Zone Contract Snapshot", () => {
       await applyAllureTestCaseId("IND-RPT-ATZ-CONTRACT-001");
 
       const api = new AtrZoneApi(authenticatedApi);
-      const validation = new ValidationEngine();
-      const assert = new AssertionEngine();
-      const { rawResponse, responseBody, responseTime } =
-        await api.getAtrZone(atrZoneDefaultQuery);
+      const validation = new ApiValidationHelper();
+      const assert = new ApiValidationHelper();
+      const { rawResponse, responseBody, responseTime } = await api.getAtrZone(atrZoneDefaultQuery);
       const mapped = AtrZoneMapper.mapData(responseBody.data);
 
       validation.execute("Status Validation", () =>
@@ -50,10 +48,7 @@ test.describe("Revenue Protection — ATR Zone Contract Snapshot", () => {
         rowFieldKeys,
       });
 
-      await assertContractSnapshot(
-        "revenue-protection/atr-zone-columns",
-        snapshot,
-      );
+      await assertContractSnapshot("revenue-protection/atr-zone-columns", snapshot);
 
       validation.printSummary(
         "IND-RPT-ATZ-CONTRACT-001 — ATR Zone columns contract snapshot",

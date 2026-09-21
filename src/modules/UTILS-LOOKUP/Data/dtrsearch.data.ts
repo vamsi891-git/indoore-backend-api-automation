@@ -30,9 +30,7 @@ export type DtrSearchScenario =
   | "negative_page_zero"
   | "negative_limit_zero";
 
-export function resolveDtrSearchQuery(
-  scenario: DtrSearchScenario,
-): DtrSearchQuery {
+export function resolveDtrSearchQuery(scenario: DtrSearchScenario): DtrSearchQuery {
   switch (scenario) {
     case "smoke_default":
       return { page: 1, limit: 20 };
@@ -51,6 +49,8 @@ export function resolveDtrSearchQuery(
 
 export interface DtrSearchTestCase extends LookupTestCase {
   scenario: DtrSearchScenario;
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export const dtrSearchTestCases: DtrSearchTestCase[] = [
@@ -58,27 +58,32 @@ export const dtrSearchTestCases: DtrSearchTestCase[] = [
     testName: "DTR search — first page shows columns and records",
     scenario: "smoke_default",
     tags: ["@smoke", "@utils-lookup", "@dtr-search"],
+    nonEmptyExpected: true,
   },
   {
     testName: "DTR search — showing 1 per page returns at most 1 record",
     scenario: "edge_limit_one",
     tags: ["@utils-lookup", "@dtr-search", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR search — a page past the last page shows no records",
     scenario: "edge_page_beyond",
     tags: ["@utils-lookup", "@dtr-search", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR search — page 0 is rejected",
     scenario: "negative_page_zero",
     expectedStatus: 400,
     tags: ["@utils-lookup", "@dtr-search", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR search — limit 0 is rejected",
     scenario: "negative_limit_zero",
     expectedStatus: 400,
     tags: ["@utils-lookup", "@dtr-search", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

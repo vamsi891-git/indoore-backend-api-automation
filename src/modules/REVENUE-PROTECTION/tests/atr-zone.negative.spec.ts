@@ -1,23 +1,29 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { REVENUE_PROTECTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { assertZodSchema } from "../../../core/utils/zod-validation.helper";
 import { ApiErrorResponseSchema } from "../../../core/schemas/api-response.schemas";
 import { REVENUE_PROTECTION_ATRZONE_PATH } from "../Api/atr-zone.api";
 import { atrZoneNegativeCases } from "../Data/atr-zone-negative.data";
-import {RevenueCommonValidator,type RevenueErrorBody,} from "../Validator/revenue-common.validator";
+import {
+  RevenueCommonValidator,
+  type RevenueErrorBody,
+} from "../Validator/revenue-common.validator";
 import { applyAllureTestCaseId } from "../../../core/utils/allure-test-case.helper";
 import { AtrZoneMapper } from "../Mapper/atr-zone.mapper";
 import type { AtrZoneRawData } from "../Mapper/atr-zone.mapper";
-import {buildRevenueProtectionUrl,getRevenueProtectionWithRetry,} from "../utils/revenue-protection-request.helper";
+import {
+  buildRevenueProtectionUrl,
+  getRevenueProtectionWithRetry,
+} from "../utils/revenue-protection-request.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 test.describe("Revenue Protection — ATR Zone Negative", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(REVENUE_PROTECTION_TEST_TIMEOUT_MS);
   for (const negativeCase of atrZoneNegativeCases) {
     test(negativeCase.testName, { tag: negativeCase.tags }, async ({ authenticatedApi }) => {
       await applyAllureTestCaseId(negativeCase.testCaseId);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const { response: rawResponse } = await getRevenueProtectionWithRetry(
         authenticatedApi,
         buildRevenueProtectionUrl(REVENUE_PROTECTION_ATRZONE_PATH, negativeCase.params),

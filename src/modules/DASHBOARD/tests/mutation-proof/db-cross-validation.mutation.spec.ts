@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { compareApiToDb } from "../../../../core/db/db-compare.engine";
+import { compareApiToDb } from "../../../../extras/db/db-compare.engine";
 import { compareDashboardMetricMissingRow } from "../../Db/dashboard-db-compare";
 import { DashboardDbValidator } from "../../Db/dashboard-db.validator";
 
@@ -25,9 +25,7 @@ test.describe("Mutation proof — DB cross-validation (fixture)", () => {
     "MUT-DB-DB-002 — assertApiLteDb fails when API exceeds DB",
     { tag: ["@mutation-proof", "@dashboard"] },
     async () => {
-      expect(() =>
-        DashboardDbValidator.assertApiLteDb("dtrs", 50, 10),
-      ).toThrow(/exceeds|50|10/i);
+      expect(() => DashboardDbValidator.assertApiLteDb("dtrs", 50, 10)).toThrow(/exceeds|50|10/i);
     },
   );
 
@@ -35,9 +33,7 @@ test.describe("Mutation proof — DB cross-validation (fixture)", () => {
     "MUT-DB-DB-003 — missing row helper throws",
     { tag: ["@mutation-proof", "@dashboard"] },
     async () => {
-      expect(() => compareDashboardMetricMissingRow()).toThrow(
-        /missing|L_Network_Lookup/i,
-      );
+      expect(() => compareDashboardMetricMissingRow()).toThrow(/missing|L_Network_Lookup/i);
     },
   );
 });

@@ -1,4 +1,4 @@
-﻿import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
+﻿import { compareApiToDb, type DbCompareObs } from "../../../extras/db/db-compare.engine";
 import type { DbFeederMeterRow, DbFeederRow } from "./feeder.db";
 
 export function compareFeederProfileToDb(options: {
@@ -23,7 +23,9 @@ export function compareFeederProfileToDb(options: {
     );
   }
 
-  const apiStatus = String(api.status ?? "").trim().toLowerCase();
+  const apiStatus = String(api.status ?? "")
+    .trim()
+    .toLowerCase();
   const dbStatus = dbRow.isActive ? "active" : "inactive";
 
   compareApiToDb(

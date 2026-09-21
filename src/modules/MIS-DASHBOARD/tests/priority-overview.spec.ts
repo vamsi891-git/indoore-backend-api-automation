@@ -2,46 +2,33 @@ import { test } from "../../../fixtures/api.fixture";
 import { PriorityOverviewApi } from "../Api/priority-overview.api";
 import { PriorityOverviewMapper } from "../Mapper/priority-overview.mapper";
 import { PriorityOverviewValidator } from "../Validator/priority-overview.validator";
-import {
-  priorityOverviewQuery,
-  priorityOverviewTestCases,
-} from "../Data/priority-overview.data";
+import { priorityOverviewQuery, priorityOverviewTestCases } from "../Data/priority-overview.data";
 import { MisDashboardEdgesValidator } from "../Validator/mis-dashboard.edges.validator";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("How many events by urgency", () => {
   for (const testCase of priorityOverviewTestCases) {
     test(testCase.testName, { tag: testCase.tags }, async ({ authenticatedApi }) => {
       const api = new PriorityOverviewApi(authenticatedApi);
-      const { rawResponse, responseBody, responseTime } =
-        await api.getPriorityOverview(testCase.params);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const { rawResponse, responseBody, responseTime } = await api.getPriorityOverview(
+        testCase.params,
+      );
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new PriorityOverviewValidator();
       const edges = new MisDashboardEdgesValidator();
 
       validation.execute("Status", () =>
-        assert.validateStatusCode(
-          rawResponse,
-          testCase.expectedStatus,
-          responseBody,
-        ),
+        assert.validateStatusCode(rawResponse, testCase.expectedStatus, responseBody),
       );
       validation.execute("Content", () =>
         assert.validateContentType(rawResponse, "application/json"),
       );
-      validation.execute("Performance", () =>
-        assert.validateResponseTime(responseTime, 120000),
-      );
-      validation.execute("Sensitive Data", () =>
-        assert.validateSensitiveData(responseBody),
-      );
+      validation.execute("Performance", () => assert.validateResponseTime(responseTime, 120000));
+      validation.execute("Sensitive Data", () => assert.validateSensitiveData(responseBody));
 
       if (testCase.expectedStatus !== 200) {
-        validation.execute("Error code", () =>
-          edges.validateValidationError(responseBody),
-        );
+        validation.execute("Error code", () => edges.validateValidationError(responseBody));
         validation.printSummary(testCase.testName, responseTime);
         return;
       }
@@ -56,21 +43,15 @@ test.describe("How many events by urgency", () => {
           testCase.expectSameDayWindow,
         ),
       );
-      validation.execute("Urgency list", () =>
-        validator.validatePrioritiesExist(data),
-      );
-      validation.execute("Urgency row shape", () =>
-        validator.validatePriorityStructure(data),
-      );
+      validation.execute("Urgency list", () => validator.validatePrioritiesExist(data));
+      validation.execute("Urgency row shape", () => validator.validatePriorityStructure(data));
       validation.execute("No duplicate urgency numbers", () =>
         validator.validateUniquePriorityIds(data),
       );
       validation.execute("No duplicate urgency names", () =>
         validator.validateUniquePriorityLabels(data),
       );
-      validation.execute("Urgency order", () =>
-        validator.validatePriorityOrdering(data),
-      );
+      validation.execute("Urgency order", () => validator.validatePriorityOrdering(data));
       if (testCase.checkExpectedPriorities !== false) {
         validation.execute("Expected urgency levels", () =>
           validator.validateExpectedPriorities(data),
@@ -85,8 +66,8 @@ test.describe("How many events by urgency", () => {
     { tag: ["@mis-dashboard", "@priority-overview", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new PriorityOverviewApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new PriorityOverviewValidator();
       const [allResult, consumerResult, dtrResult] = await Promise.all([
         api.getPriorityOverview({ ...priorityOverviewQuery, assetType: "all" }),
@@ -103,19 +84,13 @@ test.describe("How many events by urgency", () => {
       validation.execute("Consumer status", () =>
         assert.validateStatusCode(consumerResult.rawResponse, 200),
       );
-      validation.execute("DTR status", () =>
-        assert.validateStatusCode(dtrResult.rawResponse, 200),
-      );
+      validation.execute("DTR status", () => assert.validateStatusCode(dtrResult.rawResponse, 200));
 
-      const allMeters = PriorityOverviewMapper.mapPriorityOverview(
-        allResult.responseBody.data,
-      );
+      const allMeters = PriorityOverviewMapper.mapPriorityOverview(allResult.responseBody.data);
       const consumers = PriorityOverviewMapper.mapPriorityOverview(
         consumerResult.responseBody.data,
       );
-      const dtrs = PriorityOverviewMapper.mapPriorityOverview(
-        dtrResult.responseBody.data,
-      );
+      const dtrs = PriorityOverviewMapper.mapPriorityOverview(dtrResult.responseBody.data);
       validation.execute("Consumer counts do not exceed all meters", () =>
         validator.validateSubsetDoesNotExceedAll(allMeters, consumers),
       );

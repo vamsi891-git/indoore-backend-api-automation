@@ -1,9 +1,6 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { DtrProfileQuery } from "../Api/dtrprofile.api";
-import type {
-  DtrProfileResponse,
-  DtrProfileScenario,
-} from "../Mapper/dtrprofile.mapper";
+import type { DtrProfileResponse, DtrProfileScenario } from "../Mapper/dtrprofile.mapper";
 
 export const dtrProfileMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 
@@ -103,8 +100,7 @@ export const dtrProfileContractNullOptionalResponse: DtrProfileResponse = {
 export const dtrProfileContractEmptyActivitiesResponse: DtrProfileResponse = {
   success: true,
   data: {
-    profileInformation: dtrProfileContractLive11Iw3Response.data!
-      .profileInformation,
+    profileInformation: dtrProfileContractLive11Iw3Response.data!.profileInformation,
     hierarchy: dtrProfileContractLive11Iw3Response.data!.hierarchy,
     latestActivities: [],
   },
@@ -114,8 +110,7 @@ export const dtrProfileContractEmptyActivitiesResponse: DtrProfileResponse = {
 export const dtrProfileContractWithActivitiesResponse: DtrProfileResponse = {
   success: true,
   data: {
-    profileInformation: dtrProfileContractLive11Iw3Response.data!
-      .profileInformation,
+    profileInformation: dtrProfileContractLive11Iw3Response.data!.profileInformation,
     hierarchy: dtrProfileContractLive11Iw3Response.data!.hierarchy,
     latestActivities: [
       {
@@ -163,8 +158,7 @@ export const dtrProfileContractCapacityKvaResponse: DtrProfileResponse = {
 export const dtrProfileContractDeepHierarchyResponse: DtrProfileResponse = {
   success: true,
   data: {
-    profileInformation: dtrProfileContractCapacityKvaResponse.data!
-      .profileInformation,
+    profileInformation: dtrProfileContractCapacityKvaResponse.data!.profileInformation,
     hierarchy: [
       { title: "Circle", value: "Indore city circle" },
       { title: "Division", value: "WEST" },
@@ -183,11 +177,11 @@ export interface DtrProfileTestCase {
   expectedStatus?: number;
   isContractFixture?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
-export function resolveDtrProfileCode(
-  scenario: DtrProfileScenario,
-): string | undefined {
+export function resolveDtrProfileCode(scenario: DtrProfileScenario): string | undefined {
   switch (scenario) {
     case "dpr_by_code_primary":
     case "dpr_ignore_unknown_query":
@@ -220,9 +214,7 @@ export function resolveDtrProfileCode(
   }
 }
 
-export function resolveDtrProfileQuery(
-  scenario: DtrProfileScenario,
-): DtrProfileQuery {
+export function resolveDtrProfileQuery(scenario: DtrProfileScenario): DtrProfileQuery {
   if (scenario === "dpr_ignore_unknown_query") {
     return { foo: 1, bar: "baz" };
   }
@@ -262,69 +254,76 @@ export const dtrProfileData = {
 
 export const dtrProfileTestCases: DtrProfileTestCase[] = [
   {
-    testName:
-      "DTR profile — name, meter, feeder, and location load, each field once",
+    testName: "DTR profile — name, meter, feeder, and location load, each field once",
     scenario: "dpr_by_code_primary",
     tags: ["@smoke", "@dtr", "@profile"],
+    nonEmptyExpected: true,
   },
   {
     testName: "DTR profile — a second transformer still shows a profile",
     scenario: "dpr_by_code_alt",
     tags: ["@dtr", "@profile", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "DTR profile — extra filters that nobody uses are ignored",
+    testName: "DTR profile — extra filters that nobody uses are ignored",
     scenario: "dpr_ignore_unknown_query",
     tags: ["@dtr", "@profile", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample profile — transformer 11IW3 with empty recent activity",
     scenario: "contract_live_11iw3",
     isContractFixture: true,
     tags: ["@dtr", "@profile", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Sample profile — capacity and map pin can be empty",
+    testName: "Sample profile — capacity and map pin can be empty",
     scenario: "contract_null_optional_fields",
     isContractFixture: true,
     tags: ["@dtr", "@profile", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample profile — no recent activity is allowed",
     scenario: "contract_empty_activities",
     isContractFixture: true,
     tags: ["@dtr", "@profile", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample profile — recent alarms with date and time",
     scenario: "contract_with_activities",
     isContractFixture: true,
     tags: ["@dtr", "@profile", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample profile — capacity shown as kVA with a map pin",
     scenario: "contract_capacity_kva",
     isContractFixture: true,
     tags: ["@dtr", "@profile", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Sample profile — network path ends at this transformer, each level once",
+    testName: "Sample profile — network path ends at this transformer, each level once",
     scenario: "contract_deep_hierarchy",
     isContractFixture: true,
     tags: ["@dtr", "@profile", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR profile — unknown transformer is not shown",
     scenario: "dtr_not_found",
     tags: ["@dtr", "@profile", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR profile — a blank transformer code is not allowed",
     scenario: "empty_dtr_code",
     expectedStatus: 400,
     tags: ["@dtr", "@profile", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

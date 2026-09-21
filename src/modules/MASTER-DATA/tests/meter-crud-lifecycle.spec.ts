@@ -1,7 +1,5 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { CreateMeterApi } from "../Api/create-meter.api";
 import { UpdateMeterApi } from "../Api/update-meter.api";
@@ -15,6 +13,7 @@ import { CreateMeterValidator } from "../Validator/create-meter.validator";
 import { UpdateMeterValidator } from "../Validator/update-meter.validator";
 import { DeactivateMeterValidator } from "../Validator/deactivate-meter.validator";
 import { ensureMeterManufacturerContext } from "../utils/meter-manufacturer.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 // SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
 test.describe.skip("Master data — add, update, then deactivate a meter", () => {
@@ -38,13 +37,11 @@ test.describe.skip("Master data — add, update, then deactivate a meter", () =>
       ],
     },
     async ({ authenticatedApi }) => {
-      const assertion = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assertion = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
 
       const createRequest = buildCreateMeterRequest();
-      const created = await new CreateMeterApi(authenticatedApi).createMeter(
-        createRequest,
-      );
+      const created = await new CreateMeterApi(authenticatedApi).createMeter(createRequest);
       const createdMapped = CreateMeterMapper.map(created.responseBody);
       const createValidator = new CreateMeterValidator();
 
@@ -55,15 +52,10 @@ test.describe.skip("Master data — add, update, then deactivate a meter", () =>
         assertion.validateContentType(created.rawResponse),
       );
       validation.execute("Create response contract", () =>
-        createValidator.validateScenario(
-          createdMapped,
-          "success",
-          createRequest,
-        ),
+        createValidator.validateScenario(createdMapped, "success", createRequest),
       );
 
-      const meterLookupTblRefId =
-        created.responseBody.data?.meterLookupTblRefId;
+      const meterLookupTblRefId = created.responseBody.data?.meterLookupTblRefId;
       expect(meterLookupTblRefId).toBeTruthy();
 
       const updateRequest = toUpdateMeterPayload(createRequest, {
@@ -97,20 +89,14 @@ test.describe.skip("Master data — add, update, then deactivate a meter", () =>
         ),
       );
       validation.execute("Identity preserved after update", () => {
-        expect(updatedMapped.data?.meterTblRefId).toBe(
-          createdMapped.data?.meterTblRefId,
-        );
-        expect(updatedMapped.data?.meterLookupTblRefId).toBe(
-          meterLookupTblRefId,
-        );
-        expect(updatedMapped.data?.meterSerialNumber).toBe(
-          createRequest.meterSerialNumber,
-        );
+        expect(updatedMapped.data?.meterTblRefId).toBe(createdMapped.data?.meterTblRefId);
+        expect(updatedMapped.data?.meterLookupTblRefId).toBe(meterLookupTblRefId);
+        expect(updatedMapped.data?.meterSerialNumber).toBe(createRequest.meterSerialNumber);
       });
 
-      const deleted = await new DeactivateMeterApi(
-        authenticatedApi,
-      ).deactivateMeter(meterLookupTblRefId!);
+      const deleted = await new DeactivateMeterApi(authenticatedApi).deactivateMeter(
+        meterLookupTblRefId!,
+      );
       const deletedMapped = DeactivateMeterMapper.map(deleted.responseBody);
       const deactivateValidator = new DeactivateMeterValidator();
 
@@ -121,28 +107,18 @@ test.describe.skip("Master data — add, update, then deactivate a meter", () =>
         assertion.validateContentType(deleted.rawResponse),
       );
       validation.execute("Deactivate response contract", () =>
-        deactivateValidator.validateScenario(
-          deletedMapped,
-          "success",
-          meterLookupTblRefId!,
-        ),
+        deactivateValidator.validateScenario(deletedMapped, "success", meterLookupTblRefId!),
       );
       validation.execute("Identity preserved after deactivate", () => {
-        expect(deletedMapped.data?.meterTblRefId).toBe(
-          createdMapped.data?.meterTblRefId,
-        );
-        expect(deletedMapped.data?.meterSerialNumber).toBe(
-          createRequest.meterSerialNumber,
-        );
+        expect(deletedMapped.data?.meterTblRefId).toBe(createdMapped.data?.meterTblRefId);
+        expect(deletedMapped.data?.meterSerialNumber).toBe(createRequest.meterSerialNumber);
         expect(deletedMapped.data?.isActiveStatus).toBe(false);
       });
 
-      const deletedAgain = await new DeactivateMeterApi(
-        authenticatedApi,
-      ).deactivateMeter(meterLookupTblRefId!);
-      const deletedAgainMapped = DeactivateMeterMapper.map(
-        deletedAgain.responseBody,
+      const deletedAgain = await new DeactivateMeterApi(authenticatedApi).deactivateMeter(
+        meterLookupTblRefId!,
       );
+      const deletedAgainMapped = DeactivateMeterMapper.map(deletedAgain.responseBody);
 
       validation.execute("Repeated deactivate is idempotent", () => {
         expect(deletedAgain.rawResponse.status()).toBe(200);

@@ -1,5 +1,5 @@
 import { test as apiDbTest } from "../../../fixtures/api-db.fixture";
-import { isDbConfigured } from "../../../core/db/postgres.client";
+import { isDbConfigured } from "../../../extras/db/postgres.client";
 import { isRolePermissionsDbSqlReady } from "../Db/role-permissions.db";
 import { runRolePermissionsDbCoverage } from "./role-permissions-db.harness";
 

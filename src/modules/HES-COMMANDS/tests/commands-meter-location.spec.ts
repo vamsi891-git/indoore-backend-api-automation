@@ -1,9 +1,7 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { CommandsMeterLocationApi } from "../Api/commands-meter-location.api";
 import {
@@ -23,24 +21,25 @@ test.describe("HES Commands — Meter Location", () => {
     async ({ authenticatedApi }, testInfo) => {
       const body = buildMeterLocationBody();
       const api = new CommandsMeterLocationApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new CommandsMeterLocationValidator();
 
-      const { rawResponse, responseBody, responseTime } =
-        await api.postMeterLocation(body);
+      const { rawResponse, responseBody, responseTime } = await api.postMeterLocation(body);
 
       const url = `${process.env.BASE_URL}${METER_LOCATION_PATH}`;
       await PerformanceTracker.track(
         rawResponse,
         "Commands Meter Location",
         rawResponse.url(),
-        responseTime
+        responseTime,
       );
 
       const status = rawResponse.status();
 
-      if (BackendResponse.shouldSkipServerFailure(status, "Commands Meter Location", responseBody)) {
+      if (
+        BackendResponse.shouldSkipServerFailure(status, "Commands Meter Location", responseBody)
+      ) {
         validation.execute("Error Response (500 backend defect)", () =>
           validator.validateErrorResponse(responseBody),
         );
@@ -68,21 +67,13 @@ test.describe("HES Commands — Meter Location", () => {
         maxResponseTimeMs: commandsMeterLocationData.maxResponseTimeMs,
       });
 
-      validation.execute("Success Response", () =>
-        validator.validateResponse(responseBody),
-      );
+      validation.execute("Success Response", () => validator.validateResponse(responseBody));
 
       const mapped = CommandsMeterLocationMapper.mapResponse(responseBody);
 
-      validation.execute("Node ID Echo", () =>
-        validator.validateNodeIdEcho(mapped.location, body),
-      );
-      validation.execute("Node ID Format", () =>
-        validator.validateNodeIdFormat(mapped.location),
-      );
-      validation.execute("Coordinates", () =>
-        validator.validateCoordinates(mapped.location),
-      );
+      validation.execute("Node ID Echo", () => validator.validateNodeIdEcho(mapped.location, body));
+      validation.execute("Node ID Format", () => validator.validateNodeIdFormat(mapped.location));
+      validation.execute("Coordinates", () => validator.validateCoordinates(mapped.location));
       validation.execute("HES SOAP Envelope", () =>
         validator.validateHesSoapEnvelope(mapped.location),
       );
@@ -95,9 +86,7 @@ test.describe("HES Commands — Meter Location", () => {
       validation.execute("HES SOAP Metadata", () =>
         validator.validateHesSoapMetadata(mapped.location),
       );
-      validation.execute("Full API Contract", () =>
-        validator.validateFullContract(mapped, body),
-      );
+      validation.execute("Full API Contract", () => validator.validateFullContract(mapped, body));
 
       ApiValidationHelper.finalize(validation, {
         apiName: "Commands Meter Location",
@@ -125,12 +114,11 @@ test.describe("HES Commands — Meter Location", () => {
         nodeId: commandsMeterLocationData.unknownHesNodeId,
       });
       const api = new CommandsMeterLocationApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new CommandsMeterLocationValidator();
 
-      const { rawResponse, responseBody, responseTime } =
-        await api.postMeterLocation(body);
+      const { rawResponse, responseBody, responseTime } = await api.postMeterLocation(body);
 
       const label = "Commands Meter Location — Unknown Node";
       const status = rawResponse.status();
@@ -148,8 +136,7 @@ test.describe("HES Commands — Meter Location", () => {
             requestParams: body,
             responseStatus: status,
             responseBody,
-            expectedBehavior:
-              "404/400 for unknown HES node (backend intermittently returns 500).",
+            expectedBehavior: "404/400 for unknown HES node (backend intermittently returns 500).",
           },
         });
         return;
@@ -158,12 +145,8 @@ test.describe("HES Commands — Meter Location", () => {
       validation.execute("Status (client error)", () => {
         expect([400, 404]).toContain(status);
       });
-      validation.execute("Content Type", () =>
-        assert.validateContentType(rawResponse),
-      );
-      validation.execute("Error Response", () =>
-        validator.validateErrorResponse(responseBody),
-      );
+      validation.execute("Content Type", () => assert.validateContentType(rawResponse));
+      validation.execute("Error Response", () => validator.validateErrorResponse(responseBody));
 
       ApiValidationHelper.finalize(validation, {
         apiName: label,
@@ -176,8 +159,7 @@ test.describe("HES Commands — Meter Location", () => {
           requestParams: body,
           responseStatus: rawResponse.status(),
           responseBody,
-          expectedBehavior:
-            "Unknown HES node returns 400 or 404 with error envelope.",
+          expectedBehavior: "Unknown HES node returns 400 or 404 with error envelope.",
         },
       });
     },
@@ -191,12 +173,11 @@ test.describe("HES Commands — Meter Location", () => {
         latitude: commandsMeterLocationData.invalidLatitude,
       });
       const api = new CommandsMeterLocationApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new CommandsMeterLocationValidator();
 
-      const { rawResponse, responseBody, responseTime } =
-        await api.postMeterLocation(body);
+      const { rawResponse, responseBody, responseTime } = await api.postMeterLocation(body);
 
       const label = "Commands Meter Location — Invalid Latitude";
       const status = rawResponse.status();
@@ -214,8 +195,7 @@ test.describe("HES Commands — Meter Location", () => {
             requestParams: body,
             responseStatus: status,
             responseBody,
-            expectedBehavior:
-              "400 for latitude out of range (backend intermittently returns 500).",
+            expectedBehavior: "400 for latitude out of range (backend intermittently returns 500).",
           },
         });
         return;
@@ -224,12 +204,8 @@ test.describe("HES Commands — Meter Location", () => {
       validation.execute("Status (bad request)", () =>
         assert.validateStatusCode(rawResponse, 400, responseBody),
       );
-      validation.execute("Content Type", () =>
-        assert.validateContentType(rawResponse),
-      );
-      validation.execute("Error Response", () =>
-        validator.validateErrorResponse(responseBody),
-      );
+      validation.execute("Content Type", () => assert.validateContentType(rawResponse));
+      validation.execute("Error Response", () => validator.validateErrorResponse(responseBody));
 
       ApiValidationHelper.finalize(validation, {
         apiName: label,

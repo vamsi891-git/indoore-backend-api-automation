@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { compareApiToDb } from "../../../../core/db/db-compare.engine";
+import { compareApiToDb } from "../../../../extras/db/db-compare.engine";
 import { compareTechnicalReportRowToDb } from "../../Db/technical-analysis-db-compare";
 
 test.describe("Mutation proof — DB cross-validation (fixture)", () => {

@@ -1,6 +1,5 @@
 import type pg from "pg";
 import type { APIRequestContext } from "@playwright/test";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ConsumerDetailApi } from "../Api/consumer-detail.api";
 import { MeterValidationApi } from "../Api/meter-validation.api";
 import { DashboardSummaryApi } from "../Api/dashboard-summary.api";
@@ -35,6 +34,7 @@ import {
   compareMrSubmissionDetailToDb,
 } from "../Db/meter-replacement-db-compare";
 import { logMeterReplacementDataQualityFindings } from "../Db/meter-replacement-db.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 function resolveConsumerId(): number {
   const fromEnv = Number(process.env.METER_REPLACEMENT_CONSUMER_ID ?? "");
@@ -45,8 +45,7 @@ function resolveConsumerId(): number {
 }
 function resolveValidateSerial(): string {
   return (
-    process.env.METER_REPLACEMENT_VALIDATE_SERIAL?.trim() ||
-    meterValidationData.validMeterSerial
+    process.env.METER_REPLACEMENT_VALIDATE_SERIAL?.trim() || meterValidationData.validMeterSerial
   );
 }
 function resolveSubmissionId(): number {
@@ -66,15 +65,13 @@ export async function runMeterReplacementDbCoverage(
   authenticatedApi: APIRequestContext,
   db: pg.Pool,
 ): Promise<void> {
-  const validation = new ValidationEngine();
+  const validation = new ApiValidationHelper();
   const consumerId = resolveConsumerId();
   const serial = resolveValidateSerial();
   const submissionId = resolveSubmissionId();
   const submittedBy = resolveSubmittedByUuid();
   // --- Dashboard overall (unscoped COUNT on general.meter_replacement) ---
-  const summaryBody = await new DashboardSummaryApi(
-    authenticatedApi,
-  ).getDashboardSummary();
+  const summaryBody = await new DashboardSummaryApi(authenticatedApi).getDashboardSummary();
   const summary = DashboardSummaryMapper.map(summaryBody.responseBody);
   await logMeterReplacementDataQualityFindings(
     "dashboard-summary",
@@ -115,9 +112,7 @@ export async function runMeterReplacementDbCoverage(
     });
   }
   // --- Consumer detail ---
-  const detailBody = await new ConsumerDetailApi(
-    authenticatedApi,
-  ).getConsumerDetail(consumerId);
+  const detailBody = await new ConsumerDetailApi(authenticatedApi).getConsumerDetail(consumerId);
   const detail = ConsumerDetailMapper.map(detailBody.responseBody);
   await logMeterReplacementDataQualityFindings(
     "consumer-detail",
@@ -141,9 +136,7 @@ export async function runMeterReplacementDbCoverage(
     });
   });
   // --- Meter validate ---
-  const validateBody = await new MeterValidationApi(
-    authenticatedApi,
-  ).validateMeter(serial);
+  const validateBody = await new MeterValidationApi(authenticatedApi).validateMeter(serial);
   const validated = MeterValidationMapper.map(validateBody.responseBody);
   await logMeterReplacementDataQualityFindings(
     "meter-validation",
@@ -167,9 +160,7 @@ export async function runMeterReplacementDbCoverage(
     });
   }
   // --- Submission history total ---
-  const historyBody = await new SubmissionHistoryApi(
-    authenticatedApi,
-  ).getSubmissionHistory(
+  const historyBody = await new SubmissionHistoryApi(authenticatedApi).getSubmissionHistory(
     submissionHistoryData.page,
     submissionHistoryData.limit,
   );
@@ -183,9 +174,9 @@ export async function runMeterReplacementDbCoverage(
     });
   });
   // --- Submission detail ---
-  const submissionBody = await new SubmissionDetailApi(
-    authenticatedApi,
-  ).getSubmissionDetail(submissionId);
+  const submissionBody = await new SubmissionDetailApi(authenticatedApi).getSubmissionDetail(
+    submissionId,
+  );
   if (submissionBody.rawResponse.status() === 200 && submissionBody.responseBody.success) {
     const submission = SubmissionDetailMapper.map(submissionBody.responseBody);
     await logMeterReplacementDataQualityFindings(

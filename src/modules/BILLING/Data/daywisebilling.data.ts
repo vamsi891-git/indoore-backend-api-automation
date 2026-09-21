@@ -12,25 +12,15 @@ export const daywiseDefaultYear = resolveBillingInt(
   2000,
   2100,
 );
-export const daywiseDefaultPage = resolveBillingInt(
-  "DAYWISE_BILLING_PAGE",
-  1,
-  1,
-);
-export const daywiseDefaultLimit = resolveBillingInt(
-  "DAYWISE_BILLING_LIMIT",
-  10,
-  1,
-  100,
-);
+export const daywiseDefaultPage = resolveBillingInt("DAYWISE_BILLING_PAGE", 1, 1);
+export const daywiseDefaultLimit = resolveBillingInt("DAYWISE_BILLING_LIMIT", 10, 1, 100);
 export const daywiseBeyondPage = 99999;
 
 /** Kept for DB / contract callers. Default matches live: includeTotal=false. */
 export const DaywiseBillingTestData = {
   month: daywiseDefaultMonth,
   year: daywiseDefaultYear,
-  includeTotal:
-    process.env.DAYWISE_BILLING_INCLUDE_TOTAL?.trim().toLowerCase() === "true",
+  includeTotal: process.env.DAYWISE_BILLING_INCLUDE_TOTAL?.trim().toLowerCase() === "true",
   page: daywiseDefaultPage,
   limit: daywiseDefaultLimit,
 };
@@ -112,11 +102,11 @@ export interface DaywiseBillingTestCase {
   tags: string[];
   isContractFixture?: boolean;
   expectedStatus?: number;
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
-export function resolveDaywiseQuery(
-  scenario: DaywiseBillingScenario,
-): DaywiseBillingQueryParams {
+export function resolveDaywiseQuery(scenario: DaywiseBillingScenario): DaywiseBillingQueryParams {
   switch (scenario) {
     case "dev_live_include_total":
       return primaryQuery({ includeTotal: true });
@@ -161,52 +151,62 @@ export const daywiseBillingTestCases: DaywiseBillingTestCase[] = [
     testName: "Day-by-day billing — October 2025 first page lists each day's reading",
     scenario: "dev_live_without_total",
     tags: ["@smoke", "@billing", "@daywise-billing"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Day-by-day billing — turning the exact total on still shows the same columns",
     scenario: "dev_live_include_total",
     tags: ["@billing", "@daywise-billing", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Day-by-day billing — asking for one meter at a time still returns a row",
     scenario: "dev_limit_one",
     tags: ["@billing", "@daywise-billing", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Day-by-day billing — page 2 continues the list without repeating a meter",
     scenario: "dev_page_two",
     tags: ["@billing", "@daywise-billing", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Day-by-day billing — searching by a meter number returns only that meter",
     scenario: "dev_meter_filter",
     tags: ["@billing", "@daywise-billing", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Day-by-day billing — a meter number that does not exist shows an empty list",
     scenario: "dev_unknown_meter",
     tags: ["@billing", "@daywise-billing", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Day-by-day billing — a page far past the end of the list is empty",
     scenario: "dev_live_page_beyond",
     tags: ["@billing", "@daywise-billing", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Day-by-day billing — leftover unused filters are ignored",
     scenario: "dev_ignore_unknown_query",
     tags: ["@billing", "@daywise-billing", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Day-by-day billing — November (30 days) does not fill a 31st day column",
     scenario: "dev_thirty_day_month",
     tags: ["@billing", "@daywise-billing", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Day-by-day billing — October 2025 sample row matches the live layout",
     scenario: "contract_live_oct_2025",
     isContractFixture: true,
     tags: ["@billing", "@daywise-billing", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName:
@@ -214,48 +214,56 @@ export const daywiseBillingTestCases: DaywiseBillingTestCase[] = [
     scenario: "contract_same_feeder_plateau",
     isContractFixture: true,
     tags: ["@billing", "@daywise-billing", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Day-by-day billing — month 13 is rejected (month must be January to December)",
     scenario: "invalid_month",
     expectedStatus: 400,
     tags: ["@billing", "@daywise-billing", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Day-by-day billing — month 0 is rejected",
     scenario: "invalid_month_zero",
     expectedStatus: 400,
     tags: ["@billing", "@daywise-billing", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Day-by-day billing — year 0 is rejected",
     scenario: "invalid_year",
     expectedStatus: 400,
     tags: ["@billing", "@daywise-billing", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Day-by-day billing — leaving out the month is rejected",
     scenario: "missing_month",
     expectedStatus: 400,
     tags: ["@billing", "@daywise-billing", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Day-by-day billing — leaving out the year is rejected",
     scenario: "missing_year",
     expectedStatus: 400,
     tags: ["@billing", "@daywise-billing", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Day-by-day billing — page numbering must start at 1",
     scenario: "invalid_page",
     expectedStatus: 400,
     tags: ["@billing", "@daywise-billing", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Day-by-day billing — asking for zero rows per page is rejected",
     scenario: "invalid_limit",
     expectedStatus: 400,
     tags: ["@billing", "@daywise-billing", "@negative"],
+    nonEmptyExpected: false,
   },
 ];
 
@@ -268,18 +276,16 @@ function kwhDays(values: number[]): Record<string, number> {
 }
 
 const firstMeterDays = [
-  682.47, 684.05, 686.16, 687.38, 688.78, 688.86, 689.93, 691.04, 692.25,
-  693.43, 694.64, 695.71, 695.8, 697.15, 698.46, 699.6, 700.88, 702.09, 703.45,
-  703.54, 703.62, 703.71, 704.71, 705.93, 707.19, 708.51, 708.59, 710.14,
-  711.45, 712.66, 713.47,
+  682.47, 684.05, 686.16, 687.38, 688.78, 688.86, 689.93, 691.04, 692.25, 693.43, 694.64, 695.71,
+  695.8, 697.15, 698.46, 699.6, 700.88, 702.09, 703.45, 703.54, 703.62, 703.71, 704.71, 705.93,
+  707.19, 708.51, 708.59, 710.14, 711.45, 712.66, 713.47,
 ];
 
 /** Live row 3: D25–D28 stay at 6496.7 (zero-consumption plateau). */
 const plateauDays = [
-  6280.09, 6290.19, 6300.43, 6309.79, 6319.59, 6328.68, 6336.64, 6342.8,
-  6351.32, 6359.24, 6367.4, 6376.3, 6390.26, 6399.4, 6406.34, 6418.21, 6427.81,
-  6439.22, 6451.66, 6462.62, 6472.73, 6479.94, 6489.07, 6494.89, 6496.7, 6496.7,
-  6496.7, 6496.7, 6498.61, 6508.95, 6515.59,
+  6280.09, 6290.19, 6300.43, 6309.79, 6319.59, 6328.68, 6336.64, 6342.8, 6351.32, 6359.24, 6367.4,
+  6376.3, 6390.26, 6399.4, 6406.34, 6418.21, 6427.81, 6439.22, 6451.66, 6462.62, 6472.73, 6479.94,
+  6489.07, 6494.89, 6496.7, 6496.7, 6496.7, 6496.7, 6498.61, 6508.95, 6515.59,
 ];
 
 export const daywiseOct2025Fixture = {

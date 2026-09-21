@@ -1,7 +1,8 @@
 import fs from "fs";
 import path from "path";
+import { env } from "../config/env.schema";
 
-type LogLevel = "DEBUG" | "INFO" | "ERROR" | "API";
+type LogLevel = "DEBUG" | "INFO" | "WARN" | "ERROR" | "API";
 
 export class LoggerEngine {
   private static readonly logDir = path.join(process.cwd(), "logs");
@@ -21,7 +22,7 @@ export class LoggerEngine {
   }
 
   static debug(message: string): void {
-    const level = (process.env.LOG_LEVEL ?? "").trim().toLowerCase();
+    const level = (env.LOG_LEVEL ?? "").toLowerCase();
     if (level !== "debug") {
       return;
     }
@@ -30,6 +31,10 @@ export class LoggerEngine {
 
   static info(message: string): void {
     this.write("INFO", message);
+  }
+
+  static warn(message: string): void {
+    this.write("WARN", message);
   }
 
   static error(message: string, error?: unknown): void {
@@ -48,7 +53,7 @@ export class LoggerEngine {
     const attemptText = args.attempt ? ` attempt=${args.attempt}` : "";
     this.write(
       "API",
-      `${args.method.toUpperCase()} ${args.url} status=${args.status} time=${args.responseTimeMs}ms${attemptText}`
+      `${args.method.toUpperCase()} ${args.url} status=${args.status} time=${args.responseTimeMs}ms${attemptText}`,
     );
   }
 }

@@ -1,4 +1,4 @@
-import { compareApiToDb } from "../../../core/db/db-compare.engine";
+import { compareApiToDb } from "../../../extras/db/db-compare.engine";
 import { getBillingMeterHeaderBySerial } from "../Db/billing.db";
 import { coerceBillingNumeric } from "../utils/billing-item.helper";
 import type pg from "pg";
@@ -13,9 +13,7 @@ export type BillingRowWithMeter = {
   sanctionedLoadKw?: string | number | null;
 };
 
-export function firstBillingRowWithMeter<T extends BillingRowWithMeter>(
-  rows: T[],
-): T | undefined {
+export function firstBillingRowWithMeter<T extends BillingRowWithMeter>(rows: T[]): T | undefined {
   return rows.find((row) => row.meterNumber?.trim());
 }
 

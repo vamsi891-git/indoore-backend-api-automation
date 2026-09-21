@@ -1,8 +1,6 @@
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { CommandsQueryMeterJobApi } from "../Api/commands-query-meter-job.api";
 import {
@@ -21,19 +19,18 @@ test.describe("HES Commands — Query Meter Job", () => {
     async ({ authenticatedApi }, testInfo) => {
       const jobName = commandsQueryMeterJobData.knownJobName;
       const api = new CommandsQueryMeterJobApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new CommandsQueryMeterJobValidator();
 
-      const { rawResponse, responseBody, responseTime } =
-        await api.getQueryMeterJob(jobName);
+      const { rawResponse, responseBody, responseTime } = await api.getQueryMeterJob(jobName);
 
       const url = `${process.env.BASE_URL}${buildQueryMeterJobPath(jobName)}`;
       await PerformanceTracker.track(
         rawResponse,
         "Commands Query Meter Job",
         rawResponse.url(),
-        responseTime
+        responseTime,
       );
 
       ApiValidationHelper.runStandardChecks(validation, assert, {
@@ -44,32 +41,19 @@ test.describe("HES Commands — Query Meter Job", () => {
         maxResponseTimeMs: commandsQueryMeterJobData.maxResponseTimeMs,
       });
 
-      validation.execute("Success Response", () =>
-        validator.validateResponse(responseBody),
-      );
+      validation.execute("Success Response", () => validator.validateResponse(responseBody));
 
       const mapped = CommandsQueryMeterJobMapper.mapResponse(responseBody);
 
-      validation.execute("Job Name Echo", () =>
-        validator.validateJobNameEcho(mapped, jobName),
-      );
-      validation.execute("Sync Flags", () =>
-        validator.validateSyncFlags(mapped),
-      );
-      validation.execute("HES Job Status", () =>
-        validator.validateHesJobStatus(mapped),
-      );
-      validation.execute("HES Status Code", () =>
-        validator.validateHesStatusCode(mapped),
-      );
+      validation.execute("Job Name Echo", () => validator.validateJobNameEcho(mapped, jobName));
+      validation.execute("Sync Flags", () => validator.validateSyncFlags(mapped));
+      validation.execute("HES Job Status", () => validator.validateHesJobStatus(mapped));
+      validation.execute("HES Status Code", () => validator.validateHesStatusCode(mapped));
       validation.execute("Summary Counts", () =>
         validator.validateSummaryCounts(mapped.job.summary),
       );
       validation.execute("Summary vs Meter Results", () =>
-        validator.validateSummaryMatchesMeterResults(
-          mapped.job.summary,
-          mapped.job.meterResults,
-        ),
+        validator.validateSummaryMatchesMeterResults(mapped.job.summary, mapped.job.meterResults),
       );
       validation.execute("Meter Results Present", () =>
         validator.validateMeterResultsPresent(mapped.job.meterResults),
@@ -78,10 +62,7 @@ test.describe("HES Commands — Query Meter Job", () => {
         validator.validateAllMeterResults(mapped.job.meterResults),
       );
       validation.execute("Status Summary Alignment", () =>
-        validator.validateStatusSummaryAlignment(
-          mapped.job.summary,
-          mapped.job.meterResults,
-        ),
+        validator.validateStatusSummaryAlignment(mapped.job.summary, mapped.job.meterResults),
       );
       validation.execute("HES Unreachable Message Rules", () =>
         validator.validateHesUnreachableMessage(mapped),
@@ -93,11 +74,7 @@ test.describe("HES Commands — Query Meter Job", () => {
         ),
       );
       validation.execute("Full API Contract", () =>
-        validator.validateFullContract(
-          mapped,
-          jobName,
-          commandsQueryMeterJobData.expectedMeterId,
-        ),
+        validator.validateFullContract(mapped, jobName, commandsQueryMeterJobData.expectedMeterId),
       );
 
       ApiValidationHelper.finalize(validation, {
@@ -124,12 +101,11 @@ test.describe("HES Commands — Query Meter Job", () => {
     async ({ authenticatedApi }, testInfo) => {
       const jobName = commandsQueryMeterJobData.unknownJobName;
       const api = new CommandsQueryMeterJobApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new CommandsQueryMeterJobValidator();
 
-      const { rawResponse, responseBody, responseTime } =
-        await api.getQueryMeterJob(jobName);
+      const { rawResponse, responseBody, responseTime } = await api.getQueryMeterJob(jobName);
 
       const label = "Commands Query Meter Job — Unknown Job";
       const status = rawResponse.status();
@@ -157,12 +133,8 @@ test.describe("HES Commands — Query Meter Job", () => {
       validation.execute("Status (not found)", () =>
         assert.validateStatusCode(rawResponse, 404, responseBody),
       );
-      validation.execute("Content Type", () =>
-        assert.validateContentType(rawResponse),
-      );
-      validation.execute("Error Response", () =>
-        validator.validateNotFoundResponse(responseBody),
-      );
+      validation.execute("Content Type", () => assert.validateContentType(rawResponse));
+      validation.execute("Error Response", () => validator.validateNotFoundResponse(responseBody));
 
       ApiValidationHelper.finalize(validation, {
         apiName: label,
@@ -175,8 +147,7 @@ test.describe("HES Commands — Query Meter Job", () => {
           requestParams: { jobName },
           responseStatus: rawResponse.status(),
           responseBody,
-          expectedBehavior:
-            "Unknown job name returns 404 with error envelope.",
+          expectedBehavior: "Unknown job name returns 404 with error envelope.",
         },
       });
     },

@@ -10,7 +10,7 @@ import { test, expect } from "../../../fixtures/observability.fixture";
 import {
   assertContractSnapshot,
   buildLookupItemsContractSnapshot,
-} from "../../../core/contract/contract-snapshot.helper";
+} from "../../../extras/contract/contract-snapshot.helper";
 import { NetworkHierarchyApi } from "../Api/networkhierarchy.api";
 import { OrganisationHierarchyApi } from "../Api/organizationhierarchy.api";
 import { DtrDetailApi } from "../Api/DtrId.api";
@@ -29,9 +29,7 @@ import { AssetExportMapper } from "../Mapper/assetexport.mapper";
 import { resolveLiveDtrLookupId } from "../utils/resolve-dtr-lookup.helper";
 
 function asRecord(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === "object"
-    ? (value as Record<string, unknown>)
-    : {};
+  return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
 type HierarchyNodeLike = {
@@ -56,10 +54,7 @@ function findFirstDtr(nodes: unknown[]): Record<string, unknown> | null {
  * Shape lock for network/organisation hierarchy trees.
  * Captures envelope + node/dtr/meter field names only.
  */
-function buildHierarchyContractSnapshot(input: {
-  pathPattern: string;
-  responseBody: unknown;
-}): {
+function buildHierarchyContractSnapshot(input: { pathPattern: string; responseBody: unknown }): {
   httpMethod: "GET";
   pathPattern: string;
   successEnvelopeKeys: string[];
@@ -109,11 +104,7 @@ test.describe("Asset Management Contract Snapshots", () => {
   test(
     "Organisation Hierarchy",
     {
-      tag: [
-        "@asset-management",
-        "@contract-snapshot",
-        "@organisation-hierarchy",
-      ],
+      tag: ["@asset-management", "@contract-snapshot", "@organisation-hierarchy"],
     },
     async ({ authenticatedApi }) => {
       const api = new OrganisationHierarchyApi(authenticatedApi);
@@ -145,10 +136,7 @@ test.describe("Asset Management Contract Snapshots", () => {
       const body = asRecord(responseBody);
       const data = asRecord(body.data);
       const consumers = Array.isArray(data.consumers) ? data.consumers : [];
-      const consumerKeys =
-        consumers.length > 0
-          ? Object.keys(asRecord(consumers[0]))
-          : [];
+      const consumerKeys = consumers.length > 0 ? Object.keys(asRecord(consumers[0])) : [];
 
       await assertContractSnapshot(
         "asset-management/dtr-detail",
@@ -164,11 +152,7 @@ test.describe("Asset Management Contract Snapshots", () => {
   test(
     "Hierarchy Children",
     {
-      tag: [
-        "@asset-management",
-        "@contract-snapshot",
-        "@hierarchy-children",
-      ],
+      tag: ["@asset-management", "@contract-snapshot", "@hierarchy-children"],
     },
     async ({ authenticatedApi }) => {
       const api = new HierarchyChildrenApi(authenticatedApi);
@@ -180,8 +164,7 @@ test.describe("Asset Management Contract Snapshots", () => {
       const body = asRecord(responseBody);
       const data = asRecord(body.data);
       const items = Array.isArray(data.items) ? data.items : [];
-      const itemKeys =
-        items.length > 0 ? Object.keys(asRecord(items[0])) : [];
+      const itemKeys = items.length > 0 ? Object.keys(asRecord(items[0])) : [];
 
       await assertContractSnapshot(
         "asset-management/hierarchy-children",
@@ -214,8 +197,7 @@ test.describe("Asset Management Contract Snapshots", () => {
       const body = asRecord(responseBody);
       const data = asRecord(body.data);
       const items = Array.isArray(data.items) ? data.items : [];
-      const itemKeys =
-        items.length > 0 ? Object.keys(asRecord(items[0])) : [];
+      const itemKeys = items.length > 0 ? Object.keys(asRecord(items[0])) : [];
 
       await assertContractSnapshot(
         "asset-management/hierarchy-search",
@@ -235,16 +217,13 @@ test.describe("Asset Management Contract Snapshots", () => {
     },
     async ({ authenticatedApi }) => {
       const api = new HierarchyTypesApi(authenticatedApi);
-      const { responseBody } = await api.getHierarchyTypes(
-        hierarchyTypesQuery("network"),
-      );
+      const { responseBody } = await api.getHierarchyTypes(hierarchyTypesQuery("network"));
       expect(responseBody.success).toBe(true);
 
       const body = asRecord(responseBody);
       const data = asRecord(body.data);
       const items = Array.isArray(data.items) ? data.items : [];
-      const itemKeys =
-        items.length > 0 ? Object.keys(asRecord(items[0])) : [];
+      const itemKeys = items.length > 0 ? Object.keys(asRecord(items[0])) : [];
 
       await assertContractSnapshot(
         "asset-management/hierarchy-types",
@@ -264,10 +243,9 @@ test.describe("Asset Management Contract Snapshots", () => {
     },
     async ({ authenticatedApi }) => {
       const childrenApi = new HierarchyChildrenApi(authenticatedApi);
-      const { responseBody: childrenBody } =
-        await childrenApi.getHierarchyChildren(
-          hierarchyChildrenQuery({ mode: "network", page: 1, pageSize: 20 }),
-        );
+      const { responseBody: childrenBody } = await childrenApi.getHierarchyChildren(
+        hierarchyChildrenQuery({ mode: "network", page: 1, pageSize: 20 }),
+      );
       const rootId = childrenBody.data?.items?.[0]?.id;
       test.skip(rootId == null, "No network roots from hierarchy/children");
       if (rootId == null) return;
@@ -297,9 +275,7 @@ test.describe("Asset Management Contract Snapshots", () => {
     async ({ authenticatedApi }) => {
       const api = new AssetExportApi(authenticatedApi);
       const network = await api.getExport(assetExportQuery({ kind: "network" }));
-      const organisation = await api.getExport(
-        assetExportQuery({ kind: "organisation" }),
-      );
+      const organisation = await api.getExport(assetExportQuery({ kind: "organisation" }));
       expect(network.rawResponse.status()).toBe(200);
       expect(organisation.rawResponse.status()).toBe(200);
 
@@ -308,8 +284,7 @@ test.describe("Asset Management Contract Snapshots", () => {
         pathPattern: "/indore/asset-management/export",
         contentTypeContains: "text/csv",
         networkColumns: AssetExportMapper.mapCsv(network.csvContent).headers,
-        organisationColumns: AssetExportMapper.mapCsv(organisation.csvContent)
-          .headers,
+        organisationColumns: AssetExportMapper.mapCsv(organisation.csvContent).headers,
       });
     },
   );
@@ -329,8 +304,7 @@ test.describe("Asset Management Contract Snapshots", () => {
       const body = asRecord(responseBody);
       const data = asRecord(body.data);
       const markers = Array.isArray(data.markers) ? data.markers : [];
-      const markerKeys =
-        markers.length > 0 ? Object.keys(asRecord(markers[0])) : [];
+      const markerKeys = markers.length > 0 ? Object.keys(asRecord(markers[0])) : [];
 
       await assertContractSnapshot(
         "asset-management/map-markers",

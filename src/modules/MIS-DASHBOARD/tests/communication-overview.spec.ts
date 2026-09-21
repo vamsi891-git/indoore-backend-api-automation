@@ -8,42 +8,29 @@ import {
   EXPECTED_OVERVIEW_PHASES,
 } from "../Data/communication-overview.data";
 import { MisDashboardEdgesValidator } from "../Validator/mis-dashboard.edges.validator";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Talking vs not talking overview", () => {
   for (const testCase of communicationOverviewTestCases) {
     test(testCase.testName, { tag: testCase.tags }, async ({ authenticatedApi }) => {
       const api = new CommunicationOverviewApi(authenticatedApi);
-      const { rawResponse, responseBody, responseTime } = await api.getOverview(
-        testCase.params,
-      );
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const { rawResponse, responseBody, responseTime } = await api.getOverview(testCase.params);
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new CommunicationOverviewValidator();
       const edges = new MisDashboardEdgesValidator();
 
       validation.execute("Status", () =>
-        assert.validateStatusCode(
-          rawResponse,
-          testCase.expectedStatus,
-          responseBody,
-        ),
+        assert.validateStatusCode(rawResponse, testCase.expectedStatus, responseBody),
       );
       validation.execute("Content", () =>
         assert.validateContentType(rawResponse, "application/json"),
       );
-      validation.execute("Performance", () =>
-        assert.validateResponseTime(responseTime, 120000),
-      );
-      validation.execute("Sensitive Data", () =>
-        assert.validateSensitiveData(responseBody),
-      );
+      validation.execute("Performance", () => assert.validateResponseTime(responseTime, 120000));
+      validation.execute("Sensitive Data", () => assert.validateSensitiveData(responseBody));
 
       if (testCase.expectedStatus !== 200) {
-        validation.execute("Error code", () =>
-          edges.validateValidationError(responseBody),
-        );
+        validation.execute("Error code", () => edges.validateValidationError(responseBody));
         validation.printSummary(testCase.testName, responseTime);
         return;
       }
@@ -58,9 +45,7 @@ test.describe("Talking vs not talking overview", () => {
           testCase.expectSameDayWindow,
         ),
       );
-      validation.execute("Talking vs not talking adds up", () =>
-        validator.validateOverall(data),
-      );
+      validation.execute("Talking vs not talking adds up", () => validator.validateOverall(data));
       validation.execute("Meter type list", () => validator.validatePhases(data));
       if (testCase.checkExpectedLabels !== false) {
         validation.execute("Expected meter type names", () =>
@@ -87,8 +72,8 @@ test.describe("Talking vs not talking overview", () => {
     { tag: ["@mis-dashboard", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new CommunicationOverviewApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new CommunicationOverviewValidator();
       const [allResult, consumerResult, dtrResult] = await Promise.all([
         api.getOverview({ ...communicationOverviewQuery, assetType: "all" }),
@@ -105,13 +90,9 @@ test.describe("Talking vs not talking overview", () => {
       validation.execute("Consumer status", () =>
         assert.validateStatusCode(consumerResult.rawResponse, 200),
       );
-      validation.execute("DTR status", () =>
-        assert.validateStatusCode(dtrResult.rawResponse, 200),
-      );
+      validation.execute("DTR status", () => assert.validateStatusCode(dtrResult.rawResponse, 200));
       const allMeters = CommunicationOverviewMapper.map(allResult.responseBody.data);
-      const consumers = CommunicationOverviewMapper.map(
-        consumerResult.responseBody.data,
-      );
+      const consumers = CommunicationOverviewMapper.map(consumerResult.responseBody.data);
       const dtrs = CommunicationOverviewMapper.map(dtrResult.responseBody.data);
       validation.execute("All equals consumer plus DTR", () =>
         validator.validateAllEqualsConsumerPlusDtr(allMeters, consumers, dtrs),

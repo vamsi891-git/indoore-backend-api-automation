@@ -51,6 +51,8 @@ export interface DtrMasterTestCase {
   query: DtrMasterQuery;
   tags: string[];
   searchTerm?: string;
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export const dtrMasterTestCases: DtrMasterTestCase[] = [
@@ -58,16 +60,19 @@ export const dtrMasterTestCases: DtrMasterTestCase[] = [
     testName: "DTR list — first page shows columns, records, and page numbers",
     query: { ...dtrMasterDefaultQuery },
     tags: ["@smoke", "@master-data", "@dtr-master"],
+    nonEmptyExpected: true,
   },
   {
     testName: "DTR list — page 2 shows the next set of records",
     query: { ...dtrMasterPage2Query },
     tags: ["@master-data", "@dtr-master"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR list — a smaller page size shows fewer records",
     query: { ...dtrMasterSmallPageQuery },
     tags: ["@master-data", "@dtr-master"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR list — search finds the DTR name or meter serial",
@@ -76,16 +81,19 @@ export const dtrMasterTestCases: DtrMasterTestCase[] = [
       q: resolveDtrMasterSearchTerm(),
     },
     tags: ["@master-data", "@dtr-master"],
+    nonEmptyExpected: false,
     searchTerm: resolveDtrMasterSearchTerm(),
   },
   {
     testName: "DTR list — an empty search shows the full list",
     query: { ...dtrMasterDefaultQuery, q: "" },
     tags: ["@master-data", "@dtr-master", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR list — a page past the last page shows no records",
     query: { page: 99999, limit: 20 },
     tags: ["@master-data", "@dtr-master", "@edge"],
+    nonEmptyExpected: false,
   },
 ];

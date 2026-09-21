@@ -1,5 +1,5 @@
 import type pg from "pg";
-import { queryScalar } from "../../../core/db/postgres.client";
+import { queryScalar } from "../../../extras/db/postgres.client";
 import {
   OD_ACTIVE_DTR_COUNT_SQL,
   OD_ACTIVE_FEEDER_COUNT_SQL,

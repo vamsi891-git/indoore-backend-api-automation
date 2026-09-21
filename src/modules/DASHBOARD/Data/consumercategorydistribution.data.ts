@@ -5,11 +5,9 @@ import type {
   ConsumerCategoryDistributionScenario,
 } from "../Mapper/consumercategorydistribution.mapper";
 
-export const consumerCategoryDistributionMaxResponseTimeMs =
-  MASTER_DATA_MAX_RESPONSE_TIME_MS;
+export const consumerCategoryDistributionMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 
-export const consumerCategoryDistributionSuccessMessage =
-  "Data fetched successfully";
+export const consumerCategoryDistributionSuccessMessage = "Data fetched successfully";
 
 export {
   dtrUnbalanceUnauthorizedMessage as consumerCategoryDistributionUnauthorizedMessage,
@@ -31,15 +29,14 @@ export const CONSUMER_CATEGORY_DISTRIBUTION_COLUMN_KEYS = [
  * Query category display names → metrics `categoryWiseConsumer` keys.
  * Backend matches LOWER(BTRIM(M_Category.CategoryName)).
  */
-export const CONSUMER_CATEGORY_DISTRIBUTION_METRICS_KEY: Record<string, string> =
-  {
-    Residential: "residential",
-    Commercial: "commercial",
-    Industrial: "industrial",
-    Temporary: "temporary",
-    "Street Light": "streetLight",
-    "Electric Vehicle Charging Station": "electricVehicleChargingStation",
-  };
+export const CONSUMER_CATEGORY_DISTRIBUTION_METRICS_KEY: Record<string, string> = {
+  Residential: "residential",
+  Commercial: "commercial",
+  Industrial: "industrial",
+  Temporary: "temporary",
+  "Street Light": "streetLight",
+  "Electric Vehicle Charging Station": "electricVehicleChargingStation",
+};
 
 const columns = [
   { key: "slNo", header: "Sl.No." },
@@ -80,10 +77,8 @@ function withRowsContract(): ConsumerCategoryDistributionResponse {
   };
 }
 
-export const consumerCategoryDistributionContractResidential =
-  withRowsContract();
-export const consumerCategoryDistributionContractCommercial =
-  withRowsContract();
+export const consumerCategoryDistributionContractResidential = withRowsContract();
+export const consumerCategoryDistributionContractCommercial = withRowsContract();
 
 export const consumerCategoryDistributionContractResidentialEmpty: ConsumerCategoryDistributionResponse =
   {
@@ -102,11 +97,11 @@ export interface ConsumerCategoryDistributionTestCase {
   expectedStatus?: number;
   isContractFixture?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
-export function categoryForScenario(
-  scenario: ConsumerCategoryDistributionScenario,
-): string {
+export function categoryForScenario(scenario: ConsumerCategoryDistributionScenario): string {
   switch (scenario) {
     case "dev_live_commercial":
     case "contract_commercial":
@@ -147,49 +142,56 @@ export function resolveConsumerCategoryDistributionContractBody(
   }
 }
 
-export const consumerCategoryDistributionTestCases: ConsumerCategoryDistributionTestCase[] =
-  [
-    {
-      testName: "Consumers by category — residential connections",
-      scenario: "dev_live_residential",
-      tags: ["@smoke", "@dashboard", "@consumer-category-distribution"],
-    },
-    {
-      testName: "Consumers by category — commercial connections",
-      scenario: "dev_live_commercial",
-      tags: ["@dashboard", "@consumer-category-distribution"],
-    },
-    {
-      testName: "Consumers by category — industrial connections",
-      scenario: "dev_live_industrial",
-      tags: ["@dashboard", "@consumer-category-distribution"],
-    },
-    {
-      testName: "Consumers by category — page 2 still shows a valid list",
-      scenario: "dev_live_page_limit",
-      tags: ["@dashboard", "@consumer-category-distribution", "@edge"],
-    },
-    {
-      testName: "Consumers by category — extra unused filters are ignored",
-      scenario: "dev_ignore_unknown_query",
-      tags: ["@dashboard", "@consumer-category-distribution", "@edge"],
-    },
-    {
-      testName: "Saved example — Residential with rows (offline)",
-      scenario: "contract_residential",
-      isContractFixture: true,
-      tags: ["@contract", "@dashboard", "@consumer-category-distribution"],
-    },
-    {
-      testName: "Saved example — Commercial with rows (offline)",
-      scenario: "contract_commercial",
-      isContractFixture: true,
-      tags: ["@contract", "@dashboard", "@consumer-category-distribution"],
-    },
-    {
-      testName: "Saved example — Residential empty page (offline)",
-      scenario: "contract_residential_empty",
-      isContractFixture: true,
-      tags: ["@contract", "@dashboard", "@consumer-category-distribution"],
-    },
-  ];
+export const consumerCategoryDistributionTestCases: ConsumerCategoryDistributionTestCase[] = [
+  {
+    testName: "Consumers by category — residential connections",
+    scenario: "dev_live_residential",
+    tags: ["@smoke", "@dashboard", "@consumer-category-distribution"],
+    nonEmptyExpected: true,
+  },
+  {
+    testName: "Consumers by category — commercial connections",
+    scenario: "dev_live_commercial",
+    tags: ["@dashboard", "@consumer-category-distribution"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumers by category — industrial connections",
+    scenario: "dev_live_industrial",
+    tags: ["@dashboard", "@consumer-category-distribution"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumers by category — page 2 still shows a valid list",
+    scenario: "dev_live_page_limit",
+    tags: ["@dashboard", "@consumer-category-distribution", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumers by category — extra unused filters are ignored",
+    scenario: "dev_ignore_unknown_query",
+    tags: ["@dashboard", "@consumer-category-distribution", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Saved example — Residential with rows (offline)",
+    scenario: "contract_residential",
+    isContractFixture: true,
+    tags: ["@contract", "@dashboard", "@consumer-category-distribution"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Saved example — Commercial with rows (offline)",
+    scenario: "contract_commercial",
+    isContractFixture: true,
+    tags: ["@contract", "@dashboard", "@consumer-category-distribution"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Saved example — Residential empty page (offline)",
+    scenario: "contract_residential_empty",
+    isContractFixture: true,
+    tags: ["@contract", "@dashboard", "@consumer-category-distribution"],
+    nonEmptyExpected: false,
+  },
+];

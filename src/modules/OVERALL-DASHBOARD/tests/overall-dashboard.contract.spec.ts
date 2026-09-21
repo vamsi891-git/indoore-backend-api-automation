@@ -6,7 +6,7 @@ import { test, expect } from "../../../fixtures/observability.fixture";
 import {
   assertContractSnapshot,
   buildLookupItemsContractSnapshot,
-} from "../../../core/contract/contract-snapshot.helper";
+} from "../../../extras/contract/contract-snapshot.helper";
 import { DashboardMetricsApi } from "../Api/dashboardmetrics.api";
 import { DtrCommunicationApi } from "../Api/dtrcommunication.api";
 import { InstallationSummaryApi } from "../Api/installationsummary.api";
@@ -16,9 +16,7 @@ import { INSTALLATION_SUMMARY_PATH } from "../Data/installationsummary.data";
 import { DISCONNECTION_DETAILS_PATH } from "../Data/disconnectiondetails.data";
 
 function asRecord(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === "object"
-    ? (value as Record<string, unknown>)
-    : {};
+  return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
 test.describe("Home dashboard — saved field lists", () => {
@@ -33,11 +31,8 @@ test.describe("Home dashboard — saved field lists", () => {
       ).getDashboardMetrics();
       expect(responseBody.success).toBe(true);
       const data = asRecord(responseBody.data);
-      const installation = Array.isArray(data.installationSummary)
-        ? data.installationSummary
-        : [];
-      const firstInstall =
-        installation.length > 0 ? asRecord(installation[0]) : {};
+      const installation = Array.isArray(data.installationSummary) ? data.installationSummary : [];
+      const firstInstall = installation.length > 0 ? asRecord(installation[0]) : {};
       await assertContractSnapshot(
         "overall-dashboard/dashboard-metrics",
         buildLookupItemsContractSnapshot({
@@ -76,11 +71,7 @@ test.describe("Home dashboard — saved field lists", () => {
   test(
     "Mapped vs unmapped meters — the field list still matches what we saved",
     {
-      tag: [
-        "@contract-snapshot",
-        "@overall-dashboard",
-        "@installation-summary",
-      ],
+      tag: ["@contract-snapshot", "@overall-dashboard", "@installation-summary"],
     },
     async ({ authenticatedApi }) => {
       const { responseBody } = await new InstallationSummaryApi(
@@ -103,11 +94,7 @@ test.describe("Home dashboard — saved field lists", () => {
   test(
     "Connect and disconnect by month — the field list still matches what we saved",
     {
-      tag: [
-        "@contract-snapshot",
-        "@overall-dashboard",
-        "@disconnection-details",
-      ],
+      tag: ["@contract-snapshot", "@overall-dashboard", "@disconnection-details"],
     },
     async ({ authenticatedApi }) => {
       const { responseBody } = await new DisconnectionDetailsApi(
@@ -121,8 +108,7 @@ test.describe("Home dashboard — saved field lists", () => {
         buildLookupItemsContractSnapshot({
           pathPattern: DISCONNECTION_DETAILS_PATH,
           dataKeys: Object.keys(data).sort(),
-          itemKeys:
-            months.length > 0 ? Object.keys(asRecord(months[0])).sort() : [],
+          itemKeys: months.length > 0 ? Object.keys(asRecord(months[0])).sort() : [],
         }),
       );
     },

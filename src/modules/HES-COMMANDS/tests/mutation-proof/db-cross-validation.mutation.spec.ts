@@ -1,8 +1,9 @@
 import { test, expect } from "@playwright/test";
-import { compareApiToDb } from "../../../../core/db/db-compare.engine";
+import { compareApiToDb } from "../../../../extras/db/db-compare.engine";
 import { compareHesCommandsCountLteDb } from "../../Db/hes-commands-db-compare";
 test.describe("Mutation proof — HES-COMMANDS DB (fixture)", () => {
-  test("MUT-HES-CO-DB-001 — compareApiToDb fails on mismatch",
+  test(
+    "MUT-HES-CO-DB-001 — compareApiToDb fails on mismatch",
     { tag: ["@mutation-proof", "@hes-commands"] },
     async () => {
       let caught: Error | undefined;
@@ -18,7 +19,7 @@ test.describe("Mutation proof — HES-COMMANDS DB (fixture)", () => {
     },
   );
   test(
- "MUT-HES-CO-DB-002 — lte assert fails when API > DB",
+    "MUT-HES-CO-DB-002 — lte assert fails when API > DB",
     { tag: ["@mutation-proof", "@hes-commands"] },
     async () => {
       expect(() =>

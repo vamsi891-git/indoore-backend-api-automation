@@ -1,4 +1,4 @@
-﻿import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
+﻿import { compareApiToDb, type DbCompareObs } from "../../../extras/db/db-compare.engine";
 
 export function compareUsersProfileImageCountLteDb(options: {
   label: string;

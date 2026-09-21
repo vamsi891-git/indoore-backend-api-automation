@@ -1,16 +1,26 @@
 import { expect } from "@playwright/test";
 import type { APIRequestContext } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { BulkUploadConsumersApi } from "../Api/bulk-upload-consumers.api";
-import {bulkUploadConsumersMaxResponseTimeMs,bulkUploadConsumersTestCases,ensureBulkConsumerExistingCid,ensureBulkConsumerNearestAcctId,hasBulkConsumerExistingCid,hasBulkConsumerMeterPool,hasBulkConsumerNearestAcctId,} from "../Data/bulk-upload-consumers.data";
+import {
+  bulkUploadConsumersMaxResponseTimeMs,
+  bulkUploadConsumersTestCases,
+  ensureBulkConsumerExistingCid,
+  ensureBulkConsumerNearestAcctId,
+  hasBulkConsumerExistingCid,
+  hasBulkConsumerMeterPool,
+  hasBulkConsumerNearestAcctId,
+} from "../Data/bulk-upload-consumers.data";
 import { shouldSkipMasterDataTestForEnv } from "../utils/master-data-env.helper";
 import { shouldSkipKnownBackendDefects } from "../utils/master-data-manual-validations.helper";
 import { ensureConsumerLookupContext } from "../utils/consumer-lookup.helper";
-import {ensureValidateMeterRuntimeContext,getValidateMeterSerial,runtimeMeterSerialEnvKey,} from "../utils/validate-meter-runtime.helper";
+import {
+  ensureValidateMeterRuntimeContext,
+  getValidateMeterSerial,
+  runtimeMeterSerialEnvKey,
+} from "../utils/validate-meter-runtime.helper";
 import { ensureConsumerMeterRuntimeContext } from "../utils/consumer-meter-runtime.helper";
 import { ensureConsumerBulkHierarchyFromMasterData } from "../utils/consumer-bulk-hierarchy.helper";
 import { BulkUploadConsumersMapper } from "../Mapper/bulk-upload-consumers.mapper";
@@ -20,6 +30,7 @@ import {
   BulkUploadConsumersRowOutcomeResponseSchema,
   BulkUploadConsumersSuccessResponseSchema,
 } from "../schemas/master-data.schemas";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 type BulkUploadConsumersTestCase = (typeof bulkUploadConsumersTestCases)[number];
 
@@ -56,9 +67,7 @@ function shouldSkipForEnv(testCase: BulkUploadConsumersTestCase): boolean {
   return shouldSkipMasterDataTestForEnv(testCase.envKeys);
 }
 
-function missingRuntimeMeterSerial(
-  scenario: BulkUploadConsumersTestCase["scenario"],
-): boolean {
+function missingRuntimeMeterSerial(scenario: BulkUploadConsumersTestCase["scenario"]): boolean {
   const envKey = runtimeMeterSerialEnvKey(scenario);
   if (!envKey) {
     return false;
@@ -74,10 +83,9 @@ function needsAssignableMeter(testCase: BulkUploadConsumersTestCase): boolean {
 }
 
 function needsNearestAcctId(testCase: BulkUploadConsumersTestCase): boolean {
-  return ![
-    "row_invalid_nearest_acct_id",
-    "row_missing_nearest_acct_id",
-  ].includes(testCase.scenario);
+  return !["row_invalid_nearest_acct_id", "row_missing_nearest_acct_id"].includes(
+    testCase.scenario,
+  );
 }
 
 function shouldSkipTestCase(testCase: BulkUploadConsumersTestCase): string | null {
@@ -93,24 +101,15 @@ function shouldSkipTestCase(testCase: BulkUploadConsumersTestCase): string | nul
     return `Could not resolve runtime meter serial for ${testCase.scenario}`;
   }
 
-  if (
-    testCase.scenario === "row_consumer_id_exists" &&
-    !hasBulkConsumerExistingCid()
-  ) {
+  if (testCase.scenario === "row_consumer_id_exists" && !hasBulkConsumerExistingCid()) {
     return "No existing Consumer ID resolved from consumer master for duplicate-CID test";
   }
 
-  if (
-    BULK_SUCCESS_SCENARIOS.has(testCase.scenario) &&
-    !hasBulkConsumerNearestAcctId()
-  ) {
+  if (BULK_SUCCESS_SCENARIOS.has(testCase.scenario) && !hasBulkConsumerNearestAcctId()) {
     return "No valid Nearest Acct. ID resolved for bulk-upload-consumers success scenarios";
   }
 
-  if (
-    BULK_SUCCESS_SCENARIOS.has(testCase.scenario) &&
-    !hasBulkConsumerMeterPool()
-  ) {
+  if (BULK_SUCCESS_SCENARIOS.has(testCase.scenario) && !hasBulkConsumerMeterPool()) {
     return "No assignable meters provisioned via add-meter for bulk-upload-consumers success scenarios";
   }
 
@@ -137,10 +136,7 @@ async function ensureBulkUploadConsumerTestReady(
     await ensureValidateMeterRuntimeContext(authenticatedApi);
   }
 
-  if (
-    BULK_SUCCESS_SCENARIOS.has(testCase.scenario) ||
-    needsAssignableMeter(testCase)
-  ) {
+  if (BULK_SUCCESS_SCENARIOS.has(testCase.scenario) || needsAssignableMeter(testCase)) {
     if (!hasBulkConsumerMeterPool()) {
       await ensureConsumerMeterRuntimeContext(authenticatedApi);
     }
@@ -150,10 +146,7 @@ async function ensureBulkUploadConsumerTestReady(
     await ensureBulkConsumerNearestAcctId(authenticatedApi);
   }
 
-  if (
-    testCase.scenario === "row_consumer_id_exists" &&
-    !hasBulkConsumerExistingCid()
-  ) {
+  if (testCase.scenario === "row_consumer_id_exists" && !hasBulkConsumerExistingCid()) {
     await ensureBulkConsumerExistingCid(authenticatedApi);
   }
 }
@@ -164,8 +157,7 @@ async function runBulkUploadConsumerTestCase(
 ): Promise<void> {
   const upload = await testCase.buildUpload();
   const api = new BulkUploadConsumersApi(authenticatedApi);
-  const { rawResponse, responseBody, responseTime } =
-    await api.bulkUploadConsumers(upload);
+  const { rawResponse, responseBody, responseTime } = await api.bulkUploadConsumers(upload);
 
   if (
     testCase.scenario === "bulk_success" ||
@@ -175,30 +167,21 @@ async function runBulkUploadConsumerTestCase(
     console.log(JSON.stringify(responseBody, null, 2));
   }
 
-  await PerformanceTracker.track(
-        rawResponse,
-        testCase.testName,
-        rawResponse.url(),
-        responseTime
-      );
+  await PerformanceTracker.track(rawResponse, testCase.testName, rawResponse.url(), responseTime);
 
-  const assert = new AssertionEngine();
-  const validation = new ValidationEngine();
+  const assert = new ApiValidationHelper();
+  const validation = new ApiValidationHelper();
   const validator = new BulkUploadConsumersValidator();
   const mapped = BulkUploadConsumersMapper.map(responseBody);
 
   validation.execute("Status Validation", () =>
     expect(rawResponse.status()).toBe(testCase.expectedStatus),
   );
-  validation.execute("Content Validation", () =>
-    assert.validateContentType(rawResponse),
-  );
+  validation.execute("Content Validation", () => assert.validateContentType(rawResponse));
   validation.execute("Response Time", () =>
-    assert.validateResponseTime(responseTime,bulkUploadConsumersMaxResponseTimeMs,),
+    assert.validateResponseTime(responseTime, bulkUploadConsumersMaxResponseTimeMs),
   );
-  validation.execute("Security Validation", () =>
-    assert.validateSensitiveData(responseBody),
-  );
+  validation.execute("Security Validation", () => assert.validateSensitiveData(responseBody));
   if (BULK_SUCCESS_SCENARIOS.has(testCase.scenario)) {
     validation.execute("Zod Response Schema", () =>
       MasterDataCommonValidator.validateZodResponseSchema(
@@ -207,11 +190,7 @@ async function runBulkUploadConsumerTestCase(
       ),
     );
     validation.execute("Required Fields", () =>
-      assert.validateRequiredFields(responseBody, [
-        "success",
-        "message",
-        "data",
-      ]),
+      assert.validateRequiredFields(responseBody, ["success", "message", "data"]),
     );
   } else if (!FILE_ERROR_SCENARIOS.has(testCase.scenario)) {
     validation.execute("Zod Response Schema", () =>
@@ -221,11 +200,7 @@ async function runBulkUploadConsumerTestCase(
       ),
     );
     validation.execute("Required Fields", () =>
-      assert.validateRequiredFields(responseBody, [
-        "success",
-        "message",
-        "data",
-      ]),
+      assert.validateRequiredFields(responseBody, ["success", "message", "data"]),
     );
   } else {
     validation.execute("Required Fields", () => {
@@ -247,45 +222,38 @@ function registerBulkUploadConsumerTests(
   options: { expectKnownDefect?: boolean } = {},
 ): void {
   for (const testCase of cases) {
-    test(
-      testCase.testName,
-      { tag: testCase.tags },
-      async ({ authenticatedApi }) => {
-        await ensureBulkUploadConsumerTestReady(authenticatedApi, testCase);
-        const skipReason = shouldSkipTestCase(testCase);
-        if (skipReason) {
-          test.skip(true, skipReason);
-          return;
-        }
+    test(testCase.testName, { tag: testCase.tags }, async ({ authenticatedApi }) => {
+      await ensureBulkUploadConsumerTestReady(authenticatedApi, testCase);
+      const skipReason = shouldSkipTestCase(testCase);
+      if (skipReason) {
+        test.skip(true, skipReason);
+        return;
+      }
 
-        if (options.expectKnownDefect) {
-          try {
-            await runBulkUploadConsumerTestCase(authenticatedApi, testCase);
-            expect(
-              false,
-              `${testCase.scenario}: API now matches manual rule — remove @backend-defect`,
-            ).toBe(true);
-          } catch (error) {
-            const detail =
-              error instanceof Error ? error.message : String(error);
-            console.log(
-              `[backend-defect] ${testCase.scenario} still open: ${detail.split("\n")[0]}`,
-            );
-          }
-          return;
+      if (options.expectKnownDefect) {
+        try {
+          await runBulkUploadConsumerTestCase(authenticatedApi, testCase);
+          expect(
+            false,
+            `${testCase.scenario}: API now matches manual rule — remove @backend-defect`,
+          ).toBe(true);
+        } catch (error) {
+          const detail = error instanceof Error ? error.message : String(error);
+          console.log(`[backend-defect] ${testCase.scenario} still open: ${detail.split("\n")[0]}`);
         }
+        return;
+      }
 
-        await runBulkUploadConsumerTestCase(authenticatedApi, testCase);
-      },
-    );
+      await runBulkUploadConsumerTestCase(authenticatedApi, testCase);
+    });
   }
 }
 
 const enforcementTestCases = bulkUploadConsumersTestCases.filter(
   (testCase) => !isBackendDefectTestCase(testCase),
 );
-const backendDefectTestCases = bulkUploadConsumersTestCases.filter(
-  (testCase) => isBackendDefectTestCase(testCase),
+const backendDefectTestCases = bulkUploadConsumersTestCases.filter((testCase) =>
+  isBackendDefectTestCase(testCase),
 );
 
 // SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
@@ -307,12 +275,8 @@ test.describe.skip("Master data — Excel upload (consumers)", () => {
     console.log(
       `[bulk-upload-consumers] assignable meter pool (${runtime?.pool.length ?? 0}): ${runtime?.pool.join(", ") || "empty"}`,
     );
-    console.log(
-      `[bulk-upload-consumers] nearest account id: ${nearestAcctId ?? "none"}`,
-    );
-    console.log(
-      `[bulk-upload-consumers] existing consumer id: ${existingCid ?? "none"}`,
-    );
+    console.log(`[bulk-upload-consumers] nearest account id: ${nearestAcctId ?? "none"}`);
+    console.log(`[bulk-upload-consumers] existing consumer id: ${existingCid ?? "none"}`);
   });
 
   test.afterEach(async () => {

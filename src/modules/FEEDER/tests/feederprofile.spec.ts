@@ -4,14 +4,10 @@ import { FeederProfileApi } from "../Api/feederprofile.api";
 import { feederProfileData } from "../Data/feederprofile.data";
 import { FeederProfileMapper } from "../Mapper/feederprofile.mapper";
 import { FeederProfileValidator } from "../Validator/feederprofile.validator";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { FeederProfileSuccessResponseSchema } from "../schemas/feeder.schemas";
-import {
-  resolveFeederCode,
-  skipIfFeederInternalError,
-} from "../utils/feeder-env.helper";
+import { resolveFeederCode, skipIfFeederInternalError } from "../utils/feeder-env.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Feeder profile", () => {
   test(
@@ -22,8 +18,7 @@ test.describe("Feeder profile", () => {
     async ({ authenticatedApi }) => {
       const feederCode = resolveFeederCode(feederProfileData.feederCode);
       const api = new FeederProfileApi(authenticatedApi);
-      const { rawResponse, responseBody, responseTime } =
-        await api.getFeederProfile(feederCode);
+      const { rawResponse, responseBody, responseTime } = await api.getFeederProfile(feederCode);
       await PerformanceTracker.track(
         rawResponse,
         "Feeder profile — name, status, parent DTR, and overview cards load",
@@ -35,24 +30,15 @@ test.describe("Feeder profile", () => {
         responseBody,
         `/indore/feeder/${feederCode}/profile`,
       );
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
-      validation.execute("Status Code", () =>
-        assert.validateStatusCode(rawResponse, 200),
-      );
-      validation.execute("Content Type", () =>
-        assert.validateContentType(rawResponse),
-      );
-      validation.execute("Response Time", () =>
-        assert.validateResponseTime(responseTime, 30000),
-      );
-      validation.execute("Sensitive Data", () =>
-        assert.validateSensitiveData(responseBody),
-      );
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
+      validation.execute("Status Code", () => assert.validateStatusCode(rawResponse, 200));
+      validation.execute("Content Type", () => assert.validateContentType(rawResponse));
+      validation.execute("Response Time", () => assert.validateResponseTime(responseTime, 30000));
+      validation.execute("Sensitive Data", () => assert.validateSensitiveData(responseBody));
       if (rawResponse.status() === 200) {
         validation.execute("Zod Response Schema", () => {
-          const result =
-            FeederProfileSuccessResponseSchema.safeParse(responseBody);
+          const result = FeederProfileSuccessResponseSchema.safeParse(responseBody);
           expect(
             result.success,
             result.success
@@ -63,15 +49,11 @@ test.describe("Feeder profile", () => {
       }
       const mapped = FeederProfileMapper.map(responseBody);
       const validator = new FeederProfileValidator();
-      validation.execute("Success Flag Validation", () =>
-        validator.validateSuccess(responseBody),
-      );
+      validation.execute("Success Flag Validation", () => validator.validateSuccess(responseBody));
       validation.execute("Response Data Validation", () =>
         validator.validateResponseData(responseBody),
       );
-      validation.execute("Field Validation", () =>
-        validator.validateFields(mapped),
-      );
+      validation.execute("Field Validation", () => validator.validateFields(mapped));
       validation.execute("Feeder Code Validation", () =>
         validator.validateFeederCode(mapped, feederCode),
       );
@@ -82,20 +64,11 @@ test.describe("Feeder profile", () => {
         validator.validateOverviewStructure(mapped.overview),
       );
       validation.execute("Overview Order Validation", () =>
-        validator.validateOverviewOrder(
-          mapped.overview,
-          feederProfileData.expectedOverviewTitles,
-        ),
+        validator.validateOverviewOrder(mapped.overview, feederProfileData.expectedOverviewTitles),
       );
-      validation.execute("Type Validation", () =>
-        validator.validateTypes(mapped),
-      );
-      validation.execute("Status Validation", () =>
-        validator.validateStatus(mapped),
-      );
-      validation.execute("Parent DTR Validation", () =>
-        validator.validateParentDtr(mapped),
-      );
+      validation.execute("Type Validation", () => validator.validateTypes(mapped));
+      validation.execute("Status Validation", () => validator.validateStatus(mapped));
+      validation.execute("Parent DTR Validation", () => validator.validateParentDtr(mapped));
       validation.execute("Feeder Status Logic Validation", () =>
         validator.validateFeederStatusLogic(mapped),
       );

@@ -1,6 +1,6 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { EventLogCardsQuery } from "../Api/eventlogcards.api";
-import type {EventLogCardsResponse,EventLogCardsScenario,} from "../Mapper/eventlogcards.mapper";
+import type { EventLogCardsResponse, EventLogCardsScenario } from "../Mapper/eventlogcards.mapper";
 import {
   CONSUMERS_LIVE_IVRS,
   CONSUMERS_LIVE_METER_ROUTE,
@@ -13,9 +13,9 @@ export const eventLogCardsMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 export const eventLogCardsDefaultIvrs = CONSUMERS_LIVE_IVRS;
 export const eventLogCardsDefaultConsumerId = CONSUMERS_LIVE_IVRS;
 export const eventLogCardsDefaultMeterRoute = CONSUMERS_LIVE_METER_ROUTE;
-export const eventLogCardsNotFoundRef = "INVALID_CONSUMER_XYZ"
+export const eventLogCardsNotFoundRef = "INVALID_CONSUMER_XYZ";
 export const eventLogCardsMeterNotFoundRef = "meter-999999999";
-export const eventLogCardsEmptyRef = " "
+export const eventLogCardsEmptyRef = " ";
 /** User-provided live sample — getEmptyEventCards() shape. */
 export const eventLogCardsContractEmptyResponse: EventLogCardsResponse = {
   success: true,
@@ -134,11 +134,11 @@ export interface EventLogCardsTestCase {
   expectedStatus?: number;
   isContractFixture?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
-export function resolveEventLogCardsRef(
-  scenario: EventLogCardsScenario,
-): string | undefined {
+export function resolveEventLogCardsRef(scenario: EventLogCardsScenario): string | undefined {
   switch (scenario) {
     case "elc_by_ivrs":
     case "elc_ignore_unknown_query":
@@ -179,9 +179,7 @@ export function resolveEventLogCardsRef(
   }
 }
 
-export function resolveEventLogCardsQuery(
-  scenario: EventLogCardsScenario,
-): EventLogCardsQuery {
+export function resolveEventLogCardsQuery(scenario: EventLogCardsScenario): EventLogCardsQuery {
   if (scenario === "elc_ignore_unknown_query") {
     return { foo: 1 };
   }
@@ -207,74 +205,74 @@ export function resolveEventLogCardsContractBody(
 
 export const eventLogCardsTestCases: EventLogCardsTestCase[] = [
   {
-    testName:
-      "Event summary — cards for the consumer",
+    testName: "Event summary — cards for the consumer",
     scenario: "elc_by_ivrs",
     tags: ["@smoke", "@consumer", "@event-log", "@event-log-cards"],
+    nonEmptyExpected: true,
   },
   {
-    testName:
-      "Event summary — opens using the account number",
+    testName: "Event summary — opens using the account number",
     scenario: "elc_by_account",
     tags: ["@consumer", "@event-log", "@event-log-cards", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Event summary — opens using the meter",
+    testName: "Event summary — opens using the meter",
     scenario: "elc_by_meter",
     tags: ["@consumer", "@event-log", "@event-log-cards", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Event summary — extra unused options are ignored",
+    testName: "Event summary — extra unused options are ignored",
     scenario: "elc_ignore_unknown_query",
     tags: ["@consumer", "@event-log", "@event-log-cards", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Event summary — sample: all zeros",
+    testName: "Event summary — sample: all zeros",
     scenario: "contract_empty_cards",
     isContractFixture: true,
     tags: ["@consumer", "@event-log", "@event-log-cards", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Event summary — sample: resolved and pending counts",
+    testName: "Event summary — sample: resolved and pending counts",
     scenario: "contract_nonzero_cards",
     isContractFixture: true,
     tags: ["@consumer", "@event-log", "@event-log-cards", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Event summary — sample: change vs yesterday is correct",
+    testName: "Event summary — sample: change vs yesterday is correct",
     scenario: "contract_trend_formula",
     isContractFixture: true,
     tags: ["@consumer", "@event-log", "@event-log-cards", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Event summary — sample: long restore time shown as hours and minutes",
+    testName: "Event summary — sample: long restore time shown as hours and minutes",
     scenario: "contract_avg_display",
     isContractFixture: true,
     tags: ["@consumer", "@event-log", "@event-log-cards", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Event summary — unknown consumer is empty or not found",
+    testName: "Event summary — unknown consumer is empty or not found",
     scenario: "consumer_not_found",
     tags: ["@consumer", "@event-log", "@event-log-cards", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Event summary — unknown meter is empty or not found",
+    testName: "Event summary — unknown meter is empty or not found",
     scenario: "meter_not_found",
     tags: ["@consumer", "@event-log", "@event-log-cards", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Event summary — blank consumer number is rejected",
+    testName: "Event summary — blank consumer number is rejected",
     scenario: "empty_consumer_ref",
     expectedStatus: 400,
     tags: ["@consumer", "@event-log", "@event-log-cards", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

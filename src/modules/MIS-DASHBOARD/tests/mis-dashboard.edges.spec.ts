@@ -1,22 +1,15 @@
 import { test } from "../../../fixtures/api.fixture";
 import type { APIRequestContext } from "@playwright/test";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { EventPriorityApi } from "../Api/eventpriority.api";
 import { EventPriorityMapper } from "../Mapper/eventpriority.mapper";
 import { EventPriorityOverviewMapper } from "../Mapper/eventpriorityoverview.mapper";
 import { EventPriorityOverviewValidator } from "../Validator/eventpriorityoverview.validator";
 import { EventPriorityValidator } from "../Validator/eventpriority.validator";
 import { MisDashboardEdgesValidator } from "../Validator/mis-dashboard.edges.validator";
-import {
-  misDashboardEdgeCases,
-  type MisDashboardEdgeCase,
-} from "../Data/mis-dashboard.edges.data";
+import { misDashboardEdgeCases, type MisDashboardEdgeCase } from "../Data/mis-dashboard.edges.data";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
-async function callEdge(
-  authenticatedApi: APIRequestContext,
-  testCase: MisDashboardEdgeCase,
-) {
+async function callEdge(authenticatedApi: APIRequestContext, testCase: MisDashboardEdgeCase) {
   return new EventPriorityApi(authenticatedApi).getPriorityData(
     testCase.priority ?? "Priority1",
     testCase.params,
@@ -33,22 +26,16 @@ test.describe("Unusual or invalid requests", () => {
       }
       const responseBody = result.responseBody;
       const responseTime = result.responseTime;
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const edges = new MisDashboardEdgesValidator();
 
       validation.execute("Status", () =>
         assert.validateStatusCode(rawResponse, testCase.expectedStatus, responseBody),
       );
-      validation.execute("Content Type", () =>
-        assert.validateContentType(rawResponse),
-      );
-      validation.execute("Response Time", () =>
-        assert.validateResponseTime(responseTime, 120000),
-      );
-      validation.execute("Sensitive Data", () =>
-        assert.validateSensitiveData(responseBody),
-      );
+      validation.execute("Content Type", () => assert.validateContentType(rawResponse));
+      validation.execute("Response Time", () => assert.validateResponseTime(responseTime, 120000));
+      validation.execute("Sensitive Data", () => assert.validateSensitiveData(responseBody));
 
       if (testCase.expectedStatus !== 200) {
         validation.execute("Error code", () =>

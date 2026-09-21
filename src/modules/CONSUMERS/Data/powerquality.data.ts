@@ -1,6 +1,6 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { PowerQualityQuery } from "../Api/powerquality.api";
-import type {PowerQualityResponse,PowerQualityScenario,} from "../Mapper/powerquality.mapper";
+import type { PowerQualityResponse, PowerQualityScenario } from "../Mapper/powerquality.mapper";
 import {
   CONSUMERS_LIVE_ACCOUNT_ID,
   CONSUMERS_LIVE_IVRS,
@@ -103,10 +103,10 @@ export interface PowerQualityTestCase {
   expectedStatus?: number;
   isContractFixture?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
-export function resolvePowerQualityRef(
-  scenario: PowerQualityScenario,
-): string | undefined {
+export function resolvePowerQualityRef(scenario: PowerQualityScenario): string | undefined {
   switch (scenario) {
     case "pq_by_ivrs":
     case "pq_ignore_unknown_query":
@@ -142,9 +142,7 @@ export function resolvePowerQualityRef(
       return undefined;
   }
 }
-export function resolvePowerQualityQuery(
-  scenario: PowerQualityScenario,
-): PowerQualityQuery {
+export function resolvePowerQualityQuery(scenario: PowerQualityScenario): PowerQualityQuery {
   if (scenario === "pq_ignore_unknown_query") {
     return { foo: 1 };
   }
@@ -166,68 +164,68 @@ export function resolvePowerQualityContractBody(
 }
 export const powerQualityTestCases: PowerQualityTestCase[] = [
   {
-    testName:
-      "Power quality — shown for the consumer",
+    testName: "Power quality — shown for the consumer",
     scenario: "pq_by_ivrs",
     tags: ["@smoke", "@consumer", "@power-quality"],
+    nonEmptyExpected: true,
   },
   {
-    testName:
-      "Power quality — opens using the account number",
+    testName: "Power quality — opens using the account number",
     scenario: "pq_by_account",
     tags: ["@consumer", "@power-quality", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Power quality — opens using the meter",
+    testName: "Power quality — opens using the meter",
     scenario: "pq_by_meter",
     tags: ["@consumer", "@power-quality", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Power quality — extra unused options are ignored",
+    testName: "Power quality — extra unused options are ignored",
     scenario: "pq_ignore_unknown_query",
     tags: ["@consumer", "@power-quality", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Power quality — sample: no live reading yet",
+    testName: "Power quality — sample: no live reading yet",
     scenario: "contract_null_data",
     isContractFixture: true,
     tags: ["@consumer", "@power-quality", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Power quality — sample: single-phase meter",
+    testName: "Power quality — sample: single-phase meter",
     scenario: "contract_sp_metrics",
     isContractFixture: true,
     tags: ["@consumer", "@power-quality", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Power quality — sample: three-phase meter",
+    testName: "Power quality — sample: three-phase meter",
     scenario: "contract_tp_metrics",
     isContractFixture: true,
     tags: ["@consumer", "@power-quality", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Power quality — unknown consumer is not found",
+    testName: "Power quality — unknown consumer is not found",
     scenario: "consumer_not_found",
     expectedStatus: 200,
     tags: ["@consumer", "@power-quality", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Power quality — unknown meter is empty or not found",
+    testName: "Power quality — unknown meter is empty or not found",
     scenario: "meter_not_found",
     tags: ["@consumer", "@power-quality", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Power quality — blank consumer number is rejected",
+    testName: "Power quality — blank consumer number is rejected",
     scenario: "empty_consumer_ref",
     expectedStatus: 400,
     tags: ["@consumer", "@power-quality", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

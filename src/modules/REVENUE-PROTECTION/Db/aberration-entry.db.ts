@@ -1,5 +1,5 @@
 import type pg from "pg";
-import { queryReadOnly, queryScalar } from "../../../core/db/postgres.client";
+import { queryReadOnly, queryScalar } from "../../../extras/db/postgres.client";
 import {
   ABERRATION_ENTRY_COUNT_SQL,
   ABERRATION_ENTRY_EXISTS_BY_IVRS_SQL,
@@ -7,10 +7,7 @@ import {
   ABERRATION_ENTRY_ROW_BY_BUSINESS_KEY_SQL,
 } from "./aberration-entry-sql";
 import type { AberrationEntryQuery, AberrationEntryType } from "../Mapper/aberration-entry.mapper";
-import {
-  resolveDbSampleSize,
-  sampleRowIds,
-} from "./cases.db";
+import { resolveDbSampleSize, sampleRowIds } from "./cases.db";
 
 export type DbAberrationEntryRow = {
   ivrs: string | null;
@@ -26,11 +23,7 @@ export type DbAberrationEntryRow = {
 };
 
 export function isAberrationEntryDbSqlReady(): boolean {
-  return (
-    process.env.RP_ABERRATION_ENTRY_DB_SQL_READY
-      ?.trim()
-      .toLowerCase() === "true"
-  );
+  return process.env.RP_ABERRATION_ENTRY_DB_SQL_READY?.trim().toLowerCase() === "true";
 }
 
 const CASE_LEVEL_BY_ENTRY_TYPE: Record<AberrationEntryType, string> = {
@@ -48,17 +41,11 @@ export async function countAberrationEntryForFilters(
   query: AberrationEntryQuery,
 ): Promise<number> {
   return (
-    (
-      await queryScalar<number>(
-        pool,
-        ABERRATION_ENTRY_COUNT_SQL,
-        [
-          query.month ?? null,
-          query.year ? String(query.year) : null,
-          resolveCaseLevel(query),
-        ],
-      )
-    ) ?? 0
+    (await queryScalar<number>(pool, ABERRATION_ENTRY_COUNT_SQL, [
+      query.month ?? null,
+      query.year ? String(query.year) : null,
+      resolveCaseLevel(query),
+    ])) ?? 0
   );
 }
 
@@ -72,28 +59,14 @@ export async function getAberrationEntryRowByBusinessKey(
   const rows = await queryReadOnly<DbAberrationEntryRow>(
     pool,
     ABERRATION_ENTRY_ROW_BY_BUSINESS_KEY_SQL,
-    [
-      ivrs,
-      eventName,
-      amountBilled,
-      caseLevel ?? null,
-    ],
+    [ivrs, eventName, amountBilled, caseLevel ?? null],
   );
 
   return rows[0] ?? null;
 }
 
-export async function countAberrationEntryByIvrs(
-  pool: pg.Pool,
-  ivrsNo: string,
-): Promise<number> {
-  return (
-    (
-      await queryScalar<number>(pool, ABERRATION_ENTRY_EXISTS_BY_IVRS_SQL, [
-        ivrsNo,
-      ])
-    ) ?? 0
-  );
+export async function countAberrationEntryByIvrs(pool: pg.Pool, ivrsNo: string): Promise<number> {
+  return (await queryScalar<number>(pool, ABERRATION_ENTRY_EXISTS_BY_IVRS_SQL, [ivrsNo])) ?? 0;
 }
 
 export async function getLatestAberrationEntryByIvrs(
@@ -111,7 +84,4 @@ export async function getLatestAberrationEntryByIvrs(
 /**
  * Reuse common DB sampling helpers.
  */
-export {
-  resolveDbSampleSize,
-  sampleRowIds,
-};
+export { resolveDbSampleSize, sampleRowIds };

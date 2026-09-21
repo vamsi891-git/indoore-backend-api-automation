@@ -8,8 +8,6 @@ import {
 } from "../Data/powerfactor.data";
 import { PowerFactorMapper } from "../Mapper/powerfactor.mapper";
 import { PowerFactorValidator } from "../Validator/powerfactoranalysis.validator";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 import { shouldSkipCommercialResponse } from "../utils/commercial-request.helper";
 import {
@@ -21,21 +19,18 @@ import {
 
 test.describe("Power Factor Violation report", () => {
   test.setTimeout(120000);
-  test("Power Factor Violation — report opens, PF is below 0.8, and the same meter is not listed twice on the same DTR",
+  test(
+    "Power Factor Violation — report opens, PF is below 0.8, and the same meter is not listed twice on the same DTR",
     { tag: ["@smoke", "@power-factor"] },
     async ({ authenticatedApi }, testInfo) => {
       const api = new PowerFactorApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new PowerFactorValidator();
-      const { rawResponse, responseBody, responseTime } =
-        await api.getPfAnalysis(pfAnalysisQuery);
+      const { rawResponse, responseBody, responseTime } = await api.getPfAnalysis(pfAnalysisQuery);
 
       if (shouldSkipCommercialResponse(rawResponse.status(), responseBody)) {
-        test.skip(
-          true,
-          `PF analysis unavailable (HTTP ${rawResponse.status()})`,
-        );
+        test.skip(true, `PF analysis unavailable (HTTP ${rawResponse.status()})`);
         return;
       }
       const defectContext = {
@@ -49,67 +44,63 @@ test.describe("Power Factor Violation report", () => {
       };
 
       try {
-      validation.execute("Status Code Validation", () =>
-        assert.validateStatusCode(rawResponse, 200),
-      );
+        validation.execute("Status Code Validation", () =>
+          assert.validateStatusCode(rawResponse, 200),
+        );
 
-      validation.execute("Content Type Validation", () =>
-        assert.validateContentType(rawResponse, "application/json"),
-      );
+        validation.execute("Content Type Validation", () =>
+          assert.validateContentType(rawResponse, "application/json"),
+        );
 
-      validation.execute("Response Time Validation", () =>
-        assert.validateResponseTime(responseTime, 120000),
-      );
+        validation.execute("Response Time Validation", () =>
+          assert.validateResponseTime(responseTime, 120000),
+        );
 
-      validation.execute("Sensitive Data Validation", () =>
-        assert.validateSensitiveData(responseBody),
-      );
+        validation.execute("Sensitive Data Validation", () =>
+          assert.validateSensitiveData(responseBody),
+        );
 
-      if (rawResponse.status() !== 200) {
-        return;
-      }
+        if (rawResponse.status() !== 200) {
+          return;
+        }
 
-      const rows = PowerFactorMapper.mapPfRows(responseBody.data.rows);
+        const rows = PowerFactorMapper.mapPfRows(responseBody.data.rows);
 
-      validation.execute("Response Validation", () =>
-        validator.validateResponse(responseBody),
-      );
+        validation.execute("Response Validation", () => validator.validateResponse(responseBody));
 
-      validation.execute("Grid Columns", () =>
-        validator.validateGridColumns(responseBody),
-      );
+        validation.execute("Grid Columns", () => validator.validateGridColumns(responseBody));
 
-      validation.execute("Query Params Validation", () =>
-        validator.validateQueryParams(responseBody, pfAnalysisQuery),
-      );
+        validation.execute("Query Params Validation", () =>
+          validator.validateQueryParams(responseBody, pfAnalysisQuery),
+        );
 
-      validation.execute("Mandatory Fields Validation", () =>
-        validator.validateMandatoryFields(rows),
-      );
+        validation.execute("Mandatory Fields Validation", () =>
+          validator.validateMandatoryFields(rows),
+        );
 
-      validation.execute("PF Below Threshold Validation", () =>
-        validator.validatePfBelowThreshold(rows, pfAnalysisQuery.threshold),
-      );
+        validation.execute("PF Below Threshold Validation", () =>
+          validator.validatePfBelowThreshold(rows, pfAnalysisQuery.threshold),
+        );
 
-      validation.execute("Report Threshold Column Validation", () =>
-        validator.validateReportThresholdColumn(rows, pfAnalysisQuery.threshold),
-      );
+        validation.execute("Report Threshold Column Validation", () =>
+          validator.validateReportThresholdColumn(rows, pfAnalysisQuery.threshold),
+        );
 
-      validation.execute("Duplicate PF Record Validation", () =>
-        validator.validateNoDuplicatePfRecords(rows),
-      );
+        validation.execute("Duplicate PF Record Validation", () =>
+          validator.validateNoDuplicatePfRecords(rows),
+        );
 
-      validation.execute("Unique meterLookupId / ivrsNumber / msn", () =>
-        validator.validateUniqueIdentityFields(rows),
-      );
+        validation.execute("Unique meterLookupId / ivrsNumber / msn", () =>
+          validator.validateUniqueIdentityFields(rows),
+        );
 
-      validation.execute("Pagination Validation", () =>
-        validator.validatePagination(responseBody, pfAnalysisQuery),
-      );
+        validation.execute("Pagination Validation", () =>
+          validator.validatePagination(responseBody, pfAnalysisQuery),
+        );
 
-      validation.execute("Total Count Validation", () =>
-        validator.validateTotalCount(responseBody, pfAnalysisQuery),
-      );
+        validation.execute("Total Count Validation", () =>
+          validator.validateTotalCount(responseBody, pfAnalysisQuery),
+        );
       } finally {
         ApiValidationHelper.finalize(validation, {
           apiName: "Power Factor API",
@@ -127,18 +118,14 @@ test.describe("Power Factor Violation report", () => {
       { tag: ["@power-factor", "@commercial", `@pf-${categoryCase.label}`] },
       async ({ authenticatedApi }, testInfo) => {
         const api = new PowerFactorApi(authenticatedApi);
-        const assert = new AssertionEngine();
-        const validation = new ValidationEngine();
+        const assert = new ApiValidationHelper();
+        const validation = new ApiValidationHelper();
         const validator = new PowerFactorValidator();
         const query = categoryCase.query;
-        const { rawResponse, responseBody, responseTime } =
-          await api.getPfAnalysis(query);
+        const { rawResponse, responseBody, responseTime } = await api.getPfAnalysis(query);
 
         if (shouldSkipCommercialResponse(rawResponse.status(), responseBody)) {
-          test.skip(
-            true,
-            `PF ${categoryCase.label} unavailable (HTTP ${rawResponse.status()})`,
-          );
+          test.skip(true, `PF ${categoryCase.label} unavailable (HTTP ${rawResponse.status()})`);
           return;
         }
 
@@ -223,7 +210,7 @@ test.describe("Power Factor Violation report", () => {
     { tag: ["@power-factor", "@commercial", "@pf-category-split"] },
     async ({ authenticatedApi }, testInfo) => {
       const api = new PowerFactorApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const validator = new PowerFactorValidator();
 
       const unfilteredQuery = { ...pfCategoryCountBase };
@@ -259,10 +246,7 @@ test.describe("Power Factor Violation report", () => {
 
       try {
         if (
-          shouldSkipCommercialResponse(
-            allRes.rawResponse.status(),
-            allRes.responseBody,
-          ) ||
+          shouldSkipCommercialResponse(allRes.rawResponse.status(), allRes.responseBody) ||
           shouldSkipCommercialResponse(
             domesticRes.rawResponse.status(),
             domesticRes.responseBody,
@@ -290,10 +274,7 @@ test.describe("Power Factor Violation report", () => {
           return;
         }
 
-        const allView = getCommercialPaginatedView(
-          allRes.responseBody.data,
-          unfilteredQuery,
-        );
+        const allView = getCommercialPaginatedView(allRes.responseBody.data, unfilteredQuery);
         const domesticView = getCommercialPaginatedView(
           domesticRes.responseBody.data,
           pfConnectionCategoryCases[0]!.query,

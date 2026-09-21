@@ -1,16 +1,13 @@
 import type pg from "pg";
 import type { APIRequestContext } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { logDbVsApiSection } from "../../../core/db/db-compare.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { logDbVsApiSection } from "../../../extras/db/db-compare.engine";
 import { AuditLogsApi } from "../Api/auditlogs.api";
 import { AuditLogsMapper } from "../Mapper/auditlogs.mapper";
-import {
-  compareAuditLogSpotToDb,
-  compareAuditLogsCountLteDb,
-} from "../Db/audit-logs-db-compare";
+import { compareAuditLogSpotToDb, compareAuditLogsCountLteDb } from "../Db/audit-logs-db-compare";
 import { countAuditLogs, getAuditLogById } from "../Db/audit-logs.db";
 import { logAuditLogsDataQualityFindings } from "../Db/audit-logs-db.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 const SPOT_SAMPLE_SIZE = 3;
 
@@ -26,7 +23,7 @@ export async function runAuditLogsDbCoverage(
   authenticatedApi: APIRequestContext,
   db: pg.Pool,
 ): Promise<void> {
-  const validation = new ValidationEngine();
+  const validation = new ApiValidationHelper();
   const api = new AuditLogsApi(authenticatedApi);
   const { rawResponse, responseBody } = await api.getAuditLogs({
     page: 1,
@@ -64,10 +61,9 @@ export async function runAuditLogsDbCoverage(
     });
   });
 
-  expect(
-    mapped.logs.length,
-    "Audit logs page should include rows for spot checks",
-  ).toBeGreaterThan(0);
+  expect(mapped.logs.length, "Audit logs page should include rows for spot checks").toBeGreaterThan(
+    0,
+  );
 
   for (const apiRow of mapped.logs.slice(0, SPOT_SAMPLE_SIZE)) {
     const dbRow = await getAuditLogById(db, apiRow.id);

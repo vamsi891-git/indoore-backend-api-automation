@@ -1,5 +1,5 @@
 import { test as apiDbTest } from "../../../fixtures/api-db.fixture";
-import { isDbConfigured } from "../../../core/db/postgres.client";
+import { isDbConfigured } from "../../../extras/db/postgres.client";
 import { isHesCommandsDbSqlReady } from "../Db/hes-commands.db";
 import { runHesCommandsDbCoverage } from "./hes-commands-db.harness";
 

@@ -6,37 +6,26 @@ import { registerCatalogLookupTests } from "../utils/lookup-catalog.harness";
 import { getLookupResponseData } from "../utils/lookup-spec.harness";
 import type { CatalogScenario } from "../Data/lookup-catalogs.data";
 import type { ConsumerCategoryData } from "../Mapper/consumercategory.mapper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 function validateConsumerCategory(
   scenario: CatalogScenario,
   responseBody: unknown,
-  validation: import("../../../core/engine/validation.engine").ValidationEngine,
+  validation: ApiValidationHelper,
 ): void {
   const data = ConsumerCategoryMapper.mapData(
     getLookupResponseData<ConsumerCategoryData>(responseBody),
   );
   const validator = new ConsumerCategoryValidator();
-  validation.execute("Response", () =>
-    validator.validateResponse(responseBody as never),
-  );
+  validation.execute("Response", () => validator.validateResponse(responseBody as never));
   validation.execute("Items", () => validator.validateItemsExist(data));
   validation.execute("Fields", () => validator.validateFields(data));
-  validation.execute("Duplicate IDs", () =>
-    validator.validateDuplicateIds(data),
-  );
-  validation.execute("Duplicate Names", () =>
-    validator.validateDuplicateNames(data),
-  );
-  validation.execute("Duplicate Short Names", () =>
-    validator.validateDuplicateShortNames(data),
-  );
-  validation.execute("Ascending Order", () =>
-    validator.validateAscendingOrder(data),
-  );
+  validation.execute("Duplicate IDs", () => validator.validateDuplicateIds(data));
+  validation.execute("Duplicate Names", () => validator.validateDuplicateNames(data));
+  validation.execute("Duplicate Short Names", () => validator.validateDuplicateShortNames(data));
+  validation.execute("Ascending Order", () => validator.validateAscendingOrder(data));
   if (scenario === "smoke") {
-    validation.execute("Expected Categories", () =>
-      validator.validateExpectedCategories(data),
-    );
+    validation.execute("Expected Categories", () => validator.validateExpectedCategories(data));
   }
 }
 

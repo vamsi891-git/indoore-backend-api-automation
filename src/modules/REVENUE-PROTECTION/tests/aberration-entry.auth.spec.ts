@@ -1,6 +1,5 @@
 import { expect } from "@playwright/test";
 import { test as authTest } from "../../../fixtures/auth.fixture";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { assertZodSchema } from "../../../core/utils/zod-validation.helper";
 import { ApiErrorResponseSchema } from "../../../core/schemas/api-response.schemas";
 import { buildAberrationEntryQueryString } from "../Api/aberration-entry.api";
@@ -13,17 +12,19 @@ import {
   type RevenueErrorBody,
 } from "../Validator/revenue-common.validator";
 import { applyAllureTestCaseId } from "../../../core/utils/allure-test-case.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 const aberrationEntryUrl = `${revenueProtectionPaths.aberrationEntry}?${buildAberrationEntryQueryString(aberrationEntryDefaultQuery)}`;
 const aberrationEntryEenltmtUrl = `${revenueProtectionPaths.aberrationEntryEenltmt}?${buildAberrationEntryQueryString(aberrationEntryEenltmtDefaultQuery)}`;
 authTest.describe("Revenue Protection — Aberration Entry Auth Negative", () => {
   authTest.describe.configure({ mode: "serial" });
   authTest.setTimeout(180_000);
 
-  authTest("IND-REV-ABE-ENTRY-AUTH-001 — Request without Authorization header",
+  authTest(
+    "IND-REV-ABE-ENTRY-AUTH-001 — Request without Authorization header",
     { tag: ["@revenue-protection", "@aberration-entry", "@negative", "@auth"] },
     async ({ unauthenticatedApi }) => {
       await applyAllureTestCaseId("IND-REV-ABE-ENTRY-AUTH-001");
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const rawResponse = await RevenueCommonValidator.getUnauthenticated(
         unauthenticatedApi,
         aberrationEntryUrl,
@@ -38,11 +39,12 @@ authTest.describe("Revenue Protection — Aberration Entry Auth Negative", () =>
       validation.printSummary("Aberration Entry — Missing Auth", 0);
     },
   );
-  authTest("IND-REV-ABE-ENTRY-AUTH-002 — Invalid bearer token",
+  authTest(
+    "IND-REV-ABE-ENTRY-AUTH-002 — Invalid bearer token",
     { tag: ["@revenue-protection", "@aberration-entry", "@negative", "@auth"] },
     async ({ unauthenticatedApi }) => {
       await applyAllureTestCaseId("IND-REV-ABE-ENTRY-AUTH-002");
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const rawResponse = await RevenueCommonValidator.getUnauthenticated(
         unauthenticatedApi,
         aberrationEntryUrl,
@@ -63,11 +65,12 @@ authTest.describe("Revenue Protection — Aberration Entry Auth Negative", () =>
       validation.printSummary("Aberration Entry — Invalid Token", 0);
     },
   );
-  authTest("IND-REV-ABE-ENTRY-AUTH-003 — Unsupported HTTP method",
+  authTest(
+    "IND-REV-ABE-ENTRY-AUTH-003 — Unsupported HTTP method",
     { tag: ["@revenue-protection", "@aberration-entry", "@negative", "@auth"] },
     async ({ unauthenticatedApi }) => {
       await applyAllureTestCaseId("IND-REV-ABE-ENTRY-AUTH-003");
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const callers = RevenueCommonValidator.getDisallowedMethodCallers(
         unauthenticatedApi,
         revenueProtectionPaths.aberrationEntry,
@@ -85,18 +88,14 @@ authTest.describe("Revenue Protection — Aberration Entry Auth Negative", () =>
 authTest.describe("Revenue Protection — Aberration Entry EENLTMT Auth Negative", () => {
   authTest.describe.configure({ mode: "serial" });
   authTest.setTimeout(180_000);
-  authTest("IND-REV-ABE-EEN-AUTH-001 — Request without Authorization header",
+  authTest(
+    "IND-REV-ABE-EEN-AUTH-001 — Request without Authorization header",
     {
-      tag: [
-        "@revenue-protection",
-        "@aberration-entry-eenltmt",
-        "@negative",
-        "@auth",
-      ],
+      tag: ["@revenue-protection", "@aberration-entry-eenltmt", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
       await applyAllureTestCaseId("IND-REV-ABE-EEN-AUTH-001");
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const rawResponse = await RevenueCommonValidator.getUnauthenticated(
         unauthenticatedApi,
         aberrationEntryEenltmtUrl,
@@ -111,18 +110,14 @@ authTest.describe("Revenue Protection — Aberration Entry EENLTMT Auth Negative
       validation.printSummary("EENLTMT Aberration Entry — Missing Auth", 0);
     },
   );
-  authTest("IND-REV-ABE-EEN-AUTH-002 — Invalid bearer token",
+  authTest(
+    "IND-REV-ABE-EEN-AUTH-002 — Invalid bearer token",
     {
-      tag: [
-        "@revenue-protection",
-        "@aberration-entry-eenltmt",
-        "@negative",
-        "@auth",
-      ],
+      tag: ["@revenue-protection", "@aberration-entry-eenltmt", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
       await applyAllureTestCaseId("IND-REV-ABE-EEN-AUTH-002");
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const rawResponse = await RevenueCommonValidator.getUnauthenticated(
         unauthenticatedApi,
         aberrationEntryEenltmtUrl,
@@ -144,18 +139,14 @@ authTest.describe("Revenue Protection — Aberration Entry EENLTMT Auth Negative
     },
   );
 
-  authTest("IND-REV-ABE-EEN-AUTH-003 — Unsupported HTTP method",
+  authTest(
+    "IND-REV-ABE-EEN-AUTH-003 — Unsupported HTTP method",
     {
-      tag: [
-        "@revenue-protection",
-        "@aberration-entry-eenltmt",
-        "@negative",
-        "@auth",
-      ],
+      tag: ["@revenue-protection", "@aberration-entry-eenltmt", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
       await applyAllureTestCaseId("IND-REV-ABE-EEN-AUTH-003");
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const callers = RevenueCommonValidator.getDisallowedMethodCallers(
         unauthenticatedApi,
         revenueProtectionPaths.aberrationEntryEenltmt,

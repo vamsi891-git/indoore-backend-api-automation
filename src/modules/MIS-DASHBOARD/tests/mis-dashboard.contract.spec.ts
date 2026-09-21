@@ -2,7 +2,7 @@ import { test, expect } from "../../../fixtures/observability.fixture";
 import {
   assertContractSnapshot,
   buildLookupItemsContractSnapshot,
-} from "../../../core/contract/contract-snapshot.helper";
+} from "../../../extras/contract/contract-snapshot.helper";
 import { CommStatsApi } from "../Api/communication.api";
 import { commStatsQuery } from "../Data/communication.data";
 import { CommunicationOverviewApi } from "../Api/communication-overview.api";
@@ -42,9 +42,7 @@ import {
 } from "../Data/eventpriority.data";
 
 function asRecord(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === "object"
-    ? (value as Record<string, unknown>)
-    : {};
+  return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
 test.describe("Saved screen shape", () => {
@@ -76,9 +74,9 @@ test.describe("Saved screen shape", () => {
     "Talking vs not talking overview — saved screen shape",
     { tag: ["@contract-snapshot", "@mis-dashboard"] },
     async ({ authenticatedApi }) => {
-      const result = await new CommunicationOverviewApi(authenticatedApi).getOverview(
-        { ...communicationOverviewQuery },
-      );
+      const result = await new CommunicationOverviewApi(authenticatedApi).getOverview({
+        ...communicationOverviewQuery,
+      });
       expect(result.rawResponse.status()).toBe(200);
       const body = asRecord(result.responseBody);
       expect(body.success).toBe(true);
@@ -120,9 +118,9 @@ test.describe("Saved screen shape", () => {
     "Talking meters by category — saved screen shape",
     { tag: ["@contract-snapshot", "@mis-dashboard"] },
     async ({ authenticatedApi }) => {
-      const result = await new CommunicationCategoryApi(authenticatedApi).getCategories(
-        { ...communicationCategoryQuery },
-      );
+      const result = await new CommunicationCategoryApi(authenticatedApi).getCategories({
+        ...communicationCategoryQuery,
+      });
       expect(result.rawResponse.status()).toBe(200);
       const body = asRecord(result.responseBody);
       expect(body.success).toBe(true);
@@ -164,9 +162,9 @@ test.describe("Saved screen shape", () => {
     "How many events by urgency — saved screen shape",
     { tag: ["@contract-snapshot", "@mis-dashboard"] },
     async ({ authenticatedApi }) => {
-      const result = await new PriorityOverviewApi(authenticatedApi).getPriorityOverview(
-        { ...priorityOverviewQuery },
-      );
+      const result = await new PriorityOverviewApi(authenticatedApi).getPriorityOverview({
+        ...priorityOverviewQuery,
+      });
       expect(result.rawResponse.status()).toBe(200);
       const body = asRecord(result.responseBody);
       expect(body.success).toBe(true);
@@ -186,9 +184,9 @@ test.describe("Saved screen shape", () => {
     "What kinds of events happened — saved screen shape",
     { tag: ["@contract-snapshot", "@mis-dashboard"] },
     async ({ authenticatedApi }) => {
-      const result = await new EventClassificationApi(authenticatedApi).getEventClassification(
-        { ...eventClassificationQuery },
-      );
+      const result = await new EventClassificationApi(authenticatedApi).getEventClassification({
+        ...eventClassificationQuery,
+      });
       expect(result.rawResponse.status()).toBe(200);
       const body = asRecord(result.responseBody);
       expect(body.success).toBe(true);
@@ -318,9 +316,7 @@ test.describe("Saved screen shape", () => {
     "Events that did not roll over — saved screen shape",
     { tag: ["@contract-snapshot", "@mis-dashboard"] },
     async ({ authenticatedApi }) => {
-      const result = await new EventNonRolloverApi(
-        authenticatedApi,
-      ).getNonRolloverData({
+      const result = await new EventNonRolloverApi(authenticatedApi).getNonRolloverData({
         ...eventNonRolloverQuery,
       });
       expect(result.rawResponse.status()).toBe(200);
@@ -342,9 +338,7 @@ test.describe("Saved screen shape", () => {
     "Urgency today versus yesterday — saved screen shape",
     { tag: ["@contract-snapshot", "@mis-dashboard"] },
     async ({ authenticatedApi }) => {
-      const result = await new EventPriorityOverviewApi(
-        authenticatedApi,
-      ).getPriorityOverview({
+      const result = await new EventPriorityOverviewApi(authenticatedApi).getPriorityOverview({
         ...eventPriorityOverviewQuery,
       });
       expect(result.rawResponse.status()).toBe(200);
@@ -390,9 +384,9 @@ test.describe("Saved screen shape", () => {
       { tag: ["@contract-snapshot", "@mis-dashboard"] },
       async ({ authenticatedApi }) => {
         const slug = eventPrioritySlug(level);
-        const result = await new EventPriorityApi(
-          authenticatedApi,
-        ).getPriorityData(slug, { ...eventPriorityQuery });
+        const result = await new EventPriorityApi(authenticatedApi).getPriorityData(slug, {
+          ...eventPriorityQuery,
+        });
         expect(result.rawResponse.status()).toBe(200);
         const body = asRecord(result.responseBody);
         expect(body.success).toBe(true);
@@ -409,4 +403,3 @@ test.describe("Saved screen shape", () => {
     );
   }
 });
-

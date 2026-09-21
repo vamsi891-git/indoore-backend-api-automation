@@ -19,12 +19,7 @@ export const dtrFeedersEmptyCode = " ";
 
 export const dtrFeedersAllowedStatuses = ["Active", "Inactive"] as const;
 
-export const dtrFeedersFields = [
-  "id",
-  "name",
-  "status",
-  "lastCommunication",
-] as const;
+export const dtrFeedersFields = ["id", "name", "status", "lastCommunication"] as const;
 
 /** Live sample for GET /indore/dtr/11IW3/feeders — no LT feeder descendants. */
 export const dtrFeedersContractEmptyResponse: DtrFeedersResponse = {
@@ -124,11 +119,11 @@ export interface DtrFeedersTestCase {
   expectedStatus?: number;
   isContractFixture?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
-export function resolveDtrFeedersCode(
-  scenario: DtrFeedersScenario,
-): string | undefined {
+export function resolveDtrFeedersCode(scenario: DtrFeedersScenario): string | undefined {
   switch (scenario) {
     case "dfe_by_code_primary":
     case "dfe_ignore_unknown_query":
@@ -159,9 +154,7 @@ export function resolveDtrFeedersCode(
   }
 }
 
-export function resolveDtrFeedersQuery(
-  scenario: DtrFeedersScenario,
-): DtrFeedersQuery {
+export function resolveDtrFeedersQuery(scenario: DtrFeedersScenario): DtrFeedersQuery {
   if (scenario === "dfe_ignore_unknown_query") {
     return { foo: 1, bar: "baz" };
   }
@@ -196,62 +189,69 @@ export const dtrFeedersData = {
 
 export const dtrFeedersTestCases: DtrFeedersTestCase[] = [
   {
-    testName:
-      "DTR feeders — list under this transformer, each feeder only once",
+    testName: "DTR feeders — list under this transformer, each feeder only once",
     scenario: "dfe_by_code_primary",
     tags: ["@smoke", "@dtr", "@feeders"],
+    nonEmptyExpected: true,
   },
   {
     testName: "DTR feeders — a second transformer still shows its feeders",
     scenario: "dfe_by_code_alt",
     tags: ["@dtr", "@feeders", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "DTR feeders — extra filters that nobody uses are ignored",
+    testName: "DTR feeders — extra filters that nobody uses are ignored",
     scenario: "dfe_ignore_unknown_query",
     tags: ["@dtr", "@feeders", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample feeders — none yet is allowed",
     scenario: "contract_empty_feeders",
     isContractFixture: true,
     tags: ["@dtr", "@feeders", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Sample feeders — name, status, and last talk-to-system time",
+    testName: "Sample feeders — name, status, and last talk-to-system time",
     scenario: "contract_populated_feeders",
     isContractFixture: true,
     tags: ["@dtr", "@feeders", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample feeders — Active and Inactive both appear",
     scenario: "contract_mixed_statuses",
     isContractFixture: true,
     tags: ["@dtr", "@feeders", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample feeders — feeder number can be a plain id",
     scenario: "contract_numeric_id_fallback",
     isContractFixture: true,
     tags: ["@dtr", "@feeders", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample feeders — last communication can be empty",
     scenario: "contract_with_communication",
     isContractFixture: true,
     tags: ["@dtr", "@feeders", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR feeders — unknown transformer is not shown",
     scenario: "dtr_not_found",
     tags: ["@dtr", "@feeders", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR feeders — a blank transformer code is not allowed",
     scenario: "empty_dtr_code",
     expectedStatus: 400,
     tags: ["@dtr", "@feeders", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

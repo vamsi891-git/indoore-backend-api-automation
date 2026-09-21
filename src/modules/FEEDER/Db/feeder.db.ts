@@ -1,5 +1,5 @@
 import type pg from "pg";
-import { queryReadOnly, queryScalar } from "../../../core/db/postgres.client";
+import { queryReadOnly, queryScalar } from "../../../extras/db/postgres.client";
 import {
   FEEDER_BY_CODE_SQL,
   FEEDER_CHILD_DTR_COUNT_SQL,
@@ -32,9 +32,7 @@ export async function getFeederByCode(
   pool: pg.Pool,
   feederCode: string,
 ): Promise<DbFeederRow | null> {
-  const rows = await queryReadOnly<DbFeederRow>(pool, FEEDER_BY_CODE_SQL, [
-    feederCode,
-  ]);
+  const rows = await queryReadOnly<DbFeederRow>(pool, FEEDER_BY_CODE_SQL, [feederCode]);
   return rows[0] ?? null;
 }
 
@@ -42,21 +40,13 @@ export async function countChildDtrsUnderFeeder(
   pool: pg.Pool,
   feederLookupId: number,
 ): Promise<number> {
-  return (
-    (await queryScalar<number>(pool, FEEDER_CHILD_DTR_COUNT_SQL, [
-      feederLookupId,
-    ])) ?? 0
-  );
+  return (await queryScalar<number>(pool, FEEDER_CHILD_DTR_COUNT_SQL, [feederLookupId])) ?? 0;
 }
 
 export async function getFeederMeterBySerial(
   pool: pg.Pool,
   serial: string,
 ): Promise<DbFeederMeterRow | null> {
-  const rows = await queryReadOnly<DbFeederMeterRow>(
-    pool,
-    FEEDER_METER_BY_SERIAL_SQL,
-    [serial],
-  );
+  const rows = await queryReadOnly<DbFeederMeterRow>(pool, FEEDER_METER_BY_SERIAL_SQL, [serial]);
   return rows[0] ?? null;
 }

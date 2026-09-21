@@ -1,5 +1,5 @@
 import { test as apiDbTest } from "../../../fixtures/api-db.fixture";
-import { isDbConfigured } from "../../../core/db/postgres.client";
+import { isDbConfigured } from "../../../extras/db/postgres.client";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { isMasterDataDbSqlReady } from "../Db/master-data.db";
 import { runMasterDataDbCoverage } from "./master-data-db.harness";

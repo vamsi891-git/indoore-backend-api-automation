@@ -1,20 +1,16 @@
 import { expect, request } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
 import { InviteApi, InvitePublicApi } from "../Api/invite.api";
-import {
-  InviteTestData,
-  resolveInviteE2eContext,
-} from "../Data/invite.data";
+import { InviteTestData, resolveInviteE2eContext } from "../Data/invite.data";
 import { InviteMapper } from "../Mapper/invite.mapper";
 import { InviteValidator } from "../Validator/invite.validator";
 import {
   InvitePreviewResponseSchema,
   SentInvitationsListResponseSchema,
 } from "../schemas/auth.schemas";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { ensureSharedInviteInBeforeAll } from "../utils/invite-provision.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 async function createPublicApiContext() {
   if (!process.env.BASE_URL) {
@@ -50,47 +46,38 @@ test.describe.skip("Auth Invite Validate Flow", () => {
 
       const publicCtx = await createPublicApiContext();
       const api = new InvitePublicApi(publicCtx);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new InviteValidator();
 
       try {
         const preview = await api.previewInvitation(context.token);
 
         await PerformanceTracker.track(
-        preview.rawResponse,
-        "Auth Invite Validate — Preview",
-        preview.rawResponse.url(),
-        preview.responseTime
-      );
+          preview.rawResponse,
+          "Auth Invite Validate — Preview",
+          preview.rawResponse.url(),
+          preview.responseTime,
+        );
 
         validation.execute("Preview Status", () =>
           assert.validateStatusCode(preview.rawResponse, 200),
         );
         validation.execute("Preview Response Time", () =>
-          assert.validateResponseTime(
-            preview.responseTime,
-            InviteTestData.maxResponseTimeMs,
-          ),
+          assert.validateResponseTime(preview.responseTime, InviteTestData.maxResponseTimeMs),
         );
         validation.execute("Preview Sensitive Data", () =>
           assert.validateSensitiveData(preview.responseBody),
         );
         validation.execute("Preview Zod", () => {
-          const result = InvitePreviewResponseSchema.safeParse(
-            preview.responseBody,
-          );
+          const result = InvitePreviewResponseSchema.safeParse(preview.responseBody);
           expect(result.success).toBe(true);
         });
 
         const parsed = InvitePreviewResponseSchema.parse(preview.responseBody);
 
         validation.execute("Preview Email And Role", () =>
-          validator.validatePreviewSuccess(
-            parsed,
-            context.email,
-            context.role,
-          ),
+          validator.validatePreviewSuccess(parsed, context.email, context.role),
         );
 
         if (context.expiresAt) {
@@ -125,8 +112,8 @@ test.describe.skip("Auth Invite Validate Flow", () => {
       }
 
       const api = new InviteApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new InviteValidator();
 
       const listResponse = await api.listMyInvitations({
@@ -173,15 +160,9 @@ test.describe.skip("Auth Invite Validate Flow", () => {
         console.log(`EXPIRES AT                : ${item.expiresAt}`);
         console.log("==================================================\n");
 
-        validation.finalize(
-          "Auth Invite Validate — Mine List",
-          listResponse.responseTime,
-        );
+        validation.finalize("Auth Invite Validate — Mine List", listResponse.responseTime);
       } catch (error) {
-        validation.finalize(
-          "Auth Invite Validate — Mine List",
-          listResponse.responseTime,
-        );
+        validation.finalize("Auth Invite Validate — Mine List", listResponse.responseTime);
         throw error;
       }
     },

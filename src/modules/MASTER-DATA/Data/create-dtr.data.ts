@@ -1,10 +1,7 @@
 import { randomBytes } from "crypto";
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { CreateDtrScenario } from "../Mapper/create-dtr.mapper";
-import {
-  resolveMasterDataEnv,
-  resolveMasterDataEnvInt,
-} from "../utils/master-data-env.helper";
+import { resolveMasterDataEnv, resolveMasterDataEnvInt } from "../utils/master-data-env.helper";
 import { getValidateMeterSerial } from "../utils/validate-meter-runtime.helper";
 import {
   hasDtrAssignableMeterPool,
@@ -96,6 +93,8 @@ export interface CreateDtrTestCase {
   /** VALIDATION_ERROR — API fieldErrors key (display name). */
   validationField?: string;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export const CREATE_DTR_HIERARCHY_ENV_KEYS = [
@@ -155,10 +154,7 @@ function hashSeed(seed: string): number {
 }
 
 function uniqueFifteenDigitId(seed: string): string {
-  const digits = `${seed}${Date.now()}${Math.floor(Math.random() * 10000)}`.replace(
-    /\D/g,
-    "",
-  );
+  const digits = `${seed}${Date.now()}${Math.floor(Math.random() * 10000)}`.replace(/\D/g, "");
   return digits.padEnd(15, "7").slice(0, 15);
 }
 
@@ -188,23 +184,15 @@ function uniqueModemFields(seed: string): {
 
 function hierarchyFromEnv(): Pick<
   CreateDtrRequestBody,
-  | "organisationLookupId"
-  | "subStationNetworkLookupId"
-  | "feederNetworkLookupId"
+  "organisationLookupId" | "subStationNetworkLookupId" | "feederNetworkLookupId"
 > {
   return {
-    organisationLookupId: resolveMasterDataEnvInt(
-      "CREATE_DTR_ORGANISATION_LOOKUP_ID",
-      30,
-    ),
+    organisationLookupId: resolveMasterDataEnvInt("CREATE_DTR_ORGANISATION_LOOKUP_ID", 30),
     subStationNetworkLookupId: resolveMasterDataEnvInt(
       "CREATE_DTR_SUBSTATION_NETWORK_LOOKUP_ID",
       3,
     ),
-    feederNetworkLookupId: resolveMasterDataEnvInt(
-      "CREATE_DTR_FEEDER_NETWORK_LOOKUP_ID",
-      4,
-    ),
+    feederNetworkLookupId: resolveMasterDataEnvInt("CREATE_DTR_FEEDER_NETWORK_LOOKUP_ID", 4),
   };
 }
 
@@ -226,10 +214,7 @@ export function buildCreateDtrRequest(
     "Service Date": today,
     "Installation Date": today,
     MSN: msn,
-    "Main/Sub Meter": resolveMasterDataEnvInt(
-      "CREATE_DTR_MAIN_SUB_METER_TBL_REF_ID",
-      1,
-    ),
+    "Main/Sub Meter": resolveMasterDataEnvInt("CREATE_DTR_MAIN_SUB_METER_TBL_REF_ID", 1),
     "Service Point ID": modem.servicePointId,
     "Meter Phase": resolveMasterDataEnvInt("CREATE_DTR_METER_PHASE_TBL_REF_ID", 1),
     "Connected To DCU": true,
@@ -262,6 +247,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "DTR Code": "",
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — DTR name is required",
@@ -274,6 +260,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "DTR Name": "",
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — DTR code must be unique",
@@ -286,6 +273,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "DTR Code": getCreateDtrExistsCode(),
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — DTR capacity must be greater than zero",
@@ -298,6 +286,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "DTR Capacity (KVA)": 0,
     }),
     tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — DTR capacity cannot be negative",
@@ -310,6 +299,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "DTR Capacity (KVA)": -25,
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — status must be valid",
@@ -322,6 +312,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       Status: "MAYBE",
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
 
   // ─── Date validation (manual §2 / §3) ────────────────────────────────────
@@ -336,6 +327,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "Service Date": "not-a-date",
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — installation date must be a valid date",
@@ -348,6 +340,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "Installation Date": "not-a-date",
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — service date cannot be in the future",
@@ -360,6 +353,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "Service Date": "2099-01-01",
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — installation date cannot be in the future",
@@ -372,6 +366,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "Installation Date": "2099-01-01",
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
 
   // ─── Meter details (manual §2) ─────────────────────────────────────────
@@ -386,6 +381,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       MSN: "",
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — meter serial must already exist",
@@ -400,6 +396,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       };
     },
     tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — meter must be active",
@@ -412,6 +409,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       MSN: getValidateMeterSerial("VALIDATE_DTR_METER_INACTIVE_SERIAL"),
     }),
     tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — meter cannot already be on another DTR",
@@ -424,6 +422,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       MSN: getValidateMeterSerial("VALIDATE_DTR_METER_ON_DTR_SERIAL"),
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — meter cannot already be assigned to a consumer",
@@ -436,6 +435,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       MSN: getValidateMeterSerial("VALIDATE_DTR_METER_ASSIGNED_SERIAL"),
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — main/sub meter type must be valid",
@@ -448,6 +448,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "Main/Sub Meter": 99_999_999,
     }),
     tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — meter phase must be valid",
@@ -460,6 +461,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "Meter Phase": 99_999_999,
     }),
     tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — service point ID is required",
@@ -472,6 +474,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "Service Point ID": "",
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
 
   // ─── Communication (manual §3) ───────────────────────────────────────────
@@ -486,6 +489,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "SIM No.": "",
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — IMSI must contain digits only",
@@ -498,6 +502,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "IMSI No.": "IMSI-ABC123",
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — IP address must be a valid IPv4 address",
@@ -510,6 +515,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "IP Address": "999.999.999.999",
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — modem serial is required",
@@ -522,6 +528,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "Modem Serial Number": "",
     }),
     tags: ["@master-data", "@create-dtr", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — modem IMEI must be 15 digits",
@@ -534,6 +541,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "Modem IMEI": "12345",
     }),
     tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add DTR — initial reading must be greater than zero",
@@ -546,6 +554,7 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
       "Meter Initial Reading": 0,
     }),
     tags: ["@master-data", "@create-dtr", "@negative", "@backend-defect"],
+    nonEmptyExpected: false,
   },
 
   // ─── Success (last — consumes a provisioned meter) ─────────────────────
@@ -556,5 +565,6 @@ export const createDtrTestCases: CreateDtrTestCase[] = [
     envKeys: [...hierarchyEnvKeys],
     buildPayload: () => buildCreateDtrRequest("success"),
     tags: ["@smoke", "@master-data", "@create-dtr", "@dtr-master"],
+    nonEmptyExpected: true,
   },
 ];

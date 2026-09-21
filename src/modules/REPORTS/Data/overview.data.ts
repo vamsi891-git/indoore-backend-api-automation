@@ -92,7 +92,8 @@ export interface ReportsOverviewTestCase {
   scenario: ReportsOverviewScenario;
   tags: string[];
   isContractFixture?: boolean;
-  expectedStatus?: number;
+  expectedStatus?: number;  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export function resolveReportsOverviewQuery(
@@ -127,22 +128,26 @@ export const reportsOverviewTestCases: ReportsOverviewTestCase[] = [
     testName: "Overview — KPI cards show (zeros still count as available)",
     scenario: "dev_live",
     tags: ["@smoke", "@reports", "@overview"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Overview — unknown query params are ignored",
     scenario: "dev_ignore_unknown_query",
     tags: ["@reports", "@overview", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Overview — zero KPI fixture",
     scenario: "contract_live_zeros",
     isContractFixture: true,
     tags: ["@reports", "@overview", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Overview — trend math fixture",
     scenario: "contract_nonzero_trends",
     isContractFixture: true,
     tags: ["@reports", "@overview", "@edge"],
+    nonEmptyExpected: false,
   },
 ];

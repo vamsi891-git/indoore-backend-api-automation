@@ -1,7 +1,5 @@
 import type { APIResponse } from "@playwright/test";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { AssetDetailApi } from "../Api/assetdetail.api";
 import {
   assetManagementHierarchyMaxResponseTimeMs,
@@ -10,6 +8,7 @@ import {
 import type { AssetExplorerKind } from "../Data/assetdetail.data";
 import { AssetDetailMapper } from "../Mapper/assetdetail.mapper";
 import { AssetDetailValidator } from "../Validator/assetdetail.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 export interface RunAssetDetailValidationOptions {
   api: AssetDetailApi;
@@ -20,9 +19,7 @@ export interface RunAssetDetailValidationOptions {
   requestTimeoutMs?: number;
 }
 
-export async function runAssetDetailValidation(
-  options: RunAssetDetailValidationOptions,
-): Promise<{
+export async function runAssetDetailValidation(options: RunAssetDetailValidationOptions): Promise<{
   rawResponse: APIResponse;
   responseTime: number;
   data: ReturnType<typeof AssetDetailMapper.mapData>;
@@ -42,15 +39,10 @@ export async function runAssetDetailValidation(
     requestTimeoutMs,
   );
 
-  await PerformanceTracker.track(
-    rawResponse,
-    testLabel,
-    rawResponse.url(),
-    responseTime,
-  );
+  await PerformanceTracker.track(rawResponse, testLabel, rawResponse.url(), responseTime);
 
-  const assert = new AssertionEngine();
-  const validation = new ValidationEngine();
+  const assert = new ApiValidationHelper();
+  const validation = new ApiValidationHelper();
   const validator = new AssetDetailValidator();
   const data = AssetDetailMapper.mapData(responseBody.data);
 
@@ -59,27 +51,15 @@ export async function runAssetDetailValidation(
   validation.execute("Response Time", () =>
     assert.validateResponseTime(responseTime, maxResponseTimeMs),
   );
-  validation.execute("Security", () =>
-    assert.validateSensitiveData(responseBody),
-  );
-  validation.execute("Response Contract", () =>
-    validator.validateResponse(responseBody),
-  );
+  validation.execute("Security", () => assert.validateSensitiveData(responseBody));
+  validation.execute("Response Contract", () => validator.validateResponse(responseBody));
   validation.execute("Columns", () => validator.validateColumns(data));
-  validation.execute("Identity", () =>
-    validator.validateIdentity(data, kind, id),
-  );
+  validation.execute("Identity", () => validator.validateIdentity(data, kind, id));
   validation.execute("Timestamps", () => validator.validateTimestamps(data));
-  validation.execute("Hierarchy Path", () =>
-    validator.validateHierarchyPath(data),
-  );
-  validation.execute("Hierarchy Summary", () =>
-    validator.validateHierarchySummary(data),
-  );
+  validation.execute("Hierarchy Path", () => validator.validateHierarchyPath(data));
+  validation.execute("Hierarchy Summary", () => validator.validateHierarchySummary(data));
   validation.execute("Counts", () => validator.validateCounts(data));
-  validation.execute("Recent Activity", () =>
-    validator.validateRecentActivity(data),
-  );
+  validation.execute("Recent Activity", () => validator.validateRecentActivity(data));
 
   validation.printSummary(testLabel, responseTime);
 

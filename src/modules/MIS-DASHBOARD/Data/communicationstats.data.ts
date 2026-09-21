@@ -9,6 +9,8 @@ export type CommStatsTestCase = {
   params: Record<string, string | number | boolean>;
   expectedStatus: 200 | 400;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 };
 
 const tags = ["@mis-dashboard", "@comm-stats", "@edge"];

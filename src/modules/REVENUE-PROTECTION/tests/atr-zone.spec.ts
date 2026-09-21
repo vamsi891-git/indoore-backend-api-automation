@@ -1,7 +1,5 @@
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { assertZodSchema } from "../../../core/utils/zod-validation.helper";
 import { REVENUE_PROTECTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { AtrZoneApi } from "../Api/atr-zone.api";
@@ -11,6 +9,7 @@ import { AtrZoneSuccessResponseSchema } from "../schemas/atr-zone.schemas";
 import { AtrZoneValidator } from "../Validator/atr-zone.validator";
 import { applyAllureTestCaseId } from "../../../core/utils/allure-test-case.helper";
 import { logAtrZoneDataQualityFindings } from "../utils/atr-zone-data-quality";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 test.describe("Revenue Protection — ATR Zone API", () => {
   test.describe.configure({ retries: 1 });
   test.setTimeout(REVENUE_PROTECTION_TEST_TIMEOUT_MS);
@@ -19,9 +18,14 @@ test.describe("Revenue Protection — ATR Zone API", () => {
       await applyAllureTestCaseId(testCase.testCaseId);
       const api = new AtrZoneApi(authenticatedApi);
       const { rawResponse, responseBody, responseTime } = await api.getAtrZone(testCase.query);
-      await PerformanceTracker.track(rawResponse,testCase.testName,rawResponse.url(),responseTime,);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      await PerformanceTracker.track(
+        rawResponse,
+        testCase.testName,
+        rawResponse.url(),
+        responseTime,
+      );
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new AtrZoneValidator();
       const mapped = AtrZoneMapper.mapData(responseBody.data);
       validation.execute("Status Validation", () =>
@@ -40,15 +44,19 @@ test.describe("Revenue Protection — ATR Zone API", () => {
       );
       validation.execute("Response", () => validator.validateResponse(responseBody));
       validation.execute("Columns", () => validator.validateColumns(mapped));
-      validation.execute("Column Keys Match Rows", () => validator.validateColumnKeysMatchRows(mapped));
+      validation.execute("Column Keys Match Rows", () =>
+        validator.validateColumnKeysMatchRows(mapped),
+      );
       validation.execute("Rows Exist", () => validator.validateRowsExist(mapped));
       validation.execute("Pagination", () => validator.validatePagination(mapped));
       validation.execute("Unique Row IDs", () => validator.validateUniqueRowIds(mapped));
-      validation.execute("Non-Negative Amounts", () => validator.validateNonNegativeAmounts(mapped));
+      validation.execute("Non-Negative Amounts", () =>
+        validator.validateNonNegativeAmounts(mapped),
+      );
       validation.execute("Query Echo", () => validator.validateQueryEcho(mapped, testCase.query));
       validation.execute("Year Echo", () => validator.validateYearEcho(mapped, testCase.query));
       validation.execute("Occurrence Before Restoration", () =>
-      validator.validateOccurrenceBeforeRestoration(mapped),
+        validator.validateOccurrenceBeforeRestoration(mapped),
       );
       await logAtrZoneDataQualityFindings(mapped);
       validation.printSummary(testCase.testName, responseTime);

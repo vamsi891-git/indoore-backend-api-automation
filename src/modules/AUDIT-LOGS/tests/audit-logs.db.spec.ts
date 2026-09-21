@@ -1,5 +1,5 @@
 import { test as apiDbTest } from "../../../fixtures/api-db.fixture";
-import { isDbConfigured } from "../../../core/db/postgres.client";
+import { isDbConfigured } from "../../../extras/db/postgres.client";
 import { isAuditLogsDbSqlReady } from "../Db/audit-logs.db";
 import { runAuditLogsDbCoverage } from "./audit-logs-db.harness";
 

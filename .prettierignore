@@ -1,0 +1,12 @@
+node_modules
+dist
+coverage
+playwright-report
+allure-results
+allure-report
+test-results
+reports
+*.log
+package-lock.json
+playwright/.auth
+eng.traineddata

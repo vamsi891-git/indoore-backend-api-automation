@@ -1,6 +1,7 @@
+import { env } from "../config/env.schema";
+
 export function shouldPrintResponseAlways(): boolean {
-  const flag = process.env.API_TEST_PRINT_RESPONSE?.trim().toLowerCase();
-  return flag === "1" || flag === "true" || flag === "yes";
+  return env.API_TEST_PRINT_RESPONSE;
 }
 
 export interface PrintApiResponseOptions {

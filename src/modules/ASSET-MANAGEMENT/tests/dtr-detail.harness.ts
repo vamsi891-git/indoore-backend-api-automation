@@ -1,7 +1,5 @@
 import type { APIResponse } from "@playwright/test";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { DtrDetailApi } from "../Api/DtrId.api";
 import {
   assetManagementMaxResponseTimeMs,
@@ -9,6 +7,7 @@ import {
 } from "../Data/asset-management.common.data";
 import { DtrDetailMapper } from "../Mapper/dtrId.mapper";
 import { DtrDetailValidator } from "../Validator/dtrId.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 export interface RunDtrDetailValidationOptions {
   api: DtrDetailApi;
@@ -21,9 +20,7 @@ export interface RunDtrDetailValidationOptions {
   validateLastPage?: boolean;
 }
 
-export async function runDtrDetailValidation(
-  options: RunDtrDetailValidationOptions,
-): Promise<{
+export async function runDtrDetailValidation(options: RunDtrDetailValidationOptions): Promise<{
   rawResponse: APIResponse;
   responseTime: number;
   data: ReturnType<typeof DtrDetailMapper.mapData>;
@@ -39,21 +36,12 @@ export async function runDtrDetailValidation(
     validateLastPage = false,
   } = options;
 
-  const { rawResponse, responseBody, responseTime } = await api.getDtrDetails(
-    dtrId,
-    page,
-    limit,
-  );
+  const { rawResponse, responseBody, responseTime } = await api.getDtrDetails(dtrId, page, limit);
 
-  await PerformanceTracker.track(
-    rawResponse,
-    testLabel,
-    rawResponse.url(),
-    responseTime,
-  );
+  await PerformanceTracker.track(rawResponse, testLabel, rawResponse.url(), responseTime);
 
-  const assert = new AssertionEngine();
-  const validation = new ValidationEngine();
+  const assert = new ApiValidationHelper();
+  const validation = new ApiValidationHelper();
   const validator = new DtrDetailValidator();
   const data = DtrDetailMapper.mapData(responseBody.data);
 
@@ -62,12 +50,8 @@ export async function runDtrDetailValidation(
   validation.execute("Response Time", () =>
     assert.validateResponseTime(responseTime, maxResponseTimeMs),
   );
-  validation.execute("Security", () =>
-    assert.validateSensitiveData(responseBody),
-  );
-  validation.execute("Response Contract", () =>
-    validator.validateResponse(responseBody),
-  );
+  validation.execute("Security", () => assert.validateSensitiveData(responseBody));
+  validation.execute("Response Contract", () => validator.validateResponse(responseBody));
   validation.execute("DTR", () => validator.validateDtrFields(data));
   validation.execute("Pagination", () => validator.validatePagination(data));
   validation.execute("Pagination Consistency", () =>
@@ -85,12 +69,8 @@ export async function runDtrDetailValidation(
     validation.execute("Consumer Field Coverage", () =>
       validator.validateConsumerFieldCoverage(data),
     );
-    validation.execute("Meter Field Coverage", () =>
-      validator.validateMeterFieldCoverage(data),
-    );
-    validation.execute("Duplicate Consumer", () =>
-      validator.validateDuplicateConsumers(data),
-    );
+    validation.execute("Meter Field Coverage", () => validator.validateMeterFieldCoverage(data));
+    validation.execute("Duplicate Consumer", () => validator.validateDuplicateConsumers(data));
     validation.execute("Consumer Meter Uniqueness", () =>
       validator.validateConsumerMeterUniqueness(data),
     );

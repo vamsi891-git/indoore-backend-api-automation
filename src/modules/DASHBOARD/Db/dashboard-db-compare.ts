@@ -1,4 +1,4 @@
-﻿import { assertDbVsApiScalar } from "../../../core/db/db-compare.engine";
+﻿import { assertDbVsApiScalar } from "../../../extras/db/db-compare.engine";
 
 /** Fail when the API number is not the same as the SQL count. */
 export function compareApiEqualsSql(options: {

@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { compareApiToDb } from "../../../../core/db/db-compare.engine";
+import { compareApiToDb } from "../../../../extras/db/db-compare.engine";
 import { collectDtrDetailDataQualityFindings } from "../../Db/asset-management-db.validator";
 import { sampleDtrDetailSuccess } from "./fixtures/asset-sample.fixture";
 
@@ -28,10 +28,7 @@ test.describe("Mutation proof — DB cross-validation mismatch", () => {
         caught = error instanceof Error ? error : new Error(String(error));
       }
 
-      expect(
-        caught,
-        "compareApiToDb should throw on field mismatch",
-      ).toBeDefined();
+      expect(caught, "compareApiToDb should throw on field mismatch").toBeDefined();
       const message = caught?.message ?? "";
       expect(message).toMatch(/consumerCount/i);
       expect(message).toMatch(/12|7|mismatch/i);

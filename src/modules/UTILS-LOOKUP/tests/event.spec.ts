@@ -6,30 +6,23 @@ import { registerCatalogLookupTests } from "../utils/lookup-catalog.harness";
 import { getLookupResponseData } from "../utils/lookup-spec.harness";
 import type { CatalogScenario } from "../Data/lookup-catalogs.data";
 import type { EventData } from "../Mapper/event.mapper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 function validateEvents(
   scenario: CatalogScenario,
   responseBody: unknown,
-  validation: import("../../../core/engine/validation.engine").ValidationEngine,
+  validation: ApiValidationHelper,
 ): void {
   const data = EventMapper.mapData(getLookupResponseData<EventData>(responseBody));
   const validator = new EventValidator();
-  validation.execute("Response", () =>
-    validator.validateResponse(responseBody as never),
-  );
+  validation.execute("Response", () => validator.validateResponse(responseBody as never));
   validation.execute("Items", () => validator.validateItemsExist(data));
   validation.execute("Fields", () => validator.validateFields(data));
   validation.execute("Event Names", () => validator.validateEventNames(data));
-  validation.execute("Duplicate IDs", () =>
-    validator.validateDuplicateIds(data),
-  );
-  validation.execute("Reference Tables", () =>
-    validator.validateReferenceTables(data),
-  );
+  validation.execute("Duplicate IDs", () => validator.validateDuplicateIds(data));
+  validation.execute("Reference Tables", () => validator.validateReferenceTables(data));
   if (scenario === "smoke") {
-    validation.execute("Known Events", () =>
-      validator.validateKnownEvents(data),
-    );
+    validation.execute("Known Events", () => validator.validateKnownEvents(data));
   }
 }
 

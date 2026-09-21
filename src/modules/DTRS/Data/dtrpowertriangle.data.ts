@@ -79,16 +79,15 @@ export const dtrPowerTriangleContractReactivePfMeta = {
   expectedReactiveKvar: 15,
 };
 
-export const dtrPowerTriangleContractReactivePfResponse: DtrPowerTriangleResponse =
-  {
-    success: true,
-    data: {
-      activePowerKw: dtrPowerTriangleContractReactivePfMeta.activePowerKw,
-      reactivePowerKvar: null,
-      apparentPowerKva: dtrPowerTriangleContractReactivePfMeta.apparentPowerKva,
-      powerFactor: dtrPowerTriangleContractReactivePfMeta.powerFactor,
-    },
-  };
+export const dtrPowerTriangleContractReactivePfResponse: DtrPowerTriangleResponse = {
+  success: true,
+  data: {
+    activePowerKw: dtrPowerTriangleContractReactivePfMeta.activePowerKw,
+    reactivePowerKvar: null,
+    apparentPowerKva: dtrPowerTriangleContractReactivePfMeta.apparentPowerKva,
+    powerFactor: dtrPowerTriangleContractReactivePfMeta.powerFactor,
+  },
+};
 
 /**
  * Reactive derived via triangle: Q = √(kVA² − kW²).
@@ -100,27 +99,24 @@ export const dtrPowerTriangleContractReactiveTriangleMeta = {
   expectedReactiveKvar: 40,
 };
 
-export const dtrPowerTriangleContractReactiveTriangleResponse: DtrPowerTriangleResponse =
-  {
-    success: true,
-    data: {
-      activePowerKw: dtrPowerTriangleContractReactiveTriangleMeta.activePowerKw,
-      reactivePowerKvar: null,
-      apparentPowerKva:
-        dtrPowerTriangleContractReactiveTriangleMeta.apparentPowerKva,
-      powerFactor: null,
-    },
-  };
+export const dtrPowerTriangleContractReactiveTriangleResponse: DtrPowerTriangleResponse = {
+  success: true,
+  data: {
+    activePowerKw: dtrPowerTriangleContractReactiveTriangleMeta.activePowerKw,
+    reactivePowerKvar: null,
+    apparentPowerKva: dtrPowerTriangleContractReactiveTriangleMeta.apparentPowerKva,
+    powerFactor: null,
+  },
+};
 
 /** API error when no meter reading is available for the widget. */
-export const dtrPowerTriangleContractUnavailableError: DtrPowerTriangleErrorResponse =
-  {
-    success: false,
-    error: {
-      code: "DTR_METER_DATA_UNAVAILABLE",
-      message: "No meter reading available for power triangle",
-    },
-  };
+export const dtrPowerTriangleContractUnavailableError: DtrPowerTriangleErrorResponse = {
+  success: false,
+  error: {
+    code: "DTR_METER_DATA_UNAVAILABLE",
+    message: "No meter reading available for power triangle",
+  },
+};
 
 export interface DtrPowerTriangleTestCase {
   testName: string;
@@ -128,6 +124,8 @@ export interface DtrPowerTriangleTestCase {
   expectedStatus?: number;
   isContractFixture?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export function resolveDtrPowerTriangleCode(
@@ -208,69 +206,80 @@ export const dtrPowerTriangleTestCases: DtrPowerTriangleTestCase[] = [
     testName: "DTR power now — kW, kVA, kVAr, and power factor",
     scenario: "dpt_by_code_primary",
     tags: ["@smoke", "@dtr", "@power-triangle"],
+    nonEmptyExpected: true,
   },
   {
     testName: "DTR power now — a second transformer still shows power",
     scenario: "dpt_by_code_alt",
     tags: ["@dtr", "@power-triangle", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "DTR power now — extra filters that nobody uses are ignored",
+    testName: "DTR power now — extra filters that nobody uses are ignored",
     scenario: "dpt_ignore_unknown_query",
     tags: ["@dtr", "@power-triangle", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample power now — zeros when there is no live reading",
     scenario: "contract_all_zero_degraded",
     isContractFixture: true,
     tags: ["@dtr", "@power-triangle", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample power now — empty numbers when the meter has no reading",
     scenario: "contract_all_null_backend",
     isContractFixture: true,
     tags: ["@dtr", "@power-triangle", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample power now — single-phase live reading",
     scenario: "contract_sp_instantaneous",
     isContractFixture: true,
     tags: ["@dtr", "@power-triangle", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample power now — three-phase live reading",
     scenario: "contract_tp_instantaneous",
     isContractFixture: true,
     tags: ["@dtr", "@power-triangle", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample power now — reactive power from power factor",
     scenario: "contract_reactive_from_pf",
     isContractFixture: true,
     tags: ["@dtr", "@power-triangle", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample power now — reactive power from kW and kVA",
     scenario: "contract_reactive_from_triangle",
     isContractFixture: true,
     tags: ["@dtr", "@power-triangle", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample power now — meter data unavailable message",
     scenario: "contract_meter_data_unavailable",
     isContractFixture: true,
     tags: ["@dtr", "@power-triangle", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR power now — unknown transformer is not shown",
     scenario: "dtr_not_found",
     tags: ["@dtr", "@power-triangle", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR power now — a blank transformer code is not allowed",
     scenario: "empty_dtr_code",
     expectedStatus: 400,
     tags: ["@dtr", "@power-triangle", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

@@ -117,7 +117,8 @@ export interface DtrEventTestCase {
   scenario: DtrEventScenario;
   tags: string[];
   isContractFixture?: boolean;
-  expectedStatus?: number;
+  expectedStatus?: number;  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export function resolveDtrEventQuery(scenario: DtrEventScenario): DtrEventQuery {
@@ -183,79 +184,93 @@ export const dtrEventTestCases: DtrEventTestCase[] = [
     testName: "DTR event — 1–30 Oct 2025 first page shows columns and DTRs",
     scenario: "dev_live_primary",
     tags: ["@smoke", "@reports", "@dtr-event"],
+    nonEmptyExpected: true,
   },
   {
     testName: "DTR event — page 2 continues serial numbers without duplicates",
     scenario: "dev_live_page2",
     tags: ["@reports", "@dtr-event", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR event — showing 1 per page returns at most 1 record",
     scenario: "dev_limit_one",
     tags: ["@reports", "@dtr-event", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR event — a page past the last page shows no records",
     scenario: "dev_live_page_beyond",
     tags: ["@reports", "@dtr-event", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR event — unknown query params are ignored",
     scenario: "dev_ignore_unknown_query",
     tags: ["@reports", "@dtr-event", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR event — 1–30 Oct 2025 fixture",
     scenario: "contract_live_full",
     isContractFixture: true,
     tags: ["@reports", "@dtr-event", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR event — empty page fixture",
     scenario: "contract_empty_page",
     isContractFixture: true,
     tags: ["@reports", "@dtr-event", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR event — fromDate after toDate is rejected",
     scenario: "invalid_date_range",
     expectedStatus: 400,
     tags: ["@reports", "@dtr-event", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR event — invalid fromDate is rejected",
     scenario: "invalid_date_format",
     expectedStatus: 400,
     tags: ["@reports", "@dtr-event", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR event — invalid toDate is rejected",
     scenario: "invalid_to_date",
     expectedStatus: 400,
     tags: ["@reports", "@dtr-event", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR event — missing fromDate is rejected",
     scenario: "missing_from_date",
     expectedStatus: 400,
     tags: ["@reports", "@dtr-event", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR event — missing toDate is rejected",
     scenario: "missing_to_date",
     expectedStatus: 400,
     tags: ["@reports", "@dtr-event", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR event — page 0 is rejected (page must start at 1)",
     scenario: "invalid_page",
     expectedStatus: 400,
     tags: ["@reports", "@dtr-event", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR event — limit 0 is rejected (limit must be at least 1)",
     scenario: "invalid_limit",
     expectedStatus: 400,
     tags: ["@reports", "@dtr-event", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

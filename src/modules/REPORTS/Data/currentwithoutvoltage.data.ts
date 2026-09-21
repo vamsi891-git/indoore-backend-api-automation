@@ -169,7 +169,8 @@ export interface CurrentWithoutVoltageTestCase {
   scenario: CurrentWithoutVoltageScenario;
   tags: string[];
   isContractFixture?: boolean;
-  expectedStatus?: number;
+  expectedStatus?: number;  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export const currentWithoutVoltageLiveMatrix: Array<{
@@ -261,70 +262,82 @@ export const currentWithoutVoltageTestCases: CurrentWithoutVoltageTestCase[] = [
       "Current without voltage — showing 1 per page returns at most 1 record",
     scenario: "dev_limit_one",
     tags: ["@reports", "@current-without-voltage", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName:
       "Current without voltage — a far page still returns a valid table",
     scenario: "dev_live_page_beyond",
     tags: ["@reports", "@current-without-voltage", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Current without voltage — unknown query params are ignored",
     scenario: "dev_ignore_unknown_query",
     tags: ["@reports", "@current-without-voltage", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Current without voltage — Oct 2025 phase R fixture",
     scenario: "contract_live_full",
     isContractFixture: true,
     tags: ["@reports", "@current-without-voltage", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Current without voltage — empty page fixture",
     scenario: "contract_empty_page",
     isContractFixture: true,
     tags: ["@reports", "@current-without-voltage", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Current without voltage — invalid phase is rejected",
     scenario: "invalid_phase",
     expectedStatus: 400,
     tags: ["@reports", "@current-without-voltage", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Current without voltage — invalid month is rejected",
     scenario: "invalid_month",
     expectedStatus: 400,
     tags: ["@reports", "@current-without-voltage", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Current without voltage — missing year is rejected",
     scenario: "missing_year",
     expectedStatus: 400,
     tags: ["@reports", "@current-without-voltage", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Current without voltage — missing month is rejected",
     scenario: "missing_month",
     expectedStatus: 400,
     tags: ["@reports", "@current-without-voltage", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName:
       "Current without voltage — missing phase falls back to R",
     scenario: "dev_missing_phase_defaults",
     tags: ["@reports", "@current-without-voltage", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Current without voltage — page 0 is rejected (page must start at 1)",
     scenario: "invalid_page",
     expectedStatus: 400,
     tags: ["@reports", "@current-without-voltage", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Current without voltage — limit 0 is rejected (limit must be at least 1)",
     scenario: "invalid_limit",
     expectedStatus: 400,
     tags: ["@reports", "@current-without-voltage", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

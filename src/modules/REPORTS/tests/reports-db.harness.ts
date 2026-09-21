@@ -1,8 +1,7 @@
 import type pg from "pg";
 import type { APIRequestContext } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { compareApiToDb } from "../../../core/db/db-compare.engine";
+import { compareApiToDb } from "../../../extras/db/db-compare.engine";
 import { getBillingMeterHeaderBySerial } from "../../BILLING/Db/billing.db";
 import { EventReportApi } from "../Api/eventreport.api";
 import { DtrBillingApi } from "../Api/dtrbilling.api";
@@ -20,6 +19,7 @@ import {
 } from "../Db/reports-db-compare";
 import { logReportsDataQualityFindings } from "../Db/reports-db.validator";
 import { isReportsInternalError } from "../utils/reports-env.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 /**
  * Part 4 harness — event-report catalog spot + DTR billing meter header.
@@ -29,7 +29,7 @@ export async function runReportsDbCoverage(
   authenticatedApi: APIRequestContext,
   db: pg.Pool,
 ): Promise<void> {
-  const validation = new ValidationEngine();
+  const validation = new ApiValidationHelper();
   const eventApi = new EventReportApi(authenticatedApi);
   const dtrApi = new DtrBillingApi(authenticatedApi);
 

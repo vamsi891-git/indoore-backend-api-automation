@@ -29,7 +29,10 @@ export interface UtilsLookupContractCase {
   pathPattern: string;
   kind: UtilsLookupContractKind;
   tags: string[];
-  fetch: (api: APIRequestContext) => Promise<UtilsLookupContractFetchResult>;
+  fetch: (
+    api: APIRequestContext,
+  ) => Promise<UtilsLookupContractFetchResult>; /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 /**
@@ -44,8 +47,8 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
     pathPattern: SearchConsumerApi.PATH,
     kind: "grid",
     tags: ["@utils-lookup", "@contract-snapshot", "@consumer-search"],
-    fetch: (api) =>
-      new SearchConsumerApi(api).searchConsumers({ page: 1, limit: 20 }),
+    nonEmptyExpected: false,
+    fetch: (api) => new SearchConsumerApi(api).searchConsumers({ page: 1, limit: 20 }),
   },
   {
     testCaseId: "IND-UL-CONTRACT-002",
@@ -54,6 +57,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
     pathPattern: DtrSearchApi.PATH,
     kind: "grid",
     tags: ["@utils-lookup", "@contract-snapshot", "@dtr-search"],
+    nonEmptyExpected: false,
     fetch: (api) => new DtrSearchApi(api).searchDtr({ page: 1, limit: 20 }),
   },
   {
@@ -63,6 +67,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
     pathPattern: NetworkSearchApi.PATH,
     kind: "items",
     tags: ["@utils-lookup", "@contract-snapshot", "@network-search"],
+    nonEmptyExpected: false,
     fetch: (api) => new NetworkSearchApi(api).searchNetworks({ limit: 20 }),
   },
   {
@@ -72,8 +77,8 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
     pathPattern: OrganizationApi.PATH,
     kind: "items",
     tags: ["@utils-lookup", "@contract-snapshot", "@organisation-search"],
-    fetch: (api) =>
-      new OrganizationApi(api).searchOrganizations({ limit: 20 }),
+    nonEmptyExpected: false,
+    fetch: (api) => new OrganizationApi(api).searchOrganizations({ limit: 20 }),
   },
   {
     testCaseId: "IND-UL-CONTRACT-005",
@@ -82,6 +87,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
     pathPattern: ConnectionStatusApi.PATH,
     kind: "items",
     tags: ["@utils-lookup", "@contract-snapshot", "@connection-status"],
+    nonEmptyExpected: false,
     fetch: (api) => new ConnectionStatusApi(api).getConnectionStatuses(),
   },
   {
@@ -91,6 +97,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
     pathPattern: ConsumerCategoryApi.PATH,
     kind: "items",
     tags: ["@utils-lookup", "@contract-snapshot", "@consumer-category"],
+    nonEmptyExpected: false,
     fetch: (api) => new ConsumerCategoryApi(api).getConsumerCategories(),
   },
   {
@@ -100,6 +107,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
     pathPattern: DeviceManufacturerApi.PATH,
     kind: "items",
     tags: ["@utils-lookup", "@contract-snapshot", "@device-manufacturer"],
+    nonEmptyExpected: false,
     fetch: (api) => new DeviceManufacturerApi(api).getDeviceManufacturers(),
   },
   {
@@ -109,6 +117,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
     pathPattern: EventApi.PATH,
     kind: "items",
     tags: ["@utils-lookup", "@contract-snapshot", "@events"],
+    nonEmptyExpected: false,
     fetch: (api) => new EventApi(api).getEvents(),
   },
   {
@@ -118,6 +127,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
     pathPattern: EventClassificationApi.PATH,
     kind: "items",
     tags: ["@utils-lookup", "@contract-snapshot", "@event-classification"],
+    nonEmptyExpected: false,
     fetch: (api) => new EventClassificationApi(api).getEventClassifications(),
   },
   {
@@ -127,6 +137,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
     pathPattern: EventPriorityApi.PATH,
     kind: "items",
     tags: ["@utils-lookup", "@contract-snapshot", "@event-priority"],
+    nonEmptyExpected: false,
     fetch: (api) => new EventPriorityApi(api).getEventPriorities(),
   },
   {
@@ -136,6 +147,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
     pathPattern: MeterPhaseApi.PATH,
     kind: "items",
     tags: ["@utils-lookup", "@contract-snapshot", "@meter-phase"],
+    nonEmptyExpected: false,
     fetch: (api) => new MeterPhaseApi(api).getMeterPhases(),
   },
   {
@@ -145,6 +157,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
     pathPattern: PaymentContractApi.PATH,
     kind: "items",
     tags: ["@utils-lookup", "@contract-snapshot", "@payment-contract"],
+    nonEmptyExpected: false,
     fetch: (api) => new PaymentContractApi(api).getPaymentContracts(),
   },
   {
@@ -154,6 +167,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
     pathPattern: NetworkApi.PATH,
     kind: "items",
     tags: ["@utils-lookup", "@contract-snapshot", "@network-hierarchy"],
+    nonEmptyExpected: false,
     fetch: (api) => new NetworkApi(api).getNetworkHierarchy(),
   },
   {
@@ -163,6 +177,7 @@ export const utilsLookupContractCases: UtilsLookupContractCase[] = [
     pathPattern: OrganisationApi.PATH,
     kind: "items",
     tags: ["@utils-lookup", "@contract-snapshot", "@organisation-hierarchy"],
+    nonEmptyExpected: false,
     fetch: (api) => new OrganisationApi(api).getOrganisationHierarchy(),
   },
 ];

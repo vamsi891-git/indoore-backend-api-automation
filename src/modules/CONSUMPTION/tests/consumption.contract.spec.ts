@@ -2,7 +2,7 @@ import { test, expect } from "../../../fixtures/observability.fixture";
 import {
   assertContractSnapshot,
   buildLookupItemsContractSnapshot,
-} from "../../../core/contract/contract-snapshot.helper";
+} from "../../../extras/contract/contract-snapshot.helper";
 import { DailyConsumptionApi } from "../Api/dailyconsumption.api";
 import { dailyConsumptionData } from "../Data/dailyconsumption.data";
 import { ConsumptionReportApi } from "../Api/consumption-report.api";
@@ -15,9 +15,7 @@ import { PatternConsumptionApi } from "../Api/patternconsumption.api";
 import { patternConsumptionData } from "../Data/patternconsumption.data";
 
 function asRecord(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === "object"
-    ? (value as Record<string, unknown>)
-    : {};
+  return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
 function itemKeysFromData(data: Record<string, unknown>): string[] {
@@ -208,8 +206,7 @@ test.describe("CONSUMPTION — Contract Snapshots", () => {
     "Pattern Consumption Last Three Contract Snapshot",
     { tag: ["@contract-snapshot", "@consumption", "@last-three-months"] },
     async ({ authenticatedApi }) => {
-      const { page, limit, month, year, lastThreeMonthsType } =
-        patternConsumptionData;
+      const { page, limit, month, year, lastThreeMonthsType } = patternConsumptionData;
       const { responseBody, rawResponse } = await new PatternConsumptionApi(
         authenticatedApi,
       ).getPatternConsumption(lastThreeMonthsType, page, limit, month, year);
@@ -259,8 +256,7 @@ test.describe("CONSUMPTION — Contract Snapshots", () => {
     "Pattern Consumption Comparison Contract Snapshot",
     { tag: ["@contract-snapshot", "@consumption", "@comparison"] },
     async ({ authenticatedApi }) => {
-      const { page, limit, month, year, comparisonType } =
-        patternConsumptionData;
+      const { page, limit, month, year, comparisonType } = patternConsumptionData;
       const { responseBody, rawResponse } = await new PatternConsumptionApi(
         authenticatedApi,
       ).getPatternConsumption(comparisonType, page, limit, month, year);
