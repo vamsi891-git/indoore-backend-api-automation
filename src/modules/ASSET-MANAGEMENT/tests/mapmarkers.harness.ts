@@ -1,11 +1,10 @@
 import type { APIResponse } from "@playwright/test";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { MapMarkersApi } from "../Api/mapmarkers.api";
 import { assetManagementMaxResponseTimeMs } from "../Data/asset-management.common.data";
 import { MapMarkersMapper } from "../Mapper/mapmarkers.mapper";
 import { MapMarkersValidator } from "../Validator/mapmarkers.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 export interface RunMapMarkersValidationOptions {
   api: MapMarkersApi;
@@ -17,9 +16,7 @@ export interface RunMapMarkersValidationOptions {
   maxResponseTimeMs?: number;
 }
 
-export async function runMapMarkersValidation(
-  options: RunMapMarkersValidationOptions,
-): Promise<{
+export async function runMapMarkersValidation(options: RunMapMarkersValidationOptions): Promise<{
   rawResponse: APIResponse;
   responseTime: number;
   data: ReturnType<typeof MapMarkersMapper.mapData>;
@@ -34,18 +31,12 @@ export async function runMapMarkersValidation(
     maxResponseTimeMs = assetManagementMaxResponseTimeMs,
   } = options;
 
-  const { rawResponse, responseBody, responseTime } =
-    await api.getMapMarkers(query);
+  const { rawResponse, responseBody, responseTime } = await api.getMapMarkers(query);
 
-  await PerformanceTracker.track(
-    rawResponse,
-    testLabel,
-    rawResponse.url(),
-    responseTime,
-  );
+  await PerformanceTracker.track(rawResponse, testLabel, rawResponse.url(), responseTime);
 
-  const assert = new AssertionEngine();
-  const validation = new ValidationEngine();
+  const assert = new ApiValidationHelper();
+  const validation = new ApiValidationHelper();
   const validator = new MapMarkersValidator();
   const data = MapMarkersMapper.mapData(responseBody.data);
 
@@ -54,12 +45,8 @@ export async function runMapMarkersValidation(
   validation.execute("Response Time", () =>
     assert.validateResponseTime(responseTime, maxResponseTimeMs),
   );
-  validation.execute("Security", () =>
-    assert.validateSensitiveData(responseBody),
-  );
-  validation.execute("Response Contract", () =>
-    validator.validateResponse(responseBody),
-  );
+  validation.execute("Security", () => assert.validateSensitiveData(responseBody));
+  validation.execute("Response Contract", () => validator.validateResponse(responseBody));
   validation.execute("Columns", () => validator.validateColumns(data));
   validation.execute("Limit", () => validator.validateLimit(data, requestedLimit));
   validation.execute("Count", () => validator.validateCount(data));

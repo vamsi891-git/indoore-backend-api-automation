@@ -4,67 +4,71 @@
  */
 
 export const dtrUnbalanceUnauthorizedCode = "UNAUTHORIZED";
-export const dtrUnbalanceUnauthorizedMessage =
-    "Missing or invalid Authorization header";
+export const dtrUnbalanceUnauthorizedMessage = "Missing or invalid Authorization header";
 
 export const dtrUnbalanceAccessTokenInvalidCode = "ACCESS_TOKEN_INVALID";
-export const dtrUnbalanceAccessTokenInvalidMessage =
-    "Invalid or expired access token";
+export const dtrUnbalanceAccessTokenInvalidMessage = "Invalid or expired access token";
 
 /** Minimal expired-looking JWT (exp=1) — signature is irrelevant; API rejects as invalid. */
 export const dtrUnbalanceExpiredLookingJwt =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxfQ.sig";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZXhwIjoxfQ.sig";
 
 export interface DtrUnbalanceAuthNegativeCase {
-    testName: string;
-    headers: Record<string, string>;
-    expectedStatus: 401;
-    expectedErrorCode: string;
-    expectedMessage: string;
-    tags: string[];
+  testName: string;
+  headers: Record<string, string>;
+  expectedStatus: 401;
+  expectedErrorCode: string;
+  expectedMessage: string;
+  tags: string[]; /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export const dtrUnbalanceAuthNegativeCases: DtrUnbalanceAuthNegativeCase[] = [
-    {
-        testName: "cannot open without logging in",
-        headers: {},
-        expectedStatus: 401,
-        expectedErrorCode: dtrUnbalanceUnauthorizedCode,
-        expectedMessage: dtrUnbalanceUnauthorizedMessage,
-        tags: ["@negative", "@dashboard", "@auth"],
+  {
+    testName: "cannot open without logging in",
+    headers: {},
+    expectedStatus: 401,
+    expectedErrorCode: dtrUnbalanceUnauthorizedCode,
+    expectedMessage: dtrUnbalanceUnauthorizedMessage,
+    tags: ["@negative", "@dashboard", "@auth"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "cannot open with an empty login token",
+    headers: { Authorization: "Bearer " },
+    expectedStatus: 401,
+    expectedErrorCode: dtrUnbalanceUnauthorizedCode,
+    expectedMessage: dtrUnbalanceUnauthorizedMessage,
+    tags: ["@negative", "@dashboard", "@auth", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "cannot open with a badly formed login token",
+    headers: { Authorization: "Token abc" },
+    expectedStatus: 401,
+    expectedErrorCode: dtrUnbalanceUnauthorizedCode,
+    expectedMessage: dtrUnbalanceUnauthorizedMessage,
+    tags: ["@negative", "@dashboard", "@auth", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "cannot open with an invalid login token",
+    headers: { Authorization: "Bearer not.a.jwt" },
+    expectedStatus: 401,
+    expectedErrorCode: dtrUnbalanceAccessTokenInvalidCode,
+    expectedMessage: dtrUnbalanceAccessTokenInvalidMessage,
+    tags: ["@negative", "@dashboard", "@auth", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "cannot open with an expired login token",
+    headers: {
+      Authorization: `Bearer ${dtrUnbalanceExpiredLookingJwt}`,
     },
-    {
-        testName: "cannot open with an empty login token",
-        headers: { Authorization: "Bearer " },
-        expectedStatus: 401,
-        expectedErrorCode: dtrUnbalanceUnauthorizedCode,
-        expectedMessage: dtrUnbalanceUnauthorizedMessage,
-        tags: ["@negative", "@dashboard", "@auth", "@edge"],
-    },
-    {
-        testName: "cannot open with a badly formed login token",
-        headers: { Authorization: "Token abc" },
-        expectedStatus: 401,
-        expectedErrorCode: dtrUnbalanceUnauthorizedCode,
-        expectedMessage: dtrUnbalanceUnauthorizedMessage,
-        tags: ["@negative", "@dashboard", "@auth", "@edge"],
-    },
-    {
-        testName: "cannot open with an invalid login token",
-        headers: { Authorization: "Bearer not.a.jwt" },
-        expectedStatus: 401,
-        expectedErrorCode: dtrUnbalanceAccessTokenInvalidCode,
-        expectedMessage: dtrUnbalanceAccessTokenInvalidMessage,
-        tags: ["@negative", "@dashboard", "@auth", "@edge"],
-    },
-    {
-        testName: "cannot open with an expired login token",
-        headers: {
-            Authorization: `Bearer ${dtrUnbalanceExpiredLookingJwt}`,
-        },
-        expectedStatus: 401,
-        expectedErrorCode: dtrUnbalanceAccessTokenInvalidCode,
-        expectedMessage: dtrUnbalanceAccessTokenInvalidMessage,
-        tags: ["@negative", "@dashboard", "@auth", "@edge"],
-    },
+    expectedStatus: 401,
+    expectedErrorCode: dtrUnbalanceAccessTokenInvalidCode,
+    expectedMessage: dtrUnbalanceAccessTokenInvalidMessage,
+    tags: ["@negative", "@dashboard", "@auth", "@edge"],
+    nonEmptyExpected: false,
+  },
 ];

@@ -12,8 +12,6 @@ import {
   consumptionPatternCountBase,
   consumptionPatternValidatableQueries,
 } from "../Data/consumptionpattern.data";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 import { CONSUMPTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import {
@@ -49,14 +47,10 @@ test.describe("Consumption Pattern report", () => {
       { tag: ["@smoke", "@consumption-pattern"] },
       async ({ authenticatedApi }, testInfo) => {
         const api = new ConsumptionPatternApi(authenticatedApi);
-        const { rawResponse, responseBody, responseTime } =
-          await api.getConsumptionPattern(query);
+        const { rawResponse, responseBody, responseTime } = await api.getConsumptionPattern(query);
 
         if (shouldSkipCommercialResponse(rawResponse.status(), responseBody)) {
-          test.skip(
-            true,
-            `Pattern ${query.type} unavailable (HTTP ${rawResponse.status()})`,
-          );
+          test.skip(true, `Pattern ${query.type} unavailable (HTTP ${rawResponse.status()})`);
           return;
         }
 
@@ -70,8 +64,8 @@ test.describe("Consumption Pattern report", () => {
           expectedBehavior: patternExpectedBehavior(cfg.kind),
         };
 
-        const assert = new AssertionEngine();
-        const validation = new ValidationEngine();
+        const assert = new ApiValidationHelper();
+        const validation = new ApiValidationHelper();
         const validator = new ConsumptionPatternValidator();
 
         try {
@@ -94,12 +88,8 @@ test.describe("Consumption Pattern report", () => {
 
           const rows = mapConsumptionPatternResponse(responseBody);
 
-          validation.execute("Response Validation", () =>
-            validator.validateResponse(responseBody),
-          );
-          validation.execute("Grid Columns", () =>
-            validator.validateGridColumns(responseBody),
-          );
+          validation.execute("Response Validation", () => validator.validateResponse(responseBody));
+          validation.execute("Grid Columns", () => validator.validateGridColumns(responseBody));
           validation.execute("Query Params Validation", () =>
             validator.validateQueryParams(responseBody, query),
           );
@@ -112,9 +102,7 @@ test.describe("Consumption Pattern report", () => {
           validation.execute("Pattern Business Validation", () =>
             validator.validatePatternRows(rows, cfg.kind, cfg.threshold),
           );
-          validation.execute("Duplicate contract", () =>
-            validator.validateDuplicateContract(rows),
-          );
+          validation.execute("Duplicate contract", () => validator.validateDuplicateContract(rows));
           validation.execute("Pagination Validation", () =>
             validator.validatePagination(responseBody, query),
           );
@@ -161,10 +149,7 @@ test.describe("Consumption Pattern report", () => {
           return;
         }
 
-        const responseTime = Math.max(
-          domesticRes.responseTime,
-          nonDomesticRes.responseTime,
-        );
+        const responseTime = Math.max(domesticRes.responseTime, nonDomesticRes.responseTime);
         const defectContext = {
           module: "COMMERICIAL-ANALYSIS",
           endpoint: domesticRes.rawResponse.url(),
@@ -178,18 +163,12 @@ test.describe("Consumption Pattern report", () => {
             "connectionCategory is stripped. domestic.total === non-domestic total. Page-1 meters match. This report has no duplicate records.",
         };
 
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         try {
-          const statuses = [
-            domesticRes.rawResponse.status(),
-            nonDomesticRes.rawResponse.status(),
-          ];
+          const statuses = [domesticRes.rawResponse.status(), nonDomesticRes.rawResponse.status()];
           if (
             statuses.some((status, i) =>
-              shouldSkipCommercialResponse(
-                status,
-                [domesticRes, nonDomesticRes][i]!.responseBody,
-              ),
+              shouldSkipCommercialResponse(status, [domesticRes, nonDomesticRes][i]!.responseBody),
             )
           ) {
             test.skip(
@@ -247,21 +226,14 @@ test.describe("Consumption Pattern report", () => {
             ),
           });
 
-          validation.execute(
-            "Domestic pagination.total equals non-domestic total",
-            () => {
-              expect(domesticView.totalCount).toBeGreaterThan(0);
-              expect(nonDomesticView.totalCount).toBe(domesticView.totalCount);
-            },
-          );
+          validation.execute("Domestic pagination.total equals non-domestic total", () => {
+            expect(domesticView.totalCount).toBeGreaterThan(0);
+            expect(nonDomesticView.totalCount).toBe(domesticView.totalCount);
+          });
           const validator = new ConsumptionPatternValidator();
           const cfg = CONSUMPTION_PATTERN_TYPE_CONFIG[query.type];
-          const domesticRows = mapConsumptionPatternResponse(
-            domesticRes.responseBody,
-          );
-          const nonDomesticRows = mapConsumptionPatternResponse(
-            nonDomesticRes.responseBody,
-          );
+          const domesticRows = mapConsumptionPatternResponse(domesticRes.responseBody);
+          const nonDomesticRows = mapConsumptionPatternResponse(nonDomesticRes.responseBody);
           validation.execute("Domestic page uniqueness", () => {
             validator.validateDuplicateContract(domesticRows);
           });
@@ -272,20 +244,13 @@ test.describe("Consumption Pattern report", () => {
             validator.validatePatternRows(domesticRows, cfg.kind, cfg.threshold);
           });
           validation.execute("Non-domestic page business rules", () => {
-            validator.validatePatternRows(
-              nonDomesticRows,
-              cfg.kind,
-              cfg.threshold,
+            validator.validatePatternRows(nonDomesticRows, cfg.kind, cfg.threshold);
+          });
+          validation.execute("Domestic page-1 meters equal non-domestic page-1 meters", () => {
+            expect(domesticRows.map(patternRowIdentity)).toEqual(
+              nonDomesticRows.map(patternRowIdentity),
             );
           });
-          validation.execute(
-            "Domestic page-1 meters equal non-domestic page-1 meters",
-            () => {
-              expect(domesticRows.map(patternRowIdentity)).toEqual(
-                nonDomesticRows.map(patternRowIdentity),
-              );
-            },
-          );
         } finally {
           ApiValidationHelper.finalize(validation, {
             apiName: `Consumption Pattern API (${query.type} connectionCategory ignored)`,
@@ -307,7 +272,7 @@ test.describe("Consumption Pattern report", () => {
         async ({ authenticatedApi }, testInfo) => {
           const api = new ConsumptionPatternApi(authenticatedApi);
           const validator = new ConsumptionPatternValidator();
-          const validation = new ValidationEngine();
+          const validation = new ApiValidationHelper();
           const cfg = CONSUMPTION_PATTERN_TYPE_CONFIG[query.type];
           const first = await api.getConsumptionPattern(query);
           if (shouldSkipCommercialResponse(first.rawResponse.status(), first.responseBody)) {
@@ -349,9 +314,7 @@ test.describe("Consumption Pattern report", () => {
             expect(res.rawResponse.status()).toBe(200);
           }
           validation.execute("Domestic page 1 uniqueness", () => {
-            validator.validateDuplicateContract(
-              mapConsumptionPatternResponse(first.responseBody),
-            );
+            validator.validateDuplicateContract(mapConsumptionPatternResponse(first.responseBody));
           });
           validation.execute(`Domestic last page ${lastPage} uniqueness`, () => {
             const lastRows = mapConsumptionPatternResponse(last.responseBody);
@@ -363,25 +326,18 @@ test.describe("Consumption Pattern report", () => {
               mapConsumptionPatternResponse(nonDomesticFirst.responseBody),
             );
           });
-          validation.execute(
-            `Non-domestic last page ${lastPage} uniqueness`,
-            () => {
-              validator.validateDuplicateContract(
-                mapConsumptionPatternResponse(nonDomesticLast.responseBody),
-              );
-            },
-          );
+          validation.execute(`Non-domestic last page ${lastPage} uniqueness`, () => {
+            validator.validateDuplicateContract(
+              mapConsumptionPatternResponse(nonDomesticLast.responseBody),
+            );
+          });
           validation.execute(
             "Domestic last-page meters equal non-domestic last-page meters",
             () => {
               expect(
-                mapConsumptionPatternResponse(last.responseBody).map(
-                  patternRowIdentity,
-                ),
+                mapConsumptionPatternResponse(last.responseBody).map(patternRowIdentity),
               ).toEqual(
-                mapConsumptionPatternResponse(nonDomesticLast.responseBody).map(
-                  patternRowIdentity,
-                ),
+                mapConsumptionPatternResponse(nonDomesticLast.responseBody).map(patternRowIdentity),
               );
             },
           );

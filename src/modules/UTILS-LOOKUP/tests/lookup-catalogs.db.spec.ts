@@ -1,7 +1,7 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/observability.fixture";
-import { compareApiToDb } from "../../../core/db/db-compare.engine";
-import { isDbConfigured } from "../../../core/db/postgres.client";
+import { compareApiToDb } from "../../../extras/db/db-compare.engine";
+import { isDbConfigured } from "../../../extras/db/postgres.client";
 import { UTILS_LOOKUP_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { applyAllureTestCaseId } from "../../../core/utils/allure-test-case.helper";
 import { getLookupResponseData } from "../utils/lookup-spec.harness";
@@ -81,9 +81,7 @@ test.describe("UTILS-LOOKUP — Catalog DB cross-validation", () => {
       const { responseBody } = await new ConnectionStatusApi(
         authenticatedApi,
       ).getConnectionStatuses();
-      const mapped = ConnectionStatusMapper.mapData(
-        getLookupResponseData(responseBody),
-      );
+      const mapped = ConnectionStatusMapper.mapData(getLookupResponseData(responseBody));
       const dbCount = await countConnectionStatuses(db);
       compareApiToDb(
         [{ label: "items.length", apiValue: mapped.items.length, dbValue: dbCount }],
@@ -124,9 +122,7 @@ test.describe("UTILS-LOOKUP — Catalog DB cross-validation", () => {
       const { responseBody } = await new ConsumerCategoryApi(
         authenticatedApi,
       ).getConsumerCategories();
-      const mapped = ConsumerCategoryMapper.mapData(
-        getLookupResponseData(responseBody),
-      );
+      const mapped = ConsumerCategoryMapper.mapData(getLookupResponseData(responseBody));
       const dbCount = await countConsumerCategories(db);
       compareApiToDb(
         [{ label: "items.length", apiValue: mapped.items.length, dbValue: dbCount }],
@@ -163,12 +159,8 @@ test.describe("UTILS-LOOKUP — Catalog DB cross-validation", () => {
     { tag: ["@utils-lookup", "@payment-contract", "@db"] },
     async ({ authenticatedApi, db, obs }) => {
       await applyAllureTestCaseId("IND-UL-DB-003");
-      const { responseBody } = await new PaymentContractApi(
-        authenticatedApi,
-      ).getPaymentContracts();
-      const mapped = PaymentContractMapper.mapData(
-        getLookupResponseData(responseBody),
-      );
+      const { responseBody } = await new PaymentContractApi(authenticatedApi).getPaymentContracts();
+      const mapped = PaymentContractMapper.mapData(getLookupResponseData(responseBody));
       const dbCount = await countPaymentContracts(db);
       compareApiToDb(
         [{ label: "items.length", apiValue: mapped.items.length, dbValue: dbCount }],
@@ -209,9 +201,7 @@ test.describe("UTILS-LOOKUP — Catalog DB cross-validation", () => {
       const { responseBody } = await new DeviceManufacturerApi(
         authenticatedApi,
       ).getDeviceManufacturers();
-      const mapped = DeviceManufacturerMapper.mapData(
-        getLookupResponseData(responseBody),
-      );
+      const mapped = DeviceManufacturerMapper.mapData(getLookupResponseData(responseBody));
       const dbCount = await countDeviceManufacturers(db);
       compareApiToDb(
         [{ label: "items.length", apiValue: mapped.items.length, dbValue: dbCount }],
@@ -302,9 +292,7 @@ test.describe("UTILS-LOOKUP — Catalog DB cross-validation", () => {
       const { responseBody } = await new EventClassificationApi(
         authenticatedApi,
       ).getEventClassifications();
-      const mapped = EventClassificationMapper.mapData(
-        getLookupResponseData(responseBody),
-      );
+      const mapped = EventClassificationMapper.mapData(getLookupResponseData(responseBody));
       const dbCount = await countEventClassifications(db);
       compareApiToDb(
         [{ label: "items.length", apiValue: mapped.items.length, dbValue: dbCount }],
@@ -316,9 +304,7 @@ test.describe("UTILS-LOOKUP — Catalog DB cross-validation", () => {
         mapped.items.map((item) => item.EventClassificationTblRefId),
         resolveUtilsLookupDbSampleSize(),
       )) {
-        const apiRow = mapped.items.find(
-          (item) => item.EventClassificationTblRefId === id,
-        )!;
+        const apiRow = mapped.items.find((item) => item.EventClassificationTblRefId === id)!;
         const dbRow = await getEventClassificationById(db, id);
         expect(dbRow, `DB missing event classification id=${id}`).toBeTruthy();
         compareApiToDb(
@@ -346,12 +332,8 @@ test.describe("UTILS-LOOKUP — Catalog DB cross-validation", () => {
     { tag: ["@utils-lookup", "@event-priority", "@db"] },
     async ({ authenticatedApi, db, obs }) => {
       await applyAllureTestCaseId("IND-UL-DB-007");
-      const { responseBody } = await new EventPriorityApi(
-        authenticatedApi,
-      ).getEventPriorities();
-      const mapped = EventPriorityMapper.mapData(
-        getLookupResponseData(responseBody),
-      );
+      const { responseBody } = await new EventPriorityApi(authenticatedApi).getEventPriorities();
+      const mapped = EventPriorityMapper.mapData(getLookupResponseData(responseBody));
       const dbCount = await countEventPriorities(db);
       compareApiToDb(
         [{ label: "items.length", apiValue: mapped.items.length, dbValue: dbCount }],
@@ -378,12 +360,8 @@ test.describe("UTILS-LOOKUP — Catalog DB cross-validation", () => {
     { tag: ["@utils-lookup", "@meter-phase", "@db"] },
     async ({ authenticatedApi, db, obs }) => {
       await applyAllureTestCaseId("IND-UL-DB-008");
-      const { responseBody } = await new MeterPhaseApi(
-        authenticatedApi,
-      ).getMeterPhases();
-      const mapped = MeterPhaseMapper.mapData(
-        getLookupResponseData(responseBody),
-      );
+      const { responseBody } = await new MeterPhaseApi(authenticatedApi).getMeterPhases();
+      const mapped = MeterPhaseMapper.mapData(getLookupResponseData(responseBody));
       const dbCount = await countMeterPhases(db);
       compareApiToDb(
         [{ label: "items.length", apiValue: mapped.items.length, dbValue: dbCount }],
@@ -418,9 +396,7 @@ test.describe("UTILS-LOOKUP — Catalog DB cross-validation", () => {
       const { responseBody } = await new OrganisationApi(
         authenticatedApi,
       ).getOrganisationHierarchy();
-      const mapped = OrganisationMapper.mapData(
-        getLookupResponseData(responseBody),
-      );
+      const mapped = OrganisationMapper.mapData(getLookupResponseData(responseBody));
       const dbCount = await countOrganisationHierarchies(db);
       compareApiToDb(
         [{ label: "items.length", apiValue: mapped.items.length, dbValue: dbCount }],
@@ -453,12 +429,8 @@ test.describe("UTILS-LOOKUP — Catalog DB cross-validation", () => {
     { tag: ["@utils-lookup", "@network-hierarchy", "@db"] },
     async ({ authenticatedApi, db, obs }) => {
       await applyAllureTestCaseId("IND-UL-DB-010");
-      const { responseBody } = await new NetworkApi(
-        authenticatedApi,
-      ).getNetworkHierarchy();
-      const mapped = NetworkMapper.mapData(
-        getLookupResponseData(responseBody),
-      );
+      const { responseBody } = await new NetworkApi(authenticatedApi).getNetworkHierarchy();
+      const mapped = NetworkMapper.mapData(getLookupResponseData(responseBody));
       const dbCount = await countNetworkHierarchies(db);
       compareApiToDb(
         [{ label: "items.length", apiValue: mapped.items.length, dbValue: dbCount }],

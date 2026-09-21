@@ -1,8 +1,4 @@
-import {
-  mapMasterDataList,
-  MasterDataList,
-  MasterDataListRaw,
-} from "./master-data-list.mapper";
+import { mapMasterDataList, MasterDataList, MasterDataListRaw } from "./master-data-list.mapper";
 
 export interface MeterMasterQuery {
   page?: number;
@@ -47,7 +43,7 @@ export interface MeterMasterItem {
   meterRating?: number | string | null;
 }
 
-export interface MeterMasterRawData extends MasterDataListRaw<MeterMasterItem> {}
+export type MeterMasterRawData = MasterDataListRaw<MeterMasterItem>;
 
 export interface MeterMasterResponse {
   success: boolean;
@@ -60,10 +56,7 @@ export interface MeterMasterData extends MasterDataList<MeterMasterItem> {
 }
 
 export class MeterMasterMapper {
-  static mapData(
-    raw: MeterMasterRawData | undefined,
-    defaultLimit = 20,
-  ): MeterMasterData {
+  static mapData(raw: MeterMasterRawData | undefined, defaultLimit = 20): MeterMasterData {
     const list = mapMasterDataList(raw ?? {}, defaultLimit);
     return {
       ...list,

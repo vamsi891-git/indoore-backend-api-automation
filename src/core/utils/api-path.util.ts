@@ -3,17 +3,23 @@
  * Live mounts under `/indore/...`. Set STRIP_INDORE_PREFIX=true in `.env`
  * to rewrite `/indore/...` → `/...` for local testing without editing every API file.
  */
+import { getEnv, setStripIndorePrefix } from "../config/env.schema";
+
 export function enableStripIndorePrefix(): void {
-  const raw = process.env.STRIP_INDORE_PREFIX?.trim().toLowerCase();
-  if (raw === "0" || raw === "false" || raw === "no") {
+  if (
+    process.env.STRIP_INDORE_PREFIX?.trim().toLowerCase() === "0" ||
+    process.env.STRIP_INDORE_PREFIX?.trim().toLowerCase() === "false" ||
+    process.env.STRIP_INDORE_PREFIX?.trim().toLowerCase() === "no"
+  ) {
     return;
   }
-  process.env.STRIP_INDORE_PREFIX = "true";
+  setStripIndorePrefix(true);
 }
 
 function shouldAutoStripIndorePrefix(): boolean {
   try {
-    const host = new URL(normalizeApiBaseUrl(process.env.BASE_URL)).hostname;
+    const base = process.env.BASE_URL ?? "";
+    const host = new URL(normalizeApiBaseUrl(base)).hostname;
     return host === "api.mdm.mppkvvcl.bestinfra.app";
   } catch {
     return false;
@@ -21,6 +27,14 @@ function shouldAutoStripIndorePrefix(): boolean {
 }
 
 export function isStripIndorePrefixEnabled(): boolean {
+  try {
+    const e = getEnv();
+    if (e.STRIP_INDORE_PREFIX) {
+      return true;
+    }
+  } catch {
+    // Env not ready / invalid — fall through to process.env + auto-detect.
+  }
   const raw = process.env.STRIP_INDORE_PREFIX?.trim().toLowerCase();
   if (raw === "1" || raw === "true" || raw === "yes") {
     return true;

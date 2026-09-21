@@ -1,18 +1,13 @@
 import { expect } from "@playwright/test";
 import { test as apiDbTest } from "../../../fixtures/api-db.fixture";
-import { logDbVsApiSection } from "../../../core/db/db-compare.engine";
-import { isArchiveDbConfigured } from "../../../core/db/postgres.client";
+import { logDbVsApiSection } from "../../../extras/db/db-compare.engine";
+import { isArchiveDbConfigured } from "../../../extras/db/postgres.client";
 import { BillingDataApi } from "../Api/billingdata.api";
 import { BillingDataTestData } from "../Data/billingdata.data";
 import { BillingDataMapper } from "../Mapper/billingdata.mapper";
 import { BillingDataResponseSchema } from "../schemas/billing.schemas";
-import {
-  countBillingArchiveUniverseDistinct,
-} from "../Db/billing.db";
-import {
-  assertBillingMeterHeaderMatchesDb,
-  firstBillingRowWithMeter,
-} from "./billing-db.helpers";
+import { countBillingArchiveUniverseDistinct } from "../Db/billing.db";
+import { assertBillingMeterHeaderMatchesDb, firstBillingRowWithMeter } from "./billing-db.helpers";
 import { BILLING_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 
 apiDbTest.describe("Monthly billing vs database", () => {

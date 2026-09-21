@@ -1,14 +1,13 @@
 import { expect } from "@playwright/test";
 import { test as authTest } from "../../../fixtures/auth.fixture";
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
 import {
   EnergyAuditInvalidQueries,
   EnergyAuditUnauthorizedCases,
 } from "../Data/energy-audits-negative.data";
 import { EnergyAuditsCommonValidator } from "../Validator/energy-audits-common.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Energy Audits — Negative", () => {
   for (const row of EnergyAuditInvalidQueries) {
@@ -16,11 +15,8 @@ test.describe("Energy Audits — Negative", () => {
       row.testName,
       { tag: ["@negative", "@energy-audit", "@edge"] },
       async ({ authenticatedApi }) => {
-        const validation = new ValidationEngine();
-        const rawResponse = await getWithAutoRefresh(
-          authenticatedApi,
-          `${row.path}?${row.query}`,
-        );
+        const validation = new ApiValidationHelper();
+        const rawResponse = await getWithAutoRefresh(authenticatedApi, `${row.path}?${row.query}`);
         const responseBody = await rawResponse.json().catch(() => ({}));
         const status = rawResponse.status();
 
@@ -28,11 +24,9 @@ test.describe("Energy Audits — Negative", () => {
           expect(row.expectedStatus).toContain(status);
         });
         validation.execute("Error envelope", () =>
-          EnergyAuditsCommonValidator.validateErrorResponse(
-            status,
-            responseBody,
-            [...row.expectedStatus],
-          ),
+          EnergyAuditsCommonValidator.validateErrorResponse(status, responseBody, [
+            ...row.expectedStatus,
+          ]),
         );
         validation.printSummary(row.testName, 0);
       },
@@ -44,11 +38,9 @@ test.describe("Energy Audits — Negative", () => {
       row.testName,
       { tag: ["@negative", "@energy-audit", "@auth"] },
       async ({ unauthenticatedApi }) => {
-        const assert = new AssertionEngine();
-        const validation = new ValidationEngine();
-        const rawResponse = await unauthenticatedApi.get(
-          `${row.path}?${row.query}`,
-        );
+        const assert = new ApiValidationHelper();
+        const validation = new ApiValidationHelper();
+        const rawResponse = await unauthenticatedApi.get(`${row.path}?${row.query}`);
         const responseBody = await rawResponse.json().catch(() => ({}));
         validation.execute("Status (unauthorized)", () =>
           assert.validateStatusCode(rawResponse, 401, responseBody),

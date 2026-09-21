@@ -1,15 +1,14 @@
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { REVENUE_PROTECTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { applyAllureTestCaseId } from "../../../core/utils/allure-test-case.helper";
 import {
   assertContractSnapshot,
   buildGridContractSnapshot,
-} from "../../../core/contract/contract-snapshot.helper";
+} from "../../../extras/contract/contract-snapshot.helper";
 import { AberrationEntryApi } from "../Api/aberration-entry.api";
 import { aberrationEntryDefaultQuery } from "../Data/aberration-entry.data";
 import { AberrationEntryMapper } from "../Mapper/aberration-entry.mapper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 /**
  * Contract snapshot for Aberration Entry (zone) column metadata.
@@ -21,20 +20,17 @@ test.describe("Revenue Protection — Aberration Entry Zone Contract Snapshot", 
   test(
     "IND-RPT-ABE-ENTRY-CONTRACT-001 — Aberration Entry zone columns contract snapshot",
     {
-      tag: [
-        "@revenue-protection",
-        "@aberration-entry",
-        "@contract-snapshot",
-      ],
+      tag: ["@revenue-protection", "@aberration-entry", "@contract-snapshot"],
     },
     async ({ authenticatedApi }) => {
       await applyAllureTestCaseId("IND-RPT-ABE-ENTRY-CONTRACT-001");
 
       const api = new AberrationEntryApi(authenticatedApi);
-      const validation = new ValidationEngine();
-      const assert = new AssertionEngine();
-      const { rawResponse, responseBody, responseTime } =
-        await api.getAberrationEntry(aberrationEntryDefaultQuery);
+      const validation = new ApiValidationHelper();
+      const assert = new ApiValidationHelper();
+      const { rawResponse, responseBody, responseTime } = await api.getAberrationEntry(
+        aberrationEntryDefaultQuery,
+      );
       const mapped = AberrationEntryMapper.mapData(responseBody.data);
 
       validation.execute("Status Validation", () =>

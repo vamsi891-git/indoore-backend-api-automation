@@ -9,9 +9,8 @@ import {
   AuthLoginSuccessResponseSchema,
   isTwoFactorChallengePayload,
 } from "../schemas/auth.schemas";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Auth Login API", () => {
   test.describe.configure({ mode: "serial" });
@@ -20,14 +19,11 @@ test.describe("Auth Login API", () => {
     "Validate CSRF preflight and login flows",
     { tag: ["@smoke", "@auth"] },
     async ({ unauthenticatedApi }) => {
-      test.skip(
-        !AuthTestData.hasValidCredentials,
-        "EMAIL/USERNAME and PASSWORD required in .env",
-      );
+      test.skip(!AuthTestData.hasValidCredentials, "EMAIL/USERNAME and PASSWORD required in .env");
 
       const api = new AuthenticationApi(unauthenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new AuthValidator();
 
       const preflight = await api.getLoginPreflight();
@@ -36,24 +32,19 @@ test.describe("Auth Login API", () => {
         preflight.rawResponse,
         "Auth CSRF Preflight",
         preflight.rawResponse.url(),
-        preflight.responseTime
+        preflight.responseTime,
       );
 
       try {
         validation.execute("Preflight Response Time", () =>
-          assert.validateResponseTime(
-            preflight.responseTime,
-            AuthTestData.maxResponseTimeMs,
-          ),
+          assert.validateResponseTime(preflight.responseTime, AuthTestData.maxResponseTimeMs),
         );
 
         const csrfToken = await AuthMapper.resolveCsrfToken(
           unauthenticatedApi,
           preflight.rawResponse.headers(),
         );
-        validation.execute("CSRF Token Available", () =>
-          validator.validateCsrfToken(csrfToken),
-        );
+        validation.execute("CSRF Token Available", () => validator.validateCsrfToken(csrfToken));
 
         let invalidLogin = await api.postLogin(
           AuthTestData.validEmail,
@@ -86,9 +77,7 @@ test.describe("Auth Login API", () => {
         );
 
         validation.execute("Invalid Login Zod", () => {
-          const result = AuthErrorResponseSchema.safeParse(
-            invalidLogin.responseBody,
-          );
+          const result = AuthErrorResponseSchema.safeParse(invalidLogin.responseBody);
           expect(result.success).toBe(true);
         });
 
@@ -109,27 +98,20 @@ test.describe("Auth Login API", () => {
         );
 
         await PerformanceTracker.track(
-        validLogin.rawResponse,
-        "Auth Login API",
-        validLogin.rawResponse.url(),
-        validLogin.responseTime
-      );
+          validLogin.rawResponse,
+          "Auth Login API",
+          validLogin.rawResponse.url(),
+          validLogin.responseTime,
+        );
 
         validation.execute("Valid Login Status", () =>
-          assert.validateStatusCode(
-            validLogin.rawResponse,
-            200,
-            validLogin.responseBody,
-          ),
+          assert.validateStatusCode(validLogin.rawResponse, 200, validLogin.responseBody),
         );
         validation.execute("Valid Login Content Type", () =>
           assert.validateContentType(validLogin.rawResponse),
         );
         validation.execute("Valid Login Response Time", () =>
-          assert.validateResponseTime(
-            validLogin.responseTime,
-            AuthTestData.maxResponseTimeMs,
-          ),
+          assert.validateResponseTime(validLogin.responseTime, AuthTestData.maxResponseTimeMs),
         );
         validation.execute("Valid Login Security", () =>
           validator.validateAuthResponseSecurity(validLogin.responseBody),
@@ -137,9 +119,7 @@ test.describe("Auth Login API", () => {
 
         if (validLogin.rawResponse.status() === 200) {
           validation.execute("Valid Login Zod", () => {
-            const result = AuthLoginSuccessResponseSchema.safeParse(
-              validLogin.responseBody,
-            );
+            const result = AuthLoginSuccessResponseSchema.safeParse(validLogin.responseBody);
             expect(
               result.success,
               result.success
@@ -155,15 +135,10 @@ test.describe("Auth Login API", () => {
             validator.validateLoginPayloadShape(body.data);
           });
 
-          const parsed = AuthLoginSuccessResponseSchema.parse(
-            validLogin.responseBody,
-          );
+          const parsed = AuthLoginSuccessResponseSchema.parse(validLogin.responseBody);
 
           if (AuthMapper.hasDirectSession(parsed.data)) {
-            const session = AuthMapper.mapLoginSession(
-              parsed.data,
-              csrfToken,
-            );
+            const session = AuthMapper.mapLoginSession(parsed.data, csrfToken);
             validation.execute("Direct Login Session", () =>
               validator.validateLoginSession(session),
             );

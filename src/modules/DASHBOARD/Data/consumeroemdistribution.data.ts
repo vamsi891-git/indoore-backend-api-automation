@@ -5,11 +5,9 @@ import type {
   ConsumerOemDistributionScenario,
 } from "../Mapper/consumeroemdistribution.mapper";
 
-export const consumerOemDistributionMaxResponseTimeMs =
-  MASTER_DATA_MAX_RESPONSE_TIME_MS;
+export const consumerOemDistributionMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 
-export const consumerOemDistributionSuccessMessage =
-  "Data fetched successfully";
+export const consumerOemDistributionSuccessMessage = "Data fetched successfully";
 
 export {
   dtrUnbalanceUnauthorizedMessage as consumerOemDistributionUnauthorizedMessage,
@@ -72,9 +70,7 @@ function sampleRow(oem: ConsumerOemAlias) {
   };
 }
 
-function withRowsContract(
-  oem: ConsumerOemAlias,
-): ConsumerOemDistributionResponse {
+function withRowsContract(oem: ConsumerOemAlias): ConsumerOemDistributionResponse {
   return {
     success: true,
     data: {
@@ -87,19 +83,17 @@ function withRowsContract(
 }
 
 export const consumerOemDistributionContractLt = withRowsContract("L&T");
-export const consumerOemDistributionContractLinkwell =
-  withRowsContract("Linkwell");
+export const consumerOemDistributionContractLinkwell = withRowsContract("Linkwell");
 
-export const consumerOemDistributionContractLtEmpty: ConsumerOemDistributionResponse =
-  {
-    success: true,
-    data: {
-      columns: [...columns],
-      rows: [],
-      pagination: { page: 1, limit: 20, total: 0, totalPages: 0 },
-    },
-    message: consumerOemDistributionSuccessMessage,
-  };
+export const consumerOemDistributionContractLtEmpty: ConsumerOemDistributionResponse = {
+  success: true,
+  data: {
+    columns: [...columns],
+    rows: [],
+    pagination: { page: 1, limit: 20, total: 0, totalPages: 0 },
+  },
+  message: consumerOemDistributionSuccessMessage,
+};
 
 export interface ConsumerOemDistributionTestCase {
   testName: string;
@@ -107,11 +101,11 @@ export interface ConsumerOemDistributionTestCase {
   expectedStatus?: number;
   isContractFixture?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
-export function oemForScenario(
-  scenario: ConsumerOemDistributionScenario,
-): ConsumerOemAlias {
+export function oemForScenario(scenario: ConsumerOemDistributionScenario): ConsumerOemAlias {
   switch (scenario) {
     case "dev_live_linkwell":
     case "contract_linkwell":
@@ -150,44 +144,50 @@ export function resolveConsumerOemDistributionContractBody(
   }
 }
 
-export const consumerOemDistributionTestCases: ConsumerOemDistributionTestCase[] =
-  [
-    {
-      testName: "Consumers by meter make — L&T meters",
-      scenario: "dev_live_lt",
-      tags: ["@smoke", "@dashboard", "@consumer-oem-distribution"],
-    },
-    {
-      testName: "Consumers by meter make — Linkwell meters",
-      scenario: "dev_live_linkwell",
-      tags: ["@dashboard", "@consumer-oem-distribution"],
-    },
-    {
-      testName: "Consumers by meter make — page 2 still shows a valid list",
-      scenario: "dev_live_page_limit",
-      tags: ["@dashboard", "@consumer-oem-distribution", "@edge"],
-    },
-    {
-      testName: "Consumers by meter make — extra unused filters are ignored",
-      scenario: "dev_ignore_unknown_query",
-      tags: ["@dashboard", "@consumer-oem-distribution", "@edge"],
-    },
-    {
-      testName: "Saved example — L&T with rows (offline)",
-      scenario: "contract_lt",
-      isContractFixture: true,
-      tags: ["@contract", "@dashboard", "@consumer-oem-distribution"],
-    },
-    {
-      testName: "Saved example — Linkwell with rows (offline)",
-      scenario: "contract_linkwell",
-      isContractFixture: true,
-      tags: ["@contract", "@dashboard", "@consumer-oem-distribution"],
-    },
-    {
-      testName: "Saved example — L&T empty page (offline)",
-      scenario: "contract_lt_empty",
-      isContractFixture: true,
-      tags: ["@contract", "@dashboard", "@consumer-oem-distribution"],
-    },
-  ];
+export const consumerOemDistributionTestCases: ConsumerOemDistributionTestCase[] = [
+  {
+    testName: "Consumers by meter make — L&T meters",
+    scenario: "dev_live_lt",
+    tags: ["@smoke", "@dashboard", "@consumer-oem-distribution"],
+    nonEmptyExpected: true,
+  },
+  {
+    testName: "Consumers by meter make — Linkwell meters",
+    scenario: "dev_live_linkwell",
+    tags: ["@dashboard", "@consumer-oem-distribution"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumers by meter make — page 2 still shows a valid list",
+    scenario: "dev_live_page_limit",
+    tags: ["@dashboard", "@consumer-oem-distribution", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumers by meter make — extra unused filters are ignored",
+    scenario: "dev_ignore_unknown_query",
+    tags: ["@dashboard", "@consumer-oem-distribution", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Saved example — L&T with rows (offline)",
+    scenario: "contract_lt",
+    isContractFixture: true,
+    tags: ["@contract", "@dashboard", "@consumer-oem-distribution"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Saved example — Linkwell with rows (offline)",
+    scenario: "contract_linkwell",
+    isContractFixture: true,
+    tags: ["@contract", "@dashboard", "@consumer-oem-distribution"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Saved example — L&T empty page (offline)",
+    scenario: "contract_lt_empty",
+    isContractFixture: true,
+    tags: ["@contract", "@dashboard", "@consumer-oem-distribution"],
+    nonEmptyExpected: false,
+  },
+];

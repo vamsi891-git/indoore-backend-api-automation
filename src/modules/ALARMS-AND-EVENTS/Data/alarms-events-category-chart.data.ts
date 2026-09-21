@@ -31,6 +31,8 @@ export type AlarmsEventsCategoryChartTestCase = {
   expectedSlug?: string;
   expectedLabel?: string;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 };
 
 const tags = ["@alarms-events", "@alarms-events-category-chart", "@edge"];
@@ -50,67 +52,66 @@ function happyCases(): AlarmsEventsCategoryChartTestCase[] {
   }));
 }
 
-export const alarmsEventsCategoryChartTestCases: AlarmsEventsCategoryChartTestCase[] =
-  [
-    ...happyCases(),
-    {
-      testName:
-        "GET /alarms-events/category-wise/chart - extra unused query is ignored",
-      params: {
-        category: "Power",
-        date: alarmsEventsCategoryChartData.date,
-        foo: "1",
-      },
-      expectedStatus: 200,
-      expectedSlug: "power",
-      expectedLabel: "Power",
-      tags: [...tags],
+export const alarmsEventsCategoryChartTestCases: AlarmsEventsCategoryChartTestCase[] = [
+  ...happyCases(),
+  {
+    testName: "GET /alarms-events/category-wise/chart - extra unused query is ignored",
+    params: {
+      category: "Power",
+      date: alarmsEventsCategoryChartData.date,
+      foo: "1",
     },
-    {
-      testName:
-        "GET /alarms-events/category-wise/chart - missing category is rejected",
-      params: { date: alarmsEventsCategoryChartData.date },
-      expectedStatus: 400,
-      tags: [...tags],
+    expectedStatus: 200,
+    expectedSlug: "power",
+    expectedLabel: "Power",
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/category-wise/chart - missing category is rejected",
+    params: { date: alarmsEventsCategoryChartData.date },
+    expectedStatus: 400,
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/category-wise/chart - missing date is rejected",
+    params: { category: "Power" },
+    expectedStatus: 400,
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/category-wise/chart - blank category is rejected",
+    params: { category: " ", date: alarmsEventsCategoryChartData.date },
+    expectedStatus: 400,
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/category-wise/chart - unknown category is rejected",
+    params: {
+      category: "not-a-category",
+      date: alarmsEventsCategoryChartData.date,
     },
-    {
-      testName:
-        "GET /alarms-events/category-wise/chart - missing date is rejected",
-      params: { category: "Power" },
-      expectedStatus: 400,
-      tags: [...tags],
-    },
-    {
-      testName:
-        "GET /alarms-events/category-wise/chart - blank category is rejected",
-      params: { category: " ", date: alarmsEventsCategoryChartData.date },
-      expectedStatus: 400,
-      tags: [...tags],
-    },
-    {
-      testName:
-        "GET /alarms-events/category-wise/chart - unknown category is rejected",
-      params: {
-        category: "not-a-category",
-        date: alarmsEventsCategoryChartData.date,
-      },
-      expectedStatus: 400,
-      tags: [...tags],
-    },
-    {
-      testName:
-        "GET /alarms-events/category-wise/chart - invalid date is rejected",
-      params: { category: "Power", date: "23-08-2025" },
-      expectedStatus: 400,
-      tags: [...tags],
-    },
-    {
-      testName:
-        "GET /alarms-events/category-wise/chart - a future date returns empty totals",
-      params: { category: "Power", date: "2099-01-01" },
-      expectedStatus: 200,
-      expectedSlug: "power",
-      expectedLabel: "Power",
-      tags: [...tags],
-    },
-  ];
+    expectedStatus: 400,
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/category-wise/chart - invalid date is rejected",
+    params: { category: "Power", date: "23-08-2025" },
+    expectedStatus: 400,
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "GET /alarms-events/category-wise/chart - a future date returns empty totals",
+    params: { category: "Power", date: "2099-01-01" },
+    expectedStatus: 200,
+    expectedSlug: "power",
+    expectedLabel: "Power",
+    tags: [...tags],
+    nonEmptyExpected: false,
+  },
+];

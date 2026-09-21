@@ -1,7 +1,5 @@
 import type { APIResponse } from "@playwright/test";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { AssetExportApi } from "../Api/assetexport.api";
 import {
   assetManagementHierarchyMaxResponseTimeMs,
@@ -10,6 +8,7 @@ import {
 import type { AssetExportKind } from "../Data/assetexport.data";
 import { AssetExportMapper } from "../Mapper/assetexport.mapper";
 import { AssetExportValidator } from "../Validator/assetexport.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 export interface RunAssetExportValidationOptions {
   api: AssetExportApi;
@@ -22,9 +21,7 @@ export interface RunAssetExportValidationOptions {
   requestTimeoutMs?: number;
 }
 
-export async function runAssetExportValidation(
-  options: RunAssetExportValidationOptions,
-): Promise<{
+export async function runAssetExportValidation(options: RunAssetExportValidationOptions): Promise<{
   rawResponse: APIResponse;
   responseTime: number;
   csvContent: string;
@@ -41,33 +38,20 @@ export async function runAssetExportValidation(
     requestTimeoutMs = assetManagementHierarchyRequestTimeoutMs,
   } = options;
 
-  const { rawResponse, csvContent, responseTime } = await api.getExport(
-    query,
-    requestTimeoutMs,
-  );
+  const { rawResponse, csvContent, responseTime } = await api.getExport(query, requestTimeoutMs);
 
-  await PerformanceTracker.track(
-    rawResponse,
-    testLabel,
-    rawResponse.url(),
-    responseTime,
-  );
+  await PerformanceTracker.track(rawResponse, testLabel, rawResponse.url(), responseTime);
 
-  const assert = new AssertionEngine();
-  const validation = new ValidationEngine();
+  const assert = new ApiValidationHelper();
+  const validation = new ApiValidationHelper();
   const validator = new AssetExportValidator();
   const data = AssetExportMapper.mapCsv(csvContent);
   const headers = rawResponse.headers();
 
   validation.execute("Status", () => assert.validateStatusCode(rawResponse, 200));
-  validation.execute("Content", () =>
-    assert.validateContentType(rawResponse, "text/csv"),
-  );
+  validation.execute("Content", () => assert.validateContentType(rawResponse, "text/csv"));
   validation.execute("Download Headers", () =>
-    validator.validateDownloadHeaders(
-      headers["content-type"],
-      headers["content-disposition"],
-    ),
+    validator.validateDownloadHeaders(headers["content-type"], headers["content-disposition"]),
   );
   validation.execute("Response Time", () =>
     assert.validateResponseTime(responseTime, maxResponseTimeMs),
@@ -83,15 +67,9 @@ export async function runAssetExportValidation(
   }
   validation.execute("Row Schema", () => validator.validateRowSchema(data));
   validation.execute("Fields", () => validator.validateFields(data));
-  validation.execute("Kind Counts", () =>
-    validator.validateKindCounts(data, kind),
-  );
-  validation.execute("Hierarchy Types", () =>
-    validator.validateHierarchyTypes(data, kind),
-  );
-  validation.execute("Duplicate Codes", () =>
-    validator.validateDuplicateCodes(data),
-  );
+  validation.execute("Kind Counts", () => validator.validateKindCounts(data, kind));
+  validation.execute("Hierarchy Types", () => validator.validateHierarchyTypes(data, kind));
+  validation.execute("Duplicate Codes", () => validator.validateDuplicateCodes(data));
   if (q != null) {
     validation.execute("Search Filter", () => validator.validateQFilter(data, q));
   }

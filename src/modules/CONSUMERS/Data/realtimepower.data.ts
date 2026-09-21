@@ -1,6 +1,6 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { RealTimePowerQuery } from "../Api/realtimepower.api";
-import type {RealTimePowerResponse,RealTimePowerScenario,} from "../Mapper/realtimepower.mapper";
+import type { RealTimePowerResponse, RealTimePowerScenario } from "../Mapper/realtimepower.mapper";
 import {
   CONSUMERS_LIVE_ACCOUNT_ID,
   CONSUMERS_LIVE_IVRS,
@@ -76,17 +76,14 @@ export interface RealTimePowerTestCase {
   /** Skip live HTTP; validate mapper/validator against fixture body. */
   isContractFixture?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
-export function resolveRealTimePowerRef(
-  scenario: RealTimePowerScenario,
-): string | undefined {
+export function resolveRealTimePowerRef(scenario: RealTimePowerScenario): string | undefined {
   switch (scenario) {
     case "power_by_ivrs":
     case "power_ignore_unknown_query":
-      return resolveLiveIvrs(
-        process.env.CONSUMER_RTP_IVRS,
-        realTimePowerDefaultIvrs,
-      );
+      return resolveLiveIvrs(process.env.CONSUMER_RTP_IVRS, realTimePowerDefaultIvrs);
     case "power_by_account":
       return resolveLiveAccountId(
         process.env.CONSUMER_RTP_CONSUMER_ID,
@@ -112,9 +109,7 @@ export function resolveRealTimePowerRef(
       return undefined;
   }
 }
-export function resolveRealTimePowerQuery(
-  scenario: RealTimePowerScenario,
-): RealTimePowerQuery {
+export function resolveRealTimePowerQuery(scenario: RealTimePowerScenario): RealTimePowerQuery {
   if (scenario === "power_ignore_unknown_query") {
     return { foo: 1 };
   }
@@ -136,68 +131,68 @@ export function resolveRealTimePowerContractBody(
 }
 export const realTimePowerTestCases: RealTimePowerTestCase[] = [
   {
-    testName:
-      "Live voltage and current — shown for the consumer",
+    testName: "Live voltage and current — shown for the consumer",
     scenario: "power_by_ivrs",
     tags: ["@smoke", "@consumer", "@real-time-power"],
+    nonEmptyExpected: true,
   },
   {
-    testName:
-      "Live voltage and current — opens using the account number",
+    testName: "Live voltage and current — opens using the account number",
     scenario: "power_by_account",
     tags: ["@consumer", "@real-time-power", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Live voltage and current — opens using the meter",
+    testName: "Live voltage and current — opens using the meter",
     scenario: "power_by_meter",
     tags: ["@consumer", "@real-time-power", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Live voltage and current — extra unused options are ignored",
+    testName: "Live voltage and current — extra unused options are ignored",
     scenario: "power_ignore_unknown_query",
     tags: ["@consumer", "@real-time-power", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Live voltage and current — sample: no live reading yet",
+    testName: "Live voltage and current — sample: no live reading yet",
     scenario: "contract_null_data",
     isContractFixture: true,
     tags: ["@consumer", "@real-time-power", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Live voltage and current — sample: three-phase meter",
+    testName: "Live voltage and current — sample: three-phase meter",
     scenario: "contract_tp_phases",
     isContractFixture: true,
     tags: ["@consumer", "@real-time-power", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Live voltage and current — sample: single-phase meter",
+    testName: "Live voltage and current — sample: single-phase meter",
     scenario: "contract_sp_phases",
     isContractFixture: true,
     tags: ["@consumer", "@real-time-power", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Live voltage and current — unknown consumer is not found",
+    testName: "Live voltage and current — unknown consumer is not found",
     scenario: "consumer_not_found",
     expectedStatus: 200,
     tags: ["@consumer", "@real-time-power", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Live voltage and current — unknown meter is empty or not found",
+    testName: "Live voltage and current — unknown meter is empty or not found",
     scenario: "meter_not_found",
     tags: ["@consumer", "@real-time-power", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Live voltage and current — blank consumer number is rejected",
+    testName: "Live voltage and current — blank consumer number is rejected",
     scenario: "empty_consumer_ref",
     expectedStatus: 400,
     tags: ["@consumer", "@real-time-power", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

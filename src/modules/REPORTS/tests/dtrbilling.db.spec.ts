@@ -1,5 +1,5 @@
 import { test } from "../../../fixtures/observability.fixture";
-import { compareApiToDb } from "../../../core/db/db-compare.engine";
+import { compareApiToDb } from "../../../extras/db/db-compare.engine";
 import { getBillingMeterHeaderBySerial } from "../../BILLING/Db/billing.db";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { DtrBillingApi } from "../Api/dtrbilling.api";

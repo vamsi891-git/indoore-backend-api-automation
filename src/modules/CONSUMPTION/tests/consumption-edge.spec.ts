@@ -6,10 +6,18 @@ import { MonthlyNetMeterMapper } from "../Mapper/monthlynetmeter.mapper";
 import { ConsumptionReportApi } from "../Api/consumption-report.api";
 import { consumptionEdgeCases } from "../Data/consumption-negative.data";
 import { PatternConsumptionMapper } from "../Mapper/patternconsumption.mapper";
-import { DailyConsumptionMapper,DailyConsumptionResponse,} from "../Mapper/dailyconsumption.mapper";
-import {HourlyConsumptionMapper,HourlyConsumptionResponse,} from "../Mapper/hourlyconsumption.mapper";
-import {MonthlyReportConsumptionMapper,MonthlyReportConsumptionResponse,} from "../Mapper/monthlyconsumption.mapper";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
+import {
+  DailyConsumptionMapper,
+  DailyConsumptionResponse,
+} from "../Mapper/dailyconsumption.mapper";
+import {
+  HourlyConsumptionMapper,
+  HourlyConsumptionResponse,
+} from "../Mapper/hourlyconsumption.mapper";
+import {
+  MonthlyReportConsumptionMapper,
+  MonthlyReportConsumptionResponse,
+} from "../Mapper/monthlyconsumption.mapper";
 import { CONSUMPTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { skipIfConsumptionInternalError } from "../utils/consumption-env.helper";
 import {
@@ -22,6 +30,7 @@ import {
   NightZeroConsumptionMapper,
   NightZeroConsumptionResponse,
 } from "../Mapper/nightzeroconsumption.mapper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 test.describe("Consumption API — Edge", () => {
   test.setTimeout(CONSUMPTION_TEST_TIMEOUT_MS);
   const patternKinds = [
@@ -68,7 +77,7 @@ test.describe("Consumption API — Edge", () => {
           responseBody,
           `/indore/consumption/pattern-consumption?patternType=${kind.type}`,
         );
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const mapped = PatternConsumptionMapper.map(responseBody);
         const firstMapped = PatternConsumptionMapper.map(first.responseBody);
         validation.execute("Status 200", () => {
@@ -94,10 +103,7 @@ test.describe("Consumption API — Edge", () => {
             ),
           );
         }
-        validation.printSummary(
-          `${kind.name} — page 2 continues without repeating a meter`,
-          0,
-        );
+        validation.printSummary(`${kind.name} — page 2 continues without repeating a meter`, 0);
       },
     );
     test(
@@ -118,7 +124,7 @@ test.describe("Consumption API — Edge", () => {
           responseBody,
           `/indore/consumption/pattern-consumption?patternType=${kind.type}`,
         );
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const mapped = PatternConsumptionMapper.map(responseBody);
         validation.execute("Status 200", () => {
           expect(rawResponse.status()).toBe(200);
@@ -156,7 +162,7 @@ test.describe("Consumption API — Edge", () => {
           responseBody,
           `/indore/consumption/pattern-consumption?patternType=${kind.type}`,
         );
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const mapped = PatternConsumptionMapper.map(responseBody);
         validation.execute("Status 200", () => {
           expect(rawResponse.status()).toBe(200);
@@ -169,10 +175,7 @@ test.describe("Consumption API — Edge", () => {
             validateSharedHierarchyAllowed(patternIdentityRows(mapped.rows)),
           );
         }
-        validation.printSummary(
-          `${kind.name} — leftover unused filters are ignored`,
-          0,
-        );
+        validation.printSummary(`${kind.name} — leftover unused filters are ignored`, 0);
       },
     );
     test(
@@ -193,7 +196,7 @@ test.describe("Consumption API — Edge", () => {
           responseBody,
           `/indore/consumption/pattern-consumption?patternType=${kind.type}`,
         );
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const mapped = PatternConsumptionMapper.map(responseBody);
         validation.execute("Status 200", () => {
           expect(rawResponse.status()).toBe(200);
@@ -206,24 +209,17 @@ test.describe("Consumption API — Edge", () => {
             validateUniqueConsumerKeys(patternIdentityRows(mapped.rows)),
           );
         }
-        validation.printSummary(
-          `${kind.name} — a page far past the end of the list is empty`,
-          0,
-        );
+        validation.printSummary(`${kind.name} — a page far past the end of the list is empty`, 0);
       },
     );
   }
-  test("Monthly net meter — page 2 continues without repeating a meter",
+  test(
+    "Monthly net meter — page 2 continues without repeating a meter",
     { tag: ["@consumption", "@monthly-net-meter", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new MonthlyNetMeterApi(authenticatedApi);
       const params = consumptionEdgeCases.monthlyNetMeterPage2;
-      const first = await api.getMonthlyNetMeter(
-        1,
-        params.limit,
-        params.month,
-        params.year,
-      );
+      const first = await api.getMonthlyNetMeter(1, params.limit, params.month, params.year);
       skipIfConsumptionInternalError(
         first.rawResponse.status(),
         first.responseBody,
@@ -240,7 +236,7 @@ test.describe("Consumption API — Edge", () => {
         responseBody,
         "/indore/consumption/monthly-net-meter",
       );
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const mapped = MonthlyNetMeterMapper.map(responseBody);
       const firstMapped = MonthlyNetMeterMapper.map(first.responseBody);
       validation.execute("Status 200", () => {
@@ -253,9 +249,7 @@ test.describe("Consumption API — Edge", () => {
         expect(mapped.items.length).toBeLessThanOrEqual(params.limit);
       });
       if (mapped.items.length > 0) {
-        validation.execute("Unique consumers", () =>
-          validateUniqueConsumerKeys(mapped.items),
-        );
+        validation.execute("Unique consumers", () => validateUniqueConsumerKeys(mapped.items));
         validation.execute("Shared feeder allowed", () =>
           validateSharedHierarchyAllowed(mapped.items),
         );
@@ -263,13 +257,11 @@ test.describe("Consumption API — Edge", () => {
           validateNoMeterOverlap(firstMapped.items, mapped.items),
         );
       }
-      validation.printSummary(
-        "Monthly net meter — page 2 continues without repeating a meter",
-        0,
-      );
+      validation.printSummary("Monthly net meter — page 2 continues without repeating a meter", 0);
     },
   );
-  test("Monthly net meter — asking for one consumer at a time still returns a row",
+  test(
+    "Monthly net meter — asking for one consumer at a time still returns a row",
     { tag: ["@consumption", "@monthly-net-meter", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new MonthlyNetMeterApi(authenticatedApi);
@@ -285,7 +277,7 @@ test.describe("Consumption API — Edge", () => {
         responseBody,
         "/indore/consumption/monthly-net-meter",
       );
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const mapped = MonthlyNetMeterMapper.map(responseBody);
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
@@ -294,9 +286,7 @@ test.describe("Consumption API — Edge", () => {
         expect(mapped.items.length).toBeLessThanOrEqual(1);
       });
       if (mapped.items.length > 0) {
-        validation.execute("Unique consumers", () =>
-          validateUniqueConsumerKeys(mapped.items),
-        );
+        validation.execute("Unique consumers", () => validateUniqueConsumerKeys(mapped.items));
       }
       validation.printSummary(
         "Monthly net meter — asking for one consumer at a time still returns a row",
@@ -304,7 +294,8 @@ test.describe("Consumption API — Edge", () => {
       );
     },
   );
-  test("Monthly net meter — leftover unused filters are ignored",
+  test(
+    "Monthly net meter — leftover unused filters are ignored",
     { tag: ["@consumption", "@monthly-net-meter", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new MonthlyNetMeterApi(authenticatedApi);
@@ -321,26 +312,22 @@ test.describe("Consumption API — Edge", () => {
         responseBody,
         "/indore/consumption/monthly-net-meter",
       );
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const mapped = MonthlyNetMeterMapper.map(responseBody);
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
       });
       if (mapped.items.length > 0) {
-        validation.execute("Unique consumers", () =>
-          validateUniqueConsumerKeys(mapped.items),
-        );
+        validation.execute("Unique consumers", () => validateUniqueConsumerKeys(mapped.items));
         validation.execute("Shared feeder allowed", () =>
           validateSharedHierarchyAllowed(mapped.items),
         );
       }
-      validation.printSummary(
-        "Monthly net meter — leftover unused filters are ignored",
-        0,
-      );
+      validation.printSummary("Monthly net meter — leftover unused filters are ignored", 0);
     },
   );
-  test("Monthly net meter — a page far past the end of the list is empty",
+  test(
+    "Monthly net meter — a page far past the end of the list is empty",
     { tag: ["@consumption", "@monthly-net-meter", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new MonthlyNetMeterApi(authenticatedApi);
@@ -356,7 +343,7 @@ test.describe("Consumption API — Edge", () => {
         responseBody,
         "/indore/consumption/monthly-net-meter",
       );
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const mapped = MonthlyNetMeterMapper.map(responseBody);
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
@@ -365,9 +352,7 @@ test.describe("Consumption API — Edge", () => {
         expect(mapped.items.length).toBeLessThanOrEqual(params.limit);
       });
       if (mapped.items.length > 0) {
-        validation.execute("Unique consumers", () =>
-          validateUniqueConsumerKeys(mapped.items),
-        );
+        validation.execute("Unique consumers", () => validateUniqueConsumerKeys(mapped.items));
       }
       validation.printSummary(
         "Monthly net meter — a page far past the end of the list is empty",
@@ -375,7 +360,8 @@ test.describe("Consumption API — Edge", () => {
       );
     },
   );
-  test("Daily consumption — page 2 continues without repeating a meter",
+  test(
+    "Daily consumption — page 2 continues without repeating a meter",
     { tag: ["@consumption", "@daily-consumption", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new ConsumptionReportApi(authenticatedApi);
@@ -394,8 +380,7 @@ test.describe("Consumption API — Edge", () => {
         first.responseBody,
         "/indore/consumption/report?reportType=daily",
       );
-      const { rawResponse, responseBody } =
-        await api.getReport<DailyConsumptionResponse>(
+      const { rawResponse, responseBody } = await api.getReport<DailyConsumptionResponse>(
         params.reportType,
         params.page,
         params.limit,
@@ -409,7 +394,7 @@ test.describe("Consumption API — Edge", () => {
         responseBody,
         "/indore/consumption/report?reportType=daily",
       );
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const mapped = DailyConsumptionMapper.map(responseBody);
       const firstMapped = DailyConsumptionMapper.map(first.responseBody);
       validation.execute("Status 200", () => {
@@ -422,9 +407,7 @@ test.describe("Consumption API — Edge", () => {
         expect(mapped.items.length).toBeLessThanOrEqual(params.limit);
       });
       if (mapped.items.length > 0) {
-        validation.execute("Unique consumers", () =>
-          validateUniqueConsumerKeys(mapped.items),
-        );
+        validation.execute("Unique consumers", () => validateUniqueConsumerKeys(mapped.items));
         validation.execute("Shared feeder allowed", () =>
           validateSharedHierarchyAllowed(mapped.items),
         );
@@ -432,19 +415,16 @@ test.describe("Consumption API — Edge", () => {
           validateNoMeterOverlap(firstMapped.items, mapped.items),
         );
       }
-      validation.printSummary(
-        "Daily consumption — page 2 continues without repeating a meter",
-        0,
-      );
+      validation.printSummary("Daily consumption — page 2 continues without repeating a meter", 0);
     },
   );
-  test("Daily consumption — asking for one consumer at a time still returns a row",
+  test(
+    "Daily consumption — asking for one consumer at a time still returns a row",
     { tag: ["@consumption", "@daily-consumption", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new ConsumptionReportApi(authenticatedApi);
       const params = consumptionEdgeCases.reportDailyLimit1;
-      const { rawResponse, responseBody } =
-        await api.getReport<DailyConsumptionResponse>(
+      const { rawResponse, responseBody } = await api.getReport<DailyConsumptionResponse>(
         params.reportType,
         params.page,
         params.limit,
@@ -458,7 +438,7 @@ test.describe("Consumption API — Edge", () => {
         responseBody,
         "/indore/consumption/report?reportType=daily",
       );
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const mapped = DailyConsumptionMapper.map(responseBody);
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
@@ -467,9 +447,7 @@ test.describe("Consumption API — Edge", () => {
         expect(mapped.items.length).toBeLessThanOrEqual(1);
       });
       if (mapped.items.length > 0) {
-        validation.execute("Unique consumers", () =>
-          validateUniqueConsumerKeys(mapped.items),
-        );
+        validation.execute("Unique consumers", () => validateUniqueConsumerKeys(mapped.items));
       }
       validation.printSummary(
         "Daily consumption — asking for one consumer at a time still returns a row",
@@ -477,13 +455,13 @@ test.describe("Consumption API — Edge", () => {
       );
     },
   );
-  test("Daily consumption — leftover unused filters are ignored",
+  test(
+    "Daily consumption — leftover unused filters are ignored",
     { tag: ["@consumption", "@daily-consumption", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new ConsumptionReportApi(authenticatedApi);
       const params = consumptionEdgeCases.reportDailyUnusedQuery;
-      const { rawResponse, responseBody } =
-        await api.getReport<DailyConsumptionResponse>(
+      const { rawResponse, responseBody } = await api.getReport<DailyConsumptionResponse>(
         params.reportType,
         params.page,
         params.limit,
@@ -499,32 +477,27 @@ test.describe("Consumption API — Edge", () => {
         responseBody,
         "/indore/consumption/report?reportType=daily",
       );
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const mapped = DailyConsumptionMapper.map(responseBody);
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
       });
       if (mapped.items.length > 0) {
-        validation.execute("Unique consumers", () =>
-          validateUniqueConsumerKeys(mapped.items),
-        );
+        validation.execute("Unique consumers", () => validateUniqueConsumerKeys(mapped.items));
         validation.execute("Shared feeder allowed", () =>
           validateSharedHierarchyAllowed(mapped.items),
         );
       }
-      validation.printSummary(
-        "Daily consumption — leftover unused filters are ignored",
-        0,
-      );
+      validation.printSummary("Daily consumption — leftover unused filters are ignored", 0);
     },
   );
-  test("Daily consumption — a page far past the end of the list is empty",
+  test(
+    "Daily consumption — a page far past the end of the list is empty",
     { tag: ["@consumption", "@daily-consumption", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new ConsumptionReportApi(authenticatedApi);
       const params = consumptionEdgeCases.reportDailyFarPage;
-      const { rawResponse, responseBody } =
-        await api.getReport<DailyConsumptionResponse>(
+      const { rawResponse, responseBody } = await api.getReport<DailyConsumptionResponse>(
         params.reportType,
         params.page,
         params.limit,
@@ -538,7 +511,7 @@ test.describe("Consumption API — Edge", () => {
         responseBody,
         "/indore/consumption/report?reportType=daily",
       );
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const mapped = DailyConsumptionMapper.map(responseBody);
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
@@ -547,9 +520,7 @@ test.describe("Consumption API — Edge", () => {
         expect(mapped.items.length).toBeLessThanOrEqual(params.limit);
       });
       if (mapped.items.length > 0) {
-        validation.execute("Unique consumers", () =>
-          validateUniqueConsumerKeys(mapped.items),
-        );
+        validation.execute("Unique consumers", () => validateUniqueConsumerKeys(mapped.items));
       }
       validation.printSummary(
         "Daily consumption — a page far past the end of the list is empty",
@@ -557,13 +528,13 @@ test.describe("Consumption API — Edge", () => {
       );
     },
   );
-  test("Hourly consumption — asking for one row at a time still stays within the limit",
+  test(
+    "Hourly consumption — asking for one row at a time still stays within the limit",
     { tag: ["@consumption", "@hourly-consumption", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new ConsumptionReportApi(authenticatedApi);
       const params = consumptionEdgeCases.reportHourlyLimit1;
-      const { rawResponse, responseBody } =
-        await api.getReport<HourlyConsumptionResponse>(
+      const { rawResponse, responseBody } = await api.getReport<HourlyConsumptionResponse>(
         params.reportType,
         params.page,
         params.limit,
@@ -577,7 +548,7 @@ test.describe("Consumption API — Edge", () => {
         responseBody,
         "/indore/consumption/report?reportType=hourly",
       );
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const mapped = HourlyConsumptionMapper.map(responseBody);
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
@@ -586,9 +557,7 @@ test.describe("Consumption API — Edge", () => {
         expect(mapped.items.length).toBeLessThanOrEqual(1);
       });
       if (mapped.items.length > 0) {
-        validation.execute("Unique consumers", () =>
-          validateUniqueConsumerKeys(mapped.items),
-        );
+        validation.execute("Unique consumers", () => validateUniqueConsumerKeys(mapped.items));
       }
       validation.printSummary(
         "Hourly consumption — asking for one row at a time still stays within the limit",
@@ -596,7 +565,8 @@ test.describe("Consumption API — Edge", () => {
       );
     },
   );
-  test("Monthly consumption — page 2 continues without repeating a meter",
+  test(
+    "Monthly consumption — page 2 continues without repeating a meter",
     { tag: ["@consumption", "@monthly-consumption", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new ConsumptionReportApi(authenticatedApi);
@@ -615,8 +585,7 @@ test.describe("Consumption API — Edge", () => {
         first.responseBody,
         "/indore/consumption/report?reportType=monthly",
       );
-      const { rawResponse, responseBody } =
-        await api.getReport<MonthlyReportConsumptionResponse>(
+      const { rawResponse, responseBody } = await api.getReport<MonthlyReportConsumptionResponse>(
         params.reportType,
         params.page,
         params.limit,
@@ -630,7 +599,7 @@ test.describe("Consumption API — Edge", () => {
         responseBody,
         "/indore/consumption/report?reportType=monthly",
       );
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const mapped = MonthlyReportConsumptionMapper.map(responseBody);
       const firstMapped = MonthlyReportConsumptionMapper.map(first.responseBody);
       validation.execute("Status 200", () => {
@@ -640,9 +609,7 @@ test.describe("Consumption API — Edge", () => {
         expect(mapped.items.length).toBeLessThanOrEqual(params.limit);
       });
       if (mapped.items.length > 0) {
-        validation.execute("Unique consumers", () =>
-          validateUniqueConsumerKeys(mapped.items),
-        );
+        validation.execute("Unique consumers", () => validateUniqueConsumerKeys(mapped.items));
         validation.execute("Shared feeder allowed", () =>
           validateSharedHierarchyAllowed(mapped.items),
         );
@@ -656,7 +623,8 @@ test.describe("Consumption API — Edge", () => {
       );
     },
   );
-  test("Night-time consumption — page 2 continues without repeating a meter",
+  test(
+    "Night-time consumption — page 2 continues without repeating a meter",
     { tag: ["@consumption", "@night-zero-consumption", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new ConsumptionReportApi(authenticatedApi);
@@ -675,8 +643,7 @@ test.describe("Consumption API — Edge", () => {
         first.responseBody,
         "/indore/consumption/report?reportType=nightZero",
       );
-      const { rawResponse, responseBody } =
-        await api.getReport<NightZeroConsumptionResponse>(
+      const { rawResponse, responseBody } = await api.getReport<NightZeroConsumptionResponse>(
         params.reportType,
         params.page,
         params.limit,
@@ -690,7 +657,7 @@ test.describe("Consumption API — Edge", () => {
         responseBody,
         "/indore/consumption/report?reportType=nightZero",
       );
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const mapped = NightZeroConsumptionMapper.map(responseBody);
       const firstMapped = NightZeroConsumptionMapper.map(first.responseBody);
       validation.execute("Status 200", () => {
@@ -703,9 +670,7 @@ test.describe("Consumption API — Edge", () => {
         expect(mapped.items.length).toBeLessThanOrEqual(params.limit);
       });
       if (mapped.items.length > 0) {
-        validation.execute("Unique consumers", () =>
-          validateUniqueConsumerKeys(mapped.items),
-        );
+        validation.execute("Unique consumers", () => validateUniqueConsumerKeys(mapped.items));
         validation.execute("Shared feeder allowed", () =>
           validateSharedHierarchyAllowed(mapped.items),
         );

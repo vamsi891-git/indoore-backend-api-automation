@@ -12,10 +12,14 @@ type RequestOptions = Omit<
   headers?: Record<string, string>;
 };
 
-// 500 is an application error; retrying it doubles load and rarely helps.
-const RETRYABLE_STATUSES = new Set([502, 503, 504]);
-const RETRIES = 1;
-const RETRY_DELAY_MS = 2000;
+/**
+ * GET retries are owned by TimedApiClient (429 / 502 / 503 / 504 only).
+ * Non-GET still retries gateway statuses here because skipped write specs
+ * and CSRF refresh can hit 502/503/504 without going through TimedApiClient.getJson.
+ */
+const WRITE_RETRYABLE_STATUSES = new Set([502, 503, 504]);
+const WRITE_RETRIES = 1;
+const WRITE_RETRY_DELAY_MS = 2000;
 
 const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
@@ -23,12 +27,12 @@ function buildHeaders(
   token: string,
   incoming: Record<string, string> | undefined,
   csrfToken: string | undefined,
-  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE"
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
 ): Record<string, string> {
   const headers: Record<string, string> = {
     ...(incoming ?? {}),
     Authorization: `Bearer ${token}`,
-    Accept: incoming?.Accept ?? "application/json"
+    Accept: incoming?.Accept ?? "application/json",
   };
 
   if (MUTATING_METHODS.has(method) && csrfToken) {
@@ -44,7 +48,7 @@ function buildHeaders(
 function normalizeOptions(options: RequestOptions): RequestOptions {
   return {
     timeout: DEFAULT_REQUEST_TIMEOUT_MS,
-    ...options
+    ...options,
   };
 }
 
@@ -87,13 +91,13 @@ async function executeWithToken(
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
   url: string,
   options: RequestOptions,
-  token: string
+  token: string,
 ): Promise<APIResponse> {
   const startTime = Date.now();
   const csrfToken = MUTATING_METHODS.has(method) ? await TokenManager.getCsrf() : undefined;
   const requestOptions = {
     ...normalizeOptions(options),
-    headers: buildHeaders(token, options.headers, csrfToken, method)
+    headers: buildHeaders(token, options.headers, csrfToken, method),
   };
 
   const response = await (() => {
@@ -115,7 +119,7 @@ async function executeWithToken(
     method,
     url,
     status: response.status(),
-    responseTimeMs: Date.now() - startTime
+    responseTimeMs: Date.now() - startTime,
   });
 
   return response;
@@ -125,26 +129,18 @@ async function requestWithAutoRefresh(
   request: APIRequestContext,
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE",
   url: string,
-  options: RequestOptions = {}
+  options: RequestOptions = {},
 ): Promise<APIResponse> {
   const resolvedUrl = resolveApiPath(url);
   const normalizedOptions = normalizeOptions(options);
 
-  const runRequest = async (token: string): Promise<APIResponse> =>
-    RetryEngine.execute(
-      async attempt => {
-        const response = await executeWithToken(
-          request,
-          method,
-          resolvedUrl,
-          normalizedOptions,
-          token
-        );
-        if (RETRYABLE_STATUSES.has(response.status())) {
-          LoggerEngine.info(`${method} ${resolvedUrl} retry attempt ${attempt + 1} due to ${response.status()}`);
-        }
-        return response;
-      },
+  const runRequest = async (token: string): Promise<APIResponse> => {
+    if (method === "GET") {
+      return executeWithToken(request, method, resolvedUrl, normalizedOptions, token);
+    }
+
+    return RetryEngine.execute(
+      async () => executeWithToken(request, method, resolvedUrl, normalizedOptions, token),
       (response, error) => {
         if (error != null) {
           if (isNonRetryableError(error)) {
@@ -152,10 +148,22 @@ async function requestWithAutoRefresh(
           }
           return isTransientNetworkError(error);
         }
-        return Boolean(response) && RETRYABLE_STATUSES.has((response as APIResponse).status());
+        return (
+          Boolean(response) && WRITE_RETRYABLE_STATUSES.has((response as APIResponse).status())
+        );
       },
-      { retries: RETRIES, delayMs: RETRY_DELAY_MS, label: `${method} ${resolvedUrl}` }
+      {
+        retries: WRITE_RETRIES,
+        delayMs: WRITE_RETRY_DELAY_MS,
+        label: `${method} ${resolvedUrl}`,
+        onRetry: ({ failedAttempt, result }) => {
+          LoggerEngine.warn(
+            `[retry] ${method} ${resolvedUrl} status=${result?.status() ?? "error"} attempt=${failedAttempt}`,
+          );
+        },
+      },
     );
+  };
 
   let token = await TokenManager.getToken();
   let response = await runRequest(token);
@@ -179,7 +187,7 @@ async function requestWithAutoRefresh(
 export function getWithAutoRefresh(
   request: APIRequestContext,
   url: string,
-  options: RequestOptions = {}
+  options: RequestOptions = {},
 ): Promise<APIResponse> {
   return requestWithAutoRefresh(request, "GET", url, options);
 }
@@ -187,7 +195,7 @@ export function getWithAutoRefresh(
 export function postWithAutoRefresh(
   request: APIRequestContext,
   url: string,
-  options: RequestOptions = {}
+  options: RequestOptions = {},
 ): Promise<APIResponse> {
   return requestWithAutoRefresh(request, "POST", url, options);
 }
@@ -195,7 +203,7 @@ export function postWithAutoRefresh(
 export function putWithAutoRefresh(
   request: APIRequestContext,
   url: string,
-  options: RequestOptions = {}
+  options: RequestOptions = {},
 ): Promise<APIResponse> {
   return requestWithAutoRefresh(request, "PUT", url, options);
 }
@@ -203,7 +211,7 @@ export function putWithAutoRefresh(
 export function patchWithAutoRefresh(
   request: APIRequestContext,
   url: string,
-  options: RequestOptions = {}
+  options: RequestOptions = {},
 ): Promise<APIResponse> {
   return requestWithAutoRefresh(request, "PATCH", url, options);
 }
@@ -211,7 +219,7 @@ export function patchWithAutoRefresh(
 export function deleteWithAutoRefresh(
   request: APIRequestContext,
   url: string,
-  options: RequestOptions = {}
+  options: RequestOptions = {},
 ): Promise<APIResponse> {
   return requestWithAutoRefresh(request, "DELETE", url, options);
 }

@@ -38,16 +38,15 @@ export const technicalSummaryExpectedAnalysisTypes = [
   "ynr_cover_open",
 ] as const;
 
-export const technicalSummaryExpectedReportCount =
-  technicalSummaryExpectedAnalysisTypes.length;
+export const technicalSummaryExpectedReportCount = technicalSummaryExpectedAnalysisTypes.length;
 
 export { technicalAnalysisReportNames as technicalSummaryReportNames } from "./technicalanalysis.data";
 
 export const technicalSummaryTechnicalTypes = technicalSummaryExpectedAnalysisTypes.filter(
   (type) => !type.startsWith("ynr_"),
 );
-export const technicalSummaryYnrTypes = technicalSummaryExpectedAnalysisTypes.filter(
-  (type) => type.startsWith("ynr_"),
+export const technicalSummaryYnrTypes = technicalSummaryExpectedAnalysisTypes.filter((type) =>
+  type.startsWith("ynr_"),
 );
 
 export type TechnicalSummaryScenario =
@@ -62,6 +61,8 @@ export interface TechnicalSummaryTestCase {
   scenario: TechnicalSummaryScenario;
   tags: string[];
   expectedStatus?: number;
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 export function resolveTechnicalSummaryQuery(
   scenario: TechnicalSummaryScenario,
@@ -114,33 +115,39 @@ export const technicalSummaryTestCases: TechnicalSummaryTestCase[] = [
     scenario: "invalid_month_zero",
     expectedStatus: 400,
     tags: ["@technical", "@technical-summary", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Technical summary — month 13 is rejected",
     scenario: "invalid_month_13",
     expectedStatus: 400,
     tags: ["@technical", "@technical-summary", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Technical summary — missing month is rejected",
     scenario: "missing_month",
     expectedStatus: 400,
     tags: ["@technical", "@technical-summary", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Technical summary — missing year is rejected",
     scenario: "missing_year",
     expectedStatus: 400,
     tags: ["@technical", "@technical-summary", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Technical summary — October 2025 cards show counts",
     scenario: "dev_live_primary",
     tags: ["@technical", "@technical-summary", "@smoke"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Technical summary — alternate period still opens",
     scenario: "dev_live_alt_month",
     tags: ["@technical", "@technical-summary", "@edge"],
+    nonEmptyExpected: false,
   },
 ];

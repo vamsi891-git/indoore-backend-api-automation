@@ -8,7 +8,7 @@ import { test, expect } from "../../../fixtures/observability.fixture";
 import {
   assertContractSnapshot,
   buildLookupItemsContractSnapshot,
-} from "../../../core/contract/contract-snapshot.helper";
+} from "../../../extras/contract/contract-snapshot.helper";
 import { DashboardSummaryApi } from "../Api/dashboard-summary.api";
 import { ProgressApi } from "../Api/progress.api";
 import { ConsumerSearchApi } from "../Api/consumer-search.api";
@@ -23,9 +23,7 @@ import { submissionHistoryData } from "../Data/submission-history.data";
 import { submissionDetailData } from "../Data/submission-detail.data";
 
 function asRecord(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === "object"
-    ? (value as Record<string, unknown>)
-    : {};
+  return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
 function resolveConsumerId(): number {
@@ -38,8 +36,7 @@ function resolveConsumerId(): number {
 
 function resolveValidateSerial(): string {
   return (
-    process.env.METER_REPLACEMENT_VALIDATE_SERIAL?.trim() ||
-    meterValidationData.validMeterSerial
+    process.env.METER_REPLACEMENT_VALIDATE_SERIAL?.trim() || meterValidationData.validMeterSerial
   );
 }
 
@@ -62,15 +59,12 @@ async function snapshotEnvelope(
   const data = body.data;
   const dataRecord = Array.isArray(data) ? {} : asRecord(data);
   const items = itemSource ?? (Array.isArray(data) ? data : []);
-  const itemKeys =
-    items.length > 0 ? Object.keys(asRecord(items[0])) : Object.keys(dataRecord);
+  const itemKeys = items.length > 0 ? Object.keys(asRecord(items[0])) : Object.keys(dataRecord);
   await assertContractSnapshot(
     name,
     buildLookupItemsContractSnapshot({
       pathPattern,
-      dataKeys: Array.isArray(data)
-        ? ["data"]
-        : Object.keys(dataRecord),
+      dataKeys: Array.isArray(data) ? ["data"] : Object.keys(dataRecord),
       itemKeys,
     }),
   );
@@ -100,9 +94,7 @@ test.describe("METER-REPLACEMENT — Contract Snapshots", () => {
     "Progress Contract Snapshot",
     { tag: ["@contract-snapshot", "@meter-replacement", "@progress"] },
     async ({ authenticatedApi }) => {
-      const { responseBody } = await new ProgressApi(
-        authenticatedApi,
-      ).getProgress();
+      const { responseBody } = await new ProgressApi(authenticatedApi).getProgress();
       const data = asRecord(asRecord(responseBody).data);
       await snapshotEnvelope(
         "meter-replacement/progress",
@@ -117,9 +109,9 @@ test.describe("METER-REPLACEMENT — Contract Snapshots", () => {
     "Consumer Search Contract Snapshot",
     { tag: ["@contract-snapshot", "@meter-replacement", "@consumer-search"] },
     async ({ authenticatedApi }) => {
-      const { responseBody } = await new ConsumerSearchApi(
-        authenticatedApi,
-      ).searchConsumer(consumerSearchData.validSearch);
+      const { responseBody } = await new ConsumerSearchApi(authenticatedApi).searchConsumer(
+        consumerSearchData.validSearch,
+      );
       const data = asRecord(responseBody).data;
       await snapshotEnvelope(
         "meter-replacement/consumer-search",
@@ -134,9 +126,9 @@ test.describe("METER-REPLACEMENT — Contract Snapshots", () => {
     "Consumer Detail Contract Snapshot",
     { tag: ["@contract-snapshot", "@meter-replacement", "@consumer-detail"] },
     async ({ authenticatedApi }) => {
-      const { responseBody } = await new ConsumerDetailApi(
-        authenticatedApi,
-      ).getConsumerDetail(resolveConsumerId());
+      const { responseBody } = await new ConsumerDetailApi(authenticatedApi).getConsumerDetail(
+        resolveConsumerId(),
+      );
       await snapshotEnvelope(
         "meter-replacement/consumer-detail",
         "/indore/meter-replacement/consumers/{consumerId}",
@@ -149,9 +141,9 @@ test.describe("METER-REPLACEMENT — Contract Snapshots", () => {
     "Meter Validation Contract Snapshot",
     { tag: ["@contract-snapshot", "@meter-replacement", "@meter-validation"] },
     async ({ authenticatedApi }) => {
-      const { responseBody } = await new MeterValidationApi(
-        authenticatedApi,
-      ).validateMeter(resolveValidateSerial());
+      const { responseBody } = await new MeterValidationApi(authenticatedApi).validateMeter(
+        resolveValidateSerial(),
+      );
       await snapshotEnvelope(
         "meter-replacement/meter-validation",
         "/indore/meter-replacement/meters/validate",
@@ -168,10 +160,7 @@ test.describe("METER-REPLACEMENT — Contract Snapshots", () => {
     async ({ authenticatedApi }) => {
       const { responseBody } = await new SubmissionHistoryApi(
         authenticatedApi,
-      ).getSubmissionHistory(
-        submissionHistoryData.page,
-        submissionHistoryData.limit,
-      );
+      ).getSubmissionHistory(submissionHistoryData.page, submissionHistoryData.limit);
       const data = asRecord(asRecord(responseBody).data);
       const items = Array.isArray(data.items) ? data.items : [];
       await snapshotEnvelope(
@@ -187,9 +176,9 @@ test.describe("METER-REPLACEMENT — Contract Snapshots", () => {
     "Submission Detail Contract Snapshot",
     { tag: ["@contract-snapshot", "@meter-replacement", "@submission-detail"] },
     async ({ authenticatedApi }) => {
-      const { responseBody } = await new SubmissionDetailApi(
-        authenticatedApi,
-      ).getSubmissionDetail(resolveSubmissionId());
+      const { responseBody } = await new SubmissionDetailApi(authenticatedApi).getSubmissionDetail(
+        resolveSubmissionId(),
+      );
       const data = asRecord(asRecord(responseBody).data);
       await snapshotEnvelope(
         "meter-replacement/submission-detail",

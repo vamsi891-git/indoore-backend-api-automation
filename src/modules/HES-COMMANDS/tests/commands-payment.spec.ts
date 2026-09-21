@@ -1,10 +1,8 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
 import { HES_COMMANDS_PAYMENT_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { CommandsPaymentApi } from "../Api/commands-payment.api";
 import { CommandsQueryMeterJobApi } from "../Api/commands-query-meter-job.api";
@@ -39,15 +37,12 @@ interface PaymentE2eCase {
   logLabel: string;
   apiName: string;
   expectedBehavior: string;
-  queryPaymentValidation:
-    | "payment"
-    | "last_token_recharge_amount";
+  queryPaymentValidation: "payment" | "last_token_recharge_amount";
 }
 
 const paymentE2eCases: PaymentE2eCase[] = [
   {
-    title:
-      "Validate POST /commands/payment → query-meter-job — payment_get E2E",
+    title: "Validate POST /commands/payment → query-meter-job — payment_get E2E",
     tags: ["@smoke", "@commands", "@hes", "@commands-payment", "@e2e"],
     body: buildPaymentBody(),
     logLabel: "Commands Payment — payment_get",
@@ -57,8 +52,7 @@ const paymentE2eCases: PaymentE2eCase[] = [
     queryPaymentValidation: "payment",
   },
   {
-    title:
-      "Validate POST /commands/payment → query-meter-job — last_token_recharge_amount_get E2E",
+    title: "Validate POST /commands/payment → query-meter-job — last_token_recharge_amount_get E2E",
     tags: [
       "@smoke",
       "@commands",
@@ -87,8 +81,8 @@ test.describe("HES Commands — Payment (E2E)", () => {
       const requestedMeters = normalizeMeters(body.meters);
       const paymentApi = new CommandsPaymentApi(authenticatedApi);
       const queryApi = new CommandsQueryMeterJobApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const initValidator = new CommandsJobInitValidator();
       const queryValidator = new CommandsQueryMeterJobValidator();
       const paymentValidator = new CommandsPaymentValidator();
@@ -103,16 +97,12 @@ test.describe("HES Commands — Payment (E2E)", () => {
         postRaw,
         "Commands Payment — Init Job",
         postRaw.url(),
-        postTime
+        postTime,
       );
 
       const postStatus = postRaw.status();
       if (
-        BackendResponse.shouldSkipServerFailure(
-          postStatus,
-          "Commands Payment — Init Job",
-          postBody,
-        )
+        BackendResponse.shouldSkipServerFailure(postStatus, "Commands Payment — Init Job", postBody)
       ) {
         logCommandE2eResponses(paymentCase.logLabel, postBody);
         validation.execute("Error Response (500 backend defect)", () =>
@@ -144,9 +134,7 @@ test.describe("HES Commands — Payment (E2E)", () => {
       validation.execute("Init Response Envelope", () =>
         paymentValidator.validateInitResponseEnvelope(postBody),
       );
-      validation.execute("Init Success Response", () =>
-        initValidator.validateResponse(postBody),
-      );
+      validation.execute("Init Success Response", () => initValidator.validateResponse(postBody));
 
       const mappedInit = CommandsJobInitMapper.mapResponse(postBody);
 
@@ -162,9 +150,7 @@ test.describe("HES Commands — Payment (E2E)", () => {
       validation.execute("Init HES Callback Configured", () =>
         initValidator.validateHesCallbackConfigured(mappedInit.init),
       );
-      validation.execute("Init Note", () =>
-        paymentValidator.validateInitNote(mappedInit),
-      );
+      validation.execute("Init Note", () => paymentValidator.validateInitNote(mappedInit));
       validation.execute("Init Meter Results", () =>
         initValidator.validateAllMeterResults(
           mappedInit.init.meterResults,
@@ -174,9 +160,7 @@ test.describe("HES Commands — Payment (E2E)", () => {
       validation.execute("Init IN_PROGRESS Status", () =>
         paymentValidator.validateInitInProgressStatus(mappedInit),
       );
-      validation.execute("Init Message", () =>
-        paymentValidator.validateInitMessage(mappedInit),
-      );
+      validation.execute("Init Message", () => paymentValidator.validateInitMessage(mappedInit));
       validation.execute("Init Full Contract", () =>
         initValidator.validateFullInitContract(mappedInit, requestedMeters),
       );
@@ -205,17 +189,15 @@ test.describe("HES Commands — Payment (E2E)", () => {
         });
         softSkipHesE2eInfraFailure(error, testInfo);
       }
-      logCommandE2eResponses(
-        paymentCase.logLabel,
-        postBody,
-        pollResult.responseBody,
-        { pollAttempts: pollResult.pollAttempts, jobName },
-      );
+      logCommandE2eResponses(paymentCase.logLabel, postBody, pollResult.responseBody, {
+        pollAttempts: pollResult.pollAttempts,
+        jobName,
+      });
       await PerformanceTracker.track(
         pollResult.rawResponse,
         "Commands Payment — Query Meter Job",
         pollResult.rawResponse.url(),
-        pollResult.responseTime
+        pollResult.responseTime,
       );
 
       ApiValidationHelper.runStandardChecks(validation, assert, {
@@ -236,9 +218,7 @@ test.describe("HES Commands — Payment (E2E)", () => {
             paymentValidator.validateQueryResponseEnvelope(pollResult.mapped),
           );
           validation.execute("Query Finished Message", () =>
-            paymentValidator.validateQueryFinishedMessage(
-              pollResult.mapped.message,
-            ),
+            paymentValidator.validateQueryFinishedMessage(pollResult.mapped.message),
           );
           validation.execute("Query HES Job Status FINISHED", () => {
             expect(pollResult.mapped.job.hesJobStatus).toBe("FINISHED");
@@ -259,14 +239,10 @@ test.describe("HES Commands — Payment (E2E)", () => {
             ),
           );
           validation.execute("Query All Meter Results", () =>
-            queryValidator.validateAllMeterResults(
-              pollResult.mapped.job.meterResults,
-            ),
+            queryValidator.validateAllMeterResults(pollResult.mapped.job.meterResults),
           );
           validation.execute("Query Payment HES Response — All Fields", () => {
-            if (
-              paymentCase.queryPaymentValidation === "last_token_recharge_amount"
-            ) {
+            if (paymentCase.queryPaymentValidation === "last_token_recharge_amount") {
               paymentValidator.validateLastTokenRechargeAmountQueryMeterResults(
                 pollResult.mapped.job.meterResults,
                 requestedMeters[0],
@@ -279,11 +255,7 @@ test.describe("HES Commands — Payment (E2E)", () => {
             );
           });
           validation.execute("Query Full Contract", () =>
-            queryValidator.validateFullContract(
-              pollResult.mapped,
-              jobName,
-              requestedMeters[0],
-            ),
+            queryValidator.validateFullContract(pollResult.mapped, jobName, requestedMeters[0]),
           );
         },
       });
@@ -325,26 +297,21 @@ test.describe("HES Commands — Payment (E2E)", () => {
       };
 
       const api = new CommandsPaymentApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const initValidator = new CommandsJobInitValidator();
 
-      const { rawResponse, responseBody, responseTime } =
-        await api.postPayment(
-          body as Parameters<CommandsPaymentApi["postPayment"]>[0],
-        );
+      const { rawResponse, responseBody, responseTime } = await api.postPayment(
+        body as Parameters<CommandsPaymentApi["postPayment"]>[0],
+      );
 
       logCommandE2eResponses("Commands Payment — Invalid Type", responseBody);
 
       validation.execute("Status (validation error)", () =>
         assert.validateStatusCode(rawResponse, 400, responseBody),
       );
-      validation.execute("Content Type", () =>
-        assert.validateContentType(rawResponse),
-      );
-      validation.execute("Error Response", () =>
-        initValidator.validateErrorResponse(responseBody),
-      );
+      validation.execute("Content Type", () => assert.validateContentType(rawResponse));
+      validation.execute("Error Response", () => initValidator.validateErrorResponse(responseBody));
 
       ApiValidationHelper.finalize(validation, {
         apiName: "Commands Payment — Invalid Type",
@@ -357,8 +324,7 @@ test.describe("HES Commands — Payment (E2E)", () => {
           requestParams: body,
           responseStatus: rawResponse.status(),
           responseBody,
-          expectedBehavior:
-            "Invalid payment type returns 400 VALIDATION_ERROR.",
+          expectedBehavior: "Invalid payment type returns 400 VALIDATION_ERROR.",
         },
       });
     },

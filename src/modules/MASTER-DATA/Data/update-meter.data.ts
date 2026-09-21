@@ -27,6 +27,8 @@ export interface UpdateMeterTestCase {
   buildPayload: (base?: CreateMeterRequestBody) => UpdateMeterRequestBody;
   validationField?: string;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export function toUpdateMeterPayload(
@@ -57,6 +59,7 @@ export const updateMeterTestCases: UpdateMeterTestCase[] = [
         isActiveStatus: true,
       }),
     tags: ["@smoke", "@master-data", "@update-meter", "@meter-master"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Update meter — meter can be marked inactive",
@@ -69,6 +72,7 @@ export const updateMeterTestCases: UpdateMeterTestCase[] = [
         meterStatus: false,
       }),
     tags: ["@master-data", "@update-meter", "@meter-master"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Update meter — unknown meter is rejected",
@@ -79,6 +83,7 @@ export const updateMeterTestCases: UpdateMeterTestCase[] = [
     buildPayload: () => toUpdateMeterPayload(buildCreateMeterRequest("nf")),
     validationField: "meterLookupTblRefId",
     tags: ["@master-data", "@update-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Update meter — unknown manufacturer is rejected",
@@ -90,6 +95,7 @@ export const updateMeterTestCases: UpdateMeterTestCase[] = [
         deviceManufacturerTblRefId: 99_999_999,
       }),
     tags: ["@master-data", "@update-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Update meter — multiplication factor must be greater than zero",
@@ -99,6 +105,7 @@ export const updateMeterTestCases: UpdateMeterTestCase[] = [
     validationField: "mf",
     buildPayload: (base) => toUpdateMeterPayload(base!, { mf: 0 }),
     tags: ["@master-data", "@update-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Update meter — DLMS type must be valid",
@@ -106,9 +113,9 @@ export const updateMeterTestCases: UpdateMeterTestCase[] = [
     expectedStatus: 400,
     provisionMeter: true,
     validationField: "dlmsNonDlms",
-    buildPayload: (base) =>
-      toUpdateMeterPayload(base!, { dlmsNonDlms: "INVALID" }),
+    buildPayload: (base) => toUpdateMeterPayload(base!, { dlmsNonDlms: "INVALID" }),
     tags: ["@master-data", "@update-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Update meter — meter serial cannot be blank",
@@ -116,9 +123,9 @@ export const updateMeterTestCases: UpdateMeterTestCase[] = [
     expectedStatus: 400,
     provisionMeter: true,
     validationField: "meterSerialNumber",
-    buildPayload: (base) =>
-      toUpdateMeterPayload(base!, { meterSerialNumber: "" }),
+    buildPayload: (base) => toUpdateMeterPayload(base!, { meterSerialNumber: "" }),
     tags: ["@master-data", "@update-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Update meter — display digits must be greater than zero",
@@ -126,9 +133,9 @@ export const updateMeterTestCases: UpdateMeterTestCase[] = [
     expectedStatus: 400,
     provisionMeter: true,
     validationField: "displayDigitCount",
-    buildPayload: (base) =>
-      toUpdateMeterPayload(base!, { displayDigitCount: 0 }),
+    buildPayload: (base) => toUpdateMeterPayload(base!, { displayDigitCount: 0 }),
     tags: ["@master-data", "@update-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Update meter — accuracy class cannot be longer than 8 characters",
@@ -136,8 +143,8 @@ export const updateMeterTestCases: UpdateMeterTestCase[] = [
     expectedStatus: 400,
     provisionMeter: true,
     validationField: "accuracyClass",
-    buildPayload: (base) =>
-      toUpdateMeterPayload(base!, { accuracyClass: "123456789" }),
+    buildPayload: (base) => toUpdateMeterPayload(base!, { accuracyClass: "123456789" }),
     tags: ["@master-data", "@update-meter", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

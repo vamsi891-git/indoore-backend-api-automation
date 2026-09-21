@@ -1,13 +1,11 @@
 import fs from "fs";
 import path from "path";
 import type { TestInfo } from "@playwright/test";
-import type { ValidationResult } from "../models/resultModel";
-import type {
-  DefectReportContext,
-  DefectTriageResult,
-} from "../ai/defect-triage.types";
-import { buildHeuristicTriage } from "../ai/defect-heuristic-triage";
-import { enrichDefectTriage, isDefectLlmEnabled } from "../ai/defect-llm-triage";
+import type { ValidationResult } from "../models/result.model";
+import type { DefectReportContext, DefectTriageResult } from "../../extras/ai/defect-triage.types";
+import { buildHeuristicTriage } from "../../extras/ai/defect-heuristic-triage";
+import { enrichDefectTriage, isDefectLlmEnabled } from "../../extras/ai/defect-llm-triage";
+import { env } from "../config/env.schema";
 
 export type { DefectReportContext };
 
@@ -70,7 +68,7 @@ export class DeveloperReportEngine {
     const failed = input.results.filter((r) => r.status === "FAIL");
     const passed = input.results.filter((r) => r.status === "PASS");
     const firstFailure = failed[0];
-    const baseUrl = process.env.BASE_URL ?? "(not set)";
+    const baseUrl = env.BASE_URL || "(not set)";
     const timestamp = new Date().toISOString();
     const triageResult =
       input.triage ??
@@ -177,9 +175,7 @@ ${passed.map((p) => `- ${p.name}`).join("\n") || "_None_"}
     const reportPath = path.join(DEFECTS_DIR, `${baseName}.md`);
     const triagePath = path.join(DEFECTS_DIR, `${baseName}.triage.json`);
 
-    const triage =
-      input.triage ??
-      this.resolveTriageSync(input);
+    const triage = input.triage ?? this.resolveTriageSync(input);
     const markdown = this.buildMarkdown({ ...input, triage });
 
     fs.writeFileSync(reportPath, markdown, "utf8");

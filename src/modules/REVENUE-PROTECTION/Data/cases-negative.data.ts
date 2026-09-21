@@ -1,9 +1,6 @@
 import { casesDefaultQuery } from "./cases.data";
 
-export type CasesNegativeOutcome =
-  | "hard-reject"
-  | "empty-success"
-  | "empty-page";
+export type CasesNegativeOutcome = "hard-reject" | "empty-success" | "empty-page";
 
 export interface CasesNegativeCase {
   testCaseId: string;
@@ -11,7 +8,8 @@ export interface CasesNegativeCase {
   params: Record<string, string>;
   outcome: CasesNegativeOutcome;
   expectedStatuses: number[];
-  tags: string[];
+  tags: string[]; /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 const base = {
@@ -29,6 +27,7 @@ export const casesNegativeCases: CasesNegativeCase[] = [
     outcome: "empty-success",
     expectedStatuses: [200],
     tags: ["@revenue-protection", "@cases", "@aberrations-detail", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-NEG-002",
@@ -37,6 +36,7 @@ export const casesNegativeCases: CasesNegativeCase[] = [
     outcome: "empty-success",
     expectedStatuses: [200],
     tags: ["@revenue-protection", "@cases", "@aberrations-detail", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-NEG-003",
@@ -45,6 +45,7 @@ export const casesNegativeCases: CasesNegativeCase[] = [
     outcome: "empty-success",
     expectedStatuses: [200],
     tags: ["@revenue-protection", "@cases", "@aberrations-detail", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-NEG-004",
@@ -53,6 +54,7 @@ export const casesNegativeCases: CasesNegativeCase[] = [
     outcome: "empty-success",
     expectedStatuses: [200, 400, 422],
     tags: ["@revenue-protection", "@cases", "@aberrations-detail", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-NEG-005",
@@ -61,6 +63,7 @@ export const casesNegativeCases: CasesNegativeCase[] = [
     outcome: "hard-reject",
     expectedStatuses: [400, 422],
     tags: ["@revenue-protection", "@cases", "@aberrations-detail", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-NEG-006",
@@ -69,6 +72,7 @@ export const casesNegativeCases: CasesNegativeCase[] = [
     outcome: "empty-success",
     expectedStatuses: [200, 400, 422],
     tags: ["@revenue-protection", "@cases", "@aberrations-detail", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-NEG-007",
@@ -77,6 +81,7 @@ export const casesNegativeCases: CasesNegativeCase[] = [
     outcome: "hard-reject",
     expectedStatuses: [400, 422],
     tags: ["@revenue-protection", "@cases", "@aberrations-detail", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-NEG-008",
@@ -85,6 +90,7 @@ export const casesNegativeCases: CasesNegativeCase[] = [
     outcome: "hard-reject",
     expectedStatuses: [400, 422],
     tags: ["@revenue-protection", "@cases", "@aberrations-detail", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-NEG-009",
@@ -93,6 +99,7 @@ export const casesNegativeCases: CasesNegativeCase[] = [
     outcome: "hard-reject",
     expectedStatuses: [400, 422],
     tags: ["@revenue-protection", "@cases", "@aberrations-detail", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-NEG-010",
@@ -101,23 +108,24 @@ export const casesNegativeCases: CasesNegativeCase[] = [
     outcome: "hard-reject",
     expectedStatuses: [400, 422],
     tags: ["@revenue-protection", "@cases", "@aberrations-detail", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-NEG-015",
-    testName:
-      "IND-RPT-NEG-015 — Far-future filter returns empty success grid",
+    testName: "IND-RPT-NEG-015 — Far-future filter returns empty success grid",
     params: { ...base, month: "DEC", year: "2099" },
     outcome: "empty-success",
     expectedStatuses: [200],
     tags: ["@revenue-protection", "@cases", "@aberrations-detail", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-NEG-016",
-    testName:
-      "IND-RPT-NEG-016 — page beyond totalPages returns empty rows (not error)",
+    testName: "IND-RPT-NEG-016 — page beyond totalPages returns empty rows (not error)",
     params: { ...base, page: "9999" },
     outcome: "empty-page",
     expectedStatuses: [200],
     tags: ["@revenue-protection", "@cases", "@aberrations-detail", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

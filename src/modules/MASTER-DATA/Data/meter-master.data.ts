@@ -47,6 +47,8 @@ export interface MeterMasterTestCase {
   tags: string[];
   /** When set, runs search-result assertions against returned rows */
   searchTerm?: string;
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export const meterMasterTestCases: MeterMasterTestCase[] = [
@@ -54,16 +56,19 @@ export const meterMasterTestCases: MeterMasterTestCase[] = [
     testName: "Meter list — first page shows columns, records, and page numbers",
     query: { ...meterMasterDefaultQuery },
     tags: ["@smoke", "@master-data", "@meter-master"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Meter list — page 2 shows the next set of records",
     query: { ...meterMasterPage2Query },
     tags: ["@master-data", "@meter-master"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Meter list — showing 10 per page returns at most 10 records",
     query: { ...meterMasterSmallPageQuery },
     tags: ["@master-data", "@meter-master"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Meter list — search finds the meter serial",
@@ -72,16 +77,19 @@ export const meterMasterTestCases: MeterMasterTestCase[] = [
       q: resolveMeterMasterSearchTerm(),
     },
     tags: ["@master-data", "@meter-master"],
+    nonEmptyExpected: false,
     searchTerm: resolveMeterMasterSearchTerm(),
   },
   {
     testName: "Meter list — an empty search shows the full list",
     query: { ...meterMasterDefaultQuery, q: "" },
     tags: ["@master-data", "@meter-master", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Meter list — a page past the last page shows no records",
     query: { page: 99999, limit: 20 },
     tags: ["@master-data", "@meter-master", "@edge"],
+    nonEmptyExpected: false,
   },
 ];

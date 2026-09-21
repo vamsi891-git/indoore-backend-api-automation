@@ -1,11 +1,11 @@
 import { test as apiDbTest } from "./api-db.fixture";
-import { appendEvent, resolveRunId } from "../observability/logger";
+import { appendEvent, resolveRunId } from "../extras/observability/logger";
 import {
   clearCurrentContext,
   setCurrentContext,
   type ObsContext,
-} from "../observability/context";
-import type { TestOutcomeEvent } from "../observability/types";
+} from "../extras/observability/context";
+import type { TestOutcomeEvent } from "../extras/observability/types";
 
 function moduleFromFile(file: string): string {
   const match = file.replace(/\\/g, "/").match(/modules\/([^/]+)\//);

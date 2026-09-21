@@ -64,7 +64,8 @@ export interface MinMaxVoltageCountTestCase {
   scenario: MinMaxVoltageCountScenario;
   tags: string[];
   isContractFixture?: boolean;
-  expectedStatus?: number;
+  expectedStatus?: number;  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 /** Live voltageType × phase matrix (Oct 2025, meterPhaseTblRefId=3). */
@@ -187,71 +188,83 @@ export const minMaxVoltageCountTestCases: MinMaxVoltageCountTestCase[] = [
     testName: "Min-max voltage count — unknown query params are ignored",
     scenario: "dev_ignore_unknown_query",
     tags: ["@reports", "@min-max-voltage-count", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName:
       "Min-max voltage count — page and limit do not change the total",
     scenario: "dev_ignore_page_limit",
     tags: ["@reports", "@min-max-voltage-count", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName:
       "Min-max voltage count — a month with no readings still returns 200",
     scenario: "dev_empty_window",
     tags: ["@reports", "@min-max-voltage-count", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Min-max voltage count — Oct 2025 min R fixture",
     scenario: "contract_live_full",
     isContractFixture: true,
     tags: ["@reports", "@min-max-voltage-count", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Min-max voltage count — zero total fixture",
     scenario: "contract_empty",
     isContractFixture: true,
     tags: ["@reports", "@min-max-voltage-count", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Min-max voltage count — invalid voltageType is rejected",
     scenario: "invalid_voltage_type",
     expectedStatus: 400,
     tags: ["@reports", "@min-max-voltage-count", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Min-max voltage count — invalid phase is rejected",
     scenario: "invalid_phase",
     expectedStatus: 400,
     tags: ["@reports", "@min-max-voltage-count", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Min-max voltage count — invalid month is rejected",
     scenario: "invalid_month",
     expectedStatus: 400,
     tags: ["@reports", "@min-max-voltage-count", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Min-max voltage count — invalid year is rejected",
     scenario: "invalid_year",
     expectedStatus: 400,
     tags: ["@reports", "@min-max-voltage-count", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Min-max voltage count — missing year is rejected",
     scenario: "missing_year",
     expectedStatus: 400,
     tags: ["@reports", "@min-max-voltage-count", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Min-max voltage count — missing month is rejected",
     scenario: "missing_month",
     expectedStatus: 400,
     tags: ["@reports", "@min-max-voltage-count", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Min-max voltage count — missing meterPhaseTblRefId is rejected",
     scenario: "missing_meter_phase",
     expectedStatus: 400,
     tags: ["@reports", "@min-max-voltage-count", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

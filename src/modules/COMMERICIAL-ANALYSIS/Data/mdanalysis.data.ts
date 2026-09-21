@@ -1,10 +1,7 @@
 import { commercialAnalysisWindow } from "./commercial-window.data";
 
 /** API enum values for `type` query param — commercial.schemas MD_ANALYSIS_TYPES */
-export type MdAnalysisType =
-  | "MD > CD Last Three Month"
-  | "Sanction Load Violation"
-  | "Improper MD";
+export type MdAnalysisType = "MD > CD Last Three Month" | "Sanction Load Violation" | "Improper MD";
 
 export type MdConnectionCategory = "domestic" | "non-domestic";
 
@@ -57,9 +54,7 @@ export const MD_IMPROPER_GRID_COLUMN_KEYS = [
 ] as const;
 
 export function mdGridColumnKeys(type: MdAnalysisType): readonly string[] {
-  return type === "Improper MD"
-    ? MD_IMPROPER_GRID_COLUMN_KEYS
-    : MD_LOAD_GRID_COLUMN_KEYS;
+  return type === "Improper MD" ? MD_IMPROPER_GRID_COLUMN_KEYS : MD_LOAD_GRID_COLUMN_KEYS;
 }
 
 export const mdAnalysisCdCompareData = {
@@ -106,12 +101,13 @@ export type MdCategoryCountCase = {
     connectionCategory: MdConnectionCategory;
     page: number;
     pageSize: number;
-  };
+  }; /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 };
 
 /** MD > CD and Sanction Load honor connectionCategory; Improper MD does not. */
-export const mdConnectionCategoryCases: MdCategoryCountCase[] =
-  MD_CATEGORY_SPLIT_TYPES.flatMap((type) =>
+export const mdConnectionCategoryCases: MdCategoryCountCase[] = MD_CATEGORY_SPLIT_TYPES.flatMap(
+  (type) =>
     (["domestic", "non-domestic"] as const).map((connectionCategory) => ({
       label: `${type} / ${connectionCategory}`,
       type,
@@ -122,7 +118,7 @@ export const mdConnectionCategoryCases: MdCategoryCountCase[] =
         connectionCategory,
       },
     })),
-  );
+);
 
 export const mdTypeSplitCases: Array<{
   type: MdAnalysisType;

@@ -3,7 +3,7 @@ import { ASSET_MANAGEMENT_COVERAGE_TEST_TIMEOUT_MS } from "../../../core/constan
 import { runAssetManagementProductionCoverage } from "./asset-management-coverage.harness";
 
 test.describe("Asset Management — Production Coverage", () => {
-  test.describe.configure({ mode: "serial", retries: 2 });
+  test.describe.configure({ mode: "serial", retries: 1 });
   test.setTimeout(ASSET_MANAGEMENT_COVERAGE_TEST_TIMEOUT_MS);
 
   test(

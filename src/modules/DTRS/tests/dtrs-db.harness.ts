@@ -1,23 +1,16 @@
 import type pg from "pg";
 import type { APIRequestContext } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { logDbVsApiSection } from "../../../core/db/db-compare.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { logDbVsApiSection } from "../../../extras/db/db-compare.engine";
 import { DtrFeedersApi } from "../Api/dtrfeeders.api";
 import { DtrProfileApi } from "../Api/dtrprofile.api";
 import { dtrProfileDefaultCode } from "../Data/dtrprofile.data";
 import { DtrFeedersMapper } from "../Mapper/dtrfeeders.mapper";
 import { DtrProfileMapper } from "../Mapper/dtrprofile.mapper";
-import {
-  compareDtrProfileSpotToDb,
-  compareDtrsCountLteDb,
-} from "../Db/dtrs-db-compare";
-import {
-  countActiveDtrs,
-  countDtrFeederAncestors,
-  getDtrBaseByCode,
-} from "../Db/dtrs.db";
+import { compareDtrProfileSpotToDb, compareDtrsCountLteDb } from "../Db/dtrs-db-compare";
+import { countActiveDtrs, countDtrFeederAncestors, getDtrBaseByCode } from "../Db/dtrs.db";
 import { logDtrsDataQualityFindings } from "../Db/dtrs-db.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 function profileValue(
   items: Array<{ title: string; value: string | null }>,
@@ -39,7 +32,7 @@ export async function runDtrsDbCoverage(
   authenticatedApi: APIRequestContext,
   db: pg.Pool,
 ): Promise<void> {
-  const validation = new ValidationEngine();
+  const validation = new ApiValidationHelper();
   const dtrCode = dtrProfileDefaultCode;
   const profileApi = new DtrProfileApi(authenticatedApi);
   const feedersApi = new DtrFeedersApi(authenticatedApi);
@@ -63,15 +56,9 @@ export async function runDtrsDbCoverage(
         circle: profileValue(mappedProfile.profileInformation, "Circle"),
         division: profileValue(mappedProfile.profileInformation, "Division"),
         zone: profileValue(mappedProfile.profileInformation, "Zone"),
-        subStation: profileValue(
-          mappedProfile.profileInformation,
-          "Sub Station",
-        ),
+        subStation: profileValue(mappedProfile.profileInformation, "Sub Station"),
         feeder: profileValue(mappedProfile.profileInformation, "Feeder"),
-        meterSerial: profileValue(
-          mappedProfile.profileInformation,
-          "Meter SL No",
-        ),
+        meterSerial: profileValue(mappedProfile.profileInformation, "Meter SL No"),
         mf: profileValue(mappedProfile.profileInformation, "MF"),
       },
       dbRow: dbBase!,
@@ -89,10 +76,7 @@ export async function runDtrsDbCoverage(
   expect(mappedFeeders.success).toBe(true);
 
   expect(dbBase, "DB base required for feeder ancestor count").toBeTruthy();
-  const dbFeederCount = await countDtrFeederAncestors(
-    db,
-    dbBase!.networkLookupId,
-  );
+  const dbFeederCount = await countDtrFeederAncestors(db, dbBase!.networkLookupId);
   logDbVsApiSection(
     "DTR feeders",
     {

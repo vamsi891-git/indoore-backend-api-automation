@@ -1,5 +1,5 @@
 import type pg from "pg";
-import { queryReadOnly, queryScalar } from "../../../core/db/postgres.client";
+import { queryReadOnly, queryScalar } from "../../../extras/db/postgres.client";
 import {
   MODULES_PERMISSIONS_MODULE_BY_ID_SQL,
   MODULES_PERMISSIONS_MODULE_COUNT_SQL,
@@ -7,10 +7,7 @@ import {
 } from "./modules-permissions-sql";
 
 export function isModulesPermissionsDbSqlReady(): boolean {
-  return (
-    process.env.MODULES_PERMISSIONS_DB_SQL_READY?.trim().toLowerCase() ===
-    "true"
-  );
+  return process.env.MODULES_PERMISSIONS_DB_SQL_READY?.trim().toLowerCase() === "true";
 }
 
 export type DbModulesPermissionsModuleRow = {
@@ -22,19 +19,11 @@ export type DbModulesPermissionsModuleRow = {
 };
 
 export async function countModulesCatalog(pool: pg.Pool): Promise<number> {
-  return (
-    (await queryScalar<number>(pool, MODULES_PERMISSIONS_MODULE_COUNT_SQL)) ??
-    0
-  );
+  return (await queryScalar<number>(pool, MODULES_PERMISSIONS_MODULE_COUNT_SQL)) ?? 0;
 }
 
 export async function countPermissionsCatalog(pool: pg.Pool): Promise<number> {
-  return (
-    (await queryScalar<number>(
-      pool,
-      MODULES_PERMISSIONS_PERMISSION_COUNT_SQL,
-    )) ?? 0
-  );
+  return (await queryScalar<number>(pool, MODULES_PERMISSIONS_PERMISSION_COUNT_SQL)) ?? 0;
 }
 
 export async function getModuleById(

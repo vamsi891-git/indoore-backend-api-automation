@@ -8,7 +8,7 @@ import {
   AlarmsEventsPriorityWiseData,
   AlarmsEventsPriorityWiseResponse,
   AlarmsEventsPriorityWiseStatus,
-} from "../Mappper/alarms-events-priority-wise.mapper";
+} from "../Mapper/alarms-events-priority-wise.mapper";
 import { assertZodSchema } from "../../../core/utils/zod-validation.helper";
 import {
   AlarmsEventsPriorityWiseSuccessResponseSchema,
@@ -29,11 +29,7 @@ function statusKeys(status: AlarmsEventsPriorityWiseStatus) {
 
 export class AlarmsEventsPriorityWiseValidator {
   validateResponse(response: AlarmsEventsPriorityWiseResponse) {
-    assertZodSchema(
-      AlarmsEventsPriorityWiseSuccessResponseSchema,
-      response,
-      "Zod Response Schema",
-    );
+    assertZodSchema(AlarmsEventsPriorityWiseSuccessResponseSchema, response, "Zod Response Schema");
   }
 
   validateDates(data: AlarmsEventsPriorityWiseData, expectedCurrentDate?: string) {
@@ -45,17 +41,11 @@ export class AlarmsEventsPriorityWiseValidator {
   }
 
   validateColumns(data: AlarmsEventsPriorityWiseData) {
-    expect(statusKeys(data.active)).toEqual(
-      [...EXPECTED_PRIORITY_WISE_STATUS_COLUMNS].sort(),
-    );
-    expect(statusKeys(data.resolve)).toEqual(
-      [...EXPECTED_PRIORITY_WISE_STATUS_COLUMNS].sort(),
-    );
+    expect(statusKeys(data.active)).toEqual([...EXPECTED_PRIORITY_WISE_STATUS_COLUMNS].sort());
+    expect(statusKeys(data.resolve)).toEqual([...EXPECTED_PRIORITY_WISE_STATUS_COLUMNS].sort());
     expect(data.priorities.length).toBeGreaterThan(0);
     for (const row of data.priorities) {
-      expect(Object.keys(row).sort()).toEqual(
-        [...EXPECTED_PRIORITY_WISE_COLUMNS].sort(),
-      );
+      expect(Object.keys(row).sort()).toEqual([...EXPECTED_PRIORITY_WISE_COLUMNS].sort());
     }
   }
 
@@ -72,9 +62,7 @@ export class AlarmsEventsPriorityWiseValidator {
       expect(row.label).toBe(expectedById.get(row.priorityId));
     }
     if (expectedPriorityIds) {
-      expect(data.priorities.map((row) => row.priorityId)).toEqual([
-        ...expectedPriorityIds,
-      ]);
+      expect(data.priorities.map((row) => row.priorityId)).toEqual([...expectedPriorityIds]);
     }
   }
 
@@ -86,12 +74,8 @@ export class AlarmsEventsPriorityWiseValidator {
   }
 
   validateTotals(data: AlarmsEventsPriorityWiseData) {
-    expect(data.active.totalCount + data.resolve.totalCount).toBe(
-      data.totalEvents,
-    );
-    expect(data.active.previousDay + data.resolve.previousDay).toBe(
-      data.totalEventsPreviousDay,
-    );
+    expect(data.active.totalCount + data.resolve.totalCount).toBe(data.totalEvents);
+    expect(data.active.previousDay + data.resolve.previousDay).toBe(data.totalEventsPreviousDay);
     expect(data.totalEvents).toBeGreaterThanOrEqual(0);
     expect(data.totalEventsPreviousDay).toBeGreaterThanOrEqual(0);
     for (const row of data.priorities) {

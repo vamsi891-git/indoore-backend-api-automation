@@ -12,12 +12,14 @@ export type ConsumptionNegativeCase = {
   path: string;
   params: Record<string, string | number>;
   expectedStatuses: number[];
-  expectedCodes?: string[];
+  expectedCodes?: string[]; /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 };
 export const patternConsumptionNegativeCases: ConsumptionNegativeCase[] = [
   {
     testName: "Pattern consumption — leaving out the pattern type is rejected",
     tags: ["@consumption", "@pattern-consumption", "@negative"],
+    nonEmptyExpected: false,
     path: "/indore/consumption/pattern-consumption",
     params: {
       page: patternConsumptionData.page,
@@ -31,6 +33,7 @@ export const patternConsumptionNegativeCases: ConsumptionNegativeCase[] = [
   {
     testName: "Pattern consumption — an unknown pattern type is rejected",
     tags: ["@consumption", "@pattern-consumption", "@negative"],
+    nonEmptyExpected: false,
     path: "/indore/consumption/pattern-consumption",
     params: {
       patternType: "not-a-pattern",
@@ -45,6 +48,7 @@ export const patternConsumptionNegativeCases: ConsumptionNegativeCase[] = [
   {
     testName: "Pattern consumption — month zero is rejected",
     tags: ["@consumption", "@pattern-consumption", "@negative"],
+    nonEmptyExpected: false,
     path: "/indore/consumption/pattern-consumption",
     params: {
       patternType: patternConsumptionData.comparisonType,
@@ -59,6 +63,7 @@ export const patternConsumptionNegativeCases: ConsumptionNegativeCase[] = [
   {
     testName: "Pattern consumption — month thirteen is rejected",
     tags: ["@consumption", "@pattern-consumption", "@negative"],
+    nonEmptyExpected: false,
     path: "/indore/consumption/pattern-consumption",
     params: {
       patternType: patternConsumptionData.comparisonType,
@@ -73,6 +78,7 @@ export const patternConsumptionNegativeCases: ConsumptionNegativeCase[] = [
   {
     testName: "Pattern consumption — page zero is rejected",
     tags: ["@consumption", "@pattern-consumption", "@negative"],
+    nonEmptyExpected: false,
     path: "/indore/consumption/pattern-consumption",
     params: {
       patternType: patternConsumptionData.comparisonType,
@@ -87,6 +93,7 @@ export const patternConsumptionNegativeCases: ConsumptionNegativeCase[] = [
   {
     testName: "Pattern consumption — limit zero is rejected",
     tags: ["@consumption", "@pattern-consumption", "@negative"],
+    nonEmptyExpected: false,
     path: "/indore/consumption/pattern-consumption",
     params: {
       patternType: patternConsumptionData.comparisonType,
@@ -104,6 +111,7 @@ export const monthlyNetMeterNegativeCases: ConsumptionNegativeCase[] = [
   {
     testName: "Monthly net meter — month zero is rejected",
     tags: ["@consumption", "@monthly-net-meter", "@negative"],
+    nonEmptyExpected: false,
     path: "/indore/consumption/monthly-net-meter",
     params: { page: 1, limit: 10, month: 0, year: consumptionReportYear },
     expectedStatuses: [400, 422],
@@ -112,6 +120,7 @@ export const monthlyNetMeterNegativeCases: ConsumptionNegativeCase[] = [
   {
     testName: "Monthly net meter — year zero is rejected",
     tags: ["@consumption", "@monthly-net-meter", "@negative"],
+    nonEmptyExpected: false,
     path: "/indore/consumption/monthly-net-meter",
     params: { page: 1, limit: 10, month: consumptionReportMonth, year: 0 },
     expectedStatuses: [400, 422],
@@ -120,6 +129,7 @@ export const monthlyNetMeterNegativeCases: ConsumptionNegativeCase[] = [
   {
     testName: "Monthly net meter — page zero is rejected",
     tags: ["@consumption", "@monthly-net-meter", "@negative"],
+    nonEmptyExpected: false,
     path: "/indore/consumption/monthly-net-meter",
     params: {
       page: 0,
@@ -136,6 +146,7 @@ export const consumptionReportNegativeCases: ConsumptionNegativeCase[] = [
   {
     testName: "Daily consumption — leaving out the report type is rejected",
     tags: ["@consumption", "@consumption-report", "@negative"],
+    nonEmptyExpected: false,
     path: "/indore/consumption/report",
     params: {
       page: dailyConsumptionData.page,
@@ -151,6 +162,7 @@ export const consumptionReportNegativeCases: ConsumptionNegativeCase[] = [
   {
     testName: "Daily consumption — an unknown report type is rejected",
     tags: ["@consumption", "@consumption-report", "@negative"],
+    nonEmptyExpected: false,
     path: "/indore/consumption/report",
     params: {
       reportType: "weekly",
@@ -167,6 +179,7 @@ export const consumptionReportNegativeCases: ConsumptionNegativeCase[] = [
   {
     testName: "Daily consumption — start date after end date is rejected",
     tags: ["@consumption", "@consumption-report", "@negative"],
+    nonEmptyExpected: false,
     path: "/indore/consumption/report",
     params: {
       reportType: "daily",
@@ -183,6 +196,7 @@ export const consumptionReportNegativeCases: ConsumptionNegativeCase[] = [
   {
     testName: "Daily consumption — a badly formatted start date is rejected",
     tags: ["@consumption", "@consumption-report", "@negative"],
+    nonEmptyExpected: false,
     path: "/indore/consumption/report",
     params: {
       reportType: "daily",

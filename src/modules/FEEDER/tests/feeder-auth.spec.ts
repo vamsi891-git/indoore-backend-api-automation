@@ -1,8 +1,6 @@
 import { test as authTest } from "../../../fixtures/auth.fixture";
 import { expect } from "@playwright/test";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { resolveFeederCode } from "../utils/feeder-env.helper";
@@ -14,6 +12,7 @@ import {
   dtrUnbalanceUnauthorizedCode,
   dtrUnbalanceUnauthorizedMessage,
 } from "../../DASHBOARD/Data/dtr-unbalance-auth.data";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 authTest.describe("Feeder screens — cannot open without a valid login", () => {
   authTest.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
@@ -48,8 +47,8 @@ authTest.describe("Feeder screens — cannot open without a valid login", () => 
         `${target.label} — ${authCase.testName}`,
         { tag: [...authCase.tags, "@feeder", target.tag] },
         async ({ unauthenticatedApi }) => {
-          const assert = new AssertionEngine();
-          const validation = new ValidationEngine();
+          const assert = new ApiValidationHelper();
+          const validation = new ApiValidationHelper();
           const started = Date.now();
 
           const rawResponse = await unauthenticatedApi.get(target.path, {
@@ -61,10 +60,7 @@ authTest.describe("Feeder screens — cannot open without a valid login", () => 
               `${target.label} ${authCase.testName}`,
             )
           ) {
-            authTest.skip(
-              true,
-              `Rate limited (429) on ${target.path} — retry later`,
-            );
+            authTest.skip(true, `Rate limited (429) on ${target.path} — retry later`);
             return;
           }
           const responseBody = await rawResponse.json().catch(() => ({}));
@@ -78,15 +74,9 @@ authTest.describe("Feeder screens — cannot open without a valid login", () => 
           );
 
           validation.execute("Status (auth negative)", () =>
-            assert.validateStatusCode(
-              rawResponse,
-              authCase.expectedStatus,
-              responseBody,
-            ),
+            assert.validateStatusCode(rawResponse, authCase.expectedStatus, responseBody),
           );
-          validation.execute("Content Type", () =>
-            assert.validateContentType(rawResponse),
-          );
+          validation.execute("Content Type", () => assert.validateContentType(rawResponse));
           validation.execute("Auth Error Envelope", () => {
             const body = responseBody as {
               success?: boolean;
@@ -105,10 +95,7 @@ authTest.describe("Feeder screens — cannot open without a valid login", () => 
             );
           });
 
-          validation.printSummary(
-            `${target.label} — ${authCase.expectedErrorCode}`,
-            responseTime,
-          );
+          validation.printSummary(`${target.label} — ${authCase.expectedErrorCode}`, responseTime);
         },
       );
     }

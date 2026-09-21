@@ -5,7 +5,6 @@ import {
   HES_COMMANDS_JOB_POLL_STUCK_MS,
   HES_COMMANDS_JOB_POLL_TIMEOUT_MS,
 } from "../../../core/constants/api-timeouts";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { CommandsQueryMeterJobApi } from "../Api/commands-query-meter-job.api";
 import {
@@ -14,11 +13,9 @@ import {
 } from "../Mapper/commands-query-meter-job.mapper";
 import { CommandsQueryMeterJobMapper } from "../Mapper/commands-query-meter-job.mapper";
 import { CommandsQueryMeterJobValidator } from "../Validator/commands-query-meter-job.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
-export function parsePositiveMs(
-  value: string | number | undefined,
-  fallback: number,
-): number {
+export function parsePositiveMs(value: string | number | undefined, fallback: number): number {
   const parsed = typeof value === "number" ? value : Number(value);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
@@ -36,18 +33,9 @@ const DEFAULT_POLL_STUCK_MS = parsePositiveMs(
   HES_COMMANDS_JOB_POLL_STUCK_MS,
 );
 
-const INCOMPLETE_HES_JOB_STATUSES = new Set([
-  "RUNNING",
-  "PENDING",
-  "IN_PROGRESS",
-]);
+const INCOMPLETE_HES_JOB_STATUSES = new Set(["RUNNING", "PENDING", "IN_PROGRESS"]);
 
-const TERMINAL_HES_JOB_STATUSES = new Set([
-  "FINISHED",
-  "FAILED",
-  "CANCELLED",
-  "COMPLETED",
-]);
+const TERMINAL_HES_JOB_STATUSES = new Set(["FINISHED", "FAILED", "CANCELLED", "COMPLETED"]);
 
 export interface HesJobIncompleteDetails {
   jobName: string;
@@ -83,19 +71,14 @@ export function isTransientApiNetworkError(error: unknown): boolean {
  * Default false: validate async init + IN_PROGRESS query path and pass (HES callback is env-dependent).
  */
 export function isHesE2eCompletionRequired(): boolean {
-  return (
-    process.env.HES_E2E_REQUIRE_COMPLETION?.trim().toLowerCase() === "true"
-  );
+  return process.env.HES_E2E_REQUIRE_COMPLETION?.trim().toLowerCase() === "true";
 }
 
 /**
  * Soft-skip only for transient DNS/network mid-poll.
  * Incomplete HES jobs are handled by pollQueryMeterJob (pass async path unless completion required).
  */
-export function softSkipHesE2eInfraFailure(
-  error: unknown,
-  testInfo?: TestInfo,
-): never {
+export function softSkipHesE2eInfraFailure(error: unknown, testInfo?: TestInfo): never {
   if (isTransientApiNetworkError(error)) {
     const message = error instanceof Error ? error.message : String(error);
     BackendResponse.logFinding("HES poll transient network", message);
@@ -126,9 +109,7 @@ export interface PollQueryMeterJobOptions {
 }
 
 export interface PollQueryMeterJobResult {
-  rawResponse: Awaited<
-    ReturnType<CommandsQueryMeterJobApi["getQueryMeterJob"]>
-  >["rawResponse"];
+  rawResponse: Awaited<ReturnType<CommandsQueryMeterJobApi["getQueryMeterJob"]>>["rawResponse"];
   responseBody: QueryMeterJobResponse;
   responseTime: number;
   mapped: MappedQueryMeterJobData;
@@ -145,7 +126,6 @@ export interface PollQueryMeterJobResult {
 export const QUERY_FINISHED_MESSAGE =
   /job finished|synced from meterStatusForJob|job status fetched successfully/i;
 
-
 function hasTerminalMeterRows(body: QueryMeterJobResponse): boolean {
   const rows = body.data?.meterResults ?? [];
   if (rows.length === 0) {
@@ -160,11 +140,7 @@ function hasTerminalMeterRows(body: QueryMeterJobResponse): boolean {
 export function isQueryMeterJobComplete(body: QueryMeterJobResponse): boolean {
   const hesStatus = body.data?.hesJobStatus?.trim().toUpperCase();
   if (hesStatus && INCOMPLETE_HES_JOB_STATUSES.has(hesStatus)) {
-    if (
-      body.message &&
-      QUERY_FINISHED_MESSAGE.test(body.message) &&
-      hasTerminalMeterRows(body)
-    ) {
+    if (body.message && QUERY_FINISHED_MESSAGE.test(body.message) && hasTerminalMeterRows(body)) {
       return true;
     }
     return false;
@@ -198,9 +174,7 @@ function throwIncomplete(
   const meterStatus = data?.meterResults?.[0]?.status ?? "unknown";
   const meterNote = data?.meterResults?.[0]?.note ?? data?.note ?? "";
   const commandLabel =
-    expectedCommand?.trim() ||
-    data?.meterResults?.[0]?.action?.trim() ||
-    "this command";
+    expectedCommand?.trim() || data?.meterResults?.[0]?.action?.trim() || "this command";
   const callbackPending =
     INCOMPLETE_HES_JOB_STATUSES.has(String(hesJobStatus).toUpperCase()) ||
     /hes callback/i.test(`${body.message ?? ""} ${meterNote}`);
@@ -236,21 +210,14 @@ export async function pollQueryMeterJob(
   options: PollQueryMeterJobOptions = {},
 ): Promise<PollQueryMeterJobResult> {
   const timeoutMs = parsePositiveMs(options.timeoutMs, DEFAULT_POLL_TIMEOUT_MS);
-  const intervalMs = parsePositiveMs(
-    options.intervalMs,
-    DEFAULT_POLL_INTERVAL_MS,
-  );
+  const intervalMs = parsePositiveMs(options.intervalMs, DEFAULT_POLL_INTERVAL_MS);
   const initialDelayMs = parsePositiveMs(
     options.initialDelayMs,
     HES_COMMANDS_JOB_POLL_INITIAL_DELAY_MS,
   );
-  const stuckMs = Math.min(
-    parsePositiveMs(options.stuckMs, DEFAULT_POLL_STUCK_MS),
-    timeoutMs,
-  );
+  const stuckMs = Math.min(parsePositiveMs(options.stuckMs, DEFAULT_POLL_STUCK_MS), timeoutMs);
   const waitForCompletion = options.waitForCompletion ?? true;
-  const requireCompletion =
-    options.requireCompletion ?? isHesE2eCompletionRequired();
+  const requireCompletion = options.requireCompletion ?? isHesE2eCompletionRequired();
 
   if (initialDelayMs > 0) {
     await new Promise((resolve) => setTimeout(resolve, initialDelayMs));
@@ -259,9 +226,7 @@ export async function pollQueryMeterJob(
   const deadline = Date.now() + timeoutMs;
   const pollStartedAt = Date.now();
 
-  let lastResult: Awaited<
-    ReturnType<CommandsQueryMeterJobApi["getQueryMeterJob"]>
-  >;
+  let lastResult: Awaited<ReturnType<CommandsQueryMeterJobApi["getQueryMeterJob"]>>;
   let pollAttempts = 0;
   let totalResponseTime = 0;
   let lastFingerprint = "";
@@ -298,8 +263,7 @@ export async function pollQueryMeterJob(
   } while (Date.now() < deadline);
 
   const completed =
-    lastResult.responseBody.success !== false &&
-    isQueryMeterJobComplete(lastResult.responseBody);
+    lastResult.responseBody.success !== false && isQueryMeterJobComplete(lastResult.responseBody);
 
   if (waitForCompletion && !completed && lastResult.responseBody.success !== false) {
     const reason = stuckReason ?? "timeout";
@@ -323,9 +287,7 @@ export async function pollQueryMeterJob(
     );
   }
 
-  const mapped = CommandsQueryMeterJobMapper.mapResponse(
-    lastResult.responseBody,
-  );
+  const mapped = CommandsQueryMeterJobMapper.mapResponse(lastResult.responseBody);
 
   return {
     rawResponse: lastResult.rawResponse,
@@ -363,21 +325,14 @@ export function logCommandE2eResponses(
  * If still pending → assert async RUNNING/IN_PROGRESS contract and pass.
  */
 export function assertHesE2eQueryPhase(options: {
-  validation: ValidationEngine;
+  validation: ApiValidationHelper;
   queryValidator: CommandsQueryMeterJobValidator;
   pollResult: PollQueryMeterJobResult;
   jobName: string;
   meterId: string;
   onFinished: () => void;
 }): void {
-  const {
-    validation,
-    queryValidator,
-    pollResult,
-    jobName,
-    meterId,
-    onFinished,
-  } = options;
+  const { validation, queryValidator, pollResult, jobName, meterId, onFinished } = options;
 
   validation.execute("Query Success Response", () =>
     queryValidator.validateResponse(pollResult.responseBody),
@@ -385,17 +340,12 @@ export function assertHesE2eQueryPhase(options: {
   validation.execute("Query Job Name Echo", () =>
     queryValidator.validateJobNameEcho(pollResult.mapped, jobName),
   );
-  validation.execute("Query Sync Flags", () =>
-    queryValidator.validateSyncFlags(pollResult.mapped),
-  );
+  validation.execute("Query Sync Flags", () => queryValidator.validateSyncFlags(pollResult.mapped));
   validation.execute("Query HES Status Code", () =>
     queryValidator.validateHesStatusCode(pollResult.mapped),
   );
   validation.execute("Query Expected Meter Present", () =>
-    queryValidator.validateExpectedMeterPresent(
-      pollResult.mapped.job.meterResults,
-      meterId,
-    ),
+    queryValidator.validateExpectedMeterPresent(pollResult.mapped.job.meterResults, meterId),
   );
 
   if (pollResult.completed) {
@@ -409,8 +359,7 @@ export function assertHesE2eQueryPhase(options: {
       INCOMPLETE_HES_JOB_STATUSES.has(hes),
       `expected incomplete hesJobStatus, got ${hes || "empty"}`,
     ).toBe(true);
-    const meterStatus =
-      pollResult.mapped.job.meterResults[0]?.status?.trim().toUpperCase() ?? "";
+    const meterStatus = pollResult.mapped.job.meterResults[0]?.status?.trim().toUpperCase() ?? "";
     expect(
       INCOMPLETE_HES_JOB_STATUSES.has(meterStatus) || meterStatus === "",
       `expected incomplete meter status, got ${meterStatus || "empty"}`,

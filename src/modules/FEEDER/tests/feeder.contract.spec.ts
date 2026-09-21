@@ -8,7 +8,7 @@ import { test, expect } from "../../../fixtures/observability.fixture";
 import {
   assertContractSnapshot,
   buildLookupItemsContractSnapshot,
-} from "../../../core/contract/contract-snapshot.helper";
+} from "../../../extras/contract/contract-snapshot.helper";
 import { FeederProfileApi } from "../Api/feederprofile.api";
 import { FeederAlertsApi } from "../Api/feeder-alerts.api";
 import { FeederElectricalParametersApi } from "../Api/feeder-electrical-parameters.api";
@@ -20,9 +20,7 @@ import { feederDailyConsumptionData } from "../Data/feeder-daily-consumption.dat
 import { resolveFeederCode } from "../utils/feeder-env.helper";
 
 function asRecord(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === "object"
-    ? (value as Record<string, unknown>)
-    : {};
+  return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
 test.describe("Feeder — saved field lists", () => {
@@ -33,9 +31,7 @@ test.describe("Feeder — saved field lists", () => {
     { tag: ["@contract-snapshot", "@feeder", "@profile"] },
     async ({ authenticatedApi }) => {
       const code = resolveFeederCode(feederProfileData.feederCode);
-      const { responseBody } = await new FeederProfileApi(
-        authenticatedApi,
-      ).getFeederProfile(code);
+      const { responseBody } = await new FeederProfileApi(authenticatedApi).getFeederProfile(code);
       expect(responseBody.success).toBe(true);
       const data = asRecord(responseBody.data);
       await assertContractSnapshot(
@@ -43,9 +39,10 @@ test.describe("Feeder — saved field lists", () => {
         buildLookupItemsContractSnapshot({
           pathPattern: "/indore/feeder/{feederCode}/profile",
           dataKeys: Object.keys(data),
-          itemKeys: Array.isArray(data.overview) && data.overview.length > 0
-            ? Object.keys(asRecord(data.overview[0]))
-            : Object.keys(data),
+          itemKeys:
+            Array.isArray(data.overview) && data.overview.length > 0
+              ? Object.keys(asRecord(data.overview[0]))
+              : Object.keys(data),
         }),
       );
     },
@@ -56,9 +53,11 @@ test.describe("Feeder — saved field lists", () => {
     { tag: ["@contract-snapshot", "@feeder", "@feeder-alerts"] },
     async ({ authenticatedApi }) => {
       const code = resolveFeederCode(feederAlertsData.feederCode);
-      const { responseBody } = await new FeederAlertsApi(
-        authenticatedApi,
-      ).getAlerts(code, feederAlertsData.page, feederAlertsData.limit);
+      const { responseBody } = await new FeederAlertsApi(authenticatedApi).getAlerts(
+        code,
+        feederAlertsData.page,
+        feederAlertsData.limit,
+      );
       expect(responseBody.success).toBe(true);
       const data = asRecord(responseBody.data);
       const rows = Array.isArray(data.rows) ? data.rows : [];
@@ -77,9 +76,7 @@ test.describe("Feeder — saved field lists", () => {
     "Feeder voltage and current — the field list still matches what we saved",
     { tag: ["@contract-snapshot", "@feeder", "@electrical-parameters"] },
     async ({ authenticatedApi }) => {
-      const code = resolveFeederCode(
-        feederElectricalParametersData.feederCode,
-      );
+      const code = resolveFeederCode(feederElectricalParametersData.feederCode);
       const { responseBody } = await new FeederElectricalParametersApi(
         authenticatedApi,
       ).getElectricalParameters(code);

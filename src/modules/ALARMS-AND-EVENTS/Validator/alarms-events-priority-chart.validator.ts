@@ -9,7 +9,7 @@ import {
   AlarmsEventsPriorityChartData,
   AlarmsEventsPriorityChartPeriod,
   AlarmsEventsPriorityChartResponse,
-} from "../Mappper/alarms-events-priority-chart.mapper";
+} from "../Mapper/alarms-events-priority-chart.mapper";
 import { assertZodSchema } from "../../../core/utils/zod-validation.helper";
 import {
   AlarmsEventsPriorityChartSuccessResponseSchema,
@@ -52,9 +52,7 @@ export class AlarmsEventsPriorityChartValidator {
     expectedDate?: string,
   ) {
     expect(period.period).toBe(expectedName);
-    expect(Object.keys(period).sort()).toEqual(
-      [...EXPECTED_PRIORITY_CHART_PERIOD_COLUMNS].sort(),
-    );
+    expect(Object.keys(period).sort()).toEqual([...EXPECTED_PRIORITY_CHART_PERIOD_COLUMNS].sort());
     expect(period.fromDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(period.toDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(period.toDate >= period.fromDate).toBe(true);

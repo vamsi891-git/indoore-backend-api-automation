@@ -1,5 +1,5 @@
 import type pg from "pg";
-import { queryReadOnly, queryScalar } from "../../../core/db/postgres.client";
+import { queryReadOnly, queryScalar } from "../../../extras/db/postgres.client";
 import {
   BILLING_HISTORY_ARCHIVE_COUNT_SQL,
   CONSUMER_ACTIVATION_BY_REF_SQL,
@@ -55,11 +55,9 @@ export async function getConsumerProfileByRef(
   pool: pg.Pool,
   accountOrIvrs: string,
 ): Promise<DbConsumerProfileRow | null> {
-  const rows = await queryReadOnly<DbConsumerProfileRow>(
-    pool,
-    CONSUMER_PROFILE_BY_REF_SQL,
-    [accountOrIvrs],
-  );
+  const rows = await queryReadOnly<DbConsumerProfileRow>(pool, CONSUMER_PROFILE_BY_REF_SQL, [
+    accountOrIvrs,
+  ]);
   return rows[0] ?? null;
 }
 
@@ -75,11 +73,9 @@ export async function getConsumerActivationByRef(
   pool: pg.Pool,
   accountOrIvrs: string,
 ): Promise<DbConsumerActivationRow | null> {
-  const rows = await queryReadOnly<DbConsumerActivationRow>(
-    pool,
-    CONSUMER_ACTIVATION_BY_REF_SQL,
-    [accountOrIvrs],
-  );
+  const rows = await queryReadOnly<DbConsumerActivationRow>(pool, CONSUMER_ACTIVATION_BY_REF_SQL, [
+    accountOrIvrs,
+  ]);
   return rows[0] ?? null;
 }
 
@@ -87,13 +83,8 @@ export async function countConsumerAccounts(pool: pg.Pool): Promise<number> {
   return (await queryScalar<number>(pool, CONSUMER_CONNECTION_COUNT_SQL)) ?? 0;
 }
 
-export async function getMeterBySerial(
-  pool: pg.Pool,
-  serial: string,
-): Promise<DbMeterRow | null> {
-  const rows = await queryReadOnly<DbMeterRow>(pool, METER_BY_SERIAL_SQL, [
-    serial,
-  ]);
+export async function getMeterBySerial(pool: pg.Pool, serial: string): Promise<DbMeterRow | null> {
+  const rows = await queryReadOnly<DbMeterRow>(pool, METER_BY_SERIAL_SQL, [serial]);
   return rows[0] ?? null;
 }
 
@@ -101,11 +92,9 @@ export async function getMeterLastSeen(
   pool: pg.Pool,
   meterLookupId: number,
 ): Promise<DbMeterLastSeenRow | null> {
-  const rows = await queryReadOnly<DbMeterLastSeenRow>(
-    pool,
-    METER_LAST_SEEN_BY_LOOKUP_SQL,
-    [meterLookupId],
-  );
+  const rows = await queryReadOnly<DbMeterLastSeenRow>(pool, METER_LAST_SEEN_BY_LOOKUP_SQL, [
+    meterLookupId,
+  ]);
   return rows[0] ?? null;
 }
 
@@ -115,11 +104,7 @@ export async function countBillingHistoryArchiveRows(
   meterSerial: string,
 ): Promise<number> {
   return (
-    (await queryScalar<number>(
-      archivePool,
-      BILLING_HISTORY_ARCHIVE_COUNT_SQL,
-      [meterSerial],
-    )) ?? 0
+    (await queryScalar<number>(archivePool, BILLING_HISTORY_ARCHIVE_COUNT_SQL, [meterSerial])) ?? 0
   );
 }
 
@@ -140,11 +125,9 @@ export async function getLatestSpRealTimePower(
   pool: pg.Pool,
   meterLookupId: number,
 ): Promise<DbRealTimePowerRow | null> {
-  const rows = await queryReadOnly<DbRealTimePowerRow>(
-    pool,
-    REALTIME_POWER_SP_LATEST_SQL,
-    [meterLookupId],
-  );
+  const rows = await queryReadOnly<DbRealTimePowerRow>(pool, REALTIME_POWER_SP_LATEST_SQL, [
+    meterLookupId,
+  ]);
   return rows[0] ?? null;
 }
 
@@ -153,11 +136,9 @@ export async function getLatestTpRealTimePower(
   pool: pg.Pool,
   meterLookupId: number,
 ): Promise<DbRealTimePowerRow | null> {
-  const rows = await queryReadOnly<DbRealTimePowerRow>(
-    pool,
-    REALTIME_POWER_TP_LATEST_SQL,
-    [meterLookupId],
-  );
+  const rows = await queryReadOnly<DbRealTimePowerRow>(pool, REALTIME_POWER_TP_LATEST_SQL, [
+    meterLookupId,
+  ]);
   return rows[0] ?? null;
 }
 
@@ -174,11 +155,9 @@ export async function getLatestSpPowerQuality(
   pool: pg.Pool,
   meterLookupId: number,
 ): Promise<DbPowerQualityRow | null> {
-  const rows = await queryReadOnly<DbPowerQualityRow>(
-    pool,
-    POWER_QUALITY_SP_LATEST_SQL,
-    [meterLookupId],
-  );
+  const rows = await queryReadOnly<DbPowerQualityRow>(pool, POWER_QUALITY_SP_LATEST_SQL, [
+    meterLookupId,
+  ]);
   return rows[0] ?? null;
 }
 
@@ -187,10 +166,8 @@ export async function getLatestTpPowerQuality(
   pool: pg.Pool,
   meterLookupId: number,
 ): Promise<DbPowerQualityRow | null> {
-  const rows = await queryReadOnly<DbPowerQualityRow>(
-    pool,
-    POWER_QUALITY_TP_LATEST_SQL,
-    [meterLookupId],
-  );
+  const rows = await queryReadOnly<DbPowerQualityRow>(pool, POWER_QUALITY_TP_LATEST_SQL, [
+    meterLookupId,
+  ]);
   return rows[0] ?? null;
 }

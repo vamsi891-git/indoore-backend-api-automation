@@ -57,14 +57,11 @@ export const aberrationEntryTestCases = [
   {
     testCaseId: "IND-REV-ABE-ENTRY-001",
 
-    testName:
-      "IND-REV-ABE-ENTRY-001 — Fetch Aberration Entry using month + year",
+    testName: "IND-REV-ABE-ENTRY-001 — Fetch Aberration Entry using month + year",
 
-    tags: [
-      "@revenue-protection",
-      "@aberration-entry",
-      "@positive",
-    ],
+    tags: ["@revenue-protection", "@aberration-entry", "@positive"],
+
+    nonEmptyExpected: false,
 
     query: {
       entryType: "zone",
@@ -78,14 +75,11 @@ export const aberrationEntryTestCases = [
   {
     testCaseId: "IND-REV-ABE-ENTRY-002",
 
-    testName:
-      "IND-REV-ABE-ENTRY-002 — Fetch Aberration Entry using only year",
+    testName: "IND-REV-ABE-ENTRY-002 — Fetch Aberration Entry using only year",
 
-    tags: [
-      "@revenue-protection",
-      "@aberration-entry",
-      "@positive",
-    ],
+    tags: ["@revenue-protection", "@aberration-entry", "@positive"],
+
+    nonEmptyExpected: false,
 
     query: {
       entryType: "zone",
@@ -98,14 +92,11 @@ export const aberrationEntryTestCases = [
   {
     testCaseId: "IND-REV-ABE-ENTRY-003",
 
-    testName:
-      "IND-REV-ABE-ENTRY-003 — Fetch Aberration Entry using only month",
+    testName: "IND-REV-ABE-ENTRY-003 — Fetch Aberration Entry using only month",
 
-    tags: [
-      "@revenue-protection",
-      "@aberration-entry",
-      "@positive",
-    ],
+    tags: ["@revenue-protection", "@aberration-entry", "@positive"],
+
+    nonEmptyExpected: false,
 
     query: {
       entryType: "zone",
@@ -118,14 +109,11 @@ export const aberrationEntryTestCases = [
   {
     testCaseId: "IND-REV-ABE-ENTRY-004",
 
-    testName:
-      "IND-REV-ABE-ENTRY-004 — Fetch Aberration Entry without optional filters",
+    testName: "IND-REV-ABE-ENTRY-004 — Fetch Aberration Entry without optional filters",
 
-    tags: [
-      "@revenue-protection",
-      "@aberration-entry",
-      "@positive",
-    ],
+    tags: ["@revenue-protection", "@aberration-entry", "@positive"],
+
+    nonEmptyExpected: false,
 
     query: {
       entryType: "zone",

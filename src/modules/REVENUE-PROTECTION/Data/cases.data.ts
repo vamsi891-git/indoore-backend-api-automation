@@ -38,6 +38,8 @@ export interface CasesTestCase {
   testName: string;
   query: CasesQuery;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export const casesTestCases: CasesTestCase[] = [
@@ -47,18 +49,21 @@ export const casesTestCases: CasesTestCase[] = [
       "IND-RPT-001 — Validate GET /indore/revenue-protection/aberrations/detail — default page (JAN 2026)",
     query: { ...casesDefaultQuery },
     tags: ["@smoke", "@revenue-protection", "@cases", "@aberrations-detail"],
+    nonEmptyExpected: true,
   },
   {
     testCaseId: "IND-RPT-002",
     testName: "IND-RPT-002 — Validate pagination — smaller page size (limit 5)",
     query: { ...casesSmallPageQuery },
     tags: ["@revenue-protection", "@cases", "@aberrations-detail"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-003",
     testName: "IND-RPT-003 — Validate pagination — page 2 (limit 5)",
     query: { ...casesSecondPageQuery },
     tags: ["@revenue-protection", "@cases", "@aberrations-detail"],
+    nonEmptyExpected: false,
   },
 ];
 

@@ -23,6 +23,8 @@ export interface ValidateMeterTestCase {
   duplicateGet?: boolean;
   errorField?: string;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 const SERIAL_SCENARIOS: ValidateMeterScenario[] = [
@@ -38,21 +40,13 @@ export function resolveKnownValidateMeterSerial(): string {
     getValidateConsumerMeterSerial("already_assigned", "") ||
     getValidateConsumerMeterSerial("assignable", "") ||
     getValidateConsumerMeterSerial("inactive", "") ||
-    getValidateConsumerMeterSerial(
-      "meter_not_in_system",
-      validateMeterNotInSystemSerial,
-    )
+    getValidateConsumerMeterSerial("meter_not_in_system", validateMeterNotInSystemSerial)
   );
 }
 
-export function resolveValidateConsumerMeterSerial(
-  scenario: ValidateMeterScenario,
-): string {
+export function resolveValidateConsumerMeterSerial(scenario: ValidateMeterScenario): string {
   if (SERIAL_SCENARIOS.includes(scenario)) {
-    return getValidateConsumerMeterSerial(
-      scenario,
-      validateMeterNotInSystemSerial,
-    );
+    return getValidateConsumerMeterSerial(scenario, validateMeterNotInSystemSerial);
   }
   if (
     scenario === "padded_serial" ||
@@ -70,18 +64,18 @@ export function resolveValidateConsumerMeterSerial(
 
 export const validateMeterTestCases: ValidateMeterTestCase[] = [
   {
-    testName:
-      "Can this meter be given to a consumer? — unused active meter is allowed",
+    testName: "Can this meter be given to a consumer? — unused active meter is allowed",
     scenario: "assignable",
     envKey: "VALIDATE_CONSUMER_METER_ASSIGNABLE_SERIAL",
     tags: ["@smoke", "@consumer", "@validate-meter"],
+    nonEmptyExpected: true,
   },
   {
-    testName:
-      "Can this meter be given to a consumer? — unknown serial is not in the system",
+    testName: "Can this meter be given to a consumer? — unknown serial is not in the system",
     scenario: "meter_not_in_system",
     envKey: "VALIDATE_CONSUMER_METER_NOT_IN_SYSTEM_SERIAL",
     tags: ["@consumer", "@validate-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName:
@@ -89,19 +83,21 @@ export const validateMeterTestCases: ValidateMeterTestCase[] = [
     scenario: "already_assigned",
     envKey: "VALIDATE_CONSUMER_METER_ASSIGNED_SERIAL",
     tags: ["@consumer", "@validate-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Can this meter be given to a consumer? — switched-off meter is rejected",
     scenario: "inactive",
     envKey: "VALIDATE_CONSUMER_METER_INACTIVE_SERIAL",
     tags: ["@consumer", "@validate-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Can this meter be given to a consumer? — office filter is optional",
+    testName: "Can this meter be given to a consumer? — office filter is optional",
     scenario: "organisation_lookup",
     includeOrganisationLookupId: true,
     tags: ["@consumer", "@validate-meter", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName:
@@ -109,70 +105,71 @@ export const validateMeterTestCases: ValidateMeterTestCase[] = [
     scenario: "duplicate_get",
     duplicateGet: true,
     tags: ["@consumer", "@validate-meter", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Can this meter be given to a consumer? — extra spaces around the serial are ignored",
+    testName: "Can this meter be given to a consumer? — extra spaces around the serial are ignored",
     scenario: "padded_serial",
     padSerial: true,
     tags: ["@consumer", "@validate-meter", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Can this meter be given to a consumer? — extra unused options are ignored",
+    testName: "Can this meter be given to a consumer? — extra unused options are ignored",
     scenario: "unknown_query",
     extraParams: { unexpectedParam: "ignore-me" },
     tags: ["@consumer", "@validate-meter", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Can this meter be given to a consumer? — a different office is still handled safely",
+    testName: "Can this meter be given to a consumer? — a different office is still handled safely",
     scenario: "foreign_org_id",
     extraParams: {
       organisationLookupId: validateMeterForeignOrganisationLookupId,
     },
     tags: ["@consumer", "@validate-meter", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Can this meter be given to a consumer? — serial number is required",
+    testName: "Can this meter be given to a consumer? — serial number is required",
     scenario: "missing_meter_serial",
     expectedStatus: 400,
     errorField: "meterSerialNumber",
     tags: ["@consumer", "@validate-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Can this meter be given to a consumer? — empty serial is rejected",
+    testName: "Can this meter be given to a consumer? — empty serial is rejected",
     scenario: "empty_meter_serial",
     expectedStatus: 400,
     errorField: "meterSerialNumber",
     tags: ["@consumer", "@validate-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Can this meter be given to a consumer? — spaces-only serial is rejected",
+    testName: "Can this meter be given to a consumer? — spaces-only serial is rejected",
     scenario: "whitespace_serial",
     expectedStatus: 400,
     errorField: "meterSerialNumber",
     tags: ["@consumer", "@validate-meter", "@negative", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Can this meter be given to a consumer? — invalid office 0 is rejected",
+    testName: "Can this meter be given to a consumer? — invalid office 0 is rejected",
     scenario: "invalid_org_zero",
     expectedStatus: 400,
     errorField: "organisationLookupId",
     extraParams: { organisationLookupId: 0 },
     tags: ["@consumer", "@validate-meter", "@negative", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Can this meter be given to a consumer? — invalid office number is rejected",
+    testName: "Can this meter be given to a consumer? — invalid office number is rejected",
     scenario: "invalid_org_negative",
     expectedStatus: 400,
     errorField: "organisationLookupId",
     extraParams: { organisationLookupId: -1 },
     tags: ["@consumer", "@validate-meter", "@negative", "@edge"],
+    nonEmptyExpected: false,
   },
 ];

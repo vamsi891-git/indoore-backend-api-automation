@@ -1,19 +1,17 @@
 import { test } from "../../../fixtures/api.fixture";
 import { expect } from "@playwright/test";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { CommandsHistoryApi } from "../Api/commands-history.api";
-import { buildCommandsHistoryPath, commandsHistoryData,} from "../Data/commands-history.data";
+import { buildCommandsHistoryPath, commandsHistoryData } from "../Data/commands-history.data";
 import { CommandsHistoryMapper } from "../Mapper/commands-history.mapper";
 import { CommandsHistoryValidator } from "../Validator/commands-history.validator";
-function runHistoryStandardChecks(validation: ValidationEngine,assert: AssertionEngine,apiName: string,rawResponse: Awaited<
-  ReturnType<CommandsHistoryApi["getHistory"]>
-  >["rawResponse"],
-  responseBody: Awaited<
-    ReturnType<CommandsHistoryApi["getHistory"]>
-  >["responseBody"],
+function runHistoryStandardChecks(
+  validation: ApiValidationHelper,
+  assert: ApiValidationHelper,
+  apiName: string,
+  rawResponse: Awaited<ReturnType<CommandsHistoryApi["getHistory"]>>["rawResponse"],
+  responseBody: Awaited<ReturnType<CommandsHistoryApi["getHistory"]>>["responseBody"],
   responseTime: number,
 ): void {
   ApiValidationHelper.runStandardChecks(validation, assert, {
@@ -29,7 +27,8 @@ function runHistoryStandardChecks(validation: ValidationEngine,assert: Assertion
 }
 test.describe("HES Commands — History", () => {
   test.setTimeout(120_000);
-  test("Validate GET /commands/history — page 1 default pagination",
+  test(
+    "Validate GET /commands/history — page 1 default pagination",
     { tag: ["@smoke", "@commands", "@hes", "@commands-history"] },
     async ({ authenticatedApi }, testInfo) => {
       const query = {
@@ -37,17 +36,16 @@ test.describe("HES Commands — History", () => {
         limit: commandsHistoryData.defaultLimit,
       };
       const api = new CommandsHistoryApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new CommandsHistoryValidator();
-      const { rawResponse, responseBody, responseTime } =
-        await api.getHistory(query);
+      const { rawResponse, responseBody, responseTime } = await api.getHistory(query);
       const url = `${process.env.BASE_URL}${buildCommandsHistoryPath(query)}`;
       await PerformanceTracker.track(
         rawResponse,
         "Commands History — Page 1",
         rawResponse.url(),
-        responseTime
+        responseTime,
       );
 
       runHistoryStandardChecks(
@@ -71,9 +69,7 @@ test.describe("HES Commands — History", () => {
       validation.execute("Pagination Field Types", () =>
         validator.validatePaginationFieldTypes(data),
       );
-      validation.execute("Total Records", () =>
-        validator.validateTotalRecords(data, query.limit),
-      );
+      validation.execute("Total Records", () => validator.validateTotalRecords(data, query.limit));
       validation.execute("Full API Contract", () =>
         validator.validateFullHistory(data, query.page, query.limit),
       );
@@ -100,11 +96,10 @@ test.describe("HES Commands — History", () => {
     async ({ authenticatedApi }, testInfo) => {
       const query = { page: 2, limit: commandsHistoryData.defaultLimit };
       const api = new CommandsHistoryApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new CommandsHistoryValidator();
-      const { rawResponse, responseBody, responseTime } =
-        await api.getHistory(query);
+      const { rawResponse, responseBody, responseTime } = await api.getHistory(query);
       runHistoryStandardChecks(
         validation,
         assert,
@@ -140,12 +135,13 @@ test.describe("HES Commands — History", () => {
       });
     },
   );
-  test("Validate GET /commands/history — last page row count",
+  test(
+    "Validate GET /commands/history — last page row count",
     { tag: ["@commands", "@hes", "@commands-history"] },
     async ({ authenticatedApi }, testInfo) => {
       const api = new CommandsHistoryApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new CommandsHistoryValidator();
       const page1 = await api.getHistory({
         page: 1,
@@ -155,8 +151,7 @@ test.describe("HES Commands — History", () => {
       const lastPage = page1Data.pagination.totalPages;
 
       const query = { page: lastPage, limit: commandsHistoryData.defaultLimit };
-      const { rawResponse, responseBody, responseTime } =
-        await api.getHistory(query);
+      const { rawResponse, responseBody, responseTime } = await api.getHistory(query);
       runHistoryStandardChecks(
         validation,
         assert,
@@ -198,17 +193,21 @@ test.describe("HES Commands — History", () => {
         search,
       };
       const api = new CommandsHistoryApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new CommandsHistoryValidator();
-      const { rawResponse, responseBody, responseTime } =
-        await api.getHistory(query);
-      runHistoryStandardChecks(validation,assert,"Commands History — Search",rawResponse,responseBody,responseTime,);
+      const { rawResponse, responseBody, responseTime } = await api.getHistory(query);
+      runHistoryStandardChecks(
+        validation,
+        assert,
+        "Commands History — Search",
+        rawResponse,
+        responseBody,
+        responseTime,
+      );
       const data = CommandsHistoryMapper.mapResponse(responseBody);
       validation.execute("Rows Exist", () => validator.validateRowsExist(data));
-      validation.execute("Search Filter", () =>
-        validator.validateSearchFilter(data.rows, search),
-      );
+      validation.execute("Search Filter", () => validator.validateSearchFilter(data.rows, search));
       ApiValidationHelper.finalize(validation, {
         apiName: "Commands History — Search",
         responseTime,
@@ -237,12 +236,11 @@ test.describe("HES Commands — History", () => {
         commandType,
       };
       const api = new CommandsHistoryApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new CommandsHistoryValidator();
 
-      const { rawResponse, responseBody, responseTime } =
-        await api.getHistory(query);
+      const { rawResponse, responseBody, responseTime } = await api.getHistory(query);
 
       ApiValidationHelper.runStandardChecks(validation, assert, {
         apiName: "Commands History — Command Type",
@@ -251,9 +249,7 @@ test.describe("HES Commands — History", () => {
         responseTime,
         maxResponseTimeMs: commandsHistoryData.maxResponseTimeMs,
       });
-      validation.execute("Success Response", () =>
-        validator.validateResponse(responseBody),
-      );
+      validation.execute("Success Response", () => validator.validateResponse(responseBody));
       const data = CommandsHistoryMapper.mapResponse(responseBody);
       validation.execute("Rows Exist", () => validator.validateRowsExist(data));
       validation.execute("Command Type Filter", () =>
@@ -270,8 +266,7 @@ test.describe("HES Commands — History", () => {
           requestParams: query,
           responseStatus: rawResponse.status(),
           responseBody,
-          expectedBehavior:
-            "commandType ILIKE filter on command_name when not 'All Commands'.",
+          expectedBehavior: "commandType ILIKE filter on command_name when not 'All Commands'.",
         },
       });
     },

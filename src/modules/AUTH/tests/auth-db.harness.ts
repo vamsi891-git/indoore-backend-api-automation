@@ -1,11 +1,7 @@
 import type pg from "pg";
 import type { APIRequestContext } from "@playwright/test";
 import { expect } from "@playwright/test";
-import {
-  assertDbVsApiScalar,
-  logDbVsApiSection,
-} from "../../../core/db/db-compare.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { assertDbVsApiScalar, logDbVsApiSection } from "../../../extras/db/db-compare.engine";
 import { AuthSessionApi } from "../Api/auth-session.api";
 import { InviteApi } from "../Api/invite.api";
 import {
@@ -22,11 +18,10 @@ import {
   compareAuthMeToDb,
 } from "../Db/auth-db-compare";
 import { logAuthDataQualityFindings } from "../Db/auth-db.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 function asRecord(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === "object"
-    ? (value as Record<string, unknown>)
-    : {};
+  return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
 function flattenDevices(data: Record<string, unknown>): Array<{
@@ -65,7 +60,7 @@ export async function runAuthDbCoverage(
   authenticatedApi: APIRequestContext,
   db: pg.Pool,
 ): Promise<void> {
-  const validation = new ValidationEngine();
+  const validation = new ApiValidationHelper();
   const sessionApi = new AuthSessionApi(authenticatedApi);
   const inviteApi = new InviteApi(authenticatedApi);
 
@@ -79,9 +74,7 @@ export async function runAuthDbCoverage(
   await logAuthDataQualityFindings("me", meData);
 
   const userId = String(user.id ?? "");
-  expect(userId, "me.user.id required for DB compares").toMatch(
-    /^[0-9a-f-]{36}$/i,
-  );
+  expect(userId, "me.user.id required for DB compares").toMatch(/^[0-9a-f-]{36}$/i);
 
   const dbUser = await getAuthUserById(db, userId);
   validation.execute("Auth /me vs user_credentials+roles+profiles", () => {
@@ -171,20 +164,17 @@ export async function runAuthDbCoverage(
       { total: dbSummary.total },
       { totalMode: "exact" },
     );
-    validation.execute(
-      "Auth invitation summary vs user_invitations counts",
-      () => {
-        compareAuthInvitationSummaryToDb({
-          api: {
-            total: Number(summary.total ?? 0),
-            acceptedCount: Number(summary.acceptedCount ?? 0),
-            pendingCount: Number(summary.pendingCount ?? 0),
-            expiredCount: Number(summary.expiredCount ?? 0),
-          },
-          dbRow: dbSummary,
-        });
-      },
-    );
+    validation.execute("Auth invitation summary vs user_invitations counts", () => {
+      compareAuthInvitationSummaryToDb({
+        api: {
+          total: Number(summary.total ?? 0),
+          acceptedCount: Number(summary.acceptedCount ?? 0),
+          pendingCount: Number(summary.pendingCount ?? 0),
+          expiredCount: Number(summary.expiredCount ?? 0),
+        },
+        dbRow: dbSummary,
+      });
+    });
   } else {
     console.warn(
       `[auth-db] invitations/mine returned ${invitesResult.rawResponse.status()} — skipping summary compare`,

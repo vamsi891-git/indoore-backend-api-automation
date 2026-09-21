@@ -21,14 +21,13 @@ import {
   SentInvitationsListResponseSchema,
 } from "../schemas/auth.schemas";
 import { AuthValidator } from "../Validator/auth.validator";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { printInviteAcceptSummary } from "../utils/invite-accept.reporter";
 import {
   INVITE_PROVISION_TEST_TIMEOUT_MS,
   prepareAcceptValidateInBeforeAll,
 } from "../utils/invite-provision.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 async function createPublicApiContext() {
   if (!process.env.BASE_URL) {
@@ -62,26 +61,24 @@ test.describe.skip("Auth Invite Accept Validate Flow", () => {
       }
 
       const publicCtx = await createPublicApiContext();
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new InviteValidator();
       const authValidator = new AuthValidator();
 
       try {
         validation.execute("Accept Request Schema", () => {
-          expect(InviteAcceptRequestSchema.safeParse(acceptPayload).success).toBe(
-            true,
-          );
+          expect(InviteAcceptRequestSchema.safeParse(acceptPayload).success).toBe(true);
         });
 
         const accept = await acceptInvitationWithRetry(publicCtx, acceptPayload);
 
         await PerformanceTracker.track(
-        accept.rawResponse,
-        "Auth Invite Accept Validate",
-        accept.rawResponse.url(),
-        accept.responseTime
-      );
+          accept.rawResponse,
+          "Auth Invite Accept Validate",
+          accept.rawResponse.url(),
+          accept.responseTime,
+        );
 
         validation.execute("Accept Status", () =>
           validator.validateAcceptSuccessStatus(accept.rawResponse.status()),
@@ -90,10 +87,7 @@ test.describe.skip("Auth Invite Accept Validate Flow", () => {
           assert.validateContentType(accept.rawResponse),
         );
         validation.execute("Accept Response Time", () =>
-          assert.validateResponseTime(
-            accept.responseTime,
-            InviteTestData.maxResponseTimeMs,
-          ),
+          assert.validateResponseTime(accept.responseTime, InviteTestData.maxResponseTimeMs),
         );
         validation.execute("Accept Security", () =>
           authValidator.validateAuthResponseSecurity(accept.responseBody),
@@ -125,10 +119,7 @@ test.describe.skip("Auth Invite Accept Validate Flow", () => {
             validator.validateAcceptSessionPayload(parsed.data),
           );
           validation.execute("Accept Permissions", () =>
-            validator.validateAcceptPermissions(
-              parsed.data.permissions,
-              parsed.data.user.role,
-            ),
+            validator.validateAcceptPermissions(parsed.data.permissions, parsed.data.user.role),
           );
           validation.execute("Accept Full Response", () =>
             validator.validateAcceptResponse(
@@ -186,8 +177,8 @@ test.describe.skip("Auth Invite Accept Validate Flow", () => {
       }
 
       const api = new InviteApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new InviteValidator();
 
       const listResponse = await api.listMyInvitations({
@@ -220,10 +211,7 @@ test.describe.skip("Auth Invite Accept Validate Flow", () => {
           expect(item.acceptedAt).toBeTruthy();
         });
       } finally {
-        validation.finalize(
-          "Auth Invite Accept — Mine Accepted",
-          listResponse.responseTime,
-        );
+        validation.finalize("Auth Invite Accept — Mine Accepted", listResponse.responseTime);
       }
     },
   );

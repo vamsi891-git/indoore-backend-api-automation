@@ -131,7 +131,8 @@ export interface EventRestorationTestCase {
   scenario: EventRestorationScenario;
   tags: string[];
   isContractFixture?: boolean;
-  expectedStatus?: number;
+  expectedStatus?: number;  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export function resolveEventRestorationQuery(
@@ -200,81 +201,95 @@ export const eventRestorationTestCases: EventRestorationTestCase[] = [
       "Event restoration — 1–30 Oct 2025 first page shows columns and occurrences",
     scenario: "dev_live_primary",
     tags: ["@smoke", "@reports", "@event-restoration"],
+    nonEmptyExpected: true,
   },
   {
     testName:
       "Event restoration — page 2 continues serial numbers without duplicates",
     scenario: "dev_live_page2",
     tags: ["@reports", "@event-restoration", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName:
       "Event restoration — showing 1 per page returns at most 1 record",
     scenario: "dev_limit_one",
     tags: ["@reports", "@event-restoration", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event restoration — a page past the last page shows no records",
     scenario: "dev_live_page_beyond",
     tags: ["@reports", "@event-restoration", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event restoration — unknown query params are ignored",
     scenario: "dev_ignore_unknown_query",
     tags: ["@reports", "@event-restoration", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event restoration — 1–30 Oct 2025 fixture",
     scenario: "contract_live_full",
     isContractFixture: true,
     tags: ["@reports", "@event-restoration", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event restoration — empty page fixture",
     scenario: "contract_empty_page",
     isContractFixture: true,
     tags: ["@reports", "@event-restoration", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event restoration — fromDate after toDate is rejected",
     scenario: "invalid_date_range",
     expectedStatus: 400,
     tags: ["@reports", "@event-restoration", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event restoration — invalid fromDate is rejected",
     scenario: "invalid_date_format",
     expectedStatus: 400,
     tags: ["@reports", "@event-restoration", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event restoration — invalid toDate is rejected",
     scenario: "invalid_to_date",
     expectedStatus: 400,
     tags: ["@reports", "@event-restoration", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event restoration — missing fromDate is rejected",
     scenario: "missing_from_date",
     expectedStatus: 400,
     tags: ["@reports", "@event-restoration", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event restoration — missing toDate is rejected",
     scenario: "missing_to_date",
     expectedStatus: 400,
     tags: ["@reports", "@event-restoration", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event restoration — page 0 is rejected (page must start at 1)",
     scenario: "invalid_page",
     expectedStatus: 400,
     tags: ["@reports", "@event-restoration", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event restoration — limit 0 is rejected (limit must be at least 1)",
     scenario: "invalid_limit",
     expectedStatus: 400,
     tags: ["@reports", "@event-restoration", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

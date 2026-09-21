@@ -30,19 +30,15 @@ import {
   InviteUserResponseSchema,
   SentInvitationsListResponseSchema,
 } from "../schemas/auth.schemas";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { AuthValidator } from "../Validator/auth.validator";
-import {
-  printInviteE2eStepBanner,
-  printInviteE2eSummary,
-} from "../utils/invite-e2e.reporter";
+import { printInviteE2eStepBanner, printInviteE2eSummary } from "../utils/invite-e2e.reporter";
 import {
   adoptInviteForE2eWhenRateLimited,
   INVITE_PROVISION_TEST_TIMEOUT_MS,
   inviteUserWithRetry,
 } from "../utils/invite-provision.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 interface InviteE2eState {
   inviteEmail: string;
@@ -100,15 +96,14 @@ test.describe.skip("Auth Invite E2E Flow", () => {
         hydrateInviteE2eStateFromEnv(e2eState);
         test.info().annotations.push({
           type: "invite-flow",
-          description:
-            "reuse-context — INVITE_E2E_REUSE_CONTEXT=true (Steps 3–5 only)",
+          description: "reuse-context — INVITE_E2E_REUSE_CONTEXT=true (Steps 3–5 only)",
         });
         return;
       }
 
       const api = new InviteApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new InviteValidator();
 
       const rolesResponse = await api.getRoles();
@@ -129,11 +124,11 @@ test.describe.skip("Auth Invite E2E Flow", () => {
         const inviteStatus = inviteResponse.rawResponse.status();
 
         await PerformanceTracker.track(
-        inviteResponse.rawResponse,
-        "Auth Invite E2E — Admin Send",
-        inviteResponse.rawResponse.url(),
-        inviteResponse.responseTime
-      );
+          inviteResponse.rawResponse,
+          "Auth Invite E2E — Admin Send",
+          inviteResponse.rawResponse.url(),
+          inviteResponse.responseTime,
+        );
 
         if (inviteStatus !== 201) {
           const adopted = await adoptInviteForE2eWhenRateLimited(api);
@@ -166,24 +161,14 @@ test.describe.skip("Auth Invite E2E Flow", () => {
                   "Wait 30–60 minutes, run 00-invite-setup first, or set INVITE_E2E_REUSE_CONTEXT=true with token in .env",
               );
             }
-            assert.validateStatusCode(
-              inviteResponse.rawResponse,
-              201,
-              inviteResponse.responseBody,
-            );
+            assert.validateStatusCode(inviteResponse.rawResponse, 201, inviteResponse.responseBody);
           });
         } else {
           validation.execute("Admin Invite Status", () =>
-            assert.validateStatusCode(
-              inviteResponse.rawResponse,
-              201,
-              inviteResponse.responseBody,
-            ),
+            assert.validateStatusCode(inviteResponse.rawResponse, 201, inviteResponse.responseBody),
           );
           validation.execute("Admin Invite Zod", () => {
-            const result = InviteUserResponseSchema.safeParse(
-              inviteResponse.responseBody,
-            );
+            const result = InviteUserResponseSchema.safeParse(inviteResponse.responseBody);
             expect(result.success).toBe(true);
           });
 
@@ -216,8 +201,7 @@ test.describe.skip("Auth Invite E2E Flow", () => {
                 sentAfter: inviteSentAfter,
               });
             } catch (error) {
-              const message =
-                error instanceof Error ? error.message : String(error);
+              const message = error instanceof Error ? error.message : String(error);
               validation.execute("Gmail Invite Token Capture", () => {
                 throw new Error(message);
               });
@@ -261,8 +245,8 @@ test.describe.skip("Auth Invite E2E Flow", () => {
     { tag: ["@auth", "@invite", "@e2e"] },
     async ({ authenticatedApi }) => {
       const api = new InviteApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new InviteValidator();
 
       test.skip(!ensureInviteE2eState(), inviteEmailTokenEnvHint);
@@ -278,9 +262,7 @@ test.describe.skip("Auth Invite E2E Flow", () => {
           assert.validateStatusCode(listResponse.rawResponse, 200),
         );
         validation.execute("Mine Pending Zod", () => {
-          const result = SentInvitationsListResponseSchema.safeParse(
-            listResponse.responseBody,
-          );
+          const result = SentInvitationsListResponseSchema.safeParse(listResponse.responseBody);
           expect(result.success).toBe(true);
         });
 
@@ -309,69 +291,56 @@ test.describe.skip("Auth Invite E2E Flow", () => {
           expect(byIdLookup.item?.id).toBe(e2eState.invitationId);
         });
       } finally {
-        validation.finalize(
-          "Auth Invite E2E — Mine Pending By ID",
-          listResponse.responseTime,
-        );
+        validation.finalize("Auth Invite E2E — Mine Pending By ID", listResponse.responseTime);
       }
     },
   );
 
-  test(
-    "Step 3 — Preview invitation (public)",
-    { tag: ["@auth", "@invite", "@e2e"] },
-    async () => {
-      test.skip(!hasInviteAcceptToken(), inviteEmailTokenEnvHint);
-      test.skip(!ensureInviteE2eState(), inviteEmailTokenEnvHint);
+  test("Step 3 — Preview invitation (public)", { tag: ["@auth", "@invite", "@e2e"] }, async () => {
+    test.skip(!hasInviteAcceptToken(), inviteEmailTokenEnvHint);
+    test.skip(!ensureInviteE2eState(), inviteEmailTokenEnvHint);
 
-      const publicCtx = await createPublicApiContext();
-      const publicApi = new InvitePublicApi(publicCtx);
-      const validation = new ValidationEngine();
-      const validator = new InviteValidator();
-      const acceptToken = resolveInviteAcceptToken()!;
+    const publicCtx = await createPublicApiContext();
+    const publicApi = new InvitePublicApi(publicCtx);
+    const validation = new ApiValidationHelper();
+    const validator = new InviteValidator();
+    const acceptToken = resolveInviteAcceptToken()!;
 
-      try {
-        const preview = await publicApi.previewInvitation(acceptToken);
+    try {
+      const preview = await publicApi.previewInvitation(acceptToken);
 
-        await PerformanceTracker.track(
+      await PerformanceTracker.track(
         preview.rawResponse,
         "Auth Invite E2E — Preview",
         preview.rawResponse.url(),
-        preview.responseTime
+        preview.responseTime,
       );
 
-        validation.execute("Preview Status", () =>
-          expect(preview.rawResponse.status()).toBe(200),
+      validation.execute("Preview Status", () => expect(preview.rawResponse.status()).toBe(200));
+      validation.execute("Preview Zod", () => {
+        const result = InvitePreviewResponseSchema.safeParse(preview.responseBody);
+        expect(result.success).toBe(true);
+      });
+
+      if (preview.rawResponse.status() === 200) {
+        const parsed = InvitePreviewResponseSchema.parse(preview.responseBody);
+        validation.execute("Preview Email And Role", () =>
+          validator.validatePreviewSuccess(parsed, e2eState.inviteEmail, e2eState.role),
         );
-        validation.execute("Preview Zod", () => {
-          const result = InvitePreviewResponseSchema.safeParse(preview.responseBody);
-          expect(result.success).toBe(true);
+
+        printInviteE2eStepBanner({
+          step: "preview",
+          email: e2eState.inviteEmail,
+          invitationId: e2eState.invitationId,
+          role: e2eState.role,
         });
-
-        if (preview.rawResponse.status() === 200) {
-          const parsed = InvitePreviewResponseSchema.parse(preview.responseBody);
-          validation.execute("Preview Email And Role", () =>
-            validator.validatePreviewSuccess(
-              parsed,
-              e2eState.inviteEmail,
-              e2eState.role,
-            ),
-          );
-
-          printInviteE2eStepBanner({
-            step: "preview",
-            email: e2eState.inviteEmail,
-            invitationId: e2eState.invitationId,
-            role: e2eState.role,
-          });
-        }
-
-        validation.finalize("Auth Invite E2E — Preview", preview.responseTime);
-      } finally {
-        await publicCtx.dispose();
       }
-    },
-  );
+
+      validation.finalize("Auth Invite E2E — Preview", preview.responseTime);
+    } finally {
+      await publicCtx.dispose();
+    }
+  });
 
   test(
     "Step 4 — Accept invitation and create user",
@@ -381,7 +350,7 @@ test.describe.skip("Auth Invite E2E Flow", () => {
       test.skip(!ensureInviteE2eState(), inviteEmailTokenEnvHint);
 
       const suiteAccept = loadSuiteAcceptSnapshot();
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const validator = new InviteValidator();
       const authValidator = new AuthValidator();
 
@@ -400,9 +369,7 @@ test.describe.skip("Auth Invite E2E Flow", () => {
             authValidator.validateAuthResponseSecurity(suiteAccept.responseBody),
           );
           validation.execute("Accept Zod", () => {
-            const result = InviteAcceptResponseSchema.safeParse(
-              suiteAccept.responseBody,
-            );
+            const result = InviteAcceptResponseSchema.safeParse(suiteAccept.responseBody);
             expect(result.success).toBe(true);
           });
 
@@ -413,16 +380,11 @@ test.describe.skip("Auth Invite E2E Flow", () => {
             validator.validateAcceptSessionPayload(parsed.data),
           );
           validation.execute("Accept Permissions", () =>
-            validator.validateAcceptPermissions(
-              parsed.data.permissions,
-              suiteAccept.role,
-            ),
+            validator.validateAcceptPermissions(parsed.data.permissions, suiteAccept.role),
           );
           validation.execute("Accept User Identity", () => {
             expect(parsed.data.user.id).toBe(suiteAccept.userId);
-            expect(
-              InviteMapper.emailsMatch(suiteAccept.email, parsed.data.user.email),
-            ).toBe(true);
+            expect(InviteMapper.emailsMatch(suiteAccept.email, parsed.data.user.email)).toBe(true);
           });
 
           printInviteE2eStepBanner({
@@ -454,11 +416,11 @@ test.describe.skip("Auth Invite E2E Flow", () => {
         const accept = await acceptInvitationWithRetry(publicCtx, acceptPayload);
 
         await PerformanceTracker.track(
-        accept.rawResponse,
-        "Auth Invite E2E — Accept",
-        accept.rawResponse.url(),
-        accept.responseTime
-      );
+          accept.rawResponse,
+          "Auth Invite E2E — Accept",
+          accept.rawResponse.url(),
+          accept.responseTime,
+        );
 
         validation.execute("Accept Status", () =>
           validator.validateAcceptSuccessStatus(accept.rawResponse.status()),
@@ -514,14 +476,13 @@ test.describe.skip("Auth Invite E2E Flow", () => {
         e2eState.userId = suiteAccept.userId;
       }
 
-      const acceptedInvitationId =
-        suiteAccept?.invitationId ?? e2eState.invitationId;
+      const acceptedInvitationId = suiteAccept?.invitationId ?? e2eState.invitationId;
       const acceptedEmail = suiteAccept?.email ?? e2eState.inviteEmail;
       const acceptedRole = suiteAccept?.role ?? e2eState.role;
 
       const api = new InviteApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new InviteValidator();
 
       const listResponse = await api.listMyInvitations({
@@ -549,10 +510,7 @@ test.describe.skip("Auth Invite E2E Flow", () => {
           ),
         );
 
-        const item = InviteMapper.findInvitationById(
-          list,
-          acceptedInvitationId,
-        );
+        const item = InviteMapper.findInvitationById(list, acceptedInvitationId);
         validation.execute("Accepted At Timestamp", () => {
           expect(item?.acceptedAt).toBeTruthy();
         });
@@ -568,15 +526,9 @@ test.describe.skip("Auth Invite E2E Flow", () => {
           userId: e2eState.userId,
         });
 
-        validation.finalize(
-          "Auth Invite E2E — Mine Accepted By ID",
-          listResponse.responseTime,
-        );
+        validation.finalize("Auth Invite E2E — Mine Accepted By ID", listResponse.responseTime);
       } catch (error) {
-        validation.finalize(
-          "Auth Invite E2E — Mine Accepted By ID",
-          listResponse.responseTime,
-        );
+        validation.finalize("Auth Invite E2E — Mine Accepted By ID", listResponse.responseTime);
         throw error;
       }
     },
@@ -607,15 +559,13 @@ test.describe.skip("Auth Invite E2E Flow", () => {
       }
 
       const api = new InviteApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const validator = new InviteValidator();
 
       try {
         const deleteResponse = await api.deleteInvitation(e2eState.invitationId);
         validation.execute("Invitation By ID Delete", () =>
-          validator.validateDeleteInvitationSuccess(
-            deleteResponse.rawResponse.status(),
-          ),
+          validator.validateDeleteInvitationSuccess(deleteResponse.rawResponse.status()),
         );
 
         printInviteE2eSummary({

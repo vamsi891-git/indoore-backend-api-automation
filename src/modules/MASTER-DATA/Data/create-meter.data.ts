@@ -55,28 +55,30 @@ export interface CreateMeterTestCase {
   /** For VALIDATION_ERROR scenarios — expected field hint in error message. */
   validationField?: string;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 function buildBaseTemplate(): Omit<CreateMeterRequestBody, "meterSerialNumber"> {
   return {
-  meterRapdrpCode: process.env.CREATE_METER_RAPDRP_CODE?.trim() || "AUTO-RAP",
-  assetId: process.env.CREATE_METER_ASSET_ID?.trim() || "AUTO-ASSET",
-  mtr: 1,
-  mctr: 1,
-  lptr: 1,
-  lctr: 1,
-  mf: 1,
-  accuracyClass: "1.0",
-  meterPoNumber: "PO-AUTO",
-  meterPoDate: "2026-06-01",
-  meterTestingDate: "2026-06-15",
-  displayDigitCount: 20,
-  deviceManufacturerTblRefId: getCreateMeterDeviceManufacturerId(),
-  meterModelTblRefId: getCreateMeterModelId(),
-  meterVersion: "v1",
-  meterStatus: true,
-  dlmsNonDlms: "NA",
-  meterRating: "10-40A",
+    meterRapdrpCode: process.env.CREATE_METER_RAPDRP_CODE?.trim() || "AUTO-RAP",
+    assetId: process.env.CREATE_METER_ASSET_ID?.trim() || "AUTO-ASSET",
+    mtr: 1,
+    mctr: 1,
+    lptr: 1,
+    lctr: 1,
+    mf: 1,
+    accuracyClass: "1.0",
+    meterPoNumber: "PO-AUTO",
+    meterPoDate: "2026-06-01",
+    meterTestingDate: "2026-06-15",
+    displayDigitCount: 20,
+    deviceManufacturerTblRefId: getCreateMeterDeviceManufacturerId(),
+    meterModelTblRefId: getCreateMeterModelId(),
+    meterVersion: "v1",
+    meterStatus: true,
+    dlmsNonDlms: "NA",
+    meterRating: "10-40A",
   };
 }
 
@@ -103,9 +105,7 @@ function applySerialToRequest(
   };
 }
 
-export function buildCreateMeterRequest(
-  suffix: string = uniqueSuffix(),
-): CreateMeterRequestBody {
+export function buildCreateMeterRequest(suffix: string = uniqueSuffix()): CreateMeterRequestBody {
   const meterSerialNumber = buildMeterSerial(suffix);
   return applySerialToRequest(
     {
@@ -124,6 +124,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
     expectedStatus: 201,
     buildPayload: () => buildCreateMeterRequest(),
     tags: ["@smoke", "@master-data", "@create-meter", "@meter-master"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Add meter — asset number and RAPDRP number match the serial",
@@ -134,6 +135,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
       return applySerialToRequest(buildCreateMeterRequest(serial), serial);
     },
     tags: ["@master-data", "@create-meter", "@meter-master"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add meter — serial already exists",
@@ -145,6 +147,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
       return applySerialToRequest(buildCreateMeterRequest("dup"), serial);
     },
     tags: ["@master-data", "@create-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add meter — meter serial is required",
@@ -156,6 +159,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
       meterSerialNumber: "",
     }),
     tags: ["@master-data", "@create-meter", "@negative"],
+    nonEmptyExpected: false,
   },
 
   // ─── 2. Meter Master (manual doc §2) ─────────────────────────────────────
@@ -168,6 +172,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
       deviceManufacturerTblRefId: 99_999_999,
     }),
     tags: ["@master-data", "@create-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add meter — DLMS type must be valid",
@@ -179,6 +184,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
       dlmsNonDlms: "INVALID",
     }),
     tags: ["@master-data", "@create-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add meter — active status is accepted",
@@ -189,6 +195,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
       meterStatus: true,
     }),
     tags: ["@master-data", "@create-meter"],
+    nonEmptyExpected: false,
   },
 
   // ─── 3. Meter Configuration (manual doc §3) ──────────────────────────────
@@ -202,6 +209,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
       mf: 0,
     }),
     tags: ["@master-data", "@create-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add meter — display digits must be greater than zero",
@@ -213,6 +221,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
       displayDigitCount: 0,
     }),
     tags: ["@master-data", "@create-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add meter — MPTR cannot be negative",
@@ -224,6 +233,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
       mtr: -1,
     }),
     tags: ["@master-data", "@create-meter", "@negative"],
+    nonEmptyExpected: false,
   },
 
   // ─── 4. Date Validation (manual doc §4) ──────────────────────────────────
@@ -237,6 +247,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
       meterTestingDate: "2026-06-15",
     }),
     tags: ["@master-data", "@create-meter"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add meter — testing date cannot be before the purchase date",
@@ -249,6 +260,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
       meterTestingDate: "2026-06-01",
     }),
     tags: ["@master-data", "@create-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add meter — purchase date cannot be in the future",
@@ -261,6 +273,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
       meterTestingDate: "2099-01-01",
     }),
     tags: ["@master-data", "@create-meter", "@negative"],
+    nonEmptyExpected: false,
   },
 
   // ─── 5. Field Length (manual doc §5) ─────────────────────────────────────
@@ -274,6 +287,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
       accuracyClass: "123456789",
     }),
     tags: ["@master-data", "@create-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add meter — purchase order number cannot be longer than 32 characters",
@@ -285,6 +299,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
       meterPoNumber: "X".repeat(CREATE_METER_FIELD_LIMITS.meterPoNumber + 1),
     }),
     tags: ["@master-data", "@create-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add meter — meter version cannot be longer than 32 characters",
@@ -296,6 +311,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
       meterVersion: "X".repeat(CREATE_METER_FIELD_LIMITS.meterVersion + 1),
     }),
     tags: ["@master-data", "@create-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add meter — meter rating cannot be longer than 15 characters",
@@ -307,6 +323,7 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
       meterRating: "X".repeat(CREATE_METER_FIELD_LIMITS.meterRating + 1),
     }),
     tags: ["@master-data", "@create-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Add meter — required fields cannot be blank",
@@ -335,5 +352,6 @@ export const createMeterTestCases: CreateMeterTestCase[] = [
       meterRating: "",
     }),
     tags: ["@master-data", "@create-meter", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

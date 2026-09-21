@@ -27,35 +27,36 @@ export type AlarmsEventsCategoryWiseTestCase = {
   expectedStatus: 200 | 400;
   expectedCurrentDate?: string;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 };
 
 const tags = ["@alarms-events", "@alarms-events-category-wise", "@edge"];
 const smoke = ["@smoke", "@alarms-events", "@alarms-events-category-wise"];
 
-export const alarmsEventsCategoryWiseTestCases: AlarmsEventsCategoryWiseTestCase[] =
-  [
-    {
-      testName: "GET /alarms-events/category-wise - classification day compare loads",
-      expectedStatus: 200,
-      tags: smoke,
-    },
-    {
-      testName: "GET /alarms-events/category-wise - extra unused query is ignored",
-      params: { foo: "1" },
-      expectedStatus: 200,
-      tags,
-    },
-    {
-      testName: `GET /alarms-events/category-wise - date ${alarmsEventsCategoryWiseData.date}`,
-      params: { date: alarmsEventsCategoryWiseData.date },
-      expectedStatus: 200,
-      expectedCurrentDate: alarmsEventsCategoryWiseData.date,
-      tags,
-    },
-    {
-      testName: "GET /alarms-events/category-wise - invalid date is rejected",
-      params: { date: "23-08-2025" },
-      expectedStatus: 400,
-      tags,
-    },
-  ];
+export const alarmsEventsCategoryWiseTestCases: AlarmsEventsCategoryWiseTestCase[] = [
+  {
+    testName: "GET /alarms-events/category-wise - classification day compare loads",
+    expectedStatus: 200,
+    tags: smoke,
+  },
+  {
+    testName: "GET /alarms-events/category-wise - extra unused query is ignored",
+    params: { foo: "1" },
+    expectedStatus: 200,
+    tags,
+  },
+  {
+    testName: `GET /alarms-events/category-wise - date ${alarmsEventsCategoryWiseData.date}`,
+    params: { date: alarmsEventsCategoryWiseData.date },
+    expectedStatus: 200,
+    expectedCurrentDate: alarmsEventsCategoryWiseData.date,
+    tags,
+  },
+  {
+    testName: "GET /alarms-events/category-wise - invalid date is rejected",
+    params: { date: "23-08-2025" },
+    expectedStatus: 400,
+    tags,
+  },
+];

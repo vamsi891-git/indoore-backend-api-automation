@@ -271,7 +271,8 @@ export interface DtrDataTestCase {
   tags: string[];
   isContractFixture?: boolean;
   expectedStatus?: number;
-  expectedErrorCode?: string;
+  expectedErrorCode?: string;  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export function resolveDtrDataQuery(scenario: DtrDataScenario): DtrDataQuery {
@@ -338,54 +339,64 @@ export const dtrDataTestCases: DtrDataTestCase[] = [
     testName: "DTR data — Oct 2025 IP first page shows columns and readings",
     scenario: "dev_live_primary",
     tags: ["@smoke", "@reports", "@dtr-data"],
+    nonEmptyExpected: true,
   },
   {
     testName: "DTR data — Oct 2025 LS first page shows columns and readings",
     scenario: "dev_live_ls",
     tags: ["@reports", "@dtr-data", "@matrix"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR data — DP in a 7-day window returns the grid",
     scenario: "dev_live_dp_week",
     tags: ["@reports", "@dtr-data", "@matrix"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR data — includeTotal still shows the same IP columns",
     scenario: "dev_live_include_total",
     tags: ["@reports", "@dtr-data", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR data — showing 1 per page returns at most 1 record",
     scenario: "dev_limit_one",
     tags: ["@reports", "@dtr-data", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR data — a far page still returns a valid table",
     scenario: "dev_live_page_beyond",
     tags: ["@reports", "@dtr-data", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR data — unknown query params are ignored",
     scenario: "dev_ignore_unknown_query",
     tags: ["@reports", "@dtr-data", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR data — IP fixture (1–30 Oct 2025)",
     scenario: "contract_live_ip",
     isContractFixture: true,
     tags: ["@reports", "@dtr-data", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR data — LS fixture (1–30 Oct 2025)",
     scenario: "contract_live_ls",
     isContractFixture: true,
     tags: ["@reports", "@dtr-data", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR data — empty page fixture",
     scenario: "contract_empty_page",
     isContractFixture: true,
     tags: ["@reports", "@dtr-data", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName:
@@ -394,41 +405,48 @@ export const dtrDataTestCases: DtrDataTestCase[] = [
     expectedStatus: 400,
     expectedErrorCode: "REPORT_BACKGROUND_REQUIRED",
     tags: ["@reports", "@dtr-data", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR data — invalid report type is rejected",
     scenario: "invalid_report_type",
     expectedStatus: 400,
     tags: ["@reports", "@dtr-data", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR data — fromDate after toDate is rejected",
     scenario: "invalid_date_range",
     expectedStatus: 400,
     tags: ["@reports", "@dtr-data", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR data — missing fromDate is rejected",
     scenario: "missing_from_date",
     expectedStatus: 400,
     tags: ["@reports", "@dtr-data", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR data — missing toDate is rejected",
     scenario: "missing_to_date",
     expectedStatus: 400,
     tags: ["@reports", "@dtr-data", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR data — page 0 is rejected (page must start at 1)",
     scenario: "invalid_page",
     expectedStatus: 400,
     tags: ["@reports", "@dtr-data", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR data — limit 0 is rejected (limit must be at least 1)",
     scenario: "invalid_limit",
     expectedStatus: 400,
     tags: ["@reports", "@dtr-data", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

@@ -10,28 +10,21 @@ import { registerSearchLookupTests } from "../utils/lookup-catalog.harness";
 import { getLookupResponseData } from "../utils/lookup-spec.harness";
 import type { OrganizationData } from "../Mapper/searchorganization.mapper";
 import { expect } from "@playwright/test";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 function runOrganizationSearchValidations(
   scenario: OrganizationSearchScenario,
   responseBody: unknown,
-  validation: import("../../../core/engine/validation.engine").ValidationEngine,
+  validation: ApiValidationHelper,
 ): void {
-  const data = OrganizationMapper.mapData(
-    getLookupResponseData<OrganizationData>(responseBody),
-  );
+  const data = OrganizationMapper.mapData(getLookupResponseData<OrganizationData>(responseBody));
   const validator = new OrganizationValidator();
 
-  validation.execute("Response", () =>
-    validator.validateResponse(responseBody as never),
-  );
+  validation.execute("Response", () => validator.validateResponse(responseBody as never));
   validation.execute("Items", () => validator.validateItemsExist(data));
   validation.execute("Fields", () => validator.validateFields(data));
-  validation.execute("Duplicate IDs", () =>
-    validator.validateDuplicateIds(data),
-  );
-  validation.execute("Backend Rules", () =>
-    validator.validateBackendRules(data),
-  );
+  validation.execute("Duplicate IDs", () => validator.validateDuplicateIds(data));
+  validation.execute("Backend Rules", () => validator.validateBackendRules(data));
   validation.execute("Code Format", () => validator.validateCodeFormat(data));
 
   if (scenario === "edge_limit_one") {

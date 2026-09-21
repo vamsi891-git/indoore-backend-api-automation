@@ -2,14 +2,11 @@ export const aberrationEntryNegativeCases = [
   {
     testCaseId: "IND-REV-ABE-ENTRY-NEG-001",
 
-    testName:
-      "IND-REV-ABE-ENTRY-NEG-001 — Invalid month",
+    testName: "IND-REV-ABE-ENTRY-NEG-001 — Invalid month",
 
-    tags: [
-      "@revenue-protection",
-      "@aberration-entry",
-      "@negative",
-    ],
+    tags: ["@revenue-protection", "@aberration-entry", "@negative"],
+
+    nonEmptyExpected: false,
 
     entryType: "zone" as const,
 
@@ -28,14 +25,11 @@ export const aberrationEntryNegativeCases = [
   {
     testCaseId: "IND-REV-ABE-ENTRY-NEG-002",
 
-    testName:
-      "IND-REV-ABE-ENTRY-NEG-002 — Invalid year",
+    testName: "IND-REV-ABE-ENTRY-NEG-002 — Invalid year",
 
-    tags: [
-      "@revenue-protection",
-      "@aberration-entry",
-      "@negative",
-    ],
+    tags: ["@revenue-protection", "@aberration-entry", "@negative"],
+
+    nonEmptyExpected: false,
 
     entryType: "zone" as const,
 
@@ -54,14 +48,11 @@ export const aberrationEntryNegativeCases = [
   {
     testCaseId: "IND-REV-ABE-ENTRY-NEG-003",
 
-    testName:
-      "IND-REV-ABE-ENTRY-NEG-003 — Invalid page",
+    testName: "IND-REV-ABE-ENTRY-NEG-003 — Invalid page",
 
-    tags: [
-      "@revenue-protection",
-      "@aberration-entry",
-      "@negative",
-    ],
+    tags: ["@revenue-protection", "@aberration-entry", "@negative"],
+
+    nonEmptyExpected: false,
 
     entryType: "zone" as const,
 
@@ -80,14 +71,11 @@ export const aberrationEntryNegativeCases = [
   {
     testCaseId: "IND-REV-ABE-ENTRY-NEG-004",
 
-    testName:
-      "IND-REV-ABE-ENTRY-NEG-004 — Invalid limit",
+    testName: "IND-REV-ABE-ENTRY-NEG-004 — Invalid limit",
 
-    tags: [
-      "@revenue-protection",
-      "@aberration-entry",
-      "@negative",
-    ],
+    tags: ["@revenue-protection", "@aberration-entry", "@negative"],
+
+    nonEmptyExpected: false,
 
     entryType: "zone" as const,
 
@@ -106,14 +94,11 @@ export const aberrationEntryNegativeCases = [
   {
     testCaseId: "IND-REV-ABE-ENTRY-NEG-005",
 
-    testName:
-      "IND-REV-ABE-ENTRY-NEG-005 — Page beyond available data",
+    testName: "IND-REV-ABE-ENTRY-NEG-005 — Page beyond available data",
 
-    tags: [
-      "@revenue-protection",
-      "@aberration-entry",
-      "@negative",
-    ],
+    tags: ["@revenue-protection", "@aberration-entry", "@negative"],
+
+    nonEmptyExpected: false,
 
     entryType: "zone" as const,
 

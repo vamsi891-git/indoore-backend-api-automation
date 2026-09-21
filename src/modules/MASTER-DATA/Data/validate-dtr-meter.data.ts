@@ -10,6 +10,8 @@ export interface ValidateDtrMeterTestCase {
   scenario: ValidateDtrMeterScenario;
   envKey?: string;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export const validateDtrMeterTestCases: ValidateDtrMeterTestCase[] = [
@@ -18,28 +20,33 @@ export const validateDtrMeterTestCases: ValidateDtrMeterTestCase[] = [
     scenario: "valid_unmapped",
     envKey: "VALIDATE_DTR_METER_VALID_SERIAL",
     tags: ["@smoke", "@master-data", "@validate-dtr-meter", "@dtr-master"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Can this meter be put on a DTR? — an unknown serial is reported as not found",
     scenario: "not_found",
     tags: ["@master-data", "@validate-dtr-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Can this meter be put on a DTR? — a meter that is already on a DTR is rejected",
     scenario: "already_on_dtrs",
     envKey: "VALIDATE_DTR_METER_ON_DTR_SERIAL",
     tags: ["@master-data", "@validate-dtr-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Can this meter be put on a DTR? — an inactive meter is rejected",
     scenario: "inactive",
     envKey: "VALIDATE_DTR_METER_INACTIVE_SERIAL",
     tags: ["@master-data", "@validate-dtr-meter", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Can this meter be put on a DTR? — a meter that is already on a consumer is rejected",
     scenario: "already_assigned",
     envKey: "VALIDATE_DTR_METER_ASSIGNED_SERIAL",
     tags: ["@master-data", "@validate-dtr-meter", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

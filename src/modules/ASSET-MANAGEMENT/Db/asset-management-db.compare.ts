@@ -2,7 +2,7 @@ import {
   compareApiToDb,
   logDbVsApiSection,
   type DbCompareObs,
-} from "../../../core/db/db-compare.engine";
+} from "../../../extras/db/db-compare.engine";
 import type { ConsumerNode, DtrDetailData } from "../Mapper/dtrId.mapper";
 import type { DtrNode } from "../Mapper/networkhierarchy.mapper";
 import type { DbDtrConsumerSpotRow } from "./asset-management.db";
@@ -161,9 +161,7 @@ export function compareConsumerSpotCheckToDb(options: {
     );
   }
 
-  const apiMeterIds = new Set(
-    apiConsumer.meters.map((meter) => meter.meterLookupId),
-  );
+  const apiMeterIds = new Set(apiConsumer.meters.map((meter) => meter.meterLookupId));
 
   compareApiToDb(
     [
@@ -198,8 +196,7 @@ export function compareConsumerSpotCheckToDb(options: {
 export function assertDtrPaginationBusinessRule(
   detail: Pick<DtrDetailData, "page" | "limit" | "total" | "totalPages" | "consumers">,
 ): void {
-  const expectedPages =
-    detail.total === 0 ? 0 : Math.ceil(detail.total / detail.limit);
+  const expectedPages = detail.total === 0 ? 0 : Math.ceil(detail.total / detail.limit);
 
   compareApiToDb(
     [

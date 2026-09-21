@@ -6,7 +6,7 @@ import {
   createPgPool,
   isArchiveDbConfigured,
   isDbConfigured,
-} from "../core/db/postgres.client";
+} from "../extras/db/postgres.client";
 
 type ApiDbFixtures = {
   db: pg.Pool;

@@ -15,6 +15,8 @@ export type PriorityOverviewTestCase = {
   expectSameDayWindow?: boolean;
   checkExpectedPriorities?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 };
 
 const tags = ["@mis-dashboard", "@priority-overview", "@edge"];

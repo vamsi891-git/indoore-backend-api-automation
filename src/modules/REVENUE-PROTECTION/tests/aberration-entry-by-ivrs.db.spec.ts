@@ -1,7 +1,7 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/observability.fixture";
-import { compareApiToDb } from "../../../core/db/db-compare.engine";
-import { isDbConfigured } from "../../../core/db/postgres.client";
+import { compareApiToDb } from "../../../extras/db/db-compare.engine";
+import { isDbConfigured } from "../../../extras/db/postgres.client";
 import { REVENUE_PROTECTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { applyAllureTestCaseId } from "../../../core/utils/allure-test-case.helper";
 import { AberrationEntryApi } from "../Api/aberration-entry.api";
@@ -34,7 +34,8 @@ test.describe("Revenue Protection — Aberration Entry By IVRS DB cross-validati
     );
   });
 
-  test("IND-REV-ABE-IVRS-DB-001 — PATCH then spot-check updated fields in DB",
+  test(
+    "IND-REV-ABE-IVRS-DB-001 — PATCH then spot-check updated fields in DB",
     {
       tag: ["@revenue-protection", "@aberration-entry-by-ivrs", "@db"],
     },
@@ -102,17 +103,15 @@ test.describe("Revenue Protection — Aberration Entry By IVRS DB cross-validati
     },
   );
 
-  test("IND-REV-ABE-IVRS-DB-002 — Unknown IVRS has zero DB rows",
+  test(
+    "IND-REV-ABE-IVRS-DB-002 — Unknown IVRS has zero DB rows",
     {
       tag: ["@revenue-protection", "@aberration-entry-by-ivrs", "@db"],
     },
     async ({ db, obs }) => {
       await applyAllureTestCaseId("IND-REV-ABE-IVRS-DB-002");
 
-      const dbCount = await countAberrationEntryByIvrs(
-        db,
-        aberrationEntryUnknownIvrs,
-      );
+      const dbCount = await countAberrationEntryByIvrs(db, aberrationEntryUnknownIvrs);
 
       compareApiToDb(
         [

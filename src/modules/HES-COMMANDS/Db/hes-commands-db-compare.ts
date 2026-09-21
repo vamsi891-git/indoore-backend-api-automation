@@ -2,7 +2,7 @@
   compareApiToDb,
   logDbVsApiSection,
   type DbCompareObs,
-} from "../../../core/db/db-compare.engine";
+} from "../../../extras/db/db-compare.engine";
 import type { CommandsHistoryRow } from "../Mapper/commands-history.mapper";
 import { parseSelectedMeterTokens } from "../Validator/commands-history.validator";
 import type { DbHesCommandLogSpot } from "./hes-commands.db";
@@ -58,8 +58,7 @@ export function compareHesHistoryRowSpotToDb(options: {
     );
   }
 
-  const primaryMeter =
-    parseSelectedMeterTokens(apiRow.selectedMeter)[0] ?? apiRow.selectedMeter;
+  const primaryMeter = parseSelectedMeterTokens(apiRow.selectedMeter)[0] ?? apiRow.selectedMeter;
 
   compareApiToDb(
     [

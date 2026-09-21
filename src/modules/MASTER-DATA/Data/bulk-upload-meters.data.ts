@@ -65,8 +65,7 @@ function uniqueSuffix(): string {
 
 /** ≤16 chars; asset/RAPDRP match serial (manual doc §1). */
 function buildBulkSerial(suffix: string = uniqueSuffix()): string {
-  const digits =
-    suffix.replace(/\D/g, "").slice(-10) || uniqueSuffix().slice(-10);
+  const digits = suffix.replace(/\D/g, "").slice(-10) || uniqueSuffix().slice(-10);
   return `M${digits}`;
 }
 
@@ -90,9 +89,7 @@ function applySerialToRow(row: MeterBulkUploadRow, serial: string): void {
   row["No. Of Display Digit"] = serial.length;
 }
 
-export function buildValidMeterBulkRow(
-  suffix: string = uniqueSuffix(),
-): MeterBulkUploadRow {
+export function buildValidMeterBulkRow(suffix: string = uniqueSuffix()): MeterBulkUploadRow {
   const serial = buildBulkSerial(suffix);
   return {
     "Meter Serial Number": serial,
@@ -167,6 +164,8 @@ export interface BulkUploadMetersTestCase {
   /** Skip when any listed env var is empty. */
   envKeys?: string[];
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 function xlsxUpload(
@@ -175,8 +174,7 @@ function xlsxUpload(
 ): BulkUploadFileInput {
   return {
     fileName,
-    mimeType:
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     buffer,
   };
 }
@@ -190,41 +188,37 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     buildUpload: async () => ({
       fileName: "meters-invalid.csv",
       mimeType: "text/csv",
-      buffer: Buffer.from(
-        `${METER_BULK_UPLOAD_COLUMNS.join(",")}\nBULK-1,AUTO-RAP`,
-        "utf8",
-      ),
+      buffer: Buffer.from(`${METER_BULK_UPLOAD_COLUMNS.join(",")}\nBULK-1,AUTO-RAP`, "utf8"),
     }),
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — required Excel columns must be present",
     scenario: "file_missing_columns",
     expectedStatus: 400,
     buildUpload: async () => {
-      const columns = METER_BULK_UPLOAD_COLUMNS.filter(
-        (c) => c !== "Meter Serial Number",
-      );
-      const buffer = await buildMeterBulkUploadXlsx(
-        [buildValidMeterBulkRow("missing-col")],
-        { columns: [...columns] },
-      );
+      const columns = METER_BULK_UPLOAD_COLUMNS.filter((c) => c !== "Meter Serial Number");
+      const buffer = await buildMeterBulkUploadXlsx([buildValidMeterBulkRow("missing-col")], {
+        columns: [...columns],
+      });
       return xlsxUpload(buffer, "meter-bulk-missing-columns.xlsx");
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — duplicate column names are rejected",
     scenario: "file_duplicate_columns",
     expectedStatus: 400,
     buildUpload: async () => {
-      const buffer = await buildMeterBulkUploadXlsx(
-        [buildValidMeterBulkRow("dup-col")],
-        { duplicateColumn: "Meter Serial Number" },
-      );
+      const buffer = await buildMeterBulkUploadXlsx([buildValidMeterBulkRow("dup-col")], {
+        duplicateColumn: "Meter Serial Number",
+      });
       return xlsxUpload(buffer, "meter-bulk-duplicate-columns.xlsx");
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — the file must contain at least one data row",
@@ -235,6 +229,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer, "meter-bulk-header-only.xlsx");
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
 
   // ─── Meter identification (manual doc §1) ────────────────────────────────
@@ -244,12 +239,11 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     expectedStatus: 200,
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
     buildUpload: async () => {
-      const buffer = await buildMeterBulkUploadXlsx([
-        buildValidMeterBulkRow(),
-      ]);
+      const buffer = await buildMeterBulkUploadXlsx([buildValidMeterBulkRow()]);
       return xlsxUpload(buffer);
     },
     tags: ["@smoke", "@master-data", "@bulk-upload-meters", "@meter-master"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Excel upload (meters) — two meters are created from the file",
@@ -266,6 +260,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — blank rows are ignored",
@@ -279,14 +274,13 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       sheet.addRow([]);
       const valid = buildValidMeterBulkRow();
       sheet.addRow(
-        METER_BULK_UPLOAD_COLUMNS.map(
-          (col) => valid[col as keyof MeterBulkUploadRow] ?? "",
-        ),
+        METER_BULK_UPLOAD_COLUMNS.map((col) => valid[col as keyof MeterBulkUploadRow] ?? ""),
       );
       const arrayBuffer = await workbook.xlsx.writeBuffer();
       return xlsxUpload(Buffer.from(arrayBuffer));
     },
     tags: ["@master-data", "@bulk-upload-meters"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — meter serial is required",
@@ -300,6 +294,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — the same serial cannot appear twice in the file",
@@ -314,6 +309,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — a serial that already exists is rejected",
@@ -328,6 +324,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — asset number and RAPDRP number must match the serial",
@@ -342,6 +339,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
 
   // ─── Meter master (manual doc §2) ────────────────────────────────────────
@@ -356,6 +354,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — DLMS type must be valid",
@@ -369,6 +368,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — meter model must be valid",
@@ -382,6 +382,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — meter status must be valid",
@@ -395,6 +396,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
 
   // ─── Configuration (manual doc §3) ─────────────────────────────────────
@@ -410,6 +412,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — display digits must be greater than zero",
@@ -423,6 +426,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — MPTR cannot be negative",
@@ -436,6 +440,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — display digits must match the serial number length",
@@ -449,6 +454,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — MCTR must be a whole number",
@@ -462,6 +468,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — LPTR must be a whole number",
@@ -475,6 +482,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — LCTR must be a whole number",
@@ -488,6 +496,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
 
   // ─── Date validation (manual doc §4) ───────────────────────────────────────
@@ -503,6 +512,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — testing date must be a valid date",
@@ -516,6 +526,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — testing date cannot be before the purchase date",
@@ -530,6 +541,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — purchase date cannot be in the future",
@@ -544,6 +556,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
 
   // ─── Field length (manual doc §5) ────────────────────────────────────────
@@ -559,6 +572,7 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — purchase order number cannot be longer than 32 characters",
@@ -567,13 +581,12 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
     buildUpload: async () => {
       const row = buildValidMeterBulkRow("po-len");
-      row["Meter PO Number"] = "X".repeat(
-        CREATE_METER_FIELD_LIMITS.meterPoNumber + 1,
-      );
+      row["Meter PO Number"] = "X".repeat(CREATE_METER_FIELD_LIMITS.meterPoNumber + 1);
       const buffer = await buildMeterBulkUploadXlsx([row]);
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — meter version cannot be longer than 32 characters",
@@ -582,13 +595,12 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
     buildUpload: async () => {
       const row = buildValidMeterBulkRow("ver-len");
-      row["Meter Version"] = "X".repeat(
-        CREATE_METER_FIELD_LIMITS.meterVersion + 1,
-      );
+      row["Meter Version"] = "X".repeat(CREATE_METER_FIELD_LIMITS.meterVersion + 1);
       const buffer = await buildMeterBulkUploadXlsx([row]);
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Excel upload (meters) — meter rating cannot be longer than 15 characters",
@@ -597,12 +609,11 @@ export const bulkUploadMetersTestCases: BulkUploadMetersTestCase[] = [
     envKeys: ["BULK_METER_MANUFACTURER_NAME"],
     buildUpload: async () => {
       const row = buildValidMeterBulkRow("rate-len");
-      row["Meter Rating"] = "X".repeat(
-        CREATE_METER_FIELD_LIMITS.meterRating + 1,
-      );
+      row["Meter Rating"] = "X".repeat(CREATE_METER_FIELD_LIMITS.meterRating + 1);
       const buffer = await buildMeterBulkUploadXlsx([row]);
       return xlsxUpload(buffer);
     },
     tags: ["@master-data", "@bulk-upload-meters", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

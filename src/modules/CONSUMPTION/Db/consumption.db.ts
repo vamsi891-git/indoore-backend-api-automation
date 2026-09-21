@@ -1,5 +1,5 @@
 import type pg from "pg";
-import { queryReadOnly, queryScalar } from "../../../core/db/postgres.client";
+import { queryReadOnly, queryScalar } from "../../../extras/db/postgres.client";
 import {
   CONSUMPTION_ACTIVE_CONSUMER_METER_COUNT_SQL,
   CONSUMPTION_ACTIVE_NET_METER_COUNT_SQL,
@@ -28,33 +28,17 @@ export type DbConsumptionDailyReadingRow = {
   fr: number | string | null;
 };
 
-export async function countConsumptionActiveConsumerMeters(
-  pool: pg.Pool,
-): Promise<number> {
-  return (
-    (await queryScalar<number>(
-      pool,
-      CONSUMPTION_ACTIVE_CONSUMER_METER_COUNT_SQL,
-    )) ?? 0
-  );
+export async function countConsumptionActiveConsumerMeters(pool: pg.Pool): Promise<number> {
+  return (await queryScalar<number>(pool, CONSUMPTION_ACTIVE_CONSUMER_METER_COUNT_SQL)) ?? 0;
 }
 
-export async function countConsumptionActiveNetMeters(
-  pool: pg.Pool,
-): Promise<number> {
-  return (
-    (await queryScalar<number>(pool, CONSUMPTION_ACTIVE_NET_METER_COUNT_SQL)) ??
-    0
-  );
+export async function countConsumptionActiveNetMeters(pool: pg.Pool): Promise<number> {
+  return (await queryScalar<number>(pool, CONSUMPTION_ACTIVE_NET_METER_COUNT_SQL)) ?? 0;
 }
 
 /** Same grain as pattern/monthly `resolveConsumptionListTotal` (page-key FROM). */
-export async function countConsumptionListPageKeys(
-  pool: pg.Pool,
-): Promise<number> {
-  return (
-    (await queryScalar<number>(pool, CONSUMPTION_LIST_PAGE_KEY_COUNT_SQL)) ?? 0
-  );
+export async function countConsumptionListPageKeys(pool: pg.Pool): Promise<number> {
+  return (await queryScalar<number>(pool, CONSUMPTION_LIST_PAGE_KEY_COUNT_SQL)) ?? 0;
 }
 
 export async function getConsumptionConsumerByMsn(

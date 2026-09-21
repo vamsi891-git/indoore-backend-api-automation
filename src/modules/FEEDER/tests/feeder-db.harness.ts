@@ -1,6 +1,5 @@
 import type pg from "pg";
 import type { APIRequestContext } from "@playwright/test";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { FeederProfileApi } from "../Api/feederprofile.api";
 import { FeederElectricalParametersApi } from "../Api/feeder-electrical-parameters.api";
 import { feederProfileData } from "../Data/feederprofile.data";
@@ -12,14 +11,9 @@ import {
   getFeederByCode,
   getFeederMeterBySerial,
 } from "../Db/feeder.db";
-import {
-  compareFeederMeterExists,
-  compareFeederProfileToDb,
-} from "../Db/feeder-db-compare";
-import {
-  FeederDbValidator,
-  logFeederDataQualityFindings,
-} from "../Db/feeder-db.validator";
+import { compareFeederMeterExists, compareFeederProfileToDb } from "../Db/feeder-db-compare";
+import { FeederDbValidator, logFeederDataQualityFindings } from "../Db/feeder-db.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 function resolveFeederCode(fallback: string): string {
   return process.env.FEEDER_CODE?.trim() || fallback;
@@ -32,17 +26,12 @@ export async function runFeederDbCoverage(
   authenticatedApi: APIRequestContext,
   db: pg.Pool,
 ): Promise<void> {
-  const validation = new ValidationEngine();
+  const validation = new ApiValidationHelper();
   const code = resolveFeederCode(feederProfileData.feederCode);
 
-  const profileBody = await new FeederProfileApi(
-    authenticatedApi,
-  ).getFeederProfile(code);
+  const profileBody = await new FeederProfileApi(authenticatedApi).getFeederProfile(code);
   const profile = FeederProfileMapper.map(profileBody.responseBody);
-  await logFeederDataQualityFindings(
-    "profile",
-    profile as unknown as Record<string, unknown>,
-  );
+  await logFeederDataQualityFindings("profile", profile as unknown as Record<string, unknown>);
 
   const dbFeeder = await getFeederByCode(db, code);
   validation.execute("Feeder profile vs L_Network_Lookup", () => {
@@ -58,10 +47,7 @@ export async function runFeederDbCoverage(
   });
 
   if (dbFeeder) {
-    const dtrCount = await countChildDtrsUnderFeeder(
-      db,
-      dbFeeder.networkLookupTblRefId,
-    );
+    const dtrCount = await countChildDtrsUnderFeeder(db, dbFeeder.networkLookupTblRefId);
     validation.execute("Feeder child DTR universe is non-negative", () => {
       if (dtrCount < 0) {
         throw new Error(`child DTR count negative: ${dtrCount}`);
@@ -72,22 +58,15 @@ export async function runFeederDbCoverage(
 
   const electricalBody = await new FeederElectricalParametersApi(
     authenticatedApi,
-  ).getElectricalParameters(
-    resolveFeederCode(feederElectricalParametersData.feederCode),
-  );
-  const electrical = FeederElectricalParametersMapper.map(
-    electricalBody.responseBody,
-  );
+  ).getElectricalParameters(resolveFeederCode(feederElectricalParametersData.feederCode));
+  const electrical = FeederElectricalParametersMapper.map(electricalBody.responseBody);
   await logFeederDataQualityFindings(
     "electrical",
     electricalBody.responseBody.data as unknown as Record<string, unknown>,
   );
 
   if (electrical.meterSerialNumber?.trim()) {
-    const meterRow = await getFeederMeterBySerial(
-      db,
-      electrical.meterSerialNumber,
-    );
+    const meterRow = await getFeederMeterBySerial(db, electrical.meterSerialNumber);
     validation.execute("Electrical meter serial exists in L_Meter_Lookup", () => {
       compareFeederMeterExists({
         apiSerial: electrical.meterSerialNumber,

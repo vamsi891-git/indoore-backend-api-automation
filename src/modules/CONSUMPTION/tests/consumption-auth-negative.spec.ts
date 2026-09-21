@@ -7,15 +7,21 @@ import { ConsumptionReportApi } from "../Api/consumption-report.api";
 import { patternConsumptionData } from "../Data/patternconsumption.data";
 import { monthlyNetMeterData } from "../Data/monthlynetmeter.data";
 import { dailyConsumptionData } from "../Data/dailyconsumption.data";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import {ConsumptionCommonValidator, consumptionAuthData,consumptionPaths,type ConsumptionErrorBody,} from "../Validator/consumption-common.validator";
+import {
+  ConsumptionCommonValidator,
+  consumptionAuthData,
+  consumptionPaths,
+  type ConsumptionErrorBody,
+} from "../Validator/consumption-common.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 authTest.describe("Consumption API — Auth Negative", () => {
-  authTest("Pattern consumption rejects missing auth",
+  authTest(
+    "Pattern consumption rejects missing auth",
     {
       tag: ["@consumption", "@pattern-consumption", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const rawResponse = await ConsumptionCommonValidator.getUnauthenticated(
         unauthenticatedApi,
         consumptionPaths.patternConsumption,
@@ -31,21 +37,19 @@ authTest.describe("Consumption API — Auth Negative", () => {
       );
       const body = (await rawResponse.json().catch(() => ({}))) as ConsumptionErrorBody;
       validation.execute("Unauthorized", () =>
-        ConsumptionCommonValidator.validateUnauthorizedError(
-          rawResponse.status(),
-          body,
-        ),
+        ConsumptionCommonValidator.validateUnauthorizedError(rawResponse.status(), body),
       );
       validation.printSummary("Pattern Consumption — Missing Auth", 0);
     },
   );
 
-  authTest("Consumption report rejects missing auth",
+  authTest(
+    "Consumption report rejects missing auth",
     {
       tag: ["@consumption", "@consumption-report", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const rawResponse = await ConsumptionCommonValidator.getUnauthenticated(
         unauthenticatedApi,
         consumptionPaths.report,
@@ -63,21 +67,19 @@ authTest.describe("Consumption API — Auth Negative", () => {
       );
       const body = (await rawResponse.json().catch(() => ({}))) as ConsumptionErrorBody;
       validation.execute("Unauthorized", () =>
-        ConsumptionCommonValidator.validateUnauthorizedError(
-          rawResponse.status(),
-          body,
-        ),
+        ConsumptionCommonValidator.validateUnauthorizedError(rawResponse.status(), body),
       );
       validation.printSummary("Consumption Report — Missing Auth", 0);
     },
   );
 
-  authTest("Monthly net meter rejects missing auth",
+  authTest(
+    "Monthly net meter rejects missing auth",
     {
       tag: ["@consumption", "@monthly-net-meter", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const rawResponse = await ConsumptionCommonValidator.getUnauthenticated(
         unauthenticatedApi,
         consumptionPaths.monthlyNetMeter,
@@ -92,55 +94,48 @@ authTest.describe("Consumption API — Auth Negative", () => {
       );
       const body = (await rawResponse.json().catch(() => ({}))) as ConsumptionErrorBody;
       validation.execute("Unauthorized", () =>
-        ConsumptionCommonValidator.validateUnauthorizedError(
-          rawResponse.status(),
-          body,
-        ),
+        ConsumptionCommonValidator.validateUnauthorizedError(rawResponse.status(), body),
       );
       validation.printSummary("Monthly Net Meter — Missing Auth", 0);
     },
   );
-  authTest("Monthly net meter rejects invalid bearer token",
+  authTest(
+    "Monthly net meter rejects invalid bearer token",
     {
       tag: ["@consumption", "@monthly-net-meter", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       for (const authorization of [
         consumptionAuthData.invalidBearerToken,
         consumptionAuthData.malformedBearerToken,
         consumptionAuthData.emptyBearerToken,
       ]) {
-        const rawResponse = await unauthenticatedApi.get(
-          consumptionPaths.monthlyNetMeter,
-          {
-            headers: { Authorization: authorization },
-            params: {
-              page: monthlyNetMeterData.page,
-              limit: monthlyNetMeterData.limit,
-              month: monthlyNetMeterData.month,
-              year: monthlyNetMeterData.year,
-            },
+        const rawResponse = await unauthenticatedApi.get(consumptionPaths.monthlyNetMeter, {
+          headers: { Authorization: authorization },
+          params: {
+            page: monthlyNetMeterData.page,
+            limit: monthlyNetMeterData.limit,
+            month: monthlyNetMeterData.month,
+            year: monthlyNetMeterData.year,
           },
-        );
+        });
         const body = (await rawResponse.json().catch(() => ({}))) as ConsumptionErrorBody;
         validation.execute(`Unauthorized (${authorization.slice(0, 20)})`, () =>
-          ConsumptionCommonValidator.validateUnauthorizedError(
-            rawResponse.status(),
-            body,
-          ),
+          ConsumptionCommonValidator.validateUnauthorizedError(rawResponse.status(), body),
         );
       }
       validation.printSummary("Monthly Net Meter — Invalid Token", 0);
     },
   );
 
-  authTest("Consumption report rejects disallowed methods",
+  authTest(
+    "Consumption report rejects disallowed methods",
     {
       tag: ["@consumption", "@consumption-report", "@negative", "@auth"],
     },
     async ({ unauthenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const callers = ConsumptionCommonValidator.getDisallowedMethodCallers(
         unauthenticatedApi,
         consumptionPaths.report,
@@ -148,9 +143,7 @@ authTest.describe("Consumption API — Auth Negative", () => {
       for (const method of consumptionAuthData.disallowedMethods) {
         const rawResponse = await callers[method]();
         validation.execute(`${method} rejected`, () =>
-          ConsumptionCommonValidator.validateDisallowedMethodRejected(
-            rawResponse.status(),
-          ),
+          ConsumptionCommonValidator.validateDisallowedMethodRejected(rawResponse.status()),
         );
       }
       validation.printSummary("Consumption Report — Disallowed Methods", 0);
@@ -163,7 +156,7 @@ test.describe("Consumption API — Authenticated smoke after auth negatives", ()
     "Pattern, net meter, and report APIs remain reachable with valid auth",
     { tag: ["@consumption", "@smoke", "@positive"] },
     async ({ authenticatedApi }) => {
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const patternApi = new PatternConsumptionApi(authenticatedApi);
       const netMeterApi = new MonthlyNetMeterApi(authenticatedApi);
       const reportApi = new ConsumptionReportApi(authenticatedApi);

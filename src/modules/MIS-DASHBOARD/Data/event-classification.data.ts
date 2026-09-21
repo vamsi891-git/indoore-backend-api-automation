@@ -30,6 +30,8 @@ export type EventClassificationTestCase = {
   expectedStatus: 200 | 400;
   expectedReportType?: "phase-wise" | "category-wise";
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 };
 
 const tags = ["@mis-dashboard", "@classification", "@edge"];

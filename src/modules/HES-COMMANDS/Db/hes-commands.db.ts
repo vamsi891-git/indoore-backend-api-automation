@@ -1,9 +1,6 @@
 import type pg from "pg";
-import { queryReadOnly, queryScalar } from "../../../core/db/postgres.client";
-import {
-  HES_COMMAND_LOGS_COUNT_SQL,
-  HES_COMMAND_LOG_SPOT_SQL,
-} from "./hes-commands-sql";
+import { queryReadOnly, queryScalar } from "../../../extras/db/postgres.client";
+import { HES_COMMAND_LOGS_COUNT_SQL, HES_COMMAND_LOG_SPOT_SQL } from "./hes-commands-sql";
 
 export function isHesCommandsDbSqlReady(): boolean {
   return process.env.HES_COMMANDS_DB_SQL_READY?.trim().toLowerCase() === "true";
@@ -28,10 +25,9 @@ export async function getHesCommandLogSpot(
   requestId: string,
   selectedMeter: string,
 ): Promise<DbHesCommandLogSpot | null> {
-  const rows = await queryReadOnly<DbHesCommandLogSpot>(
-    pool,
-    HES_COMMAND_LOG_SPOT_SQL,
-    [requestId, selectedMeter],
-  );
+  const rows = await queryReadOnly<DbHesCommandLogSpot>(pool, HES_COMMAND_LOG_SPOT_SQL, [
+    requestId,
+    selectedMeter,
+  ]);
   return rows[0] ?? null;
 }

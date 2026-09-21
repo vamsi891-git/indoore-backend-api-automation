@@ -125,7 +125,8 @@ export interface DtrCommunicationReportTestCase {
   scenario: DtrCommunicationReportScenario;
   tags: string[];
   isContractFixture?: boolean;
-  expectedStatus?: number;
+  expectedStatus?: number;  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export function resolveDtrCommunicationReportQuery(
@@ -195,33 +196,39 @@ export const dtrCommunicationReportTestCases: DtrCommunicationReportTestCase[] =
         "DTR communication — 1–30 Oct 2025 first page shows columns and meters",
       scenario: "dev_live_primary",
       tags: ["@smoke", "@reports", "@dtr-communication"],
+      nonEmptyExpected: true,
     },
     {
       testName: "DTR communication — includeTotal still shows the same columns",
       scenario: "dev_live_include_total",
       tags: ["@reports", "@dtr-communication", "@edge"],
+      nonEmptyExpected: false,
     },
     {
       testName:
         "DTR communication — includeArchiveCounts=false still returns the grid",
       scenario: "dev_live_archive_false",
       tags: ["@reports", "@dtr-communication", "@edge"],
+      nonEmptyExpected: false,
     },
     {
       testName:
         "DTR communication — showing 1 per page returns at most 1 record",
       scenario: "dev_limit_one",
       tags: ["@reports", "@dtr-communication", "@edge"],
+      nonEmptyExpected: false,
     },
     {
       testName: "DTR communication — a far page still returns a valid table",
       scenario: "dev_live_page_beyond",
       tags: ["@reports", "@dtr-communication", "@edge"],
+      nonEmptyExpected: false,
     },
     {
       testName: "DTR communication — unknown query params are ignored",
       scenario: "dev_ignore_unknown_query",
       tags: ["@reports", "@dtr-communication", "@edge"],
+      nonEmptyExpected: false,
     },
     {
       testName:
@@ -229,47 +236,55 @@ export const dtrCommunicationReportTestCases: DtrCommunicationReportTestCase[] =
       scenario: "contract_live_full",
       isContractFixture: true,
       tags: ["@reports", "@dtr-communication", "@edge"],
+      nonEmptyExpected: false,
     },
     {
       testName: "DTR communication — empty page fixture",
       scenario: "contract_empty_page",
       isContractFixture: true,
       tags: ["@reports", "@dtr-communication", "@edge"],
+      nonEmptyExpected: false,
     },
     {
       testName: "DTR communication — fromDate after toDate is rejected",
       scenario: "invalid_date_range",
       expectedStatus: 400,
       tags: ["@reports", "@dtr-communication", "@negative"],
+      nonEmptyExpected: false,
     },
     {
       testName: "DTR communication — invalid fromDate is rejected",
       scenario: "invalid_date_format",
       expectedStatus: 400,
       tags: ["@reports", "@dtr-communication", "@negative"],
+      nonEmptyExpected: false,
     },
     {
       testName: "DTR communication — missing fromDate is rejected",
       scenario: "missing_from_date",
       expectedStatus: 400,
       tags: ["@reports", "@dtr-communication", "@negative"],
+      nonEmptyExpected: false,
     },
     {
       testName: "DTR communication — missing toDate is rejected",
       scenario: "missing_to_date",
       expectedStatus: 400,
       tags: ["@reports", "@dtr-communication", "@negative"],
+      nonEmptyExpected: false,
     },
     {
       testName: "DTR communication — page 0 is rejected (page must start at 1)",
       scenario: "invalid_page",
       expectedStatus: 400,
       tags: ["@reports", "@dtr-communication", "@negative"],
+      nonEmptyExpected: false,
     },
     {
       testName: "DTR communication — limit 0 is rejected (limit must be at least 1)",
       scenario: "invalid_limit",
       expectedStatus: 400,
       tags: ["@reports", "@dtr-communication", "@negative"],
+      nonEmptyExpected: false,
     },
   ];

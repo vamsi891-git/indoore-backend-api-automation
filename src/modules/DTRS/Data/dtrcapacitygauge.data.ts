@@ -49,20 +49,19 @@ export const dtrCapacityGaugeContractAllNullResponse: DtrCapacityGaugeResponse =
 };
 
 /** Populated MD values; rated capacity unavailable → percent stays null. */
-export const dtrCapacityGaugeContractPopulatedResponse: DtrCapacityGaugeResponse =
-  {
-    success: true,
-    data: {
-      ratedCapacityKva: null,
-      bands: [
-        { label: "Instant", value: 45.67, percent: null, unit: "MDkVA" },
-        { label: "Daily", value: 52.3, percent: null, unit: "MDkVA" },
-        { label: "Monthly", value: 80, percent: null, unit: "MDkVA" },
-        { label: "Yearly", value: 95.5, percent: null, unit: "MDkVA" },
-        { label: "LifeTime", value: 120.25, percent: null, unit: "MDkVA" },
-      ],
-    },
-  };
+export const dtrCapacityGaugeContractPopulatedResponse: DtrCapacityGaugeResponse = {
+  success: true,
+  data: {
+    ratedCapacityKva: null,
+    bands: [
+      { label: "Instant", value: 45.67, percent: null, unit: "MDkVA" },
+      { label: "Daily", value: 52.3, percent: null, unit: "MDkVA" },
+      { label: "Monthly", value: 80, percent: null, unit: "MDkVA" },
+      { label: "Yearly", value: 95.5, percent: null, unit: "MDkVA" },
+      { label: "LifeTime", value: 120.25, percent: null, unit: "MDkVA" },
+    ],
+  },
+};
 
 /**
  * gaugePercent meta — rated 100 kVA.
@@ -75,55 +74,49 @@ export const dtrCapacityGaugeContractPercentFormulaMeta = {
   monthly: { value: 75.5, expectedPercent: 76 },
 };
 
-export const dtrCapacityGaugeContractPercentFormulaResponse: DtrCapacityGaugeResponse =
-  {
-    success: true,
-    data: {
-      ratedCapacityKva:
-        dtrCapacityGaugeContractPercentFormulaMeta.ratedCapacityKva,
-      bands: [
-        {
-          label: "Instant",
-          value: dtrCapacityGaugeContractPercentFormulaMeta.instant.value,
-          percent:
-            dtrCapacityGaugeContractPercentFormulaMeta.instant.expectedPercent,
-          unit: "MDkVA",
-        },
-        {
-          label: "Daily",
-          value: dtrCapacityGaugeContractPercentFormulaMeta.daily.value,
-          percent:
-            dtrCapacityGaugeContractPercentFormulaMeta.daily.expectedPercent,
-          unit: "MDkVA",
-        },
-        {
-          label: "Monthly",
-          value: dtrCapacityGaugeContractPercentFormulaMeta.monthly.value,
-          percent:
-            dtrCapacityGaugeContractPercentFormulaMeta.monthly.expectedPercent,
-          unit: "MDkVA",
-        },
-        { label: "Yearly", value: 90, percent: 90, unit: "MDkVA" },
-        { label: "LifeTime", value: 100, percent: 100, unit: "MDkVA" },
-      ],
-    },
-  };
+export const dtrCapacityGaugeContractPercentFormulaResponse: DtrCapacityGaugeResponse = {
+  success: true,
+  data: {
+    ratedCapacityKva: dtrCapacityGaugeContractPercentFormulaMeta.ratedCapacityKva,
+    bands: [
+      {
+        label: "Instant",
+        value: dtrCapacityGaugeContractPercentFormulaMeta.instant.value,
+        percent: dtrCapacityGaugeContractPercentFormulaMeta.instant.expectedPercent,
+        unit: "MDkVA",
+      },
+      {
+        label: "Daily",
+        value: dtrCapacityGaugeContractPercentFormulaMeta.daily.value,
+        percent: dtrCapacityGaugeContractPercentFormulaMeta.daily.expectedPercent,
+        unit: "MDkVA",
+      },
+      {
+        label: "Monthly",
+        value: dtrCapacityGaugeContractPercentFormulaMeta.monthly.value,
+        percent: dtrCapacityGaugeContractPercentFormulaMeta.monthly.expectedPercent,
+        unit: "MDkVA",
+      },
+      { label: "Yearly", value: 90, percent: 90, unit: "MDkVA" },
+      { label: "LifeTime", value: 100, percent: 100, unit: "MDkVA" },
+    ],
+  },
+};
 
 /** getDtrCapacityGaugePrimaryByCode — billing skipped; null readings. */
-export const dtrCapacityGaugeContractPrimaryFallbackResponse: DtrCapacityGaugeResponse =
-  {
-    success: true,
-    data: {
-      ratedCapacityKva: null,
-      bands: [
-        { label: "Instant", value: 12.5, percent: null, unit: "MDkVA" },
-        { label: "Daily", value: 15, percent: null, unit: "MDkVA" },
-        { label: "Monthly", value: null, percent: null, unit: "MDkVA" },
-        { label: "Yearly", value: null, percent: null, unit: "MDkVA" },
-        { label: "LifeTime", value: null, percent: null, unit: "MDkVA" },
-      ],
-    },
-  };
+export const dtrCapacityGaugeContractPrimaryFallbackResponse: DtrCapacityGaugeResponse = {
+  success: true,
+  data: {
+    ratedCapacityKva: null,
+    bands: [
+      { label: "Instant", value: 12.5, percent: null, unit: "MDkVA" },
+      { label: "Daily", value: 15, percent: null, unit: "MDkVA" },
+      { label: "Monthly", value: null, percent: null, unit: "MDkVA" },
+      { label: "Yearly", value: null, percent: null, unit: "MDkVA" },
+      { label: "LifeTime", value: null, percent: null, unit: "MDkVA" },
+    ],
+  },
+};
 
 export interface DtrCapacityGaugeTestCase {
   testName: string;
@@ -131,6 +124,8 @@ export interface DtrCapacityGaugeTestCase {
   expectedStatus?: number;
   isContractFixture?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export function resolveDtrCapacityGaugeCode(
@@ -200,55 +195,62 @@ export const dtrCapacityGaugeData = {
 
 export const dtrCapacityGaugeTestCases: DtrCapacityGaugeTestCase[] = [
   {
-    testName:
-      "DTR loading gauge — daily, monthly, yearly, and lifetime bands, each once",
+    testName: "DTR loading gauge — daily, monthly, yearly, and lifetime bands, each once",
     scenario: "dcg_by_code_primary",
     tags: ["@smoke", "@dtr", "@capacity-gauge"],
+    nonEmptyExpected: true,
   },
   {
     testName: "DTR loading gauge — a second transformer still shows bands",
     scenario: "dcg_by_code_alt",
     tags: ["@dtr", "@capacity-gauge", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "DTR loading gauge — extra filters that nobody uses are ignored",
+    testName: "DTR loading gauge — extra filters that nobody uses are ignored",
     scenario: "dcg_ignore_unknown_query",
     tags: ["@dtr", "@capacity-gauge", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample loading gauge — empty bands when readings are missing",
     scenario: "contract_all_null_bands",
     isContractFixture: true,
     tags: ["@dtr", "@capacity-gauge", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample loading gauge — kVA values without a rated size percent",
     scenario: "contract_populated_bands",
     isContractFixture: true,
     tags: ["@dtr", "@capacity-gauge", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample loading gauge — percent of rated size",
     scenario: "contract_gauge_percent_formula",
     isContractFixture: true,
     tags: ["@dtr", "@capacity-gauge", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Sample loading gauge — only instant and daily when billing is late",
     scenario: "contract_primary_fallback_zeros",
     isContractFixture: true,
     tags: ["@dtr", "@capacity-gauge", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR loading gauge — unknown transformer is not shown",
     scenario: "dtr_not_found",
     tags: ["@dtr", "@capacity-gauge", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR loading gauge — a blank transformer code is not allowed",
     scenario: "empty_dtr_code",
     expectedStatus: 400,
     tags: ["@dtr", "@capacity-gauge", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

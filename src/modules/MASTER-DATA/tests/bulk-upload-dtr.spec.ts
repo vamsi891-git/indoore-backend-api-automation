@@ -1,8 +1,6 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { BulkUploadDtrApi } from "../Api/bulk-upload-dtr.api";
 import {
@@ -30,6 +28,7 @@ import {
   BulkUploadDtrRowOutcomeResponseSchema,
   BulkUploadDtrSuccessResponseSchema,
 } from "../schemas/master-data.schemas";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 const FILE_ERROR_SCENARIOS = new Set([
   "file_invalid_type",
@@ -52,9 +51,7 @@ const METER_SCENARIO_SCENARIOS = new Set([
   "row_dtr_code_exists",
 ]);
 
-function shouldSkipForEnv(
-  testCase: (typeof bulkUploadDtrTestCases)[number],
-): boolean {
+function shouldSkipForEnv(testCase: (typeof bulkUploadDtrTestCases)[number]): boolean {
   return shouldSkipMasterDataTestForEnv(testCase.envKeys);
 }
 
@@ -68,9 +65,7 @@ function missingRuntimeMeterSerial(
   return !getValidateMeterSerial(envKey);
 }
 
-function needsAssignableMeter(
-  testCase: (typeof bulkUploadDtrTestCases)[number],
-): boolean {
+function needsAssignableMeter(testCase: (typeof bulkUploadDtrTestCases)[number]): boolean {
   if (FILE_ERROR_SCENARIOS.has(testCase.scenario)) {
     return false;
   }
@@ -100,219 +95,166 @@ test.describe.skip("Master data — Excel upload (DTRs)", () => {
   });
 
   for (const testCase of bulkUploadDtrTestCases) {
-    test(
-      testCase.testName,
-      { tag: testCase.tags },
-      async ({ authenticatedApi }) => {
-        if (shouldSkipForEnv(testCase)) {
+    test(testCase.testName, { tag: testCase.tags }, async ({ authenticatedApi }) => {
+      if (shouldSkipForEnv(testCase)) {
+        test.skip(true, `Set ${testCase.envKeys?.join(", ") ?? "required env vars"} in .env`);
+        return;
+      }
+
+      if (shouldSkipKnownBackendDefects() && testCase.tags.includes("@backend-defect")) {
+        test.skip(true, "Known backend defect — see Bulk upload validations.txt (BULK UPLOAD DTR)");
+        return;
+      }
+
+      if (missingRuntimeMeterSerial(testCase.scenario)) {
+        await ensureDtrTestRuntimeContext(authenticatedApi);
+      }
+
+      if (missingRuntimeMeterSerial(testCase.scenario)) {
+        test.skip(true, `Could not resolve runtime meter serial for ${testCase.scenario}`);
+        return;
+      }
+
+      if (BULK_SUCCESS_SCENARIOS.has(testCase.scenario) && !hasBulkDtrMeterPool()) {
+        await ensureDtrAssignableMeterPool(authenticatedApi, {
+          targetCount: 4,
+          maxCreateAttempts: 12,
+        });
+      }
+
+      if (BULK_SUCCESS_SCENARIOS.has(testCase.scenario) && !hasBulkDtrMeterPool()) {
+        test.skip(
+          true,
+          "No assignable meters provisioned via add-meter for bulk-upload-dtr success scenarios",
+        );
+        return;
+      }
+
+      if (testCase.scenario === "bulk_success_multi") {
+        const freshMeters = await provisionFreshDtrAssignableMeters(authenticatedApi, 2, {
+          maxCreateAttempts: 10,
+        });
+        if (freshMeters.length < 2) {
           test.skip(
             true,
-            `Set ${testCase.envKeys?.join(", ") ?? "required env vars"} in .env`,
+            `Need 2 fresh assignable meters for multi-row bulk upload; provisioned ${freshMeters.length}`,
           );
           return;
         }
+        setBulkDtrMultiRowMeterSerials(freshMeters);
+        console.log(`[bulk-upload-dtr] multi-row meters: ${freshMeters.join(", ")}`);
+        await new Promise<void>((resolve) => setTimeout(resolve, 3000));
+      }
 
-        if (
-          shouldSkipKnownBackendDefects() &&
-          testCase.tags.includes("@backend-defect")
-        ) {
-          test.skip(
-            true,
-            "Known backend defect — see Bulk upload validations.txt (BULK UPLOAD DTR)",
+      if (needsAssignableMeter(testCase) && !hasBulkDtrMeterPool()) {
+        await ensureDtrAssignableMeterPool(authenticatedApi, {
+          targetCount: 4,
+          maxCreateAttempts: 12,
+        });
+      }
+
+      if (needsAssignableMeter(testCase) && !hasBulkDtrMeterPool()) {
+        test.skip(
+          true,
+          "No assignable meters provisioned via add-meter for bulk-upload-dtr field tests",
+        );
+        return;
+      }
+
+      const api = new BulkUploadDtrApi(authenticatedApi);
+      let upload = await testCase.buildUpload();
+      let { rawResponse, responseBody, responseTime } = await api.bulkUploadDtr(upload);
+
+      if (testCase.scenario === "bulk_success_multi") {
+        for (let attempt = 1; attempt <= 2; attempt += 1) {
+          const createdCount = responseBody.data?.createdCount ?? 0;
+          if (createdCount >= 2) {
+            break;
+          }
+          const failedRows = (responseBody.data?.rowResults ?? [])
+            .filter((row) => row.status !== "CREATED")
+            .map(
+              (row) =>
+                `row ${row.rowNumber} ${row.meterSerialNumber}: ${row.message ?? row.status}`,
+            );
+          console.warn(
+            `[bulk-upload-dtr] multi-row created ${createdCount}/2 (attempt ${attempt}/2): ${failedRows.join("; ") || "no row detail"} — retrying with new meters`,
           );
-          return;
-        }
-
-        if (missingRuntimeMeterSerial(testCase.scenario)) {
-          await ensureDtrTestRuntimeContext(authenticatedApi);
-        }
-
-        if (missingRuntimeMeterSerial(testCase.scenario)) {
-          test.skip(
-            true,
-            `Could not resolve runtime meter serial for ${testCase.scenario}`,
-          );
-          return;
-        }
-
-        if (
-          BULK_SUCCESS_SCENARIOS.has(testCase.scenario) &&
-          !hasBulkDtrMeterPool()
-        ) {
-          await ensureDtrAssignableMeterPool(authenticatedApi, {
-            targetCount: 4,
+          const retryMeters = await provisionFreshDtrAssignableMeters(authenticatedApi, 2, {
             maxCreateAttempts: 12,
           });
-        }
-
-        if (
-          BULK_SUCCESS_SCENARIOS.has(testCase.scenario) &&
-          !hasBulkDtrMeterPool()
-        ) {
-          test.skip(
-            true,
-            "No assignable meters provisioned via add-meter for bulk-upload-dtr success scenarios",
-          );
-          return;
-        }
-
-        if (testCase.scenario === "bulk_success_multi") {
-          const freshMeters = await provisionFreshDtrAssignableMeters(
-            authenticatedApi,
-            2,
-            { maxCreateAttempts: 10 },
-          );
-          if (freshMeters.length < 2) {
-            test.skip(
-              true,
-              `Need 2 fresh assignable meters for multi-row bulk upload; provisioned ${freshMeters.length}`,
-            );
-            return;
+          if (retryMeters.length < 2) {
+            break;
           }
-          setBulkDtrMultiRowMeterSerials(freshMeters);
-          console.log(
-            `[bulk-upload-dtr] multi-row meters: ${freshMeters.join(", ")}`,
-          );
-          await new Promise<void>((resolve) => setTimeout(resolve, 3000));
+          setBulkDtrMultiRowMeterSerials(retryMeters);
+          await new Promise<void>((resolve) => setTimeout(resolve, 4000));
+          upload = await testCase.buildUpload();
+          ({ rawResponse, responseBody, responseTime } = await api.bulkUploadDtr(upload));
         }
+      }
 
-        if (needsAssignableMeter(testCase) && !hasBulkDtrMeterPool()) {
-          await ensureDtrAssignableMeterPool(authenticatedApi, {
-            targetCount: 4,
-            maxCreateAttempts: 12,
-          });
-        }
+      if (testCase.scenario === "bulk_success" || testCase.scenario === "bulk_success_multi") {
+        console.log(JSON.stringify(responseBody, null, 2));
+      }
 
-        if (needsAssignableMeter(testCase) && !hasBulkDtrMeterPool()) {
-          test.skip(
-            true,
-            "No assignable meters provisioned via add-meter for bulk-upload-dtr field tests",
-          );
-          return;
-        }
-
-        const api = new BulkUploadDtrApi(authenticatedApi);
-        let upload = await testCase.buildUpload();
-        let { rawResponse, responseBody, responseTime } =
-          await api.bulkUploadDtr(upload);
-
-        if (testCase.scenario === "bulk_success_multi") {
-          for (let attempt = 1; attempt <= 2; attempt += 1) {
-            const createdCount = responseBody.data?.createdCount ?? 0;
-            if (createdCount >= 2) {
-              break;
-            }
-            const failedRows = (responseBody.data?.rowResults ?? [])
-              .filter((row) => row.status !== "CREATED")
-              .map(
-                (row) =>
-                  `row ${row.rowNumber} ${row.meterSerialNumber}: ${row.message ?? row.status}`,
-              );
-            console.warn(
-              `[bulk-upload-dtr] multi-row created ${createdCount}/2 (attempt ${attempt}/2): ${failedRows.join("; ") || "no row detail"} — retrying with new meters`,
-            );
-            const retryMeters = await provisionFreshDtrAssignableMeters(
-              authenticatedApi,
-              2,
-              { maxCreateAttempts: 12 },
-            );
-            if (retryMeters.length < 2) {
-              break;
-            }
-            setBulkDtrMultiRowMeterSerials(retryMeters);
-            await new Promise<void>((resolve) => setTimeout(resolve, 4000));
-            upload = await testCase.buildUpload();
-            ({ rawResponse, responseBody, responseTime } =
-              await api.bulkUploadDtr(upload));
-          }
-        }
-
-        if (
-          testCase.scenario === "bulk_success" ||
-          testCase.scenario === "bulk_success_multi"
-        ) {
-          console.log(JSON.stringify(responseBody, null, 2));
-        }
-
-        await PerformanceTracker.track(
+      await PerformanceTracker.track(
         rawResponse,
         testCase.testName,
         rawResponse.url(),
-        responseTime
+        responseTime,
       );
 
-        const assert = new AssertionEngine();
-        const validation = new ValidationEngine();
-        const validator = new BulkUploadDtrValidator();
-        const mapped = BulkUploadDtrMapper.map(responseBody);
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
+      const validator = new BulkUploadDtrValidator();
+      const mapped = BulkUploadDtrMapper.map(responseBody);
 
-        validation.execute("Status Validation", () => {
-          if (BULK_SUCCESS_SCENARIOS.has(testCase.scenario)) {
-            expect(rawResponse.status()).toBe(testCase.expectedStatus);
-            return;
-          }
-          assertNegativeMasterDataHttpStatus(
-            rawResponse,
-            testCase.expectedStatus,
-          );
-        });
-        validation.execute("Content Validation", () =>
-          assert.validateContentType(rawResponse),
-        );
-        validation.execute("Response Time", () =>
-          assert.validateResponseTime(
-            responseTime,
-            bulkUploadDtrMaxResponseTimeMs,
+      validation.execute("Status Validation", () => {
+        if (BULK_SUCCESS_SCENARIOS.has(testCase.scenario)) {
+          expect(rawResponse.status()).toBe(testCase.expectedStatus);
+          return;
+        }
+        assertNegativeMasterDataHttpStatus(rawResponse, testCase.expectedStatus);
+      });
+      validation.execute("Content Validation", () => assert.validateContentType(rawResponse));
+      validation.execute("Response Time", () =>
+        assert.validateResponseTime(responseTime, bulkUploadDtrMaxResponseTimeMs),
+      );
+      validation.execute("Security Validation", () => assert.validateSensitiveData(responseBody));
+
+      if (BULK_SUCCESS_SCENARIOS.has(testCase.scenario)) {
+        validation.execute("Zod Response Schema", () =>
+          MasterDataCommonValidator.validateZodResponseSchema(
+            responseBody,
+            BulkUploadDtrSuccessResponseSchema,
           ),
         );
-        validation.execute("Security Validation", () =>
-          assert.validateSensitiveData(responseBody),
+        validation.execute("Required Fields", () =>
+          assert.validateRequiredFields(responseBody, ["success", "message", "data"]),
         );
-
-        if (BULK_SUCCESS_SCENARIOS.has(testCase.scenario)) {
-          validation.execute("Zod Response Schema", () =>
-            MasterDataCommonValidator.validateZodResponseSchema(
-              responseBody,
-              BulkUploadDtrSuccessResponseSchema,
-            ),
-          );
-          validation.execute("Required Fields", () =>
-            assert.validateRequiredFields(responseBody, [
-              "success",
-              "message",
-              "data",
-            ]),
-          );
-        } else if (!FILE_ERROR_SCENARIOS.has(testCase.scenario)) {
-          validation.execute("Zod Response Schema", () =>
-            MasterDataCommonValidator.validateZodResponseSchema(
-              responseBody,
-              BulkUploadDtrRowOutcomeResponseSchema,
-            ),
-          );
-          validation.execute("Required Fields", () =>
-            assert.validateRequiredFields(responseBody, [
-              "success",
-              "message",
-              "data",
-            ]),
-          );
-        } else {
-          validation.execute("Required Fields", () => {
-            expect(responseBody.success).toBeFalsy();
-            expect(
-              responseBody.error ?? responseBody.message,
-            ).toBeTruthy();
-          });
-        }
-
-        validation.execute("Response", () => validator.validateResponse(mapped));
-        validation.execute("Scenario Outcome", () =>
-          validator.validateScenario(mapped, testCase.scenario),
+      } else if (!FILE_ERROR_SCENARIOS.has(testCase.scenario)) {
+        validation.execute("Zod Response Schema", () =>
+          MasterDataCommonValidator.validateZodResponseSchema(
+            responseBody,
+            BulkUploadDtrRowOutcomeResponseSchema,
+          ),
         );
+        validation.execute("Required Fields", () =>
+          assert.validateRequiredFields(responseBody, ["success", "message", "data"]),
+        );
+      } else {
+        validation.execute("Required Fields", () => {
+          expect(responseBody.success).toBeFalsy();
+          expect(responseBody.error ?? responseBody.message).toBeTruthy();
+        });
+      }
 
-        validation.printSummary(testCase.testName, responseTime);
-      },
-    );
+      validation.execute("Response", () => validator.validateResponse(mapped));
+      validation.execute("Scenario Outcome", () =>
+        validator.validateScenario(mapped, testCase.scenario),
+      );
+
+      validation.printSummary(testCase.testName, responseTime);
+    });
   }
 });

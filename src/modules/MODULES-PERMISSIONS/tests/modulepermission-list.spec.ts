@@ -1,18 +1,18 @@
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { ModulePermissionApi } from "../Api/modulepermission.api";
 import { ModulePermissionData } from "../Data/modulepermission.data";
 import { ModulePermissionMapper } from "../Mapper/modulepermission.mapper";
 import { ModulePermissionValidator } from "../Validator/modulepermission.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 test.describe("Module Permission — List", () => {
   test.describe.configure({ mode: "serial" });
-  test("Validate GET /permissions/modules — catalog list",
+  test(
+    "Validate GET /permissions/modules — catalog list",
     { tag: ["@smoke", "@permissions", "@modules-permissions"] },
     async ({ authenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new ModulePermissionValidator();
       const moduleApi = new ModulePermissionApi(authenticatedApi);
       const getModulesResponse = await moduleApi.getModules();
@@ -37,15 +37,11 @@ test.describe("Module Permission — List", () => {
         getModulesResponse.rawResponse.url(),
         getModulesResponse.responseTime,
       );
-      const modules = ModulePermissionMapper.mapModules(
-        getModulesResponse.responseBody,
-      );
+      const modules = ModulePermissionMapper.mapModules(getModulesResponse.responseBody);
       validation.execute("Validate Root Response", () =>
         validator.validateResponse(getModulesResponse.responseBody),
       );
-      validation.execute("Validate Modules Exist", () =>
-        validator.validateModules(modules),
-      );
+      validation.execute("Validate Modules Exist", () => validator.validateModules(modules));
       validation.execute("Validate Module Structure", () =>
         validator.validateModuleStructure(modules),
       );
@@ -55,9 +51,7 @@ test.describe("Module Permission — List", () => {
       validation.execute("Validate Duplicate Modules", () =>
         validator.validateDuplicateModules(modules),
       );
-      validation.execute("Validate Module Sorting", () =>
-        validator.validateModuleSorting(modules),
-      );
+      validation.execute("Validate Module Sorting", () => validator.validateModuleSorting(modules));
       validation.execute("Validate Permission Structure", () =>
         validator.validatePermissionStructure(modules),
       );
@@ -79,19 +73,12 @@ test.describe("Module Permission — List", () => {
       validation.execute("Validate Permission Key Matches Module", () => {
         for (const module of modules) {
           for (const permission of module.permissions) {
-            validator.validatePermissionKeyMatchesModule(
-              module.key,
-              permission.key,
-            );
+            validator.validatePermissionKeyMatchesModule(module.key, permission.key);
           }
         }
       });
-      validation.execute("Validate Null Values", () =>
-        validator.validateNullValues(modules),
-      );
-      validation.execute("Validate NaN Values", () =>
-        validator.validateNaNValues(modules),
-      );
+      validation.execute("Validate Null Values", () => validator.validateNullValues(modules));
+      validation.execute("Validate NaN Values", () => validator.validateNaNValues(modules));
 
       validation.printSummary("Get Modules", getModulesResponse.responseTime);
     },

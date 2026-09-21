@@ -2,7 +2,7 @@ import { test, expect } from "../../../fixtures/observability.fixture";
 import {
   assertContractSnapshot,
   buildLookupItemsContractSnapshot,
-} from "../../../core/contract/contract-snapshot.helper";
+} from "../../../extras/contract/contract-snapshot.helper";
 import { HourlyLossReportApi } from "../Api/hourly-loss-report.api";
 import { LossAnalysisApi } from "../Api/loss-analysis.api";
 import { LossAnalysisStatsApi } from "../Api/loss-analysis-stats.api";
@@ -15,9 +15,7 @@ import { buildLossAnalysisTrendsQuery } from "../Data/loss-analysis-trends.data"
 import { buildNetworkTrendsQuery } from "../Data/network-trends.data";
 
 function asRecord(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === "object"
-    ? (value as Record<string, unknown>)
-    : {};
+  return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
 test.describe("ENERGY-AUDITS — Contract Snapshots", () => {
@@ -60,10 +58,8 @@ test.describe("ENERGY-AUDITS — Contract Snapshots", () => {
       const data = asRecord(body.data);
       const rows = Array.isArray(data.rows) ? data.rows : [];
       const columns = Array.isArray(data.columns) ? data.columns : [];
-      const rowKeys =
-        rows.length > 0 ? Object.keys(asRecord(rows[0])) : ["rows"];
-      const columnKeys =
-        columns.length > 0 ? Object.keys(asRecord(columns[0])) : ["columns"];
+      const rowKeys = rows.length > 0 ? Object.keys(asRecord(rows[0])) : ["rows"];
+      const columnKeys = columns.length > 0 ? Object.keys(asRecord(columns[0])) : ["columns"];
 
       await assertContractSnapshot(
         "energy-audits/loss-analysis",
@@ -89,8 +85,7 @@ test.describe("ENERGY-AUDITS — Contract Snapshots", () => {
       expect(body.success).toBe(true);
       const data = asRecord(body.data);
       const rows = Array.isArray(data.rows) ? data.rows : [];
-      const rowKeys =
-        rows.length > 0 ? Object.keys(asRecord(rows[0])) : ["rows"];
+      const rowKeys = rows.length > 0 ? Object.keys(asRecord(rows[0])) : ["rows"];
 
       await assertContractSnapshot(
         "energy-audits/hourly-loss-report",
@@ -116,8 +111,7 @@ test.describe("ENERGY-AUDITS — Contract Snapshots", () => {
       expect(body.success).toBe(true);
       const data = asRecord(body.data);
       const items = Array.isArray(data.items) ? data.items : [];
-      const itemKeys =
-        items.length > 0 ? Object.keys(asRecord(items[0])) : ["items"];
+      const itemKeys = items.length > 0 ? Object.keys(asRecord(items[0])) : ["items"];
 
       await assertContractSnapshot(
         "energy-audits/loss-analysis-trends",
@@ -143,8 +137,7 @@ test.describe("ENERGY-AUDITS — Contract Snapshots", () => {
       expect(body.success).toBe(true);
       const data = asRecord(body.data);
       const items = Array.isArray(data.items) ? data.items : [];
-      const itemKeys =
-        items.length > 0 ? Object.keys(asRecord(items[0])) : ["items"];
+      const itemKeys = items.length > 0 ? Object.keys(asRecord(items[0])) : ["items"];
 
       await assertContractSnapshot(
         "energy-audits/network-trends",

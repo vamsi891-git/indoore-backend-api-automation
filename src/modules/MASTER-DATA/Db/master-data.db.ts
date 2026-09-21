@@ -1,5 +1,5 @@
 import type pg from "pg";
-import { queryReadOnly, queryScalar } from "../../../core/db/postgres.client";
+import { queryReadOnly, queryScalar } from "../../../extras/db/postgres.client";
 import {
   CONSUMER_MASTER_BY_LOOKUP_SQL,
   CONSUMER_MASTER_COUNT_SQL,
@@ -90,19 +90,13 @@ export async function getActiveMeterBySerial(
   pool: pg.Pool,
   serial: string,
 ): Promise<DbMeterRow | null> {
-  const rows = await queryReadOnly<DbMeterRow>(
-    pool,
-    METER_MASTER_BY_SERIAL_SQL,
-    [serial],
-  );
+  const rows = await queryReadOnly<DbMeterRow>(pool, METER_MASTER_BY_SERIAL_SQL, [serial]);
   return rows[0] ?? null;
 }
 
 export async function countDtrMasterRows(pool: pg.Pool): Promise<number> {
   return (
-    (await queryScalar<number>(pool, DTR_MASTER_COUNT_SQL, [
-      resolveDtrMeterTypeTblRefId(),
-    ])) ?? 0
+    (await queryScalar<number>(pool, DTR_MASTER_COUNT_SQL, [resolveDtrMeterTypeTblRefId()])) ?? 0
   );
 }
 
@@ -110,11 +104,7 @@ export async function getDtrByMeterLookupId(
   pool: pg.Pool,
   meterLookupTblRefId: number,
 ): Promise<DbDtrRow | null> {
-  const rows = await queryReadOnly<DbDtrRow>(
-    pool,
-    DTR_MASTER_BY_LOOKUP_SQL,
-    [meterLookupTblRefId],
-  );
+  const rows = await queryReadOnly<DbDtrRow>(pool, DTR_MASTER_BY_LOOKUP_SQL, [meterLookupTblRefId]);
   return rows[0] ?? null;
 }
 
@@ -126,11 +116,9 @@ export async function getConsumerByMeterLookupId(
   pool: pg.Pool,
   meterLookupTblRefId: number,
 ): Promise<DbConsumerRow | null> {
-  const rows = await queryReadOnly<DbConsumerRow>(
-    pool,
-    CONSUMER_MASTER_BY_LOOKUP_SQL,
-    [meterLookupTblRefId],
-  );
+  const rows = await queryReadOnly<DbConsumerRow>(pool, CONSUMER_MASTER_BY_LOOKUP_SQL, [
+    meterLookupTblRefId,
+  ]);
   return rows[0] ?? null;
 }
 
@@ -142,11 +130,7 @@ export async function getFeederByName(
   pool: pg.Pool,
   feederName: string,
 ): Promise<DbFeederRow | null> {
-  const rows = await queryReadOnly<DbFeederRow>(
-    pool,
-    FEEDER_MASTER_BY_NAME_SQL,
-    [feederName],
-  );
+  const rows = await queryReadOnly<DbFeederRow>(pool, FEEDER_MASTER_BY_NAME_SQL, [feederName]);
   return rows[0] ?? null;
 }
 
@@ -158,11 +142,9 @@ export async function getSubstationByCode(
   pool: pg.Pool,
   substationCode: string,
 ): Promise<DbSubstationRow | null> {
-  const rows = await queryReadOnly<DbSubstationRow>(
-    pool,
-    SUBSTATION_MASTER_BY_CODE_SQL,
-    [substationCode],
-  );
+  const rows = await queryReadOnly<DbSubstationRow>(pool, SUBSTATION_MASTER_BY_CODE_SQL, [
+    substationCode,
+  ]);
   return rows[0] ?? null;
 }
 
@@ -178,27 +160,13 @@ export async function getMeterCommunicationBySerial(
   return rows[0] ?? null;
 }
 
-export async function meterSerialExistsInDb(
-  pool: pg.Pool,
-  serial: string,
-): Promise<boolean> {
-  const rows = await queryReadOnly<{ one: number }>(
-    pool,
-    METER_SERIAL_EXISTS_SQL,
-    [serial.trim()],
-  );
+export async function meterSerialExistsInDb(pool: pg.Pool, serial: string): Promise<boolean> {
+  const rows = await queryReadOnly<{ one: number }>(pool, METER_SERIAL_EXISTS_SQL, [serial.trim()]);
   return rows.length > 0;
 }
 
-export async function dtrCodeExistsInDb(
-  pool: pg.Pool,
-  dtrCode: string,
-): Promise<boolean> {
-  const rows = await queryReadOnly<{ ok: boolean }>(
-    pool,
-    DTR_CODE_EXISTS_SQL,
-    [dtrCode],
-  );
+export async function dtrCodeExistsInDb(pool: pg.Pool, dtrCode: string): Promise<boolean> {
+  const rows = await queryReadOnly<{ ok: boolean }>(pool, DTR_CODE_EXISTS_SQL, [dtrCode]);
   return Boolean(rows[0]?.ok);
 }
 
@@ -206,10 +174,9 @@ export async function isMeterAlreadyOnDtrInDb(
   pool: pg.Pool,
   meterLookupId: number,
 ): Promise<boolean> {
-  const rows = await queryReadOnly<{ ok: boolean }>(
-    pool,
-    METER_ALREADY_ON_DTR_SQL,
-    [meterLookupId, resolveDtrMeterTypeTblRefId()],
-  );
+  const rows = await queryReadOnly<{ ok: boolean }>(pool, METER_ALREADY_ON_DTR_SQL, [
+    meterLookupId,
+    resolveDtrMeterTypeTblRefId(),
+  ]);
   return Boolean(rows[0]?.ok);
 }

@@ -1,9 +1,4 @@
-function resolveBillingInt(
-  envKey: string,
-  fallback: number,
-  min?: number,
-  max?: number,
-): number {
+function resolveBillingInt(envKey: string, fallback: number, min?: number, max?: number): number {
   const raw = process.env[envKey]?.trim();
   if (!raw) {
     return fallback;
@@ -24,29 +19,10 @@ function resolveBillingInt(
 
 export { resolveBillingInt };
 
-export const billingDataDefaultMonth = resolveBillingInt(
-  "BILLING_DATA_MONTH",
-  10,
-  1,
-  12,
-);
-export const billingDataDefaultYear = resolveBillingInt(
-  "BILLING_DATA_YEAR",
-  2025,
-  2000,
-  2100,
-);
-export const billingDataDefaultPage = resolveBillingInt(
-  "BILLING_DATA_PAGE",
-  1,
-  1,
-);
-export const billingDataDefaultLimit = resolveBillingInt(
-  "BILLING_DATA_LIMIT",
-  10,
-  1,
-  100,
-);
+export const billingDataDefaultMonth = resolveBillingInt("BILLING_DATA_MONTH", 10, 1, 12);
+export const billingDataDefaultYear = resolveBillingInt("BILLING_DATA_YEAR", 2025, 2000, 2100);
+export const billingDataDefaultPage = resolveBillingInt("BILLING_DATA_PAGE", 1, 1);
+export const billingDataDefaultLimit = resolveBillingInt("BILLING_DATA_LIMIT", 10, 1, 100);
 export const billingDataBeyondPage = 99999;
 
 /** Kept for DB / contract callers. */
@@ -156,11 +132,11 @@ export interface BillingDataTestCase {
   tags: string[];
   isContractFixture?: boolean;
   expectedStatus?: number;
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
-export function resolveBillingDataQuery(
-  scenario: BillingDataScenario,
-): BillingDataQuery {
+export function resolveBillingDataQuery(scenario: BillingDataScenario): BillingDataQuery {
   switch (scenario) {
     case "dev_live_without_total":
       return primaryQuery({ includeTotal: false });
@@ -205,47 +181,56 @@ export const billingDataTestCases: BillingDataTestCase[] = [
     testName: "Monthly billing — October 2025 first page lists meters and column headings",
     scenario: "dev_live_include_total",
     tags: ["@smoke", "@billing", "@billing-data"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Monthly billing — first page still lists meters when the grand total is turned off",
     scenario: "dev_live_without_total",
     tags: ["@billing", "@billing-data", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Monthly billing — asking for one meter at a time still returns a row",
     scenario: "dev_limit_one",
     tags: ["@billing", "@billing-data", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Monthly billing — page 2 continues the list without repeating a meter",
     scenario: "dev_page_two",
     tags: ["@billing", "@billing-data", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Monthly billing — searching by a meter number returns only that meter",
     scenario: "dev_meter_filter",
     tags: ["@billing", "@billing-data", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Monthly billing — a meter number that does not exist shows an empty list",
     scenario: "dev_unknown_meter",
     tags: ["@billing", "@billing-data", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Monthly billing — a page far past the end of the list is empty",
     scenario: "dev_live_page_beyond",
     tags: ["@billing", "@billing-data", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Monthly billing — leftover unused filters are ignored",
     scenario: "dev_ignore_unknown_query",
     tags: ["@billing", "@billing-data", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Monthly billing — October 2025 sample row matches the live layout",
     scenario: "contract_live_oct_2025",
     isContractFixture: true,
     tags: ["@billing", "@billing-data", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName:
@@ -253,54 +238,63 @@ export const billingDataTestCases: BillingDataTestCase[] = [
     scenario: "contract_sparse_and_sentinel",
     isContractFixture: true,
     tags: ["@billing", "@billing-data", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Monthly billing — month 13 is rejected (month must be January to December)",
     scenario: "invalid_month",
     expectedStatus: 400,
     tags: ["@billing", "@billing-data", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Monthly billing — month 0 is rejected",
     scenario: "invalid_month_zero",
     expectedStatus: 400,
     tags: ["@billing", "@billing-data", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Monthly billing — year 0 is rejected",
     scenario: "invalid_year",
     expectedStatus: 400,
     tags: ["@billing", "@billing-data", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Monthly billing — leaving out the month is rejected",
     scenario: "missing_month",
     expectedStatus: 400,
     tags: ["@billing", "@billing-data", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Monthly billing — leaving out the year is rejected",
     scenario: "missing_year",
     expectedStatus: 400,
     tags: ["@billing", "@billing-data", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Monthly billing — page numbering must start at 1",
     scenario: "invalid_page",
     expectedStatus: 400,
     tags: ["@billing", "@billing-data", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Monthly billing — asking for zero rows per page is rejected",
     scenario: "invalid_limit",
     expectedStatus: 400,
     tags: ["@billing", "@billing-data", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Monthly billing — asking for more than 5000 rows per page is rejected",
     scenario: "invalid_limit_too_high",
     expectedStatus: 400,
     tags: ["@billing", "@billing-data", "@negative"],
+    nonEmptyExpected: false,
   },
 ];
 

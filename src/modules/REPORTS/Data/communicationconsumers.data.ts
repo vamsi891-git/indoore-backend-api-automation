@@ -148,7 +148,8 @@ export interface CommunicationConsumersTestCase {
   scenario: CommunicationConsumersScenario;
   tags: string[];
   isContractFixture?: boolean;
-  expectedStatus?: number;
+  expectedStatus?: number;  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export function resolveCommunicationConsumersQuery(
@@ -229,88 +230,103 @@ export const communicationConsumersTestCases: CommunicationConsumersTestCase[] =
         "Communication consumers — day first page shows columns and meters",
       scenario: "dev_live_day",
       tags: ["@smoke", "@reports", "@communication-consumers"],
+      nonEmptyExpected: true,
     },
     {
       testName:
         "Communication consumers — month first page shows columns and meters",
       scenario: "dev_live_month",
       tags: ["@reports", "@communication-consumers", "@matrix"],
+      nonEmptyExpected: false,
     },
     {
       testName:
         "Communication consumers — range first page shows columns and meters",
       scenario: "dev_live_range",
       tags: ["@reports", "@communication-consumers", "@matrix"],
+      nonEmptyExpected: false,
     },
     {
       testName:
         "Communication consumers — showing 1 per page returns at most 1 record",
       scenario: "dev_limit_one",
       tags: ["@reports", "@communication-consumers", "@edge"],
+      nonEmptyExpected: false,
     },
     {
       testName:
         "Communication consumers — a page past the last page shows no records",
       scenario: "dev_live_page_beyond",
       tags: ["@reports", "@communication-consumers", "@edge"],
+      nonEmptyExpected: false,
     },
     {
       testName: "Communication consumers — unknown query params are ignored",
       scenario: "dev_ignore_unknown_query",
       tags: ["@reports", "@communication-consumers", "@edge"],
+      nonEmptyExpected: false,
     },
     {
       testName: "Communication consumers — 1 Oct 2025 day fixture",
       scenario: "contract_live_day",
       isContractFixture: true,
       tags: ["@reports", "@communication-consumers", "@edge"],
+      nonEmptyExpected: false,
     },
     {
       testName: "Communication consumers — empty page fixture",
       scenario: "contract_empty_page",
       isContractFixture: true,
       tags: ["@reports", "@communication-consumers", "@edge"],
+      nonEmptyExpected: false,
     },
     {
       testName: "Communication consumers — invalid period type is rejected",
       scenario: "invalid_period_type",
       expectedStatus: 400,
       tags: ["@reports", "@communication-consumers", "@negative"],
+      nonEmptyExpected: false,
     },
     {
       testName: "Communication consumers — invalid date is rejected",
       scenario: "invalid_date",
       expectedStatus: 400,
       tags: ["@reports", "@communication-consumers", "@negative"],
+      nonEmptyExpected: false,
     },
     {
       testName: "Communication consumers — missing date for day is rejected",
       scenario: "missing_date",
       expectedStatus: 400,
       tags: ["@reports", "@communication-consumers", "@negative"],
+      nonEmptyExpected: false,
     },
     {
       testName: "Communication consumers — missing month is rejected",
       scenario: "missing_month",
       expectedStatus: 400,
       tags: ["@reports", "@communication-consumers", "@negative"],
+      nonEmptyExpected: false,
     },
     {
       testName: "Communication consumers — fromDate after toDate is rejected",
       scenario: "invalid_date_range",
       expectedStatus: 400,
       tags: ["@reports", "@communication-consumers", "@negative"],
+      nonEmptyExpected: false,
     },
     {
       testName: "Communication consumers — missing fromDate is rejected",
       scenario: "missing_from_date",
       expectedStatus: 400,
       tags: ["@reports", "@communication-consumers", "@negative"],
+      nonEmptyExpected: false,
     },
     {
       testName: "Communication consumers — invalid meter type is rejected",
       scenario: "invalid_meter_type",
       expectedStatus: 400,
       tags: ["@reports", "@communication-consumers", "@negative"],
+      nonEmptyExpected: false,
     },
   ];

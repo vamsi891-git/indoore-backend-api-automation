@@ -1,10 +1,7 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
 import { InviteApi } from "../Api/invite.api";
-import {
-  buildUniqueInviteEmail,
-  InviteTestData,
-} from "../Data/invite.data";
+import { buildUniqueInviteEmail, InviteTestData } from "../Data/invite.data";
 import { InviteMapper } from "../Mapper/invite.mapper";
 import { InviteValidator } from "../Validator/invite.validator";
 import {
@@ -12,15 +9,14 @@ import {
   InviteUserResponseSchema,
   SentInvitationsListResponseSchema,
 } from "../schemas/auth.schemas";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { printInviteCrossVerification } from "../utils/invite-verification.reporter";
 import {
   INVITE_PROVISION_TEST_TIMEOUT_MS,
   inviteUserWithRetry,
   isInviteTransientStatus,
 } from "../utils/invite-provision.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 // SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
 test.describe.skip("Auth Invite User API", () => {
@@ -34,7 +30,7 @@ test.describe.skip("Auth Invite User API", () => {
     { tag: ["@auth", "@invite"] },
     async ({ authenticatedApi }) => {
       const api = new InviteApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const validator = new InviteValidator();
 
       try {
@@ -70,8 +66,8 @@ test.describe.skip("Auth Invite User API", () => {
     { tag: ["@smoke", "@auth", "@invite"] },
     async ({ authenticatedApi }) => {
       const api = new InviteApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new InviteValidator();
 
       const rolesResponse = await api.getRoles();
@@ -88,27 +84,21 @@ test.describe.skip("Auth Invite User API", () => {
 
       try {
         validation.execute("Invite Request Schema", () => {
-          expect(InviteUserRequestSchema.safeParse(invitePayload).success).toBe(
-            true,
-          );
+          expect(InviteUserRequestSchema.safeParse(invitePayload).success).toBe(true);
         });
 
         const inviteResponse = await inviteUserWithRetry(api, invitePayload);
         responseTime = inviteResponse.responseTime;
 
         await PerformanceTracker.track(
-        inviteResponse.rawResponse,
-        "Auth Invite User API",
-        inviteResponse.rawResponse.url(),
-        inviteResponse.responseTime
-      );
+          inviteResponse.rawResponse,
+          "Auth Invite User API",
+          inviteResponse.rawResponse.url(),
+          inviteResponse.responseTime,
+        );
 
         validation.execute("Invite Status", () =>
-          assert.validateStatusCode(
-            inviteResponse.rawResponse,
-            201,
-            inviteResponse.responseBody,
-          ),
+          assert.validateStatusCode(inviteResponse.rawResponse, 201, inviteResponse.responseBody),
         );
         validation.execute("Invite Content Type", () =>
           assert.validateContentType(inviteResponse.rawResponse),
@@ -125,9 +115,7 @@ test.describe.skip("Auth Invite User API", () => {
 
         if (inviteResponse.rawResponse.status() === 201) {
           validation.execute("Invite Zod", () => {
-            const result = InviteUserResponseSchema.safeParse(
-              inviteResponse.responseBody,
-            );
+            const result = InviteUserResponseSchema.safeParse(inviteResponse.responseBody);
             expect(
               result.success,
               result.success
@@ -136,9 +124,7 @@ test.describe.skip("Auth Invite User API", () => {
             ).toBe(true);
           });
 
-          const parsed = InviteUserResponseSchema.parse(
-            inviteResponse.responseBody,
-          );
+          const parsed = InviteUserResponseSchema.parse(inviteResponse.responseBody);
           const inviteModel = InviteMapper.mapInviteUser(parsed);
           invitationId = inviteModel.invitationId;
 
@@ -163,9 +149,7 @@ test.describe.skip("Auth Invite User API", () => {
 
           if (listResponse.rawResponse.status() === 200) {
             validation.execute("List Zod", () => {
-              const result = SentInvitationsListResponseSchema.safeParse(
-                listResponse.responseBody,
-              );
+              const result = SentInvitationsListResponseSchema.safeParse(listResponse.responseBody);
               expect(result.success).toBe(true);
             });
 
@@ -174,32 +158,17 @@ test.describe.skip("Auth Invite User API", () => {
             );
 
             validation.execute("Created Invitation In List", () => {
-              validator.validateCreatedInvitationInList(
-                listModel,
-                invitationId,
-                inviteEmail,
-                role,
-              );
-              const listed = InviteMapper.findInvitationById(
-                listModel,
-                invitationId,
-              );
+              validator.validateCreatedInvitationInList(listModel, invitationId, inviteEmail, role);
+              const listed = InviteMapper.findInvitationById(listModel, invitationId);
               expect(listed).toBeDefined();
               validator.validateInvitationItem(listed!);
             });
 
             validation.execute("Email Verified", () => {
-              expect(InviteMapper.emailsMatch(inviteEmail, inviteModel.email)).toBe(
-                true,
-              );
-              const listed = InviteMapper.findInvitationById(
-                listModel,
-                invitationId,
-              );
+              expect(InviteMapper.emailsMatch(inviteEmail, inviteModel.email)).toBe(true);
+              const listed = InviteMapper.findInvitationById(listModel, invitationId);
               expect(listed).toBeDefined();
-              expect(InviteMapper.emailsMatch(inviteEmail, listed!.email)).toBe(
-                true,
-              );
+              expect(InviteMapper.emailsMatch(inviteEmail, listed!.email)).toBe(true);
             });
 
             validation.execute("User Invite Created", () => {
@@ -212,10 +181,7 @@ test.describe.skip("Auth Invite User API", () => {
               invitationId,
               role,
               status: "pending",
-              emailVerifiedInResponse: InviteMapper.emailsMatch(
-                inviteEmail,
-                inviteModel.email,
-              ),
+              emailVerifiedInResponse: InviteMapper.emailsMatch(inviteEmail, inviteModel.email),
               emailVerifiedInList: Boolean(
                 InviteMapper.findInvitationById(listModel, invitationId),
               ),

@@ -8,8 +8,6 @@ import {
   CONSUMPTION_COMPARE_COVERAGE_GATED_TYPES,
   consumptionCompareLastMonthData,
 } from "../Data/consumptioncompare.data";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 import { CONSUMPTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import {
@@ -36,14 +34,12 @@ test.describe("Consumption Compare report", () => {
     { tag: ["@smoke", "@consumption-compare"] },
     async ({ authenticatedApi }, testInfo) => {
       const api = new ConsumptionCompareApi(authenticatedApi);
-      const { rawResponse, responseBody, responseTime } =
-        await api.getConsumptionCompare(consumptionCompareLastMonthData);
+      const { rawResponse, responseBody, responseTime } = await api.getConsumptionCompare(
+        consumptionCompareLastMonthData,
+      );
 
       if (shouldSkipCommercialResponse(rawResponse.status(), responseBody)) {
-        test.skip(
-          true,
-          `Compare Last Month unavailable (HTTP ${rawResponse.status()})`,
-        );
+        test.skip(true, `Compare Last Month unavailable (HTTP ${rawResponse.status()})`);
         return;
       }
 
@@ -57,8 +53,8 @@ test.describe("Consumption Compare report", () => {
           "Grid { currKwh = New kWh, prevKwh = Old kWh }. prevKwh > 0 and currKwh < 50% of prevKwh (currKwh may be 0). Unique meterLookupId. This report has no duplicate records. connectionCategory is stripped.",
       };
 
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new ConsumptionCompareValidator();
 
       try {
@@ -81,53 +77,31 @@ test.describe("Consumption Compare report", () => {
 
         const rows = mapConsumptionCompareResponse(responseBody);
 
-        validation.execute("Response Validation", () =>
-          validator.validateResponse(responseBody),
-        );
+        validation.execute("Response Validation", () => validator.validateResponse(responseBody));
         validation.execute("Grid Columns", () =>
           validator.validateLastMonthGridColumns(responseBody),
         );
         validation.execute("Query Params Validation", () =>
-          validator.validateQueryParams(
-            responseBody,
-            consumptionCompareLastMonthData,
-          ),
+          validator.validateQueryParams(responseBody, consumptionCompareLastMonthData),
         );
         validation.execute("Report Type Validation", () =>
-          validator.validateReportForType(
-            responseBody,
-            consumptionCompareLastMonthData.type,
-          ),
+          validator.validateReportForType(responseBody, consumptionCompareLastMonthData.type),
         );
         validation.execute("Has Data Validation", () =>
-          validator.validateHasData(
-            responseBody,
-            consumptionCompareLastMonthData,
-          ),
+          validator.validateHasData(responseBody, consumptionCompareLastMonthData),
         );
         validation.execute("Mandatory Fields Validation", () =>
           validator.validateMandatoryFields(rows),
         );
         validation.execute("Consumption Compare Business Rules", () =>
-          validator.validateBusinessRules(
-            rows,
-            consumptionCompareLastMonthData.type,
-          ),
+          validator.validateBusinessRules(rows, consumptionCompareLastMonthData.type),
         );
-        validation.execute("Duplicate contract", () =>
-          validator.validateDuplicateContract(rows),
-        );
+        validation.execute("Duplicate contract", () => validator.validateDuplicateContract(rows));
         validation.execute("Pagination Validation", () =>
-          validator.validatePagination(
-            responseBody,
-            consumptionCompareLastMonthData,
-          ),
+          validator.validatePagination(responseBody, consumptionCompareLastMonthData),
         );
         validation.execute("Total Count Validation", () =>
-          validator.validateTotalCount(
-            responseBody,
-            consumptionCompareLastMonthData,
-          ),
+          validator.validateTotalCount(responseBody, consumptionCompareLastMonthData),
         );
       } finally {
         ApiValidationHelper.finalize(validation, {
@@ -169,10 +143,7 @@ test.describe("Consumption Compare report", () => {
         return;
       }
 
-      const responseTime = Math.max(
-        domesticRes.responseTime,
-        nonDomesticRes.responseTime,
-      );
+      const responseTime = Math.max(domesticRes.responseTime, nonDomesticRes.responseTime);
       const defectContext = {
         module: "COMMERICIAL-ANALYSIS",
         endpoint: domesticRes.rawResponse.url(),
@@ -186,18 +157,12 @@ test.describe("Consumption Compare report", () => {
           "Last Month strips connectionCategory. domestic total === non-domestic total. Page-1 meter identities match.",
       };
 
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       try {
-        const statuses = [
-          domesticRes.rawResponse.status(),
-          nonDomesticRes.rawResponse.status(),
-        ];
+        const statuses = [domesticRes.rawResponse.status(), nonDomesticRes.rawResponse.status()];
         if (
           statuses.some((status, i) =>
-            shouldSkipCommercialResponse(
-              status,
-              [domesticRes, nonDomesticRes][i]!.responseBody,
-            ),
+            shouldSkipCommercialResponse(status, [domesticRes, nonDomesticRes][i]!.responseBody),
           )
         ) {
           test.skip(
@@ -255,32 +220,24 @@ test.describe("Consumption Compare report", () => {
           ),
         });
 
-        validation.execute(
-          "Domestic pagination.total equals non-domestic total",
-          () => {
-            expect(domesticView.totalCount).toBeGreaterThan(0);
-            expect(nonDomesticView.totalCount).toBe(domesticView.totalCount);
-          },
-        );
+        validation.execute("Domestic pagination.total equals non-domestic total", () => {
+          expect(domesticView.totalCount).toBeGreaterThan(0);
+          expect(nonDomesticView.totalCount).toBe(domesticView.totalCount);
+        });
         const validator = new ConsumptionCompareValidator();
         const domesticRows = mapConsumptionCompareResponse(domesticRes.responseBody);
-        const nonDomesticRows = mapConsumptionCompareResponse(
-          nonDomesticRes.responseBody,
-        );
+        const nonDomesticRows = mapConsumptionCompareResponse(nonDomesticRes.responseBody);
         validation.execute("Domestic page uniqueness", () => {
           validator.validateDuplicateContract(domesticRows);
         });
         validation.execute("Non-domestic page uniqueness", () => {
           validator.validateDuplicateContract(nonDomesticRows);
         });
-        validation.execute(
-          "Domestic page-1 meters equal non-domestic page-1 meters",
-          () => {
-            expect(domesticRows.map(compareRowIdentity)).toEqual(
-              nonDomesticRows.map(compareRowIdentity),
-            );
-          },
-        );
+        validation.execute("Domestic page-1 meters equal non-domestic page-1 meters", () => {
+          expect(domesticRows.map(compareRowIdentity)).toEqual(
+            nonDomesticRows.map(compareRowIdentity),
+          );
+        });
       } finally {
         ApiValidationHelper.finalize(validation, {
           apiName: "Consumption Compare API (connectionCategory ignored)",
@@ -331,7 +288,7 @@ test.describe("Consumption Compare report", () => {
       async ({ authenticatedApi }, testInfo) => {
         const api = new ConsumptionCompareApi(authenticatedApi);
         const validator = new ConsumptionCompareValidator();
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const query = consumptionCompareLastMonthData;
         const first = await api.getConsumptionCompare(query);
         if (shouldSkipCommercialResponse(first.rawResponse.status(), first.responseBody)) {
@@ -367,10 +324,7 @@ test.describe("Consumption Compare report", () => {
         ]);
         expect(domesticFirst.rawResponse.status()).toBe(200);
         expect(nonDomesticFirst.rawResponse.status()).toBe(200);
-        const domesticView = getCommercialPaginatedView(
-          domesticFirst.responseBody.data,
-          pageQuery,
-        );
+        const domesticView = getCommercialPaginatedView(domesticFirst.responseBody.data, pageQuery);
         const nonDomesticView = getCommercialPaginatedView(
           nonDomesticFirst.responseBody.data,
           pageQuery,
@@ -397,14 +351,10 @@ test.describe("Consumption Compare report", () => {
           expect(res.rawResponse.status()).toBe(200);
         }
         validation.execute("Unfiltered page 1 uniqueness", () => {
-          validator.validateDuplicateContract(
-            mapConsumptionCompareResponse(first.responseBody),
-          );
+          validator.validateDuplicateContract(mapConsumptionCompareResponse(first.responseBody));
         });
         validation.execute(`Unfiltered last page ${lastPage} uniqueness`, () => {
-          validator.validateDuplicateContract(
-            mapConsumptionCompareResponse(last.responseBody),
-          );
+          validator.validateDuplicateContract(mapConsumptionCompareResponse(last.responseBody));
         });
         validation.execute("Domestic page 1 uniqueness", () => {
           validator.validateDuplicateContract(
@@ -426,20 +376,13 @@ test.describe("Consumption Compare report", () => {
             mapConsumptionCompareResponse(nonDomesticLast.responseBody),
           );
         });
-        validation.execute(
-          "Domestic last-page meters equal non-domestic last-page meters",
-          () => {
-            expect(
-              mapConsumptionCompareResponse(domesticLast.responseBody).map(
-                compareRowIdentity,
-              ),
-            ).toEqual(
-              mapConsumptionCompareResponse(nonDomesticLast.responseBody).map(
-                compareRowIdentity,
-              ),
-            );
-          },
-        );
+        validation.execute("Domestic last-page meters equal non-domestic last-page meters", () => {
+          expect(
+            mapConsumptionCompareResponse(domesticLast.responseBody).map(compareRowIdentity),
+          ).toEqual(
+            mapConsumptionCompareResponse(nonDomesticLast.responseBody).map(compareRowIdentity),
+          );
+        });
         ApiValidationHelper.finalize(validation, {
           apiName: "Consumption Compare Last Month first/last uniqueness",
           responseTime: first.responseTime,
@@ -450,8 +393,7 @@ test.describe("Consumption Compare report", () => {
             requestParams: { ...query, lastPage },
             responseStatus: first.rawResponse.status(),
             responseBody: first.responseBody,
-            expectedBehavior:
-              "meterLookupId unique. This report has no duplicate records.",
+            expectedBehavior: "meterLookupId unique. This report has no duplicate records.",
           },
         });
       },
@@ -463,7 +405,7 @@ test.describe("Consumption Compare report", () => {
       async ({ authenticatedApi }, testInfo) => {
         const api = new ConsumptionCompareApi(authenticatedApi);
         const validator = new ConsumptionCompareValidator();
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const pageSize = 500;
         const query = {
           ...consumptionCompareLastMonthData,
@@ -490,21 +432,15 @@ test.describe("Consumption Compare report", () => {
           allRows.push(...mapConsumptionCompareResponse(next.responseBody));
         }
         expect(allRows.length, "Last Month collected rows").toBe(view.totalCount);
-        writeCommercialDuplicateSnapshot(
-          consumptionCompareLastMonthData.type,
-          allRows,
-          (row) =>
-            [
-              formatCommercialMetricKey((row as { currKwh?: number }).currKwh),
-              formatCommercialMetricKey((row as { prevKwh?: number }).prevKwh),
-            ].join("|"),
+        writeCommercialDuplicateSnapshot(consumptionCompareLastMonthData.type, allRows, (row) =>
+          [
+            formatCommercialMetricKey((row as { currKwh?: number }).currKwh),
+            formatCommercialMetricKey((row as { prevKwh?: number }).prevKwh),
+          ].join("|"),
         );
         validation.execute("Collected uniqueness", () => {
           validator.validateDuplicateContract(allRows);
-          validator.validateBusinessRules(
-            allRows,
-            consumptionCompareLastMonthData.type,
-          );
+          validator.validateBusinessRules(allRows, consumptionCompareLastMonthData.type);
         });
         ApiValidationHelper.finalize(validation, {
           apiName: "Consumption Compare Last Month uniqueness across all pages",

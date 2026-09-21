@@ -3,26 +3,20 @@ import { ProgressApi } from "../Api/progress.api";
 import { progressData } from "../Data/progress.data";
 import { ProgressMapper } from "../Mapper/progress.mapper";
 import { ProgressValidator } from "../Validator/progress.validator";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Meter Replacement Progress API", () => {
   test(
     "Validate Meter Replacement Progress API",
     {
-      tag: [
-        "@meter-replacement",
-        "@progress",
-        "@smoke",
-      ],
+      tag: ["@meter-replacement", "@progress", "@smoke"],
     },
     async ({ authenticatedApi }) => {
       const api = new ProgressApi(authenticatedApi);
       const { maxResponseTime } = progressData;
 
-      const { rawResponse, responseBody, responseTime } =
-        await api.getProgress();
+      const { rawResponse, responseBody, responseTime } = await api.getProgress();
 
       await PerformanceTracker.track(
         rawResponse,
@@ -31,8 +25,8 @@ test.describe("Meter Replacement Progress API", () => {
         responseTime,
       );
 
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new ProgressValidator();
 
       // ----------------------------------------------------
@@ -43,30 +37,20 @@ test.describe("Meter Replacement Progress API", () => {
         assert.validateStatusCode(rawResponse, 200, responseBody),
       );
 
-      validation.execute("Content Type", () =>
-        assert.validateContentType(rawResponse),
-      );
+      validation.execute("Content Type", () => assert.validateContentType(rawResponse));
 
       validation.execute("Response Time", () =>
         assert.validateResponseTime(responseTime, maxResponseTime),
       );
 
-      validation.execute("Sensitive Data", () =>
-        assert.validateSensitiveData(responseBody),
-      );
+      validation.execute("Sensitive Data", () => assert.validateSensitiveData(responseBody));
 
       validation.execute("Required Root Fields", () =>
-        assert.validateRequiredFields(responseBody, [
-          "success",
-          "data",
-        ]),
+        assert.validateRequiredFields(responseBody, ["success", "data"]),
       );
 
       validation.execute("Required Data Fields", () =>
-        assert.validateRequiredFields(responseBody.data, [
-          "weekly",
-          "monthly",
-        ]),
+        assert.validateRequiredFields(responseBody.data, ["weekly", "monthly"]),
       );
 
       // ----------------------------------------------------
@@ -80,25 +64,17 @@ test.describe("Meter Replacement Progress API", () => {
       // Validator — Positive / Edge / Business
       // ----------------------------------------------------
 
-      validation.execute("Success", () =>
-        validator.validateSuccess(mapped.success),
-      );
+      validation.execute("Success", () => validator.validateSuccess(mapped.success));
 
-      validation.execute("Root Structure", () =>
-        validator.validateRootStructure(mapped),
-      );
+      validation.execute("Root Structure", () => validator.validateRootStructure(mapped));
 
       validation.execute("Required Chart Roots", () =>
         validator.validateRequiredRootFields(mapped),
       );
 
-      validation.execute("Weekly Object", () =>
-        validator.validateWeeklyObject(weekly),
-      );
+      validation.execute("Weekly Object", () => validator.validateWeeklyObject(weekly));
 
-      validation.execute("Monthly Object", () =>
-        validator.validateMonthlyObject(monthly),
-      );
+      validation.execute("Monthly Object", () => validator.validateMonthlyObject(monthly));
 
       validation.execute("Weekly Required Fields", () =>
         validator.validateChartRequiredFields(weekly),
@@ -108,33 +84,23 @@ test.describe("Meter Replacement Progress API", () => {
         validator.validateChartRequiredFields(monthly),
       );
 
-      validation.execute("Weekly Types", () =>
-        validator.validateChartTypes(weekly),
-      );
+      validation.execute("Weekly Types", () => validator.validateChartTypes(weekly));
 
-      validation.execute("Monthly Types", () =>
-        validator.validateChartTypes(monthly),
-      );
+      validation.execute("Monthly Types", () => validator.validateChartTypes(monthly));
 
       validation.execute("Charts Are Plain Objects", () =>
         validator.validateChartsArePlainObjects(mapped),
       );
 
-      validation.execute("Weekly Bucket Count", () =>
-        validator.validateWeeklyBucketCount(weekly),
-      );
+      validation.execute("Weekly Bucket Count", () => validator.validateWeeklyBucketCount(weekly));
 
       validation.execute("Monthly Bucket Count", () =>
         validator.validateMonthlyBucketCount(monthly),
       );
 
-      validation.execute("Weekly Labels", () =>
-        validator.validateWeeklyLabels(weekly),
-      );
+      validation.execute("Weekly Labels", () => validator.validateWeeklyLabels(weekly));
 
-      validation.execute("Monthly Labels", () =>
-        validator.validateMonthlyLabels(monthly),
-      );
+      validation.execute("Monthly Labels", () => validator.validateMonthlyLabels(monthly));
 
       validation.execute("Weekly Ordered Labels", () =>
         validator.validateWeeklyOrderedLabels(weekly),
@@ -144,9 +110,7 @@ test.describe("Meter Replacement Progress API", () => {
         validator.validateMonthlyOrderedLabels(monthly),
       );
 
-      validation.execute("Weekly Label Format", () =>
-        validator.validateWeeklyLabelFormat(weekly),
-      );
+      validation.execute("Weekly Label Format", () => validator.validateWeeklyLabelFormat(weekly));
 
       validation.execute("Monthly Label Format", () =>
         validator.validateMonthlyLabelFormat(monthly),
@@ -160,29 +124,19 @@ test.describe("Meter Replacement Progress API", () => {
         validator.validateLabelsAreStrings(monthly),
       );
 
-      validation.execute("Weekly Labels Trimmed", () =>
-        validator.validateLabelsTrimmed(weekly),
-      );
+      validation.execute("Weekly Labels Trimmed", () => validator.validateLabelsTrimmed(weekly));
 
-      validation.execute("Monthly Labels Trimmed", () =>
-        validator.validateLabelsTrimmed(monthly),
-      );
+      validation.execute("Monthly Labels Trimmed", () => validator.validateLabelsTrimmed(monthly));
 
-      validation.execute("Weekly Labels Not Empty", () =>
-        validator.validateLabelsNotEmpty(weekly),
-      );
+      validation.execute("Weekly Labels Not Empty", () => validator.validateLabelsNotEmpty(weekly));
 
       validation.execute("Monthly Labels Not Empty", () =>
         validator.validateLabelsNotEmpty(monthly),
       );
 
-      validation.execute("Weekly Unique Labels", () =>
-        validator.validateUniqueLabels(weekly),
-      );
+      validation.execute("Weekly Unique Labels", () => validator.validateUniqueLabels(weekly));
 
-      validation.execute("Monthly Unique Labels", () =>
-        validator.validateUniqueLabels(monthly),
-      );
+      validation.execute("Monthly Unique Labels", () => validator.validateUniqueLabels(monthly));
 
       validation.execute("No Extra Weekly Label", () =>
         validator.validateNoExtraWeeklyLabel(weekly),
@@ -224,13 +178,9 @@ test.describe("Meter Replacement Progress API", () => {
         validator.validateValuesSafeInteger(monthly),
       );
 
-      validation.execute("Weekly Values Not Null", () =>
-        validator.validateValuesNotNull(weekly),
-      );
+      validation.execute("Weekly Values Not Null", () => validator.validateValuesNotNull(weekly));
 
-      validation.execute("Monthly Values Not Null", () =>
-        validator.validateValuesNotNull(monthly),
-      );
+      validation.execute("Monthly Values Not Null", () => validator.validateValuesNotNull(monthly));
 
       validation.execute("Weekly Length Parity", () =>
         validator.validateLabelsValuesLengthParity(weekly),
@@ -264,13 +214,9 @@ test.describe("Meter Replacement Progress API", () => {
         validator.validateChartNoExtraFields(monthly),
       );
 
-      validation.execute("Root Object Size", () =>
-        validator.validateRootObjectSize(mapped),
-      );
+      validation.execute("Root Object Size", () => validator.validateRootObjectSize(mapped));
 
-      validation.execute("No Extra Root Fields", () =>
-        validator.validateNoExtraRootFields(mapped),
-      );
+      validation.execute("No Extra Root Fields", () => validator.validateNoExtraRootFields(mapped));
 
       validation.execute("No Null Critical Fields", () =>
         validator.validateNoNullCriticalFields(mapped),
@@ -280,9 +226,7 @@ test.describe("Meter Replacement Progress API", () => {
         validator.validateNoUndefinedCriticalFields(mapped),
       );
 
-      validation.execute("Response Integrity", () =>
-        validator.validateResponseIntegrity(mapped),
-      );
+      validation.execute("Response Integrity", () => validator.validateResponseIntegrity(mapped));
 
       validation.execute("Weekly Monthly Independence", () =>
         validator.validateWeeklyMonthlyIndependence(mapped),
@@ -300,14 +244,9 @@ test.describe("Meter Replacement Progress API", () => {
         validator.validateMonthlySumNonNegative(monthly),
       );
 
-      validation.execute("Business Rules", () =>
-        validator.validateBusinessRules(mapped),
-      );
+      validation.execute("Business Rules", () => validator.validateBusinessRules(mapped));
 
-      validation.printSummary(
-        "Meter Replacement Progress API",
-        responseTime,
-      );
+      validation.printSummary("Meter Replacement Progress API", responseTime);
     },
   );
 });

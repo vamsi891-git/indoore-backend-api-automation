@@ -1,4 +1,4 @@
-﻿import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
+﻿import { compareApiToDb, type DbCompareObs } from "../../../extras/db/db-compare.engine";
 import type { DbAuditLogRow } from "./audit-logs.db";
 
 export function compareAuditLogsCountLteDb(options: {
@@ -67,10 +67,7 @@ export function compareAuditLogSpotToDb(options: {
       {
         label: "actorEmail",
         apiValue: api.actorEmail == null ? null : trimText(api.actorEmail).toLowerCase(),
-        dbValue:
-          dbRow.actorEmail == null
-            ? null
-            : trimText(dbRow.actorEmail).toLowerCase(),
+        dbValue: dbRow.actorEmail == null ? null : trimText(dbRow.actorEmail).toLowerCase(),
         optional: true,
       },
       {

@@ -2,7 +2,7 @@
   compareApiToDb,
   logDbVsApiSection,
   type DbCompareObs,
-} from "../../../core/db/db-compare.engine";
+} from "../../../extras/db/db-compare.engine";
 import type { DbNotificationRow, DbNotificationStats } from "./notifications.db";
 
 /**

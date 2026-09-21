@@ -9,15 +9,14 @@ import {
   InviteUserResponseSchema,
   SentInvitationsListResponseSchema,
 } from "../schemas/auth.schemas";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import {
   findReusablePendingInvitation,
   INVITE_PROVISION_TEST_TIMEOUT_MS,
   inviteUserWithRetry,
   isInviteTransientStatus,
 } from "../utils/invite-provision.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 // SKIPPED: add consumer/DTR/meter/user/role scenarios are commented out (mutating).
 test.describe.skip("Auth Invite Delete API", () => {
@@ -31,8 +30,8 @@ test.describe.skip("Auth Invite Delete API", () => {
     { tag: ["@auth", "@invite"] },
     async ({ authenticatedApi }) => {
       const api = new InviteApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new InviteValidator();
 
       const rolesResponse = await api.getRoles();
@@ -43,8 +42,7 @@ test.describe.skip("Auth Invite Delete API", () => {
       );
       const reusable = await findReusablePendingInvitation(api);
       let invitationId = reusable?.invitationId ?? "";
-      let inviteResponse: Awaited<ReturnType<typeof inviteUserWithRetry>> | null =
-        null;
+      let inviteResponse: Awaited<ReturnType<typeof inviteUserWithRetry>> | null = null;
 
       if (!invitationId) {
         const inviteEmail = buildUniqueInviteEmail("delete-invite");
@@ -55,9 +53,7 @@ test.describe.skip("Auth Invite Delete API", () => {
 
         const createStatus = inviteResponse.rawResponse.status();
         if (createStatus === 201) {
-          const parsed = InviteUserResponseSchema.parse(
-            inviteResponse.responseBody,
-          );
+          const parsed = InviteUserResponseSchema.parse(inviteResponse.responseBody);
           invitationId = parsed.data.invitationId;
         } else {
           const fallback = await findReusablePendingInvitation(api);
@@ -78,11 +74,11 @@ test.describe.skip("Auth Invite Delete API", () => {
 
         if (inviteResponse.rawResponse.status() === 201) {
           await PerformanceTracker.track(
-        inviteResponse.rawResponse,
-        "Auth Invite Delete API — Create",
-        inviteResponse.rawResponse.url(),
-        inviteResponse.responseTime
-      );
+            inviteResponse.rawResponse,
+            "Auth Invite Delete API — Create",
+            inviteResponse.rawResponse.url(),
+            inviteResponse.responseTime,
+          );
         }
       }
 
@@ -92,7 +88,7 @@ test.describe.skip("Auth Invite Delete API", () => {
         deleteResponse.rawResponse,
         "Auth Invite Delete API",
         deleteResponse.rawResponse.url(),
-        deleteResponse.responseTime
+        deleteResponse.responseTime,
       );
 
       const listResponse = await api.listMyInvitations({
@@ -112,9 +108,7 @@ test.describe.skip("Auth Invite Delete API", () => {
           );
         }
         validation.execute("Delete Status", () =>
-          validator.validateDeleteInvitationSuccess(
-            deleteResponse.rawResponse.status(),
-          ),
+          validator.validateDeleteInvitationSuccess(deleteResponse.rawResponse.status()),
         );
         validation.execute("Delete Response Time", () =>
           assert.validateResponseTime(
@@ -146,12 +140,10 @@ test.describe.skip("Auth Invite Delete API", () => {
     { tag: ["@auth", "@invite"] },
     async ({ authenticatedApi }) => {
       const api = new InviteApi(authenticatedApi);
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const validator = new InviteValidator();
 
-      const deleteResponse = await api.deleteInvitation(
-        InviteTestData.notFoundInvitationId,
-      );
+      const deleteResponse = await api.deleteInvitation(InviteTestData.notFoundInvitationId);
 
       try {
         validation.execute("Delete Not Found Contract", () =>

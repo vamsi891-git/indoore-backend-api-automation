@@ -148,7 +148,8 @@ export interface DtrBillingTestCase {
   scenario: DtrBillingScenario;
   tags: string[];
   isContractFixture?: boolean;
-  expectedStatus?: number;
+  expectedStatus?: number;  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 /** @deprecated Use resolveDtrBillingQuery — kept for backward compatibility. */
@@ -218,78 +219,92 @@ export const dtrBillingTestCases: DtrBillingTestCase[] = [
     testName: "DTR billing — 1–30 Oct 2025 first page (null total is valid)",
     scenario: "dev_live_without_total",
     tags: ["@smoke", "@reports", "@dtr-billing"],
+    nonEmptyExpected: true,
   },
   {
     testName: "DTR billing — includeTotal still shows the same columns",
     scenario: "dev_live_include_total",
     tags: ["@reports", "@dtr-billing", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR billing — showing 1 per page still lists a meter",
     scenario: "dev_limit_one",
     tags: ["@reports", "@dtr-billing", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR billing — a far page is empty or still consistent",
     scenario: "dev_live_page_beyond",
     tags: ["@reports", "@dtr-billing", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR billing — unknown query params are ignored",
     scenario: "dev_ignore_unknown_query",
     tags: ["@reports", "@dtr-billing", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR billing — duplicate meter serials are sent once",
     scenario: "edge_duplicate_meter_serials",
     tags: ["@reports", "@dtr-billing", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR billing — Oct 2025 fixture (null total, hasMore)",
     scenario: "contract_live_oct_2025",
     isContractFixture: true,
     tags: ["@reports", "@dtr-billing", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR billing — empty page fixture",
     scenario: "contract_empty_page",
     isContractFixture: true,
     tags: ["@reports", "@dtr-billing", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR billing — fromDate after toDate is rejected",
     scenario: "invalid_date_range",
     expectedStatus: 400,
     tags: ["@reports", "@dtr-billing", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR billing — invalid fromDate is rejected",
     scenario: "invalid_from_date",
     expectedStatus: 400,
     tags: ["@reports", "@dtr-billing", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR billing — missing fromDate is rejected",
     scenario: "missing_from_date",
     expectedStatus: 400,
     tags: ["@reports", "@dtr-billing", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR billing — missing toDate is rejected",
     scenario: "missing_to_date",
     expectedStatus: 400,
     tags: ["@reports", "@dtr-billing", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR billing — page 0 is rejected (page must start at 1)",
     scenario: "invalid_page",
     expectedStatus: 400,
     tags: ["@reports", "@dtr-billing", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "DTR billing — limit 0 is rejected (limit must be at least 1)",
     scenario: "invalid_limit",
     expectedStatus: 400,
     tags: ["@reports", "@dtr-billing", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

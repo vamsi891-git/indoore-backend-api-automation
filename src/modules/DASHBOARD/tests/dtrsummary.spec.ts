@@ -1,137 +1,98 @@
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { DtrSummaryApi } from "../Api/dtrsummary.api";
 import {
-    dtrSummaryMaxResponseTimeMs,
-    dtrSummaryTestCases,
-    resolveDtrSummaryContractBody,
-    resolveDtrSummaryExpectedPeriod,
-    resolveDtrSummaryQuery,
+  dtrSummaryMaxResponseTimeMs,
+  dtrSummaryTestCases,
+  resolveDtrSummaryContractBody,
+  resolveDtrSummaryExpectedPeriod,
+  resolveDtrSummaryQuery,
 } from "../Data/dtrssummary.data";
-import {
-    DtrSummaryMapper,
-    type DtrSummaryErrorResponse,
-} from "../Mapper/dtrsummary.mapper";
+import { DtrSummaryMapper, type DtrSummaryErrorResponse } from "../Mapper/dtrsummary.mapper";
 import { DtrSummaryValidator } from "../Validator/dtrsummary.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Dashboard — DTR summary cards", () => {
-    test.describe.configure({ retries: 1 });
-    test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
+  test.describe.configure({ retries: 1 });
+  test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
 
-    for (const testCase of dtrSummaryTestCases) {
-        test(
-            testCase.testName,
-            { tag: testCase.tags },
-            async ({ authenticatedApi }) => {
-                const expectedStatus = testCase.expectedStatus ?? 200;
-                const validator = new DtrSummaryValidator();
-                const assert = new AssertionEngine();
-                const validation = new ValidationEngine();
+  for (const testCase of dtrSummaryTestCases) {
+    test(testCase.testName, { tag: testCase.tags }, async ({ authenticatedApi }) => {
+      const expectedStatus = testCase.expectedStatus ?? 200;
+      const validator = new DtrSummaryValidator();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
 
-                if (testCase.isContractFixture) {
-                    const fixtureBody = resolveDtrSummaryContractBody(
-                        testCase.scenario,
-                    );
-                    if (!fixtureBody) {
-                        test.skip(true, "Missing DTR summary contract body");
-                        return;
-                    }
+      if (testCase.isContractFixture) {
+        const fixtureBody = resolveDtrSummaryContractBody(testCase.scenario);
+        if (!fixtureBody) {
+          test.skip(true, "Missing DTR summary contract body");
+          return;
+        }
 
-                    const mapped = DtrSummaryMapper.map(fixtureBody);
-                    validation.execute("Required Fields", () =>
-                        assert.validateRequiredFields(fixtureBody, [
-                            "success",
-                            "data",
-                        ]),
-                    );
-                    validation.execute("Contract Scenario", () =>
-                        validator.validateScenario(mapped, testCase.scenario),
-                    );
-                    validation.printSummary(testCase.testName, 0);
-                    return;
-                }
+        const mapped = DtrSummaryMapper.map(fixtureBody);
+        validation.execute("Required Fields", () =>
+          assert.validateRequiredFields(fixtureBody, ["success", "data"]),
+        );
+        validation.execute("Contract Scenario", () =>
+          validator.validateScenario(mapped, testCase.scenario),
+        );
+        validation.printSummary(testCase.testName, 0);
+        return;
+      }
 
-                const api = new DtrSummaryApi(authenticatedApi);
-                const query = resolveDtrSummaryQuery(testCase.scenario);
-                const expectedPeriod = resolveDtrSummaryExpectedPeriod(
-                    testCase.scenario,
-                );
-                const queryString = new URLSearchParams(
-                    Object.entries(query).reduce<Record<string, string>>(
-                        (acc, [key, value]) => {
-                            if (value !== undefined) {
-                                acc[key] = String(value);
-                            }
-                            return acc;
-                        },
-                        {},
-                    ),
-                ).toString();
+      const api = new DtrSummaryApi(authenticatedApi);
+      const query = resolveDtrSummaryQuery(testCase.scenario);
+      const expectedPeriod = resolveDtrSummaryExpectedPeriod(testCase.scenario);
+      const queryString = new URLSearchParams(
+        Object.entries(query).reduce<Record<string, string>>((acc, [key, value]) => {
+          if (value !== undefined) {
+            acc[key] = String(value);
+          }
+          return acc;
+        }, {}),
+      ).toString();
 
-                const { rawResponse, responseBody, responseTime } =
-                    await api.getDtrSummary(query);
+      const { rawResponse, responseBody, responseTime } = await api.getDtrSummary(query);
 
-                await PerformanceTracker.track(
+      await PerformanceTracker.track(
         rawResponse,
         testCase.testName,
         rawResponse.url(),
-        responseTime
+        responseTime,
       );
 
-                validation.execute("Status Validation", () =>
-                    assert.validateStatusCode(
-                        rawResponse,
-                        expectedStatus,
-                        responseBody,
-                    ),
-                );
-                validation.execute("Content Type", () =>
-                    assert.validateContentType(rawResponse),
-                );
-                validation.execute("Response Time", () =>
-                    assert.validateResponseTime(
-                        responseTime,
-                        dtrSummaryMaxResponseTimeMs,
-                    ),
-                );
-                validation.execute("Sensitive Data", () =>
-                    assert.validateSensitiveData(responseBody),
-                );
+      validation.execute("Status Validation", () =>
+        assert.validateStatusCode(rawResponse, expectedStatus, responseBody),
+      );
+      validation.execute("Content Type", () => assert.validateContentType(rawResponse));
+      validation.execute("Response Time", () =>
+        assert.validateResponseTime(responseTime, dtrSummaryMaxResponseTimeMs),
+      );
+      validation.execute("Sensitive Data", () => assert.validateSensitiveData(responseBody));
 
-                if (testCase.scenario === "invalid_period") {
-                    validation.execute("Invalid Period Error", () =>
-                        validator.validateInvalidPeriodError(
-                            responseBody as DtrSummaryErrorResponse,
-                        ),
-                    );
-                    validation.printSummary(testCase.testName, responseTime);
-                    return;
-                }
-
-                validation.execute("Required Fields", () =>
-                    assert.validateRequiredFields(responseBody, [
-                        "success",
-                        "data",
-                    ]),
-                );
-
-                const mapped = DtrSummaryMapper.map(responseBody);
-                validation.execute("Response Envelope", () =>
-                    validator.validateResponseEnvelope(responseBody),
-                );
-                validation.execute("DTR Summary Scenario", () =>
-                    validator.validateScenario(
-                        mapped,
-                        testCase.scenario,
-                        expectedPeriod,
-                    ),
-                );
-
-                validation.printSummary(testCase.testName, responseTime);
-            },
+      if (testCase.scenario === "invalid_period") {
+        validation.execute("Invalid Period Error", () =>
+          validator.validateInvalidPeriodError(responseBody as DtrSummaryErrorResponse),
         );
-    }
+        validation.printSummary(testCase.testName, responseTime);
+        return;
+      }
+
+      validation.execute("Required Fields", () =>
+        assert.validateRequiredFields(responseBody, ["success", "data"]),
+      );
+
+      const mapped = DtrSummaryMapper.map(responseBody);
+      validation.execute("Response Envelope", () =>
+        validator.validateResponseEnvelope(responseBody),
+      );
+      validation.execute("DTR Summary Scenario", () =>
+        validator.validateScenario(mapped, testCase.scenario, expectedPeriod),
+      );
+
+      validation.printSummary(testCase.testName, responseTime);
+    });
+  }
 });

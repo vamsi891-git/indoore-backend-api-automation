@@ -1,13 +1,13 @@
 import type pg from "pg";
 import type { APIRequestContext } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { CommStatsApi } from "../Api/communicationstats.api";
 import { commStatsQuery } from "../Data/communicationstats.data";
 import { CommStatsMapper } from "../Mapper/communicationstats.mapper";
 import { getMisCommStatsUnscoped } from "../Db/mis-dashboard.db";
 import { compareMisDashboardCountLteDb } from "../Db/mis-dashboard-db-compare";
 import { logMisDashboardDataQualityFindings } from "../Db/mis-dashboard-db.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 /**
  * Part 4 harness — live comm-stats cards ≤ unscoped L_Meter_Lookup universe
@@ -17,7 +17,7 @@ export async function runMisDashboardDbCoverage(
   authenticatedApi: APIRequestContext,
   db: pg.Pool,
 ): Promise<void> {
-  const validation = new ValidationEngine();
+  const validation = new ApiValidationHelper();
   const api = new CommStatsApi(authenticatedApi);
   const { rawResponse, responseBody } = await api.getCommStats(commStatsQuery);
   expect(rawResponse.status()).toBe(200);
@@ -48,16 +48,13 @@ export async function runMisDashboardDbCoverage(
     });
   });
 
-  validation.execute(
-    "Comm-stats nonOperationalMeters ≤ unscoped DB nonOperational",
-    () => {
-      compareMisDashboardCountLteDb({
-        label: "mis.commStats.nonOperationalMeters",
-        apiCount: mapped.nonOperationalMeters.value,
-        dbCount: dbStats.nonOperational,
-      });
-    },
-  );
+  validation.execute("Comm-stats nonOperationalMeters ≤ unscoped DB nonOperational", () => {
+    compareMisDashboardCountLteDb({
+      label: "mis.commStats.nonOperationalMeters",
+      apiCount: mapped.nonOperationalMeters.value,
+      dbCount: dbStats.nonOperational,
+    });
+  });
 
   // Unmapped can exceed a naive unscoped FILTER when meter_master join
   // cardinality / env drift differs from the API process — soft-find only.
@@ -66,16 +63,13 @@ export async function runMisDashboardDbCoverage(
       `[BACKEND FINDING] comm-stats unmappedMeters API=${mapped.unmappedMeters.value} > DB=${dbStats.unmapped} (soft; not failing)`,
     );
   } else {
-    validation.execute(
-      "Comm-stats unmappedMeters ≤ unscoped DB unmapped",
-      () => {
-        compareMisDashboardCountLteDb({
-          label: "mis.commStats.unmappedMeters",
-          apiCount: mapped.unmappedMeters.value,
-          dbCount: dbStats.unmapped,
-        });
-      },
-    );
+    validation.execute("Comm-stats unmappedMeters ≤ unscoped DB unmapped", () => {
+      compareMisDashboardCountLteDb({
+        label: "mis.commStats.unmappedMeters",
+        apiCount: mapped.unmappedMeters.value,
+        dbCount: dbStats.unmapped,
+      });
+    });
   }
   validation.printSummary("MIS-DASHBOARD DB Coverage", 0);
 }

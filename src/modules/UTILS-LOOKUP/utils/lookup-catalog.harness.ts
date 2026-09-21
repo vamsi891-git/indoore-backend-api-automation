@@ -1,11 +1,8 @@
 import { test } from "../../../fixtures/api.fixture";
 import { UTILS_LOOKUP_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import type { APIRequestContext } from "@playwright/test";
-import {
-  runLookupApiTest,
-  type LookupApiResult,
-  type LookupTestCase,
-} from "./lookup-spec.harness";
+import { runLookupApiTest, type LookupApiResult, type LookupTestCase } from "./lookup-spec.harness";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 export function registerCatalogLookupTests<
   T extends LookupTestCase & { scenario: string },
@@ -16,7 +13,7 @@ export function registerCatalogLookupTests<
   validate: (
     scenario: T["scenario"],
     responseBody: unknown,
-    validation: import("../../../core/engine/validation.engine").ValidationEngine,
+    validation: ApiValidationHelper,
   ) => void;
 }): void {
   test.describe(options.describeTitle, () => {
@@ -24,19 +21,15 @@ export function registerCatalogLookupTests<
     test.setTimeout(UTILS_LOOKUP_TEST_TIMEOUT_MS);
 
     for (const testCase of options.testCases) {
-      test(
-        testCase.testName,
-        { tag: testCase.tags },
-        async ({ authenticatedApi }) => {
-          await runLookupApiTest({
-            testCase,
-            fetch: () => options.fetch(authenticatedApi),
-            onSuccess: ({ validation, responseBody }) => {
-              options.validate(testCase.scenario, responseBody, validation);
-            },
-          });
-        },
-      );
+      test(testCase.testName, { tag: testCase.tags }, async ({ authenticatedApi }) => {
+        await runLookupApiTest({
+          testCase,
+          fetch: () => options.fetch(authenticatedApi),
+          onSuccess: ({ validation, responseBody }) => {
+            options.validate(testCase.scenario, responseBody, validation);
+          },
+        });
+      });
     }
   });
 }
@@ -48,14 +41,11 @@ export function registerSearchLookupTests<
   describeTitle: string;
   testCases: T[];
   resolveQuery: (scenario: T["scenario"]) => Q;
-  fetch: (
-    authenticatedApi: APIRequestContext,
-    query: Q,
-  ) => Promise<LookupApiResult>;
+  fetch: (authenticatedApi: APIRequestContext, query: Q) => Promise<LookupApiResult>;
   validate: (
     scenario: T["scenario"],
     responseBody: unknown,
-    validation: import("../../../core/engine/validation.engine").ValidationEngine,
+    validation: ApiValidationHelper,
   ) => void;
 }): void {
   test.describe(options.describeTitle, () => {
@@ -63,20 +53,16 @@ export function registerSearchLookupTests<
     test.setTimeout(UTILS_LOOKUP_TEST_TIMEOUT_MS);
 
     for (const testCase of options.testCases) {
-      test(
-        testCase.testName,
-        { tag: testCase.tags },
-        async ({ authenticatedApi }) => {
-          const query = options.resolveQuery(testCase.scenario);
-          await runLookupApiTest({
-            testCase,
-            fetch: () => options.fetch(authenticatedApi, query),
-            onSuccess: ({ validation, responseBody }) => {
-              options.validate(testCase.scenario, responseBody, validation);
-            },
-          });
-        },
-      );
+      test(testCase.testName, { tag: testCase.tags }, async ({ authenticatedApi }) => {
+        const query = options.resolveQuery(testCase.scenario);
+        await runLookupApiTest({
+          testCase,
+          fetch: () => options.fetch(authenticatedApi, query),
+          onSuccess: ({ validation, responseBody }) => {
+            options.validate(testCase.scenario, responseBody, validation);
+          },
+        });
+      });
     }
   });
 }

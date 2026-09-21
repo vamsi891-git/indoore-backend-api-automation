@@ -3,12 +3,7 @@ import { test } from "../../../fixtures/api.fixture";
 import { DayNightApi } from "../Api/daynight.api";
 import { mapDayNightResponse } from "../Mapper/daynight.mapper";
 import { DayNightValidator } from "../Validator/daynight.validator";
-import {
-  DAY_NIGHT_TYPE_CONFIG,
-  dayNightValidatableQueries,
-} from "../Data/daynight.data";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { DAY_NIGHT_TYPE_CONFIG, dayNightValidatableQueries } from "../Data/daynight.data";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 import { CONSUMPTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import {
@@ -20,13 +15,9 @@ import { shouldSkipCommercialResponse } from "../utils/commercial-request.helper
 import type { DayNightRow } from "../Mapper/daynight.mapper";
 
 function dayNightRowIdentity(row: DayNightRow): string {
-  return [
-    row.meterLookupId,
-    row.msn,
-    row.count ?? "",
-    row.dayKwh ?? "",
-    row.nightKwh ?? "",
-  ].join("|");
+  return [row.meterLookupId, row.msn, row.count ?? "", row.dayKwh ?? "", row.nightKwh ?? ""].join(
+    "|",
+  );
 }
 
 test.describe("Day and Night consumption report", () => {
@@ -39,14 +30,10 @@ test.describe("Day and Night consumption report", () => {
       { tag: ["@smoke", "@day-night"] },
       async ({ authenticatedApi }, testInfo) => {
         const api = new DayNightApi(authenticatedApi);
-        const { rawResponse, responseBody, responseTime } =
-          await api.getDayNight(query);
+        const { rawResponse, responseBody, responseTime } = await api.getDayNight(query);
 
         if (shouldSkipCommercialResponse(rawResponse.status(), responseBody)) {
-          test.skip(
-            true,
-            `Day-night ${query.type} unavailable (HTTP ${rawResponse.status()})`,
-          );
+          test.skip(true, `Day-night ${query.type} unavailable (HTTP ${rawResponse.status()})`);
           return;
         }
 
@@ -63,8 +50,8 @@ test.describe("Day and Night consumption report", () => {
               : "Grid { nightKwh, dayKwh }, night <= 10% of day. Unique meterLookupId. Same MSN is a duplicate only when night/day kWh match. connectionCategory is stripped. This report has no duplicate records.",
         };
 
-        const assert = new AssertionEngine();
-        const validation = new ValidationEngine();
+        const assert = new ApiValidationHelper();
+        const validation = new ApiValidationHelper();
         const validator = new DayNightValidator();
 
         try {
@@ -105,9 +92,7 @@ test.describe("Day and Night consumption report", () => {
           validation.execute("Day-Night Business Rules", () =>
             validator.validateBusinessRules(rows, cfg.kind),
           );
-          validation.execute("Duplicate contract", () =>
-            validator.validateDuplicateContract(rows),
-          );
+          validation.execute("Duplicate contract", () => validator.validateDuplicateContract(rows));
           validation.execute("Pagination Validation", () =>
             validator.validatePagination(responseBody, query),
           );
@@ -154,10 +139,7 @@ test.describe("Day and Night consumption report", () => {
           return;
         }
 
-        const responseTime = Math.max(
-          domesticRes.responseTime,
-          nonDomesticRes.responseTime,
-        );
+        const responseTime = Math.max(domesticRes.responseTime, nonDomesticRes.responseTime);
         const defectContext = {
           module: "COMMERICIAL-ANALYSIS",
           endpoint: domesticRes.rawResponse.url(),
@@ -171,18 +153,12 @@ test.describe("Day and Night consumption report", () => {
             "connectionCategory is stripped. domestic.total === non-domestic total (Night Zero 1130, LTE 2332). Page-1 meters match. No duplicate records.",
         };
 
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         try {
-          const statuses = [
-            domesticRes.rawResponse.status(),
-            nonDomesticRes.rawResponse.status(),
-          ];
+          const statuses = [domesticRes.rawResponse.status(), nonDomesticRes.rawResponse.status()];
           if (
             statuses.some((status, i) =>
-              shouldSkipCommercialResponse(
-                status,
-                [domesticRes, nonDomesticRes][i]!.responseBody,
-              ),
+              shouldSkipCommercialResponse(status, [domesticRes, nonDomesticRes][i]!.responseBody),
             )
           ) {
             test.skip(
@@ -240,32 +216,24 @@ test.describe("Day and Night consumption report", () => {
             ),
           });
 
-          validation.execute(
-            "Domestic pagination.total equals non-domestic total",
-            () => {
-              expect(domesticView.totalCount).toBeGreaterThan(0);
-              expect(nonDomesticView.totalCount).toBe(domesticView.totalCount);
-            },
-          );
+          validation.execute("Domestic pagination.total equals non-domestic total", () => {
+            expect(domesticView.totalCount).toBeGreaterThan(0);
+            expect(nonDomesticView.totalCount).toBe(domesticView.totalCount);
+          });
           const validator = new DayNightValidator();
           const domesticRows = mapDayNightResponse(domesticRes.responseBody);
-          const nonDomesticRows = mapDayNightResponse(
-            nonDomesticRes.responseBody,
-          );
+          const nonDomesticRows = mapDayNightResponse(nonDomesticRes.responseBody);
           validation.execute("Domestic page uniqueness", () => {
             validator.validateDuplicateContract(domesticRows);
           });
           validation.execute("Non-domestic page uniqueness", () => {
             validator.validateDuplicateContract(nonDomesticRows);
           });
-          validation.execute(
-            "Domestic page-1 meters equal non-domestic page-1 meters",
-            () => {
-              expect(domesticRows.map(dayNightRowIdentity)).toEqual(
-                nonDomesticRows.map(dayNightRowIdentity),
-              );
-            },
-          );
+          validation.execute("Domestic page-1 meters equal non-domestic page-1 meters", () => {
+            expect(domesticRows.map(dayNightRowIdentity)).toEqual(
+              nonDomesticRows.map(dayNightRowIdentity),
+            );
+          });
         } finally {
           ApiValidationHelper.finalize(validation, {
             apiName: `Day Night API (${query.type} connectionCategory ignored)`,
@@ -287,7 +255,7 @@ test.describe("Day and Night consumption report", () => {
         async ({ authenticatedApi }, testInfo) => {
           const api = new DayNightApi(authenticatedApi);
           const validator = new DayNightValidator();
-          const validation = new ValidationEngine();
+          const validation = new ApiValidationHelper();
           const first = await api.getDayNight(query);
           if (shouldSkipCommercialResponse(first.rawResponse.status(), first.responseBody)) {
             test.skip(
@@ -313,9 +281,7 @@ test.describe("Day and Night consumption report", () => {
           });
           expect(nonDomesticFirst.rawResponse.status()).toBe(200);
           const [last, nonDomesticLast] = await Promise.all([
-            lastPage === 1
-              ? Promise.resolve(first)
-              : api.getDayNight({ ...query, page: lastPage }),
+            lastPage === 1 ? Promise.resolve(first) : api.getDayNight({ ...query, page: lastPage }),
             lastPage === 1
               ? Promise.resolve(nonDomesticFirst)
               : api.getDayNight({
@@ -334,27 +300,16 @@ test.describe("Day and Night consumption report", () => {
             validator.validateDuplicateContract(mapDayNightResponse(last.responseBody));
           });
           validation.execute("Non-domestic page 1 uniqueness", () => {
-            validator.validateDuplicateContract(
-              mapDayNightResponse(nonDomesticFirst.responseBody),
-            );
+            validator.validateDuplicateContract(mapDayNightResponse(nonDomesticFirst.responseBody));
           });
-          validation.execute(
-            `Non-domestic last page ${lastPage} uniqueness`,
-            () => {
-              validator.validateDuplicateContract(
-                mapDayNightResponse(nonDomesticLast.responseBody),
-              );
-            },
-          );
+          validation.execute(`Non-domestic last page ${lastPage} uniqueness`, () => {
+            validator.validateDuplicateContract(mapDayNightResponse(nonDomesticLast.responseBody));
+          });
           validation.execute(
             "Domestic last-page meters equal non-domestic last-page meters",
             () => {
-              expect(
-                mapDayNightResponse(last.responseBody).map(dayNightRowIdentity),
-              ).toEqual(
-                mapDayNightResponse(nonDomesticLast.responseBody).map(
-                  dayNightRowIdentity,
-                ),
+              expect(mapDayNightResponse(last.responseBody).map(dayNightRowIdentity)).toEqual(
+                mapDayNightResponse(nonDomesticLast.responseBody).map(dayNightRowIdentity),
               );
             },
           );
@@ -368,8 +323,7 @@ test.describe("Day and Night consumption report", () => {
               requestParams: { ...query, lastPage },
               responseStatus: first.rawResponse.status(),
               responseBody: first.responseBody,
-              expectedBehavior:
-                "meterLookupId unique. No duplicate records on this report.",
+              expectedBehavior: "meterLookupId unique. No duplicate records on this report.",
             },
           });
         },

@@ -1,6 +1,10 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { EnergyConsumptionGraphQuery } from "../Api/energyconsumptiongraph.api";
-import type {EnergyConsumptionGraphResponse,EnergyConsumptionGraphScenario,EnergyConsumptionPeriod,} from "../Mapper/energyconsumptiongraph.mapper";
+import type {
+  EnergyConsumptionGraphResponse,
+  EnergyConsumptionGraphScenario,
+  EnergyConsumptionPeriod,
+} from "../Mapper/energyconsumptiongraph.mapper";
 import {
   CONSUMERS_LIVE_IVRS,
   CONSUMERS_LIVE_METER_ROUTE,
@@ -8,8 +12,7 @@ import {
   resolveLiveIvrs,
   resolveLiveMeterRoute,
 } from "./consumers-live-refs";
-export const energyConsumptionGraphMaxResponseTimeMs =
-  MASTER_DATA_MAX_RESPONSE_TIME_MS;
+export const energyConsumptionGraphMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 /** IVRS from live RTP/PQ sample; archive may return all-zero consumption. */
 export const energyConsumptionGraphDefaultIvrs = CONSUMERS_LIVE_IVRS;
 export const energyConsumptionGraphDefaultConsumerId = CONSUMERS_LIVE_IVRS;
@@ -18,14 +21,13 @@ export const energyConsumptionGraphNotFoundRef = "INVALID_CONSUMER_XYZ";
 export const energyConsumptionGraphMeterNotFoundRef = "meter-999999999";
 export const energyConsumptionGraphEmptyRef = " ";
 /** Backend CONSUMER_CONSUMPTION_BUCKET_COUNT (consumption view). */
-export const CONSUMPTION_POINT_COUNT: Record<EnergyConsumptionPeriod, number> =
-  {
-    hourly: 12,
-    daily: 12,
-    weekly: 8,
-    monthly: 12,
-    yearly: 12,
-  };
+export const CONSUMPTION_POINT_COUNT: Record<EnergyConsumptionPeriod, number> = {
+  hourly: 12,
+  daily: 12,
+  weekly: 8,
+  monthly: 12,
+  yearly: 12,
+};
 const ZERO_HOURLY_LABELS = [
   "23:00",
   "00:00",
@@ -54,16 +56,7 @@ const ZERO_DAILY_LABELS = [
   "8 Jul",
   "9 Jul",
 ] as const;
-const ZERO_WEEKLY_LABELS = [
-  "W1",
-  "W2",
-  "W3",
-  "W4",
-  "W5",
-  "W6",
-  "W7",
-  "W8",
-] as const;
+const ZERO_WEEKLY_LABELS = ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"] as const;
 const ZERO_MONTHLY_LABELS = [
   "Aug 2025",
   "Sept 2025",
@@ -99,78 +92,74 @@ function zeroPoints(labels: readonly string[]): {
   return labels.map((label) => ({ label, consumptionKwh: 0 }));
 }
 /** User-provided hourly sample (all zeros). */
-export const energyConsumptionGraphContractHourlyResponse: EnergyConsumptionGraphResponse =
-  {
-    success: true,
-    data: {
-      period: "hourly",
-      points: zeroPoints(ZERO_HOURLY_LABELS),
-    },
-  };
+export const energyConsumptionGraphContractHourlyResponse: EnergyConsumptionGraphResponse = {
+  success: true,
+  data: {
+    period: "hourly",
+    points: zeroPoints(ZERO_HOURLY_LABELS),
+  },
+};
 /** User-provided daily sample (all zeros). */
-export const energyConsumptionGraphContractDailyResponse: EnergyConsumptionGraphResponse =
-  {
-    success: true,
-    data: {
-      period: "daily",
-      points: zeroPoints(ZERO_DAILY_LABELS),
-    },
-  };
+export const energyConsumptionGraphContractDailyResponse: EnergyConsumptionGraphResponse = {
+  success: true,
+  data: {
+    period: "daily",
+    points: zeroPoints(ZERO_DAILY_LABELS),
+  },
+};
 /** User-provided weekly sample (all zeros). */
-export const energyConsumptionGraphContractWeeklyResponse: EnergyConsumptionGraphResponse =
-  {
-    success: true,
-    data: {
-      period: "weekly",
-      points: zeroPoints(ZERO_WEEKLY_LABELS),
-    },
-  };
+export const energyConsumptionGraphContractWeeklyResponse: EnergyConsumptionGraphResponse = {
+  success: true,
+  data: {
+    period: "weekly",
+    points: zeroPoints(ZERO_WEEKLY_LABELS),
+  },
+};
 /** User-provided monthly sample (all zeros). */
-export const energyConsumptionGraphContractMonthlyResponse: EnergyConsumptionGraphResponse =
-  {
-    success: true,
-    data: {
-      period: "monthly",
-      points: zeroPoints(ZERO_MONTHLY_LABELS),
-    },
-  };
+export const energyConsumptionGraphContractMonthlyResponse: EnergyConsumptionGraphResponse = {
+  success: true,
+  data: {
+    period: "monthly",
+    points: zeroPoints(ZERO_MONTHLY_LABELS),
+  },
+};
 /** User-provided yearly sample (all zeros). */
-export const energyConsumptionGraphContractYearlyResponse: EnergyConsumptionGraphResponse =
-  {
-    success: true,
-    data: {
-      period: "yearly",
-      points: zeroPoints(ZERO_YEARLY_LABELS),
-    },
-  };
+export const energyConsumptionGraphContractYearlyResponse: EnergyConsumptionGraphResponse = {
+  success: true,
+  data: {
+    period: "yearly",
+    points: zeroPoints(ZERO_YEARLY_LABELS),
+  },
+};
 /** Non-zero consumption deltas (backend roundEnergy to 2 decimals). */
-export const energyConsumptionGraphContractNonzeroResponse: EnergyConsumptionGraphResponse =
-  {
-    success: true,
-    data: {
-      period: "daily",
-      points: [
-        { label: "1 Jul", consumptionKwh: 12.5 },
-        { label: "2 Jul", consumptionKwh: 0 },
-        { label: "3 Jul", consumptionKwh: 8.33 },
-        { label: "4 Jul", consumptionKwh: 1.01 },
-        { label: "5 Jul", consumptionKwh: 0 },
-        { label: "6 Jul", consumptionKwh: 4.2 },
-        { label: "7 Jul", consumptionKwh: 0.05 },
-        { label: "8 Jul", consumptionKwh: 0 },
-        { label: "9 Jul", consumptionKwh: 100 },
-        { label: "10 Jul", consumptionKwh: 0.99 },
-        { label: "11 Jul", consumptionKwh: 0 },
-        { label: "12 Jul", consumptionKwh: 2.5 },
-      ],
-    },
-  };
+export const energyConsumptionGraphContractNonzeroResponse: EnergyConsumptionGraphResponse = {
+  success: true,
+  data: {
+    period: "daily",
+    points: [
+      { label: "1 Jul", consumptionKwh: 12.5 },
+      { label: "2 Jul", consumptionKwh: 0 },
+      { label: "3 Jul", consumptionKwh: 8.33 },
+      { label: "4 Jul", consumptionKwh: 1.01 },
+      { label: "5 Jul", consumptionKwh: 0 },
+      { label: "6 Jul", consumptionKwh: 4.2 },
+      { label: "7 Jul", consumptionKwh: 0.05 },
+      { label: "8 Jul", consumptionKwh: 0 },
+      { label: "9 Jul", consumptionKwh: 100 },
+      { label: "10 Jul", consumptionKwh: 0.99 },
+      { label: "11 Jul", consumptionKwh: 0 },
+      { label: "12 Jul", consumptionKwh: 2.5 },
+    ],
+  },
+};
 export interface EnergyConsumptionGraphTestCase {
   testName: string;
   scenario: EnergyConsumptionGraphScenario;
   expectedStatus?: number;
   isContractFixture?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 export function resolveEnergyConsumptionGraphRef(
   scenario: EnergyConsumptionGraphScenario,
@@ -281,123 +270,122 @@ export function resolveEnergyConsumptionGraphContractBody(
   }
 }
 
-export const energyConsumptionGraphTestCases: EnergyConsumptionGraphTestCase[] =
-  [
-    {
-      testName:
-        "Consumption chart — daily usage for the consumer",
-      scenario: "ecg_by_ivrs_daily",
-      tags: ["@smoke", "@consumer", "@energy-consumption-graph"],
-    },
-    {
-      testName:
-        "Consumption chart — last few hours",
-      scenario: "ecg_period_hourly",
-      tags: ["@consumer", "@energy-consumption-graph", "@edge"],
-    },
-    {
-      testName:
-        "Consumption chart — weekly view",
-      scenario: "ecg_period_weekly",
-      tags: ["@consumer", "@energy-consumption-graph", "@edge"],
-    },
-    {
-      testName:
-        "Consumption chart — monthly view",
-      scenario: "ecg_period_monthly",
-      tags: ["@consumer", "@energy-consumption-graph", "@edge"],
-    },
-    {
-      testName:
-        "Consumption chart — yearly view",
-      scenario: "ecg_period_yearly",
-      tags: ["@consumer", "@energy-consumption-graph", "@edge"],
-    },
-    {
-      testName:
-        "Consumption chart — opens using the account number",
-      scenario: "ecg_by_account",
-      tags: ["@consumer", "@energy-consumption-graph", "@edge"],
-    },
-    {
-      testName:
-        "Consumption chart — opens using the meter",
-      scenario: "ecg_by_meter",
-      tags: ["@consumer", "@energy-consumption-graph", "@edge"],
-    },
-    {
-      testName:
-        "Consumption chart — extra unused options are ignored",
-      scenario: "ecg_ignore_unknown_query",
-      tags: ["@consumer", "@energy-consumption-graph", "@edge"],
-    },
-    {
-      testName:
-        "Consumption chart — sample: hourly usage",
-      scenario: "contract_hourly",
-      isContractFixture: true,
-      tags: ["@consumer", "@energy-consumption-graph", "@edge"],
-    },
-    {
-      testName:
-        "Consumption chart — sample: daily usage",
-      scenario: "contract_daily",
-      isContractFixture: true,
-      tags: ["@consumer", "@energy-consumption-graph", "@edge"],
-    },
-    {
-      testName:
-        "Consumption chart — sample: weekly usage",
-      scenario: "contract_weekly",
-      isContractFixture: true,
-      tags: ["@consumer", "@energy-consumption-graph", "@edge"],
-    },
-    {
-      testName:
-        "Consumption chart — sample: monthly usage",
-      scenario: "contract_monthly",
-      isContractFixture: true,
-      tags: ["@consumer", "@energy-consumption-graph", "@edge"],
-    },
-    {
-      testName:
-        "Consumption chart — sample: yearly usage",
-      scenario: "contract_yearly",
-      isContractFixture: true,
-      tags: ["@consumer", "@energy-consumption-graph", "@edge"],
-    },
-    {
-      testName:
-        "Consumption chart — sample: days with usage",
-      scenario: "contract_nonzero_consumption",
-      isContractFixture: true,
-      tags: ["@consumer", "@energy-consumption-graph", "@edge"],
-    },
-    {
-      testName:
-        "Consumption chart — unknown consumer is not found",
-      scenario: "consumer_not_found",
-      expectedStatus: 404,
-      tags: ["@consumer", "@energy-consumption-graph", "@negative"],
-    },
-    {
-      testName:
-        "Consumption chart — unknown meter is empty or not found",
-      scenario: "meter_not_found",
-      tags: ["@consumer", "@energy-consumption-graph", "@negative"],
-    },
-    {
-      testName:
-        "Consumption chart — blank consumer number is rejected",
-      scenario: "empty_consumer_ref",
-      expectedStatus: 400,
-      tags: ["@consumer", "@energy-consumption-graph", "@negative"],
-    },
-    {
-      testName:
-        "Consumption chart — invalid time range is rejected",
-      scenario: "invalid_period",
-      expectedStatus: 400,
-      tags: ["@consumer", "@energy-consumption-graph", "@negative"],
-    },
-  ];
+export const energyConsumptionGraphTestCases: EnergyConsumptionGraphTestCase[] = [
+  {
+    testName: "Consumption chart — daily usage for the consumer",
+    scenario: "ecg_by_ivrs_daily",
+    tags: ["@smoke", "@consumer", "@energy-consumption-graph"],
+    nonEmptyExpected: true,
+  },
+  {
+    testName: "Consumption chart — last few hours",
+    scenario: "ecg_period_hourly",
+    tags: ["@consumer", "@energy-consumption-graph", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumption chart — weekly view",
+    scenario: "ecg_period_weekly",
+    tags: ["@consumer", "@energy-consumption-graph", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumption chart — monthly view",
+    scenario: "ecg_period_monthly",
+    tags: ["@consumer", "@energy-consumption-graph", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumption chart — yearly view",
+    scenario: "ecg_period_yearly",
+    tags: ["@consumer", "@energy-consumption-graph", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumption chart — opens using the account number",
+    scenario: "ecg_by_account",
+    tags: ["@consumer", "@energy-consumption-graph", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumption chart — opens using the meter",
+    scenario: "ecg_by_meter",
+    tags: ["@consumer", "@energy-consumption-graph", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumption chart — extra unused options are ignored",
+    scenario: "ecg_ignore_unknown_query",
+    tags: ["@consumer", "@energy-consumption-graph", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumption chart — sample: hourly usage",
+    scenario: "contract_hourly",
+    isContractFixture: true,
+    tags: ["@consumer", "@energy-consumption-graph", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumption chart — sample: daily usage",
+    scenario: "contract_daily",
+    isContractFixture: true,
+    tags: ["@consumer", "@energy-consumption-graph", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumption chart — sample: weekly usage",
+    scenario: "contract_weekly",
+    isContractFixture: true,
+    tags: ["@consumer", "@energy-consumption-graph", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumption chart — sample: monthly usage",
+    scenario: "contract_monthly",
+    isContractFixture: true,
+    tags: ["@consumer", "@energy-consumption-graph", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumption chart — sample: yearly usage",
+    scenario: "contract_yearly",
+    isContractFixture: true,
+    tags: ["@consumer", "@energy-consumption-graph", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumption chart — sample: days with usage",
+    scenario: "contract_nonzero_consumption",
+    isContractFixture: true,
+    tags: ["@consumer", "@energy-consumption-graph", "@edge"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumption chart — unknown consumer is not found",
+    scenario: "consumer_not_found",
+    expectedStatus: 404,
+    tags: ["@consumer", "@energy-consumption-graph", "@negative"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumption chart — unknown meter is empty or not found",
+    scenario: "meter_not_found",
+    tags: ["@consumer", "@energy-consumption-graph", "@negative"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumption chart — blank consumer number is rejected",
+    scenario: "empty_consumer_ref",
+    expectedStatus: 400,
+    tags: ["@consumer", "@energy-consumption-graph", "@negative"],
+    nonEmptyExpected: false,
+  },
+  {
+    testName: "Consumption chart — invalid time range is rejected",
+    scenario: "invalid_period",
+    expectedStatus: 400,
+    tags: ["@consumer", "@energy-consumption-graph", "@negative"],
+    nonEmptyExpected: false,
+  },
+];

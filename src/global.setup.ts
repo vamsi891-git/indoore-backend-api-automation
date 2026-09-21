@@ -4,26 +4,19 @@ import path from "path";
 import { AuthApi } from "./core/utils/auth.util";
 import { LoggerEngine } from "./core/engine/logger.engine";
 import { TokenManager } from "./core/utils/token-manager";
-import { initRunId } from "./observability/logger";
-import { resolveApiPath, normalizeApiBaseUrl, isStripIndorePrefixEnabled, enableStripIndorePrefix } from "./core/utils/api-path.util";
+import { initRunId } from "./extras/observability/logger";
+import {
+  resolveApiPath,
+  normalizeApiBaseUrl,
+  isStripIndorePrefixEnabled,
+  enableStripIndorePrefix,
+} from "./core/utils/api-path.util";
+import { env, loadEnv } from "./core/config/env.schema";
 
 function ensureDirectory(dirName: string): void {
   const dirPath = path.join(process.cwd(), dirName);
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
-  }
-}
-
-function validateEnv(): void {
-  const required = ["BASE_URL", "PASSWORD"] as const;
-  for (const key of required) {
-    if (!process.env[key]) {
-      throw new Error(`Missing required environment variable: ${key}`);
-    }
-  }
-
-  if (!process.env.EMAIL && !process.env.USERNAME) {
-    throw new Error("Missing required environment variable: EMAIL (or USERNAME)");
   }
 }
 
@@ -45,9 +38,9 @@ function isPrivateOrLocalHost(hostname: string): boolean {
 }
 
 async function assertApiReachable(): Promise<void> {
-  const baseURL = normalizeApiBaseUrl(process.env.BASE_URL);
+  const baseURL = normalizeApiBaseUrl(env.BASE_URL);
   const host = apiHostLabel(baseURL);
-  const onGitHub = process.env.GITHUB_ACTIONS === "true";
+  const onGitHub = env.GITHUB_ACTIONS;
 
   if (onGitHub && isPrivateOrLocalHost(host)) {
     throw new Error(
@@ -59,8 +52,7 @@ async function assertApiReachable(): Promise<void> {
   let lastStatus = 0;
   let lastCause = "";
 
-  const isGateway = (status: number) =>
-    status === 502 || status === 503 || status === 504;
+  const isGateway = (status: number) => status === 502 || status === 503 || status === 504;
 
   const loginPaths = Array.from(
     new Set([resolveApiPath("/indore/auth/login"), "/auth/login", "/indore/auth/login"]),
@@ -115,6 +107,7 @@ async function assertApiReachable(): Promise<void> {
         throw new Error(
           `API is not reachable at ${baseURL} (${lastCause}). ` +
             "Start the local backend on port 3000, or set BASE_URL to a running API.",
+          { cause: error },
         );
       }
     }
@@ -129,13 +122,13 @@ async function assertApiReachable(): Promise<void> {
 
 async function globalSetup(): Promise<void> {
   dotenv.config();
+  loadEnv();
   LoggerEngine.info("Global setup started");
 
   const runId = initRunId();
   LoggerEngine.info(`Observability runId for this run: ${runId}`);
 
-  validateEnv();
-  if (process.env.STRIP_INDORE_PREFIX?.trim() || isStripIndorePrefixEnabled()) {
+  if (env.STRIP_INDORE_PREFIX || isStripIndorePrefixEnabled()) {
     LoggerEngine.info(
       "Paths rewrite /indore/... → /... (STRIP_INDORE_PREFIX or live MPPKVVCL API host)",
     );

@@ -1,4 +1,4 @@
-﻿import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
+﻿import { compareApiToDb, type DbCompareObs } from "../../../extras/db/db-compare.engine";
 import type { DbTechnicalConsumerRow } from "./technical-analysis.db";
 
 /** DB often stores ", First Last" â€” API usually returns "First Last". */

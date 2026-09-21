@@ -1,5 +1,4 @@
 import type { APIRequestContext } from "@playwright/test";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { DtrDetailApi } from "../Api/DtrId.api";
 import { NetworkHierarchyApi } from "../Api/networkhierarchy.api";
 import { OrganisationHierarchyApi } from "../Api/organizationhierarchy.api";
@@ -19,6 +18,7 @@ import { NetworkHierarchyValidator } from "../Validator/networkhierarchy.validat
 import { OrganisationHierarchyValidator } from "../Validator/organizationhierarchy.validator";
 import {
   findDtrById,
+  findDtrForCoveragePagination,
   findDtrWithHighestConsumerCount,
   findFirstNetworkRootId,
   findFirstOrganisationRootId,
@@ -26,6 +26,7 @@ import {
 import { runNetworkHierarchyValidation } from "./network-hierarchy.harness";
 import { runOrganisationHierarchyValidation } from "./organisation-hierarchy.harness";
 import { runDtrDetailValidation } from "./dtr-detail.harness";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 const hierarchyOptions = {
   maxResponseTimeMs: assetManagementHierarchyMaxResponseTimeMs,
@@ -38,7 +39,7 @@ const hierarchyOptions = {
 export async function runAssetManagementProductionCoverage(
   authenticatedApi: APIRequestContext,
 ): Promise<void> {
-  const crossChecks = new ValidationEngine();
+  const crossChecks = new ApiValidationHelper();
   const networkApi = new NetworkHierarchyApi(authenticatedApi);
   const orgApi = new OrganisationHierarchyApi(authenticatedApi);
   const dtrApi = new DtrDetailApi(authenticatedApi);
@@ -84,6 +85,7 @@ export async function runAssetManagementProductionCoverage(
   }
 
   const dtrId = resolveCoverageDtrId(networkResult.hierarchy);
+  console.log(`Coverage DTR lookupId=${dtrId} (set ASSET_DTR_LOOKUP_ID to pin)`);
   const networkDtr = findDtrById(networkResult.hierarchy, dtrId);
   const orgDtr = findDtrById(orgResult.hierarchy, dtrId);
   const defaultQuery = DtrDetailPaginationQueries.default;
@@ -108,10 +110,7 @@ export async function runAssetManagementProductionCoverage(
 
   if (orgDtr && networkDtr) {
     crossChecks.execute("Network vs Organisation DTR Counts", () => {
-      AssetManagementCoverageValidator.validateOrgNetworkDtrCountsAlign(
-        networkDtr,
-        orgDtr,
-      );
+      AssetManagementCoverageValidator.validateOrgNetworkDtrCountsAlign(networkDtr, orgDtr);
     });
   }
 
@@ -180,7 +179,11 @@ function resolveCoverageDtrId(hierarchy: NetworkNode[]): number {
   if (process.env.ASSET_DTR_LOOKUP_ID) {
     return AssetDtrLookupId;
   }
-  return findDtrWithHighestConsumerCount(hierarchy)?.networkLookupId ?? AssetDtrLookupId;
+  return (
+    findDtrForCoveragePagination(hierarchy)?.networkLookupId ??
+    findDtrWithHighestConsumerCount(hierarchy)?.networkLookupId ??
+    AssetDtrLookupId
+  );
 }
 
 function findZeroConsumerDtr(nodes: NetworkNode[]): DtrNode | undefined {

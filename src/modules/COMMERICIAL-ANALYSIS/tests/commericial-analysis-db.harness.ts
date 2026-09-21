@@ -1,8 +1,7 @@
 import type pg from "pg";
 import type { APIRequestContext } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { isArchiveDbConfigured } from "../../../core/db/postgres.client";
+import { isArchiveDbConfigured } from "../../../extras/db/postgres.client";
 import { CommercialSummaryApi } from "../Api/commercial-summary.api";
 import { PowerFactorApi } from "../Api/powerfactor.api";
 import { LFAnalysisApi } from "../Api/loadfactor.api";
@@ -20,9 +19,7 @@ import {
   consumptionPatternLow3mData,
   consumptionPatternZero3mData,
 } from "../Data/consumptionpattern.data";
-import {
-  dayNightCountBase,
-} from "../Data/daynight.data";
+import { dayNightCountBase } from "../Data/daynight.data";
 import { CommercialSummaryMapper } from "../Mapper/commercial-summary.mapper";
 import type { CommercialSummaryReport } from "../Mapper/commercial-summary.mapper";
 import { getCommercialPaginatedView } from "../Validator/commercial-analysis.shared";
@@ -35,6 +32,7 @@ import {
   getCommercialMeterByMsnAndDtr,
 } from "../Db/commericial-analysis.db";
 import { logCommericialAnalysisDataQualityFindings } from "../Db/commericial-analysis-db.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 const SUMMARY_TO_LF_TYPE: Record<string, string> = {
   lf_lt_5: "LF < 5%",
@@ -54,9 +52,7 @@ const SUMMARY_TO_DAY_NIGHT: Record<string, string> = {
 };
 
 function asRecord(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === "object"
-    ? (value as Record<string, unknown>)
-    : {};
+  return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
 function trimText(value: unknown): string {
@@ -66,53 +62,43 @@ function trimText(value: unknown): string {
 /** Page uniqueness lives in API specs. Spot by MSN + DTR — lookupId is reused across DTRs. */
 async function assertPageRowsAgainstMeterLookup(options: {
   db: pg.Pool;
-  validation: ValidationEngine;
+  validation: ApiValidationHelper;
   label: string;
   responseBody: { data?: { rows?: unknown[] } };
 }): Promise<void> {
   const { db, validation, label, responseBody } = options;
-  const rawRows = Array.isArray(responseBody.data?.rows)
-    ? responseBody.data.rows
-    : [];
+  const rawRows = Array.isArray(responseBody.data?.rows) ? responseBody.data.rows : [];
   for (const apiRow of rawRows.map((row) => asRecord(row))) {
     const msn = trimText(apiRow.msn);
     const dtr = trimText(apiRow.dtr);
-    const lookupIdRaw =
-      apiRow.meterLookupId == null ? NaN : Number(apiRow.meterLookupId);
-    const lookupId =
-      Number.isFinite(lookupIdRaw) && lookupIdRaw > 0 ? lookupIdRaw : null;
+    const lookupIdRaw = apiRow.meterLookupId == null ? NaN : Number(apiRow.meterLookupId);
+    const lookupId = Number.isFinite(lookupIdRaw) && lookupIdRaw > 0 ? lookupIdRaw : null;
     if (!msn) continue;
     const dbMeter = await getCommercialMeterByMsnAndDtr(db, msn, dtr);
-    validation.execute(
-      `${label} ${msn} dtr=${dtr || "(blank)"} vs L_Meter_Lookup`,
-      () => {
-        expect(
-          dbMeter,
-          `DB meter row missing for msn=${msn} dtr=${dtr}`,
-        ).toBeTruthy();
-        compareCommercialMeterSpotToDb({
-          api: {
-            msn,
-            name: trimText(apiRow.name),
-            ivrsNumber: trimText(apiRow.ivrsNumber),
-            phase: trimText(apiRow.phase),
-            circle: trimText(apiRow.circle),
-            division: trimText(apiRow.division),
-            feeder: trimText(apiRow.feeder),
-            dtr,
-            tariff: trimText(apiRow.tariff),
-            meterLookupId: lookupId,
-          },
-          dbRow: dbMeter!,
-        });
-      },
-    );
+    validation.execute(`${label} ${msn} dtr=${dtr || "(blank)"} vs L_Meter_Lookup`, () => {
+      expect(dbMeter, `DB meter row missing for msn=${msn} dtr=${dtr}`).toBeTruthy();
+      compareCommercialMeterSpotToDb({
+        api: {
+          msn,
+          name: trimText(apiRow.name),
+          ivrsNumber: trimText(apiRow.ivrsNumber),
+          phase: trimText(apiRow.phase),
+          circle: trimText(apiRow.circle),
+          division: trimText(apiRow.division),
+          feeder: trimText(apiRow.feeder),
+          dtr,
+          tariff: trimText(apiRow.tariff),
+          meterLookupId: lookupId,
+        },
+        dbRow: dbMeter!,
+      });
+    });
   }
 }
 
 async function assertPfPageUniqueAndAgainstDb(options: {
   db: pg.Pool;
-  validation: ValidationEngine;
+  validation: ApiValidationHelper;
   label: string;
   responseBody: { data?: { rows?: unknown[] } };
 }): Promise<void> {
@@ -124,7 +110,7 @@ async function assertPfPageUniqueAndAgainstDb(options: {
 
 async function assertLfPageUniqueAndAgainstDb(options: {
   db: pg.Pool;
-  validation: ValidationEngine;
+  validation: ApiValidationHelper;
   label: string;
   responseBody: { data?: { rows?: unknown[] } };
 }): Promise<void> {
@@ -136,7 +122,7 @@ async function assertLfPageUniqueAndAgainstDb(options: {
 
 async function assertMdPageUniqueAndAgainstDb(options: {
   db: pg.Pool;
-  validation: ValidationEngine;
+  validation: ApiValidationHelper;
   label: string;
   responseBody: { data?: { rows?: unknown[] } };
 }): Promise<void> {
@@ -148,7 +134,7 @@ async function assertMdPageUniqueAndAgainstDb(options: {
 
 async function assertComparePageUniqueAndAgainstDb(options: {
   db: pg.Pool;
-  validation: ValidationEngine;
+  validation: ApiValidationHelper;
   label: string;
   responseBody: { data?: { rows?: unknown[] } };
 }): Promise<void> {
@@ -160,7 +146,7 @@ async function assertComparePageUniqueAndAgainstDb(options: {
 
 async function assertDayNightPageUniqueAndAgainstDb(options: {
   db: pg.Pool;
-  validation: ValidationEngine;
+  validation: ApiValidationHelper;
   label: string;
   responseBody: { data?: { rows?: unknown[] } };
 }): Promise<void> {
@@ -170,9 +156,7 @@ async function assertDayNightPageUniqueAndAgainstDb(options: {
   });
 }
 
-function reportMap(
-  reports: CommercialSummaryReport[],
-): Map<string, CommercialSummaryReport> {
+function reportMap(reports: CommercialSummaryReport[]): Map<string, CommercialSummaryReport> {
   return new Map(reports.map((r) => [r.analysisType, r]));
 }
 
@@ -180,11 +164,7 @@ function isAvailable(report: CommercialSummaryReport | undefined): boolean {
   return Boolean(report) && report!.available !== false;
 }
 
-function gridTotal(
-  data: unknown,
-  month: number,
-  year: number,
-): number {
+function gridTotal(data: unknown, month: number, year: number): number {
   return getCommercialPaginatedView(data, {
     month,
     year,
@@ -202,12 +182,14 @@ export async function runCommericialAnalysisDbCoverage(
   db: pg.Pool,
   archiveDb?: pg.Pool | null,
 ): Promise<void> {
-  const validation = new ValidationEngine();
+  const validation = new ApiValidationHelper();
   const { month, year, pfThreshold } = commercialSummaryData;
 
-  const summaryResult = await new CommercialSummaryApi(
-    authenticatedApi,
-  ).getCommercialSummary(month, year, pfThreshold);
+  const summaryResult = await new CommercialSummaryApi(authenticatedApi).getCommercialSummary(
+    month,
+    year,
+    pfThreshold,
+  );
   expect(summaryResult.rawResponse.status()).toBe(200);
   const summary = CommercialSummaryMapper.map(summaryResult.responseBody);
   expect(summary.success).toBe(true);
@@ -331,17 +313,14 @@ export async function runCommericialAnalysisDbCoverage(
       connectionCategory: "domestic",
     });
     expect(lfDomestic.rawResponse.status()).toBe(200);
-    validation.execute(
-      `lf(${type}) domestic total equals unfiltered (category stripped)`,
-      () => {
-        compareCommercialApiEqualsSql({
-          label: `lf(${type}).domestic`,
-          apiCount: gridTotal(lfDomestic.responseBody.data, month, year),
-          sqlCount: Number(summaryRow!.totalCount ?? 0),
-          sqlName: `summary ${analysisType}.totalCount`,
-        });
-      },
-    );
+    validation.execute(`lf(${type}) domestic total equals unfiltered (category stripped)`, () => {
+      compareCommercialApiEqualsSql({
+        label: `lf(${type}).domestic`,
+        apiCount: gridTotal(lfDomestic.responseBody.data, month, year),
+        sqlCount: Number(summaryRow!.totalCount ?? 0),
+        sqlName: `summary ${analysisType}.totalCount`,
+      });
+    });
     await assertLfPageUniqueAndAgainstDb({
       db,
       validation,
@@ -408,8 +387,7 @@ export async function runCommericialAnalysisDbCoverage(
     });
     if (
       MD_CATEGORY_SPLIT_TYPES.includes(type) &&
-      Number(summaryRow!.domesticCount) + Number(summaryRow!.nonDomesticCount) >
-        0
+      Number(summaryRow!.domesticCount) + Number(summaryRow!.nonDomesticCount) > 0
     ) {
       const mdDomestic = await mdApi.getMdAnalysis({
         month,
@@ -437,17 +415,14 @@ export async function runCommericialAnalysisDbCoverage(
           sqlName: `summary ${analysisType}.domesticCount`,
         });
       });
-      validation.execute(
-        `md(${type}) non-domestic === summary.nonDomesticCount`,
-        () => {
-          compareCommercialApiEqualsSql({
-            label: `md(${type}).nonDomestic`,
-            apiCount: gridTotal(mdNonDomestic.responseBody.data, month, year),
-            sqlCount: Number(summaryRow!.nonDomesticCount ?? 0),
-            sqlName: `summary ${analysisType}.nonDomesticCount`,
-          });
-        },
-      );
+      validation.execute(`md(${type}) non-domestic === summary.nonDomesticCount`, () => {
+        compareCommercialApiEqualsSql({
+          label: `md(${type}).nonDomestic`,
+          apiCount: gridTotal(mdNonDomestic.responseBody.data, month, year),
+          sqlCount: Number(summaryRow!.nonDomesticCount ?? 0),
+          sqlName: `summary ${analysisType}.nonDomesticCount`,
+        });
+      });
       await assertMdPageUniqueAndAgainstDb({
         db,
         validation,
@@ -510,14 +485,10 @@ export async function runCommericialAnalysisDbCoverage(
     expect(compareNonDomestic.rawResponse.status()).toBe(200);
     const unfilteredTotal = gridTotal(compareBody.responseBody.data, month, year);
     validation.execute("compare last month domestic === unfiltered", () => {
-      expect(gridTotal(compareDomestic.responseBody.data, month, year)).toBe(
-        unfilteredTotal,
-      );
+      expect(gridTotal(compareDomestic.responseBody.data, month, year)).toBe(unfilteredTotal);
     });
     validation.execute("compare last month non-domestic === unfiltered", () => {
-      expect(gridTotal(compareNonDomestic.responseBody.data, month, year)).toBe(
-        unfilteredTotal,
-      );
+      expect(gridTotal(compareNonDomestic.responseBody.data, month, year)).toBe(unfilteredTotal);
     });
     await assertComparePageUniqueAndAgainstDb({
       db,
@@ -583,7 +554,7 @@ export async function runCommericialAnalysisDbCoverage(
       year,
       type: consumptionPatternLow3mData.type,
       connectionCategory: "domestic",
-    page: 1,
+      page: 1,
       pageSize: 10,
     });
     expect(lowBody.rawResponse.status()).toBe(200);
@@ -658,8 +629,5 @@ export async function runCommericialAnalysisDbCoverage(
     }
   }
 
-  validation.finalize(
-    "COMMERICIAL-ANALYSIS summary vs drilldowns vs reporting SQL",
-    0,
-  );
+  validation.finalize("COMMERICIAL-ANALYSIS summary vs drilldowns vs reporting SQL", 0);
 }

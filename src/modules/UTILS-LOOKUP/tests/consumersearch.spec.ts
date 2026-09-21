@@ -10,19 +10,18 @@ import {
 import { registerSearchLookupTests } from "../utils/lookup-catalog.harness";
 import { getLookupResponseData } from "../utils/lookup-spec.harness";
 import type { SearchConsumerRawData } from "../Mapper/consumersearch.mapper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 function runConsumerSearchValidations(
   scenario: ConsumerSearchScenario,
   responseBody: unknown,
-  validation: import("../../../core/engine/validation.engine").ValidationEngine,
+  validation: ApiValidationHelper,
 ): void {
   const raw = getLookupResponseData<SearchConsumerRawData>(responseBody);
   const data = SearchConsumerMapper.mapData(raw);
   const validator = new SearchConsumerValidator();
 
-  validation.execute("Response", () =>
-    validator.validateResponse(responseBody as never),
-  );
+  validation.execute("Response", () => validator.validateResponse(responseBody as never));
   validation.execute("Columns", () => validator.validateColumns(raw.columns));
   validation.execute("Pagination", () => validator.validatePagination(data));
 
@@ -54,19 +53,11 @@ function runConsumerSearchValidations(
   }
 
   validation.execute("Items", () => validator.validateItemsExist(data));
-  validation.execute("Required Fields", () =>
-    validator.validateRequiredFields(data),
-  );
+  validation.execute("Required Fields", () => validator.validateRequiredFields(data));
   validation.execute("Data Types", () => validator.validateDataTypes(data));
-  validation.execute("Serial Sequence", () =>
-    validator.validateSerialSequence(data),
-  );
-  validation.execute("Duplicate Meter Serial", () =>
-    validator.validateDuplicateMeterSerials(data),
-  );
-  validation.execute("Mobile Format", () =>
-    validator.validateMobileNumberFormat(data),
-  );
+  validation.execute("Serial Sequence", () => validator.validateSerialSequence(data));
+  validation.execute("Duplicate Meter Serial", () => validator.validateDuplicateMeterSerials(data));
+  validation.execute("Mobile Format", () => validator.validateMobileNumberFormat(data));
   validation.execute("IVRS Fields", () => validator.validateIvrsFields(data));
 }
 

@@ -1,6 +1,11 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { EnergyFlowQuery } from "../Api/energyflow.api";
-import type {EnergyFlowPoint,EnergyFlowResponse,EnergyFlowScenario,EnergyFlowPeriod,} from "../Mapper/energyflow.mapper";
+import type {
+  EnergyFlowPoint,
+  EnergyFlowResponse,
+  EnergyFlowScenario,
+  EnergyFlowPeriod,
+} from "../Mapper/energyflow.mapper";
 import {
   CONSUMERS_LIVE_IVRS,
   CONSUMERS_LIVE_METER_ROUTE,
@@ -36,23 +41,9 @@ function zeroFlowPoints(labels: readonly string[]): EnergyFlowPoint[] {
     kvahExport: 0,
   }));
 }
-const ZERO_HOURLY_LABELS = [
-  "05:00",
-  "06:00",
-  "07:00",
-  "08:00",
-  "09:00",
-  "10:00",
-] as const;
+const ZERO_HOURLY_LABELS = ["05:00", "06:00", "07:00", "08:00", "09:00", "10:00"] as const;
 /** User-provided daily sample (6 points, all zeros). */
-const ZERO_DAILY_LABELS = [
-  "4 Jul",
-  "5 Jul",
-  "6 Jul",
-  "7 Jul",
-  "8 Jul",
-  "9 Jul",
-] as const;
+const ZERO_DAILY_LABELS = ["4 Jul", "5 Jul", "6 Jul", "7 Jul", "8 Jul", "9 Jul"] as const;
 const ZERO_WEEKLY_LABELS = ["W1", "W2", "W3", "W4"] as const;
 const ZERO_MONTHLY_LABELS = [
   "Feb 2026",
@@ -62,14 +53,7 @@ const ZERO_MONTHLY_LABELS = [
   "Jun 2026",
   "Jul 2026",
 ] as const;
-const ZERO_YEARLY_LABELS = [
-  "2021",
-  "2022",
-  "2023",
-  "2024",
-  "2025",
-  "2026",
-] as const;
+const ZERO_YEARLY_LABELS = ["2021", "2022", "2023", "2024", "2025", "2026"] as const;
 /** User-provided hourly sample (6 rolling IST hours, all zeros). */
 export const energyFlowContractHourlyResponse: EnergyFlowResponse = {
   success: true,
@@ -187,11 +171,11 @@ export interface EnergyFlowTestCase {
   expectedStatus?: number;
   isContractFixture?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
-export function resolveEnergyFlowRef(
-  scenario: EnergyFlowScenario,
-): string | undefined {
+export function resolveEnergyFlowRef(scenario: EnergyFlowScenario): string | undefined {
   switch (scenario) {
     case "ef_by_ivrs_daily":
     case "ef_period_hourly":
@@ -240,9 +224,7 @@ export function resolveEnergyFlowRef(
   }
 }
 
-export function resolveEnergyFlowQuery(
-  scenario: EnergyFlowScenario,
-): EnergyFlowQuery {
+export function resolveEnergyFlowQuery(scenario: EnergyFlowScenario): EnergyFlowQuery {
   switch (scenario) {
     case "ef_period_hourly":
       return { period: "hourly" };
@@ -267,9 +249,7 @@ export function resolveEnergyFlowQuery(
   }
 }
 
-export function resolveEnergyFlowExpectedPeriod(
-  scenario: EnergyFlowScenario,
-): EnergyFlowPeriod {
+export function resolveEnergyFlowExpectedPeriod(scenario: EnergyFlowScenario): EnergyFlowPeriod {
   const query = resolveEnergyFlowQuery(scenario);
   const period = query.period;
   if (
@@ -309,127 +289,127 @@ export function resolveEnergyFlowContractBody(
 
 export const energyFlowTestCases: EnergyFlowTestCase[] = [
   {
-    testName:
-      "Energy flow chart — daily view for the consumer",
+    testName: "Energy flow chart — daily view for the consumer",
     scenario: "ef_by_ivrs_daily",
     tags: ["@smoke", "@consumer", "@energy-flow"],
+    nonEmptyExpected: true,
   },
   {
-    testName:
-      "Energy flow chart — last few hours",
+    testName: "Energy flow chart — last few hours",
     scenario: "ef_period_hourly",
     tags: ["@consumer", "@energy-flow", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Energy flow chart — weekly view",
+    testName: "Energy flow chart — weekly view",
     scenario: "ef_period_weekly",
     tags: ["@consumer", "@energy-flow", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Energy flow chart — monthly view",
+    testName: "Energy flow chart — monthly view",
     scenario: "ef_period_monthly",
     tags: ["@consumer", "@energy-flow", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Energy flow chart — yearly view",
+    testName: "Energy flow chart — yearly view",
     scenario: "ef_period_yearly",
     tags: ["@consumer", "@energy-flow", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Energy flow chart — opens using the account number",
+    testName: "Energy flow chart — opens using the account number",
     scenario: "ef_by_account",
     tags: ["@consumer", "@energy-flow", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Energy flow chart — opens using the meter",
+    testName: "Energy flow chart — opens using the meter",
     scenario: "ef_by_meter",
     tags: ["@consumer", "@energy-flow", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Energy flow chart — extra unused options are ignored",
+    testName: "Energy flow chart — extra unused options are ignored",
     scenario: "ef_ignore_unknown_query",
     tags: ["@consumer", "@energy-flow", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Energy flow chart — sample: hourly points",
+    testName: "Energy flow chart — sample: hourly points",
     scenario: "contract_hourly",
     isContractFixture: true,
     tags: ["@consumer", "@energy-flow", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Energy flow chart — sample: daily points",
+    testName: "Energy flow chart — sample: daily points",
     scenario: "contract_daily",
     isContractFixture: true,
     tags: ["@consumer", "@energy-flow", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Energy flow chart — sample: weekly points",
+    testName: "Energy flow chart — sample: weekly points",
     scenario: "contract_weekly",
     isContractFixture: true,
     tags: ["@consumer", "@energy-flow", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Energy flow chart — sample: monthly points",
+    testName: "Energy flow chart — sample: monthly points",
     scenario: "contract_monthly",
     isContractFixture: true,
     tags: ["@consumer", "@energy-flow", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Energy flow chart — sample: yearly points",
+    testName: "Energy flow chart — sample: yearly points",
     scenario: "contract_yearly",
     isContractFixture: true,
     tags: ["@consumer", "@energy-flow", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Energy flow chart — sample: totals only go up over time",
+    testName: "Energy flow chart — sample: totals only go up over time",
     scenario: "contract_cumulative_nonzero",
     isContractFixture: true,
     tags: ["@consumer", "@energy-flow", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Energy flow chart — sample: usage matches meter totals",
+    testName: "Energy flow chart — sample: usage matches meter totals",
     scenario: "contract_consumption_formula",
     isContractFixture: true,
     tags: ["@consumer", "@energy-flow", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Energy flow chart — unknown consumer is not found",
+    testName: "Energy flow chart — unknown consumer is not found",
     scenario: "consumer_not_found",
     expectedStatus: 404,
     tags: ["@consumer", "@energy-flow", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Energy flow chart — unknown meter is empty or not found",
+    testName: "Energy flow chart — unknown meter is empty or not found",
     scenario: "meter_not_found",
     tags: ["@consumer", "@energy-flow", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Energy flow chart — blank consumer number is rejected",
+    testName: "Energy flow chart — blank consumer number is rejected",
     scenario: "empty_consumer_ref",
     expectedStatus: 400,
     tags: ["@consumer", "@energy-flow", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Energy flow chart — invalid time range is rejected",
+    testName: "Energy flow chart — invalid time range is rejected",
     scenario: "invalid_period",
     expectedStatus: 400,
     tags: ["@consumer", "@energy-flow", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

@@ -1,8 +1,6 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { CreateMeterApi } from "../../MASTER-DATA/Api/create-meter.api";
 import {
@@ -17,20 +15,15 @@ import { ensureMeterManufacturerContext } from "../../MASTER-DATA/utils/meter-ma
 import { CreateSubmissionApi } from "../Api/create-submission.api";
 import { MeterValidationApi } from "../Api/meter-validation.api";
 import { SubmissionDetailApi } from "../Api/submission-detail.api";
-import {
-  buildCreateSubmissionPayload,
-  createSubmissionData,
-} from "../Data/create-submission.data";
+import { buildCreateSubmissionPayload, createSubmissionData } from "../Data/create-submission.data";
 import { CreateSubmissionMapper } from "../Mapper/create-submission.mapper";
 import { MeterValidationMapper } from "../Mapper/meter-validation.mapper";
 import { CreateSubmissionValidator } from "../Validator/create-submission.validator";
-import {
-  ensureEligibleConsumer,
-} from "../utils/create-submission.helper";
+import { ensureEligibleConsumer } from "../utils/create-submission.helper";
 import { pauseMs } from "../utils/response.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
-const E2E_LABEL =
-  "E2E: create meter → validate → create meter replacement submission";
+const E2E_LABEL = "E2E: create meter → validate → create meter replacement submission";
 const VALIDATE_SETTLE_MS = 1_500;
 const VALIDATE_RETRIES = 8;
 
@@ -47,17 +40,11 @@ test.describe.skip("Meter Replacement Create Submission E2E", () => {
   test(
     E2E_LABEL,
     {
-      tag: [
-        "@e2e",
-        "@smoke",
-        "@meter-replacement",
-        "@create-submission",
-        "@create-meter",
-      ],
+      tag: ["@e2e", "@smoke", "@meter-replacement", "@create-submission", "@create-meter"],
     },
     async ({ authenticatedApi }) => {
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const meterValidator = new CreateMeterValidator();
       const createSubmissionValidator = new CreateSubmissionValidator();
 
@@ -87,10 +74,7 @@ test.describe.skip("Meter Replacement Create Submission E2E", () => {
         assert.validateContentType(meterResult.rawResponse),
       );
       validation.execute("Create Meter Response Time", () =>
-        assert.validateResponseTime(
-          meterResult.responseTime,
-          createMeterMaxResponseTimeMs,
-        ),
+        assert.validateResponseTime(meterResult.responseTime, createMeterMaxResponseTimeMs),
       );
       validation.execute("Create Meter Schema", () =>
         MasterDataCommonValidator.validateZodResponseSchema(
@@ -101,16 +85,12 @@ test.describe.skip("Meter Replacement Create Submission E2E", () => {
       validation.execute("Create Meter Backend Rules", () =>
         meterValidator.validateScenario(meterMapped, "success", meterPayload),
       );
-      expect(String(meterMapped.data?.meterSerialNumber ?? "")).toBe(
-        meterSerial,
-      );
+      expect(String(meterMapped.data?.meterSerialNumber ?? "")).toBe(meterSerial);
 
       // ── 2. Validate new meter for replacement eligibility ────────────────
       const validateApi = new MeterValidationApi(authenticatedApi);
       let validateResult = await validateApi.validateMeter(meterSerial);
-      let validateMapped = MeterValidationMapper.map(
-        validateResult.responseBody,
-      );
+      let validateMapped = MeterValidationMapper.map(validateResult.responseBody);
 
       for (
         let attempt = 0;
@@ -124,9 +104,7 @@ test.describe.skip("Meter Replacement Create Submission E2E", () => {
       ) {
         await pauseMs(VALIDATE_SETTLE_MS);
         validateResult = await validateApi.validateMeter(meterSerial);
-        validateMapped = MeterValidationMapper.map(
-          validateResult.responseBody,
-        );
+        validateMapped = MeterValidationMapper.map(validateResult.responseBody);
       }
 
       await PerformanceTracker.track(
@@ -154,20 +132,14 @@ test.describe.skip("Meter Replacement Create Submission E2E", () => {
         oldMeterSerial: consumer.oldMeterSerial,
         newMeterLookupId: validateMapped.meterLookupId,
         newMeterSerial: validateMapped.meterSerial,
-        latitude: Number.isFinite(latitude)
-          ? latitude
-          : createSubmissionData.defaultLatitude,
-        longitude: Number.isFinite(longitude)
-          ? longitude
-          : createSubmissionData.defaultLongitude,
+        latitude: Number.isFinite(latitude) ? latitude : createSubmissionData.defaultLatitude,
+        longitude: Number.isFinite(longitude) ? longitude : createSubmissionData.defaultLongitude,
         remarks: "automation e2e create meter then replace",
       });
 
       const createApi = new CreateSubmissionApi(authenticatedApi);
       const createResult = await createApi.createSubmission(payload);
-      const createMapped = CreateSubmissionMapper.map(
-        createResult.responseBody,
-      );
+      const createMapped = CreateSubmissionMapper.map(createResult.responseBody);
 
       await PerformanceTracker.track(
         createResult.rawResponse,
@@ -196,16 +168,10 @@ test.describe.skip("Meter Replacement Create Submission E2E", () => {
         assert.validateSensitiveData(createResult.responseBody),
       );
       validation.execute("Create Submission Root Fields", () =>
-        assert.validateRequiredFields(createResult.responseBody, [
-          "success",
-          "data",
-        ]),
+        assert.validateRequiredFields(createResult.responseBody, ["success", "data"]),
       );
       validation.execute("Create Submission Data Fields", () =>
-        assert.validateRequiredFields(createResult.responseBody.data, [
-          "id",
-          "status",
-        ]),
+        assert.validateRequiredFields(createResult.responseBody.data, ["id", "status"]),
       );
 
       validation.execute("Create Submission Mapped Success", () =>
@@ -254,20 +220,12 @@ test.describe.skip("Meter Replacement Create Submission E2E", () => {
       validation.execute("Submission Detail Identity", () => {
         expect(detail.responseBody.success).toBeTruthy();
         expect(detail.responseBody.data?.id).toBe(createMapped.id);
-        expect(
-          createSubmissionData.expectedCreatedStatuses,
-        ).toContain(
+        expect(createSubmissionData.expectedCreatedStatuses).toContain(
           String(detail.responseBody.data?.status ?? "").toUpperCase(),
         );
-        expect(detail.responseBody.data?.consumer?.consumerId).toBe(
-          consumer.consumerId,
-        );
-        expect(detail.responseBody.data?.oldMeter?.meterSerial).toBe(
-          consumer.oldMeterSerial,
-        );
-        expect(detail.responseBody.data?.newMeter?.meterSerial).toBe(
-          meterSerial,
-        );
+        expect(detail.responseBody.data?.consumer?.consumerId).toBe(consumer.consumerId);
+        expect(detail.responseBody.data?.oldMeter?.meterSerial).toBe(consumer.oldMeterSerial);
+        expect(detail.responseBody.data?.newMeter?.meterSerial).toBe(meterSerial);
       });
 
       validation.printSummary(E2E_LABEL, createResult.responseTime);

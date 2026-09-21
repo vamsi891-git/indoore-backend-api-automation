@@ -28,6 +28,8 @@ export function resolveOrganizationSearchQuery(
 
 export interface OrganizationSearchTestCase extends LookupTestCase {
   scenario: OrganizationSearchScenario;
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export const organizationSearchTestCases: OrganizationSearchTestCase[] = [
@@ -35,22 +37,26 @@ export const organizationSearchTestCases: OrganizationSearchTestCase[] = [
     testName: "Organisation search — default limit returns records",
     scenario: "smoke_default",
     tags: ["@smoke", "@utils-lookup", "@organisation-search"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Organisation search — limit 1 returns at most 1 record",
     scenario: "edge_limit_one",
     tags: ["@utils-lookup", "@organisation-search", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Organisation search — limit 0 is rejected",
     scenario: "negative_limit_zero",
     expectedStatus: 400,
     tags: ["@utils-lookup", "@organisation-search", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Organisation search — a negative limit is rejected",
     scenario: "negative_limit_negative",
     expectedStatus: 400,
     tags: ["@utils-lookup", "@organisation-search", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

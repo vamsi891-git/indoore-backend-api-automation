@@ -2,13 +2,10 @@ import { request } from "@playwright/test";
 import fs from "fs";
 import path from "path";
 import { LoggerEngine } from "../engine/logger.engine";
-import {
-  enableStripIndorePrefix,
-  resolveApiPath,
-  normalizeApiBaseUrl,
-} from "./api-path.util";
+import { enableStripIndorePrefix, resolveApiPath, normalizeApiBaseUrl } from "./api-path.util";
 import { generateTotp, getTotpSecret } from "./totp.util";
 import { solveCaptchaSvg } from "./captcha-ocr.util";
+import { env, getLoginIdentity } from "../config/env.schema";
 
 export interface LoginResponse {
   accessToken: string;
@@ -49,9 +46,15 @@ export class AuthApi {
    * trip CAPTCHA_REQUIRED on the same account.
    */
   private static readonly loginRetryMs = [0, 10_000, 30_000];
-  private static readonly captchaOcrMaxAttempts = 5;
+  /** Rate-limit (429) waits — short retries only make TOO_MANY_REQUESTS worse. */
+  private static readonly rateLimitRetryMs = [0, 60_000, 120_000];
+  private static readonly captchaOcrMaxAttempts = 8;
   /** One extra wait if the API already locked login behind captcha. */
   private static readonly captchaRetryWaitMs = 90_000;
+  /** Cap short 429 waits; longer Retry-After fails fast (do not keep hammering). */
+  private static readonly rateLimitCapMs = 120_000;
+  /** If API says wait longer than this, stop — re-running extends the lock. */
+  private static readonly rateLimitFailFastSec = 90;
   private static readonly retriablePreflightStatuses = new Set([502, 503, 504]);
   private static readonly retriableAuthStatuses = new Set([429, 502, 503, 504]);
 
@@ -79,17 +82,15 @@ export class AuthApi {
 
   private static async createContext(reuseCookies = false) {
     const storageState =
-      reuseCookies && fs.existsSync(this.storageStatePath)
-        ? this.storageStatePath
-        : undefined;
+      reuseCookies && fs.existsSync(this.storageStatePath) ? this.storageStatePath : undefined;
     return request.newContext({
-      baseURL: normalizeApiBaseUrl(process.env.BASE_URL),
+      baseURL: normalizeApiBaseUrl(env.BASE_URL),
       ignoreHTTPSErrors: true,
       ...(storageState ? { storageState } : {}),
       extraHTTPHeaders: {
         Accept: "application/json",
         "User-Agent":
-          process.env.API_USER_AGENT?.trim() ||
+          env.API_USER_AGENT ||
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
       },
     });
@@ -121,10 +122,7 @@ export class AuthApi {
     return { cookies };
   }
 
-  private static persistStorageState(state: {
-    cookies: AuthCookie[];
-    origins?: unknown;
-  }): void {
+  private static persistStorageState(state: { cookies: AuthCookie[]; origins?: unknown }): void {
     const dir = path.dirname(this.storageStatePath);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
@@ -132,10 +130,7 @@ export class AuthApi {
     fs.writeFileSync(this.storageStatePath, JSON.stringify(state, null, 2), "utf8");
   }
 
-  private static readCsrfToken(
-    cookies: AuthCookie[],
-    headers: Record<string, string>,
-  ): string {
+  private static readCsrfToken(cookies: AuthCookie[], headers: Record<string, string>): string {
     const cookieToken = cookies.find((cookie) => cookie.name === "csrf_token")?.value;
     if (cookieToken) {
       return cookieToken;
@@ -149,17 +144,13 @@ export class AuthApi {
     text?: string;
     svg?: string;
   } {
-    const root =
-      body !== null && typeof body === "object"
-        ? (body as Record<string, unknown>)
-        : {};
+    const root = body !== null && typeof body === "object" ? (body as Record<string, unknown>) : {};
     const nested =
       root.data !== null && typeof root.data === "object"
         ? (root.data as Record<string, unknown>)
         : root;
     return {
-      captchaId:
-        typeof nested.captchaId === "string" ? nested.captchaId : undefined,
+      captchaId: typeof nested.captchaId === "string" ? nested.captchaId : undefined,
       text: typeof nested.text === "string" ? nested.text : undefined,
       svg: typeof nested.svg === "string" ? nested.svg : undefined,
     };
@@ -173,35 +164,35 @@ export class AuthApi {
     apiContext: Awaited<ReturnType<typeof request.newContext>>,
     csrfToken: string,
   ): Promise<{ captchaId: string; captcha: string } | null> {
-    let lastStatus = 0;
-    let lastRaw = "";
+    let lastStatus!: number;
 
     for (const captchaPath of this.candidatePaths(this.captchaPath)) {
       const response = await apiContext.get(captchaPath, {
         headers: this.buildAuthHeaders(csrfToken),
       });
       lastStatus = response.status();
-      lastRaw = await response.text();
+      const raw = await response.text();
       if (this.isRouteNotFound(lastStatus)) {
         LoggerEngine.info(`CAPTCHA GET ${captchaPath} returned 404; trying next path`);
         continue;
       }
-      if (captchaPath === this.captchaPath.slice("/indore".length) || captchaPath === "/auth/captcha") {
+      if (
+        captchaPath === this.captchaPath.slice("/indore".length) ||
+        captchaPath === "/auth/captcha"
+      ) {
         enableStripIndorePrefix();
       }
       if (!response.ok()) {
         throw new Error(
-          `Login CAPTCHA GET failed with status ${lastStatus} - ${lastRaw.slice(0, 300)}`,
+          `Login CAPTCHA GET failed with status ${lastStatus} - ${raw.slice(0, 300)}`,
         );
       }
 
       let body: unknown;
       try {
-        body = JSON.parse(lastRaw) as unknown;
+        body = JSON.parse(raw) as unknown;
       } catch {
-        throw new Error(
-          `Login CAPTCHA GET returned non-JSON - ${lastRaw.slice(0, 300)}`,
-        );
+        throw new Error(`Login CAPTCHA GET returned non-JSON - ${raw.slice(0, 300)}`);
       }
 
       const { captchaId, text, svg } = this.unwrapLoginCaptcha(body);
@@ -258,13 +249,13 @@ export class AuthApi {
 
     return {
       accessToken,
-      expiresIn: responseBody.data?.expiresIn ?? 900
+      expiresIn: responseBody.data?.expiresIn ?? 900,
     };
   }
 
   private static async toLoginResponse(
     apiContext: Awaited<ReturnType<typeof request.newContext>>,
-    responseBody: Parameters<typeof AuthApi.extractAccessToken>[0]
+    responseBody: Parameters<typeof AuthApi.extractAccessToken>[0],
   ): Promise<LoginResponse> {
     const session = this.extractAccessToken(responseBody);
     const storageState = await this.snapshotCookies(apiContext);
@@ -283,8 +274,8 @@ export class AuthApi {
     const preflightPaths = Array.from(
       new Set([this.path(this.loginPath), "/auth/login", "/indore/auth/login"]),
     );
-    let lastStatus = 0;
-    let lastPath = preflightPaths[0];
+    let lastStatus!: number;
+    let lastPath = preflightPaths[0] ?? this.path(this.loginPath);
     let sawGatewayError = false;
 
     for (const preflightPath of preflightPaths) {
@@ -347,8 +338,8 @@ export class AuthApi {
       const response = await apiContext.post(this.path(this.refreshPath), {
         headers: {
           ...this.buildAuthHeaders(csrfToken),
-          Authorization: `Bearer ${accessToken}`
-        }
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
 
       const responseBody = await response.json();
@@ -357,12 +348,12 @@ export class AuthApi {
         method: "POST",
         url: this.path(this.refreshPath),
         status: response.status(),
-        responseTimeMs: Date.now() - startTime
+        responseTimeMs: Date.now() - startTime,
       });
 
       if (!response.ok()) {
         throw new Error(
-          `Token refresh failed with status ${response.status()} - ${JSON.stringify(responseBody)}`
+          `Token refresh failed with status ${response.status()} - ${JSON.stringify(responseBody)}`,
         );
       }
 
@@ -393,6 +384,49 @@ export class AuthApi {
     );
   }
 
+  private static isRateLimitedError(error: unknown): boolean {
+    const message = error instanceof Error ? error.message : String(error);
+    return /status 429|TOO_MANY_REQUESTS/i.test(message);
+  }
+
+  /** Seconds from `retry-after=` in our error message, if present. */
+  private static parseRetryAfterSeconds(error: unknown): number | undefined {
+    const message = error instanceof Error ? error.message : String(error);
+    const match = message.match(/retry-after=(\d+(?:\.\d+)?)/i);
+    if (!match?.[1]) {
+      return undefined;
+    }
+    const sec = Number(match[1]);
+    return Number.isFinite(sec) && sec > 0 ? sec : undefined;
+  }
+
+  /**
+   * Long Retry-After means the auth API is locked. Waiting 3 minutes then
+   * POSTing again (or Ctrl+C + re-run) only extends the lock. Fail with a
+   * clear wall-clock wait instead.
+   */
+  private static rateLimitLockoutError(error: unknown): Error {
+    const sec = this.parseRetryAfterSeconds(error) ?? 600;
+    const until = new Date(Date.now() + sec * 1000).toLocaleTimeString();
+    const minutes = Math.ceil(sec / 60);
+    return new Error(
+      `Auth API rate-limited (429). Wait ~${minutes} minute(s) until about ${until}, ` +
+        `then run ONE test command. Do not Ctrl+C and immediately re-run — ` +
+        `each login attempt extends the lock. ` +
+        `(retry-after=${sec}s)`,
+    );
+  }
+
+  /** Prefer Retry-After header seconds when the API sent one; else use schedule. */
+  private static resolveRateLimitWaitMs(error: unknown, scheduledMs: number): number {
+    const fromHeader = this.parseRetryAfterSeconds(error);
+    if (fromHeader != null) {
+      const fromHeaderMs = Math.round(fromHeader * 1_000);
+      return Math.min(this.rateLimitCapMs, Math.max(scheduledMs, fromHeaderMs));
+    }
+    return scheduledMs;
+  }
+
   private static isDbBusyError(error: unknown): boolean {
     const message = error instanceof Error ? error.message : String(error);
     return /DB_BUSY|database is busy|please retry shortly|temporarily unavailable|SERVICE_UNAVAILABLE/i.test(
@@ -401,8 +435,7 @@ export class AuthApi {
   }
 
   private static isRetriableLoginError(error: unknown): boolean {
-    const message =
-      error instanceof Error ? error.message : String(error);
+    const message = error instanceof Error ? error.message : String(error);
 
     if (this.isDbBusyError(error)) {
       return true;
@@ -425,10 +458,8 @@ export class AuthApi {
     );
   }
 
-  private static pickDevicesToTerminate(
-    devices: DeviceSelectionDevice[],
-  ): DeviceSelectionDevice[] {
-    const keepDeviceId = process.env.DEVICE_ID?.trim();
+  private static pickDevicesToTerminate(devices: DeviceSelectionDevice[]): DeviceSelectionDevice[] {
+    const keepDeviceId = env.DEVICE_ID;
     const sorted = [...devices].sort((left, right) => {
       const leftTime = Date.parse(left.lastSeenAt ?? "") || 0;
       const rightTime = Date.parse(right.lastSeenAt ?? "") || 0;
@@ -443,9 +474,7 @@ export class AuthApi {
     return releasable.length > 0 ? releasable : sorted;
   }
 
-  private static pickDeviceToRelease(
-    devices: DeviceSelectionDevice[],
-  ): DeviceSelectionDevice {
+  private static pickDeviceToRelease(devices: DeviceSelectionDevice[]): DeviceSelectionDevice {
     return this.pickDevicesToTerminate(devices)[0] ?? devices[0]!;
   }
 
@@ -460,9 +489,7 @@ export class AuthApi {
     const data = body.data ?? {};
     const fromRoot = Array.isArray(data.devices) ? data.devices : [];
     const fromGroups = Array.isArray(data.deviceGroups)
-      ? data.deviceGroups.flatMap((group) =>
-          Array.isArray(group.devices) ? group.devices : [],
-        )
+      ? data.deviceGroups.flatMap((group) => (Array.isArray(group.devices) ? group.devices : []))
       : [];
     const seen = new Set<string>();
     const merged: Array<{
@@ -507,7 +534,7 @@ export class AuthApi {
         }>;
       };
     };
-    const keepDeviceId = process.env.DEVICE_ID?.trim();
+    const keepDeviceId = env.DEVICE_ID;
     const targets = this.flattenCatalogDevices(listBody).filter((device) => {
       if (device.isCurrentDevice || device.revokedAt) {
         return false;
@@ -519,19 +546,13 @@ export class AuthApi {
     });
 
     for (const device of targets) {
-      const csrfToken = this.readCsrfToken(
-        (await this.snapshotCookies(apiContext)).cookies,
-        {},
-      );
-      const deleted = await apiContext.delete(
-        this.path(`${this.devicesPath}/${device.id}`),
-        {
-          headers: {
-            ...this.buildAuthHeaders(csrfToken),
-            Authorization: `Bearer ${session.accessToken}`,
-          },
+      const csrfToken = this.readCsrfToken((await this.snapshotCookies(apiContext)).cookies, {});
+      const deleted = await apiContext.delete(this.path(`${this.devicesPath}/${device.id}`), {
+        headers: {
+          ...this.buildAuthHeaders(csrfToken),
+          Authorization: `Bearer ${session.accessToken}`,
         },
-      );
+      });
       LoggerEngine.info(
         `Terminated session ${device.id} (${deleted.status()}) after device-limit login`,
       );
@@ -601,7 +622,7 @@ export class AuthApi {
       if (code === "TWO_FACTOR_SECRET_UNAVAILABLE") {
         const host = (() => {
           try {
-            return new URL(normalizeApiBaseUrl(process.env.BASE_URL)).hostname;
+            return new URL(normalizeApiBaseUrl(env.BASE_URL)).hostname;
           } catch {
             return "this API";
           }
@@ -632,9 +653,7 @@ export class AuthApi {
     LoggerEngine.info(
       `Device limit reached (${devices.length} active sessions). Terminating listed sessions so login can continue.`,
     );
-    console.log(
-      `Device limit reached (${devices.length} sessions). Closing all listed sessions.`,
-    );
+    console.log(`Device limit reached (${devices.length} sessions). Closing all listed sessions.`);
 
     const maxAttempts = Math.max(devices.length, 4) + 2;
 
@@ -679,9 +698,7 @@ export class AuthApi {
       }
 
       if (data?.requires2FA) {
-        LoggerEngine.info(
-          "Device slot freed; API now requires 2FA before issuing a token",
-        );
+        LoggerEngine.info("Device slot freed; API now requires 2FA before issuing a token");
         console.log("Device slot freed. Completing 2FA next.");
         return data;
       }
@@ -713,9 +730,8 @@ export class AuthApi {
     email: string;
     password: string;
   }): Promise<LoginResponse> {
-    const email =
-      credentials?.email ?? process.env.EMAIL ?? process.env.USERNAME;
-    const password = credentials?.password ?? process.env.PASSWORD;
+    const email = credentials?.email ?? getLoginIdentity();
+    const password = credentials?.password ?? env.PASSWORD;
 
     if (!email || !password) {
       throw new Error("Missing EMAIL (or USERNAME) and PASSWORD environment variables");
@@ -742,7 +758,20 @@ export class AuthApi {
         captchaAttempt <= this.captchaOcrMaxAttempts;
         captchaAttempt += 1
       ) {
-        const loginCaptcha = await this.fetchLoginCaptcha(apiContext, csrfToken);
+        let loginCaptcha: { captchaId: string; captcha: string } | null = null;
+        try {
+          loginCaptcha = await this.fetchLoginCaptcha(apiContext, csrfToken);
+        } catch (captchaError) {
+          const message =
+            captchaError instanceof Error ? captchaError.message : String(captchaError);
+          console.error(
+            `Login CAPTCHA attempt ${captchaAttempt}/${this.captchaOcrMaxAttempts}: OCR failed — ${message}`,
+          );
+          if (/CAPTCHA OCR/i.test(message) && captchaAttempt < this.captchaOcrMaxAttempts) {
+            continue;
+          }
+          throw captchaError instanceof Error ? captchaError : new Error(message);
+        }
         lastCaptchaGuess = loginCaptcha?.captcha ?? "";
 
         loginResponse = undefined;
@@ -766,7 +795,10 @@ export class AuthApi {
           });
           loginRaw = await loginResponse.text();
           if (!this.isRouteNotFound(loginResponse.status())) {
-            if (loginPath === this.loginPath.slice("/indore".length) || loginPath === "/auth/login") {
+            if (
+              loginPath === this.loginPath.slice("/indore".length) ||
+              loginPath === "/auth/login"
+            ) {
               enableStripIndorePrefix();
             }
             break;
@@ -779,8 +811,10 @@ export class AuthApi {
         }
 
         if (this.retriableAuthStatuses.has(loginResponse.status())) {
+          const retryAfter = loginResponse.headers()["retry-after"];
+          const suffix = retryAfter ? ` retry-after=${retryAfter}` : "";
           throw new Error(
-            `Login failed with status ${loginResponse.status()} - ${loginRaw.slice(0, 300)}`,
+            `Login failed with status ${loginResponse.status()} - ${loginRaw.slice(0, 300)}${suffix}`,
           );
         }
 
@@ -801,21 +835,30 @@ export class AuthApi {
         });
 
         const invalidCaptcha =
-          loginResponse.status() === 401 &&
-          /INVALID_CAPTCHA/i.test(JSON.stringify(loginBody));
+          loginResponse.status() === 401 && /INVALID_CAPTCHA/i.test(JSON.stringify(loginBody));
 
         LoggerEngine.debug(
           `CAPTCHA attempt ${captchaAttempt}/${this.captchaOcrMaxAttempts} guess=${lastCaptchaGuess || "(none)"} result=${
-            invalidCaptcha ? "INVALID_CAPTCHA" : loginResponse.ok() ? "ok" : `status ${loginResponse.status()}`
+            invalidCaptcha
+              ? "INVALID_CAPTCHA"
+              : loginResponse.ok()
+                ? "ok"
+                : `status ${loginResponse.status()}`
           }`,
         );
         console.error(
           `Login CAPTCHA attempt ${captchaAttempt}/${this.captchaOcrMaxAttempts}: ${lastCaptchaGuess || "(none)"} → ${
-            invalidCaptcha ? "INVALID_CAPTCHA" : loginResponse.ok() ? "accepted" : `status ${loginResponse.status()}`
+            invalidCaptcha
+              ? "INVALID_CAPTCHA"
+              : loginResponse.ok()
+                ? "accepted"
+                : `status ${loginResponse.status()}`
           }`,
         );
 
         if (invalidCaptcha && captchaAttempt < this.captchaOcrMaxAttempts) {
+          // Pause so a new captchaId is issued and OCR is not racing expiry.
+          await new Promise((resolve) => setTimeout(resolve, 700));
           continue;
         }
 
@@ -878,19 +921,18 @@ export class AuthApi {
     }
   }
 
-  static async login(credentials?: {
-    email: string;
-    password: string;
-  }): Promise<LoginResponse> {
+  static async login(credentials?: { email: string; password: string }): Promise<LoginResponse> {
     let lastError: Error | null = null;
     let sawDbBusy = false;
+    let sawRateLimit = false;
 
     for (let attempt = 0; attempt < this.loginRetryMs.length; attempt += 1) {
-      const waitMs = this.loginRetryMs[attempt] ?? 0;
+      const schedule = sawRateLimit ? this.rateLimitRetryMs : this.loginRetryMs;
+      const waitMs = this.resolveRateLimitWaitMs(lastError, schedule[attempt] ?? 0);
       if (waitMs > 0) {
         const msg =
-          `Login retry ${attempt + 1}/${this.loginRetryMs.length} after ${waitMs}ms` +
-          (sawDbBusy ? " (DB_BUSY backoff)" : "");
+          `Login retry ${attempt + 1}/${schedule.length} after ${waitMs}ms` +
+          (sawRateLimit ? " (429 rate-limit backoff)" : sawDbBusy ? " (DB_BUSY backoff)" : "");
         LoggerEngine.info(msg);
         console.log(msg);
         await new Promise((resolve) => setTimeout(resolve, waitMs));
@@ -910,8 +952,7 @@ export class AuthApi {
           try {
             return await this.loginOnce(credentials);
           } catch (retryError) {
-            const failed =
-              retryError instanceof Error ? retryError : new Error(String(retryError));
+            const failed = retryError instanceof Error ? retryError : new Error(String(retryError));
             LoggerEngine.error("AuthApi.login failed", failed);
             throw this.isCaptchaRequired(failed)
               ? this.captchaLockoutError(failed.message)
@@ -922,6 +963,21 @@ export class AuthApi {
         if (!this.isRetriableLoginError(lastError)) {
           LoggerEngine.error("AuthApi.login failed", lastError);
           throw lastError;
+        }
+
+        if (this.isRateLimitedError(lastError)) {
+          sawRateLimit = true;
+          const retryAfterSec = this.parseRetryAfterSeconds(lastError);
+          if (retryAfterSec != null && retryAfterSec >= this.rateLimitFailFastSec) {
+            const lockout = this.rateLimitLockoutError(lastError);
+            LoggerEngine.error("AuthApi.login rate-limited — fail fast", lockout);
+            console.error(lockout.message);
+            throw lockout;
+          }
+          const finding =
+            "Login rate-limited (429) — waiting before the next attempt (do not Ctrl+C and re-run)";
+          LoggerEngine.info(finding);
+          console.log(finding);
         }
 
         if (this.isDbBusyError(lastError)) {
@@ -942,9 +998,11 @@ export class AuthApi {
     throw (
       lastError ??
       new Error(
-        sawDbBusy
-          ? "Login failed after DB_BUSY retries — database still busy; retry the suite shortly"
-          : "Login failed after retries",
+        sawRateLimit
+          ? "Login failed after 429 rate-limit retries — wait several minutes, then re-run (do not spam login)"
+          : sawDbBusy
+            ? "Login failed after DB_BUSY retries — database still busy; retry the suite shortly"
+            : "Login failed after retries",
       )
     );
   }

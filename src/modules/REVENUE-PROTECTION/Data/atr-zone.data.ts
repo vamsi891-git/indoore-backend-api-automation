@@ -40,6 +40,8 @@ export interface AtrZoneTestCase {
   testName: string;
   query: AtrZoneQuery;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export const atrZoneTestCases: AtrZoneTestCase[] = [
@@ -49,18 +51,21 @@ export const atrZoneTestCases: AtrZoneTestCase[] = [
       "IND-RPT-ATZ-001 — Validate GET /indore/revenue-protection/atr-zone — default page (2026)",
     query: { ...atrZoneDefaultQuery },
     tags: ["@smoke", "@revenue-protection", "@atr-zone"],
+    nonEmptyExpected: true,
   },
   {
     testCaseId: "IND-RPT-ATZ-002",
     testName: "IND-RPT-ATZ-002 — Validate pagination — smaller page size (limit 5)",
     query: { ...atrZoneSmallPageQuery },
     tags: ["@revenue-protection", "@atr-zone"],
+    nonEmptyExpected: false,
   },
   {
     testCaseId: "IND-RPT-ATZ-003",
     testName: "IND-RPT-ATZ-003 — Validate pagination — page 2 (limit 5)",
     query: { ...atrZoneSecondPageQuery },
     tags: ["@revenue-protection", "@atr-zone"],
+    nonEmptyExpected: false,
   },
 ];
 

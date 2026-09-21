@@ -1,5 +1,5 @@
 import type pg from "pg";
-import { queryReadOnly, queryScalar } from "../../../core/db/postgres.client";
+import { queryReadOnly, queryScalar } from "../../../extras/db/postgres.client";
 import {
   CASES_COUNT_SQL,
   CASES_ROW_BY_BUSINESS_KEY_SQL,
@@ -32,15 +32,10 @@ export function resolveDbSampleSize(): number {
   return Number.isFinite(raw) && raw > 0 ? Math.floor(raw) : 3;
 }
 
-export async function countCasesForFilters(
-  pool: pg.Pool,
-  query: CasesQuery,
-): Promise<number> {
+export async function countCasesForFilters(pool: pg.Pool, query: CasesQuery): Promise<number> {
   return (
-    (await queryScalar<number>(pool, CASES_COUNT_SQL, [
-      String(query.month),
-      String(query.year),
-    ])) ?? 0
+    (await queryScalar<number>(pool, CASES_COUNT_SQL, [String(query.month), String(query.year)])) ??
+    0
   );
 }
 
@@ -50,11 +45,11 @@ export async function getCaseRowByBusinessKey(
   event: string,
   amountBilled: number,
 ): Promise<DbCaseRow | null> {
-  const rows = await queryReadOnly<DbCaseRow>(
-    pool,
-    CASES_ROW_BY_BUSINESS_KEY_SQL,
-    [ivrsNo, event, amountBilled],
-  );
+  const rows = await queryReadOnly<DbCaseRow>(pool, CASES_ROW_BY_BUSINESS_KEY_SQL, [
+    ivrsNo,
+    event,
+    amountBilled,
+  ]);
   return rows[0] ?? null;
 }
 
@@ -64,11 +59,11 @@ export async function orgHierarchyExists(
   division: string,
   zone: string,
 ): Promise<OrgHierarchyExists> {
-  const rows = await queryReadOnly<OrgHierarchyExists>(
-    pool,
-    ORG_HIERARCHY_EXISTS_SQL,
-    [circle, division, zone],
-  );
+  const rows = await queryReadOnly<OrgHierarchyExists>(pool, ORG_HIERARCHY_EXISTS_SQL, [
+    circle,
+    division,
+    zone,
+  ]);
   return (
     rows[0] ?? {
       circle_ok: false,

@@ -8,6 +8,7 @@
     "test:smoke": "playwright test --grep @smoke --workers=1",
     "test:db": "playwright test --grep @db --workers=1",
     "test:unit": "playwright test src/core/__tests__ --workers=1",
+    "test:shard": "playwright test --grep-invert @db",
     "test:ui": "playwright test --ui",
     "test:alarms-and-events": "playwright test src/modules/ALARMS-AND-EVENTS/tests --workers=1 --grep-invert @db",
     "test:asset-management": "playwright test src/modules/ASSET-MANAGEMENT/tests --workers=1 --grep-invert @db",
@@ -27,6 +28,8 @@
     "test:billing:contract": "playwright test src/modules/BILLING/tests --grep @contract-snapshot --workers=1",
     "test:billing:mutation-proof": "playwright test src/modules/BILLING/tests --grep @mutation-proof --workers=1",
     "test:billing:db": "playwright test src/modules/BILLING/tests --grep @db --workers=1",
+    "test:collection-report": "playwright test src/modules/COLLECTION-REPORT/tests --workers=1 --grep-invert @db",
+    "test:collection-report:contract": "playwright test src/modules/COLLECTION-REPORT/tests --grep @contract-snapshot --workers=1",
     "test:commericial-analysis": "playwright test src/modules/COMMERICIAL-ANALYSIS/tests --workers=1 --grep-invert @db",
     "test:commericial-analysis:prod": "playwright test src/modules/COMMERICIAL-ANALYSIS/tests --workers=1 --grep-invert @db",
     "test:commericial-analysis:prod-smoke": "playwright test src/modules/COMMERICIAL-ANALYSIS/tests --grep @smoke --workers=1",
@@ -129,13 +132,27 @@
     "allure:open": "allure open allure-report",
     "allure:serve": "allure open allure-report",
     "report:allure": "npm run allure:generate && npm run allure:open",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix --no-warn-ignored",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.60.0",
     "@types/node": "^25.8.0",
     "@types/pg": "^8.20.0",
@@ -143,12 +160,15 @@
     "allure-playwright": "^3.10.0",
     "eslint": "^10.3.0",
     "exceljs": "^4.4.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0",
     "playwright-html-reporter": "^0.1.11",
     "prettier": "^3.8.3",
     "sharp": "^0.35.4",
     "tesseract.js": "^7.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.70.0"
   },
   "dependencies": {
     "axios": "^1.16.0",

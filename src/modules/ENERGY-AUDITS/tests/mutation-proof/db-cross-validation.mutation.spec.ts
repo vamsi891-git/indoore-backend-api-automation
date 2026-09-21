@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { compareApiToDb } from "../../../../core/db/db-compare.engine";
+import { compareApiToDb } from "../../../../extras/db/db-compare.engine";
 import { compareEnergyAuditsCountLteDb } from "../../Db/energy-audits-db-compare";
 
 test.describe("Mutation proof — ENERGY-AUDITS DB (fixture)", () => {

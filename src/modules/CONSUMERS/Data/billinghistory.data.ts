@@ -1,6 +1,10 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { BillingHistoryQuery } from "../Api/billinghistory.api";
-import type {BillingHistoryResponse,BillingHistoryRow,BillingHistoryScenario,} from "../Mapper/billinghistory.mapper";
+import type {
+  BillingHistoryResponse,
+  BillingHistoryRow,
+  BillingHistoryScenario,
+} from "../Mapper/billinghistory.mapper";
 import {
   CONSUMERS_LIVE_IVRS,
   CONSUMERS_LIVE_METER_ROUTE,
@@ -59,15 +63,11 @@ const CONTRACT_EMPTY_DEFAULT_LABELS = [
 const CONTRACT_EMPTY_12_LABELS = CONTRACT_EMPTY_DEFAULT_LABELS.slice(0, 12);
 export const billingHistoryContractEmpty24Response: BillingHistoryResponse = {
   success: true,
-  data: CONTRACT_EMPTY_DEFAULT_LABELS.map((periodLabel) =>
-    emptyBillingMonthRow(periodLabel),
-  ),
+  data: CONTRACT_EMPTY_DEFAULT_LABELS.map((periodLabel) => emptyBillingMonthRow(periodLabel)),
 };
 export const billingHistoryContractEmpty12Response: BillingHistoryResponse = {
   success: true,
-  data: CONTRACT_EMPTY_12_LABELS.map((periodLabel) =>
-    emptyBillingMonthRow(periodLabel),
-  ),
+  data: CONTRACT_EMPTY_12_LABELS.map((periodLabel) => emptyBillingMonthRow(periodLabel)),
 };
 /**
  * Archive cumulative registers (raw ÷ 1000 = kWh):
@@ -118,10 +118,10 @@ export interface BillingHistoryTestCase {
   expectedStatus?: number;
   isContractFixture?: boolean;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
-export function resolveBillingHistoryRef(
-  scenario: BillingHistoryScenario,
-): string | undefined {
+export function resolveBillingHistoryRef(scenario: BillingHistoryScenario): string | undefined {
   switch (scenario) {
     case "bh_by_ivrs_all":
     case "bh_limit_12":
@@ -164,9 +164,7 @@ export function resolveBillingHistoryRef(
       return undefined;
   }
 }
-export function resolveBillingHistoryQuery(
-  scenario: BillingHistoryScenario,
-): BillingHistoryQuery {
+export function resolveBillingHistoryQuery(scenario: BillingHistoryScenario): BillingHistoryQuery {
   switch (scenario) {
     case "bh_limit_12":
       return { billingLimit: 12 };
@@ -186,9 +184,7 @@ export function resolveBillingHistoryQuery(
       return { billingLimit: 0 };
   }
 }
-export function resolveBillingHistoryExpectedLimit(
-  scenario: BillingHistoryScenario,
-): number {
+export function resolveBillingHistoryExpectedLimit(scenario: BillingHistoryScenario): number {
   const query = resolveBillingHistoryQuery(scenario);
   return typeof query.billingLimit === "number" ? query.billingLimit : 0;
 }
@@ -210,93 +206,93 @@ export function resolveBillingHistoryContractBody(
 }
 export const billingHistoryTestCases: BillingHistoryTestCase[] = [
   {
-    testName:
-      "Billing history — full bill list for the consumer",
+    testName: "Billing history — full bill list for the consumer",
     scenario: "bh_by_ivrs_all",
     tags: ["@smoke", "@consumer", "@billing", "@billing-history"],
+    nonEmptyExpected: true,
   },
   {
-    testName:
-      "Billing history — last 12 months of bills",
+    testName: "Billing history — last 12 months of bills",
     scenario: "bh_limit_12",
     tags: ["@consumer", "@billing", "@billing-history", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Billing history — last 6 months of bills",
+    testName: "Billing history — last 6 months of bills",
     scenario: "bh_limit_6",
     tags: ["@consumer", "@billing", "@billing-history", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Billing history — opens using the account number",
+    testName: "Billing history — opens using the account number",
     scenario: "bh_by_account",
     tags: ["@consumer", "@billing", "@billing-history", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Billing history — opens using the meter",
+    testName: "Billing history — opens using the meter",
     scenario: "bh_by_meter",
     tags: ["@consumer", "@billing", "@billing-history", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Billing history — extra unused options are ignored",
+    testName: "Billing history — extra unused options are ignored",
     scenario: "bh_ignore_unknown_query",
     tags: ["@consumer", "@billing", "@billing-history", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Billing history — sample: empty months still listed",
+    testName: "Billing history — sample: empty months still listed",
     scenario: "contract_empty_24",
     isContractFixture: true,
     tags: ["@consumer", "@billing", "@billing-history", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Billing history — sample: 12 empty months listed",
+    testName: "Billing history — sample: 12 empty months listed",
     scenario: "contract_empty_12",
     isContractFixture: true,
     tags: ["@consumer", "@billing", "@billing-history", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Billing history — sample: months with units consumed",
+    testName: "Billing history — sample: months with units consumed",
     scenario: "contract_nonzero_consumption",
     isContractFixture: true,
     tags: ["@consumer", "@billing", "@billing-history", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Billing history — sample: monthly units match meter totals",
+    testName: "Billing history — sample: monthly units match meter totals",
     scenario: "contract_consumption_formula",
     isContractFixture: true,
     tags: ["@consumer", "@billing", "@billing-history", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Billing history — unknown consumer is empty or not found",
+    testName: "Billing history — unknown consumer is empty or not found",
     scenario: "consumer_not_found",
     tags: ["@consumer", "@billing", "@billing-history", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Billing history — unknown meter is empty or not found",
+    testName: "Billing history — unknown meter is empty or not found",
     scenario: "meter_not_found",
     tags: ["@consumer", "@billing", "@billing-history", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Billing history — blank consumer number is rejected",
+    testName: "Billing history — blank consumer number is rejected",
     scenario: "empty_consumer_ref",
     expectedStatus: 400,
     tags: ["@consumer", "@billing", "@billing-history", "@negative"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Billing history — negative month limit is rejected",
+    testName: "Billing history — negative month limit is rejected",
     scenario: "invalid_billing_limit",
     expectedStatus: 400,
     tags: ["@consumer", "@billing", "@billing-history", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

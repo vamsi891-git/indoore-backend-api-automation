@@ -1,15 +1,14 @@
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { REVENUE_PROTECTION_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { applyAllureTestCaseId } from "../../../core/utils/allure-test-case.helper";
 import {
   assertContractSnapshot,
   buildGridContractSnapshot,
-} from "../../../core/contract/contract-snapshot.helper";
+} from "../../../extras/contract/contract-snapshot.helper";
 import { AberrationsApi } from "../Api/aberrations.api";
 import { aberrationsDefaultQuery } from "../Data/aberrations.data";
 import { AberrationsMapper } from "../Mapper/aberrations.mapper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 /**
  * Contract snapshot for Aberrations summary column metadata.
@@ -27,8 +26,8 @@ test.describe("Revenue Protection — Aberrations Contract Snapshot", () => {
       await applyAllureTestCaseId("IND-RPT-ABE-CONTRACT-001");
 
       const api = new AberrationsApi(authenticatedApi);
-      const validation = new ValidationEngine();
-      const assert = new AssertionEngine();
+      const validation = new ApiValidationHelper();
+      const assert = new ApiValidationHelper();
       const { rawResponse, responseBody, responseTime } =
         await api.getAberrationSummary(aberrationsDefaultQuery);
       const mapped = AberrationsMapper.mapData(responseBody.data);

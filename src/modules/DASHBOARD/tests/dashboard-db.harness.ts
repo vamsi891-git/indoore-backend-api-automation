@@ -1,6 +1,5 @@
 import type pg from "pg";
 import type { APIRequestContext } from "@playwright/test";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { DashboardMetricsApi } from "../Api/dashboardmetrics.api";
 import { ConsumerConnectionStatusApi } from "../Api/consumerconnectionstatus.api";
 import { ConsumerCategoryDistributionApi } from "../Api/consumercategorydistribution.api";
@@ -41,11 +40,9 @@ import {
 } from "../Db/dashboard.db";
 import { compareApiEqualsSql } from "../Db/dashboard-db-compare";
 import { logDashboardDataQualityFindings } from "../Db/dashboard-db.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
-function metricCount(
-  section: Record<string, { count?: number }>,
-  key: string,
-): number {
+function metricCount(section: Record<string, { count?: number }>, key: string): number {
   return Number(section?.[key]?.count ?? 0);
 }
 
@@ -59,10 +56,7 @@ function normalizeCountKey(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]/g, "");
 }
 
-function sqlCountFor(
-  rows: DashboardKeyedCount[],
-  want: string,
-): number {
+function sqlCountFor(rows: DashboardKeyedCount[], want: string): number {
   const wantKey = normalizeCountKey(want);
   const row = rows.find((item) => normalizeCountKey(item.key) === wantKey);
   return Number(row?.count ?? 0);
@@ -77,11 +71,9 @@ export async function runDashboardDbCoverage(
   authenticatedApi: APIRequestContext,
   db: pg.Pool,
 ): Promise<void> {
-  const validation = new ValidationEngine();
+  const validation = new ApiValidationHelper();
 
-  const metricsBody = await new DashboardMetricsApi(
-    authenticatedApi,
-  ).getDashboardMetrics();
+  const metricsBody = await new DashboardMetricsApi(authenticatedApi).getDashboardMetrics();
   const metrics = DashboardMetricsMapper.map(metricsBody.responseBody);
   await logDashboardDataQualityFindings(
     "metrics",
@@ -100,9 +92,9 @@ export async function runDashboardDbCoverage(
     sqlDtrConsumption,
     sqlConsumerMeterStatus,
   ] = await Promise.all([
-      countActiveDtrs(db),
-      countActiveFeeders(db),
-      countActiveSubstations(db),
+    countActiveDtrs(db),
+    countActiveFeeders(db),
+    countActiveSubstations(db),
     getConnectionStatusCounts(db),
     getCategoryWiseCounts(db),
     getPhaseWiseCounts(db),
@@ -136,30 +128,24 @@ export async function runDashboardDbCoverage(
       sqlName: "feederSubstationCatalogSql Sub Station",
     });
   });
-  validation.execute(
-    "metrics.totalMeterCount === SQL distinct IVRS",
-    () => {
+  validation.execute("metrics.totalMeterCount === SQL distinct IVRS", () => {
+    compareApiEqualsSql({
+      label: "totalMeterCount",
+      apiCount: Number(metrics.totalMeterCount ?? 0),
+      sqlCount: sqlStatus.totalMeterCount,
+      sqlName: "meterBasedConsumerSubquerySql distinct RRNumber",
+    });
+  });
+  const networkConsumers = metricCount(metrics.networkDetails, "consumers");
+  if (networkConsumers > 0 || sqlStatus.totalMeterCount > 0) {
+    validation.execute("metrics.networkDetails.consumers === SQL distinct IVRS", () => {
       compareApiEqualsSql({
-        label: "totalMeterCount",
-        apiCount: Number(metrics.totalMeterCount ?? 0),
+        label: "networkDetails.consumers",
+        apiCount: networkConsumers,
         sqlCount: sqlStatus.totalMeterCount,
         sqlName: "meterBasedConsumerSubquerySql distinct RRNumber",
       });
-    },
-  );
-  const networkConsumers = metricCount(metrics.networkDetails, "consumers");
-  if (networkConsumers > 0 || sqlStatus.totalMeterCount > 0) {
-    validation.execute(
-      "metrics.networkDetails.consumers === SQL distinct IVRS",
-      () => {
-        compareApiEqualsSql({
-          label: "networkDetails.consumers",
-          apiCount: networkConsumers,
-          sqlCount: sqlStatus.totalMeterCount,
-          sqlName: "meterBasedConsumerSubquerySql distinct RRNumber",
-        });
-      },
-    );
+    });
   }
   for (const statusKey of ["cd", "td", "pd"] as const) {
     validation.execute(`metrics.${statusKey} === SQL connection status`, () => {
@@ -182,34 +168,28 @@ export async function runDashboardDbCoverage(
     const details = ConsumerConnectionStatusMapper.map(
       (
         await connectionStatusApi.getConsumerConnectionStatus({
-      status,
-      page: 1,
-      limit: 20,
+          status,
+          page: 1,
+          limit: 20,
         })
       ).responseBody,
     );
     const metricsKey = CONSUMER_CONNECTION_STATUS_METRICS_KEY[status];
-    validation.execute(
-      `connection-status(${status}) === metrics.${metricsKey}`,
-      () => {
-        assertSame(
-          `connection-status(${status})`,
-          details.pagination.total,
-          metricCount(metrics.connectionStatus, metricsKey),
-        );
-      },
-    );
-    validation.execute(
-      `connection-status(${status}) === SQL ${metricsKey}`,
-      () => {
-        compareApiEqualsSql({
-          label: `connection-status(${status}).total`,
-          apiCount: details.pagination.total,
-          sqlCount: sqlStatus[metricsKey as "cd" | "td" | "pd"],
-          sqlName: `M_Connection_Status shortName=${metricsKey} distinct RRNumber`,
-        });
-      },
-    );
+    validation.execute(`connection-status(${status}) === metrics.${metricsKey}`, () => {
+      assertSame(
+        `connection-status(${status})`,
+        details.pagination.total,
+        metricCount(metrics.connectionStatus, metricsKey),
+      );
+    });
+    validation.execute(`connection-status(${status}) === SQL ${metricsKey}`, () => {
+      compareApiEqualsSql({
+        label: `connection-status(${status}).total`,
+        apiCount: details.pagination.total,
+        sqlCount: sqlStatus[metricsKey as "cd" | "td" | "pd"],
+        sqlName: `M_Connection_Status shortName=${metricsKey} distinct RRNumber`,
+      });
+    });
   }
 
   const categoryApi = new ConsumerCategoryDistributionApi(authenticatedApi);
@@ -217,27 +197,24 @@ export async function runDashboardDbCoverage(
     const details = ConsumerCategoryDistributionMapper.map(
       (
         await categoryApi.getConsumerCategoryDistribution({
-      category,
-      page: 1,
-      limit: 20,
+          category,
+          page: 1,
+          limit: 20,
         })
       ).responseBody,
     );
     const metricsKey = CONSUMER_CATEGORY_DISTRIBUTION_METRICS_KEY[category];
-    validation.execute(
-      `category(${category}) === metrics.${metricsKey}`,
-      () => {
-        assertSame(
-          `category(${category})`,
-          details.pagination.total,
-          metricCount(metrics.categoryWiseConsumer, metricsKey),
-        );
-      },
-    );
+    validation.execute(`category(${category}) === metrics.${metricsKey}`, () => {
+      assertSame(
+        `category(${category})`,
+        details.pagination.total,
+        metricCount(metrics.categoryWiseConsumer, metricsKey),
+      );
+    });
     validation.execute(`category(${category}) === SQL CategoryName`, () => {
       compareApiEqualsSql({
         label: `category(${category})`,
-          apiCount: details.pagination.total,
+        apiCount: details.pagination.total,
         sqlCount: sqlCountFor(sqlCategories, category),
         sqlName: "M_Category.CategoryName distinct RRNumber",
       });
@@ -250,9 +227,9 @@ export async function runDashboardDbCoverage(
     const details = ConsumerPhaseDistributionMapper.map(
       (
         await phaseApi.getConsumerPhaseDistribution({
-      phase,
-      page: 1,
-      limit: 20,
+          phase,
+          page: 1,
+          limit: 20,
         })
       ).responseBody,
     );
@@ -279,9 +256,9 @@ export async function runDashboardDbCoverage(
     const details = ConsumerOemDistributionMapper.map(
       (
         await oemApi.getConsumerOemDistribution({
-      oem,
-      page: 1,
-      limit: 20,
+          oem,
+          page: 1,
+          limit: 20,
         })
       ).responseBody,
     );
@@ -296,7 +273,7 @@ export async function runDashboardDbCoverage(
     validation.execute(`oem(${oem}) === SQL Manufacturer_Name`, () => {
       compareApiEqualsSql({
         label: `oem(${oem})`,
-          apiCount: details.pagination.total,
+        apiCount: details.pagination.total,
         sqlCount: sqlCountFor(sqlOems, metricsKey),
         sqlName: "M_Device_Manufacturer distinct RRNumber",
       });
@@ -310,17 +287,14 @@ export async function runDashboardDbCoverage(
       })
     ).responseBody,
   );
-  validation.execute(
-    "dtr-summary.totalDtrs === SQL DTR-master catalog count",
-    () => {
-      compareApiEqualsSql({
-        label: "dtr-summary.totalDtrs",
-        apiCount: Number(summary.totalDtrs?.count ?? 0),
-        sqlCount: sqlDtrFleet,
-        sqlName: "dtrMasterCatalogCountSubquerySql (active DTR × Type-2 meter)",
-      });
-    },
-  );
+  validation.execute("dtr-summary.totalDtrs === SQL DTR-master catalog count", () => {
+    compareApiEqualsSql({
+      label: "dtr-summary.totalDtrs",
+      apiCount: Number(summary.totalDtrs?.count ?? 0),
+      sqlCount: sqlDtrFleet,
+      sqlName: "dtrMasterCatalogCountSubquerySql (active DTR × Type-2 meter)",
+    });
+  });
 
   const consumption = DtrConsumptionMapper.map(
     (
@@ -329,18 +303,15 @@ export async function runDashboardDbCoverage(
       })
     ).responseBody,
   );
-  const sqlByLabel = new Map(
-    sqlDtrConsumption.points.map((p) => [p.label, p]),
-  );
+  const sqlByLabel = new Map(sqlDtrConsumption.points.map((p) => [p.label, p]));
   for (const point of consumption.points) {
-    const sqlPoint =
-      sqlByLabel.get(point.label) ??
+    const sqlPoint = sqlByLabel.get(point.label) ??
       sqlDtrConsumption.points[consumption.points.indexOf(point)] ?? {
         label: point.label,
-    kwh: 0,
-    kvah: 0,
-    kvarh: 0,
-  };
+        kwh: 0,
+        kvah: 0,
+        kvarh: 0,
+      };
     for (const field of ["kwh", "kvah", "kvarh"] as const) {
       validation.execute(
         `dtr-consumption(${point.label}).${field} === SQL ${sqlDtrConsumption.source}`,
@@ -357,42 +328,32 @@ export async function runDashboardDbCoverage(
   }
 
   const meterStatus = ConsumerMeterStatusMapper.map(
-    (await new ConsumerMeterStatusApi(authenticatedApi).getConsumerMeterStatus())
-      .responseBody,
+    (await new ConsumerMeterStatusApi(authenticatedApi).getConsumerMeterStatus()).responseBody,
   );
-  validation.execute(
-    "consumer meter-status.total === SQL distinct IVRS",
-    () => {
-      compareApiEqualsSql({
-        label: "consumer.meter-status.total",
-        apiCount: meterStatus.totalConsumerMeters,
-        sqlCount: sqlConsumerMeterStatus.totalConsumerMeters,
-        sqlName: "getConsumerMeterStatus distinct RRNumber",
-      });
-    },
-  );
-  validation.execute(
-    "consumer meter-status.communicated === SQL last_seen 1h",
-    () => {
-      compareApiEqualsSql({
-        label: "consumer.meter-status.communicated",
-        apiCount: meterStatus.communicatedConsumerMeters,
-        sqlCount: sqlConsumerMeterStatus.communicatedConsumerMeters,
-        sqlName: "meter_last_seen last 1 IST hour",
-      });
-    },
-  );
-    validation.execute(
-    "consumer meter-status.nonCommunicated === SQL last_seen 1h",
-      () => {
-      compareApiEqualsSql({
-        label: "consumer.meter-status.nonCommunicated",
-        apiCount: meterStatus.nonCommunicatedConsumerMeters,
-        sqlCount: sqlConsumerMeterStatus.nonCommunicatedConsumerMeters,
-        sqlName: "getConsumerMeterStatus not communicating",
-        });
-      },
-    );
+  validation.execute("consumer meter-status.total === SQL distinct IVRS", () => {
+    compareApiEqualsSql({
+      label: "consumer.meter-status.total",
+      apiCount: meterStatus.totalConsumerMeters,
+      sqlCount: sqlConsumerMeterStatus.totalConsumerMeters,
+      sqlName: "getConsumerMeterStatus distinct RRNumber",
+    });
+  });
+  validation.execute("consumer meter-status.communicated === SQL last_seen 1h", () => {
+    compareApiEqualsSql({
+      label: "consumer.meter-status.communicated",
+      apiCount: meterStatus.communicatedConsumerMeters,
+      sqlCount: sqlConsumerMeterStatus.communicatedConsumerMeters,
+      sqlName: "meter_last_seen last 1 IST hour",
+    });
+  });
+  validation.execute("consumer meter-status.nonCommunicated === SQL last_seen 1h", () => {
+    compareApiEqualsSql({
+      label: "consumer.meter-status.nonCommunicated",
+      apiCount: meterStatus.nonCommunicatedConsumerMeters,
+      sqlCount: sqlConsumerMeterStatus.nonCommunicatedConsumerMeters,
+      sqlName: "getConsumerMeterStatus not communicating",
+    });
+  });
 
   validation.finalize("DASHBOARD consumer metrics vs DashboardConsumerMetricsRepository SQL", 0);
 }

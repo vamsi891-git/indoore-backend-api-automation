@@ -4,204 +4,159 @@ import { CommercialSummaryApi } from "../Api/commercial-summary.api";
 import { commercialSummaryData } from "../Data/commercial-summary.data";
 import { CommercialSummaryMapper } from "../Mapper/commercial-summary.mapper";
 import { CommercialSummaryValidator } from "../Validator/commercial-summary.validator";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { shouldSkipCommercialResponse } from "../utils/commercial-request.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Commercial dashboard — report cards", () => {
-    test.describe.configure({ retries: 2 });
-    test.setTimeout(480_000);
+  test.describe.configure({ retries: 2 });
+  test.setTimeout(480_000);
 
-    test(
-        "Commercial dashboard — all report cards load for the selected month",
-        {
-            tag: ["@commercial", "@commercial-summary", "@smoke"],
-        },
-        async ({ authenticatedApi }) => {
-            const api = new CommercialSummaryApi(authenticatedApi);
-            const {
-                month,
-                year,
-                pfThreshold,
-                maxResponseTime,
-                expectedReportCount,
-                expectedCategory,
-                expectedAnalysisTypes,
-                expectedReportNames,
-                reportsExpectedUnavailable,
-                reportGroups,
-            } = commercialSummaryData;
+  test(
+    "Commercial dashboard — all report cards load for the selected month",
+    {
+      tag: ["@commercial", "@commercial-summary", "@smoke"],
+    },
+    async ({ authenticatedApi }) => {
+      const api = new CommercialSummaryApi(authenticatedApi);
+      const {
+        month,
+        year,
+        pfThreshold,
+        maxResponseTime,
+        expectedReportCount,
+        expectedCategory,
+        expectedAnalysisTypes,
+        expectedReportNames,
+        reportsExpectedUnavailable,
+        reportGroups,
+      } = commercialSummaryData;
 
-            const { rawResponse, responseBody, responseTime, attempts } =
-                await api.getCommercialSummary(month, year, pfThreshold);
+      const { rawResponse, responseBody, responseTime, attempts } = await api.getCommercialSummary(
+        month,
+        year,
+        pfThreshold,
+      );
 
-            if (shouldSkipCommercialResponse(rawResponse.status(), responseBody)) {
-                test.skip(
-                    true,
-                    `Commercial summary unavailable (HTTP ${rawResponse.status()})`,
-                );
-                return;
-            }
+      if (shouldSkipCommercialResponse(rawResponse.status(), responseBody)) {
+        test.skip(true, `Commercial summary unavailable (HTTP ${rawResponse.status()})`);
+        return;
+      }
 
-            await PerformanceTracker.track(
+      await PerformanceTracker.track(
         rawResponse,
         "Commercial Summary API",
         rawResponse.url(),
-        responseTime
+        responseTime,
       );
 
-            const assert = new AssertionEngine();
-            const validation = new ValidationEngine();
-            const validator = new CommercialSummaryValidator();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
+      const validator = new CommercialSummaryValidator();
 
-            try {
-                validation.execute("Status", () => {
-                    if (
-                        rawResponse.status() === 500 &&
-                        responseBody?.error?.code === "INTERNAL_ERROR"
-                    ) {
-                        throw new Error(
-                            `Expected status 200 but received 500 INTERNAL_ERROR after ${attempts} client retry attempt(s). Body: ${JSON.stringify(responseBody)}`,
-                        );
-                    }
-                    assert.validateStatusCode(rawResponse, 200, responseBody);
-                });
-                validation.execute("Content Type", () =>
-                    assert.validateContentType(rawResponse),
-                );
-                validation.execute("Response Time", () =>
-                    assert.validateResponseTime(responseTime, maxResponseTime),
-                );
-                validation.execute("Sensitive Data", () =>
-                    assert.validateSensitiveData(responseBody),
-                );
+      try {
+        validation.execute("Status", () => {
+          if (rawResponse.status() === 500 && responseBody?.error?.code === "INTERNAL_ERROR") {
+            throw new Error(
+              `Expected status 200 but received 500 INTERNAL_ERROR after ${attempts} client retry attempt(s). Body: ${JSON.stringify(responseBody)}`,
+            );
+          }
+          assert.validateStatusCode(rawResponse, 200, responseBody);
+        });
+        validation.execute("Content Type", () => assert.validateContentType(rawResponse));
+        validation.execute("Response Time", () =>
+          assert.validateResponseTime(responseTime, maxResponseTime),
+        );
+        validation.execute("Sensitive Data", () => assert.validateSensitiveData(responseBody));
 
-                if (rawResponse.status() !== 200 || !responseBody.success) {
-                    validation.execute("Error Envelope", () => {
-                        expect(responseBody.success).toBe(false);
-                        expect(responseBody.error?.code).toBeTruthy();
-                    });
-                    return;
-                }
+        if (rawResponse.status() !== 200 || !responseBody.success) {
+          validation.execute("Error Envelope", () => {
+            expect(responseBody.success).toBe(false);
+            expect(responseBody.error?.code).toBeTruthy();
+          });
+          return;
+        }
 
-                const data = responseBody.data;
-                validation.execute("Data Payload", () => {
-                    expect(data).toBeDefined();
-                });
-                if (!data) {
-                    return;
-                }
+        const data = responseBody.data;
+        validation.execute("Data Payload", () => {
+          expect(data).toBeDefined();
+        });
+        if (!data) {
+          return;
+        }
 
-                const summaryData = data;
+        const summaryData = data;
 
-                validation.execute("Required Fields", () =>
-                    assert.validateRequiredFields(summaryData, [
-                        "month",
-                        "year",
-                        "reports",
-                    ]),
-                );
+        validation.execute("Required Fields", () =>
+          assert.validateRequiredFields(summaryData, ["month", "year", "reports"]),
+        );
 
-                const mapped = CommercialSummaryMapper.map(responseBody);
-                const { reports } = mapped;
+        const mapped = CommercialSummaryMapper.map(responseBody);
+        const { reports } = mapped;
 
-                validation.execute("Success", () =>
-                    validator.validateSuccess(mapped.success),
-                );
-                validation.execute("Root Structure", () =>
-                    validator.validateRootStructure(mapped),
-                );
-                validation.execute("Month", () =>
-                    validator.validateMonth(mapped.month),
-                );
-                validation.execute("Year", () =>
-                    validator.validateYear(mapped.year),
-                );
-                validation.execute("Query Echo", () =>
-                    validator.validateQueryEcho(mapped, month, year),
-                );
-                validation.execute("Reports Exist", () =>
-                    validator.validateReportsExist(reports),
-                );
-                validation.execute("Report Count", () =>
-                    validator.validateReportCount(reports, expectedReportCount),
-                );
-                validation.execute("Duplicate Analysis Types", () =>
-                    validator.validateDuplicateAnalysisTypes(reports),
-                );
-                validation.execute("Expected Analysis Types", () =>
-                    validator.validateExpectedAnalysisTypes(
-                        reports,
-                        expectedAnalysisTypes,
-                    ),
-                );
-                validation.execute("Reports Order", () =>
-                    validator.validateReportsOrder(reports, expectedAnalysisTypes),
-                );
-                validation.execute("Report Groups", () =>
-                    validator.validateReportGroupsPresent(reports, reportGroups),
-                );
-                validation.execute("Commercial Category", () =>
-                    validator.validateCommercialCategory(reports, expectedCategory),
-                );
-                validation.execute("Unavailable reports", () =>
-                    validator.validateNightReportsPlaceholder(
-                        reports,
-                        reportsExpectedUnavailable,
-                    ),
-                );
-                validation.execute("Aggregate Totals", () =>
-                    validator.validateAggregateTotals(reports),
-                );
-                validation.execute("Likely Data Presence", () =>
-                    validator.validateLikelyDataPresence(reports),
-                );
-                validation.execute("Business Rules", () =>
-                    validator.validateBusinessRules(mapped),
-                );
-                reports.forEach((report) => {
-                    const label = report.analysisType;
-                    validation.execute(`${label} Required Fields`, () =>
-                        validator.validateReportRequiredFields(report),
-                    );
-                    validation.execute(`${label} Field Whitelist`, () =>
-                        validator.validateReportFieldWhitelist(report),
-                    );
-                    validation.execute(`${label} Structure`, () =>
-                        validator.validateReportStructure(report),
-                    );
-                    validation.execute(`${label} Integer Counts`, () =>
-                        validator.validateIntegerCounts(report),
-                    );
-                    validation.execute(`${label} Counts`, () =>
-                        validator.validateReportCounts(report),
-                    );
-                    validation.execute(`${label} Zero Count Logic`, () =>
-                        validator.validateZeroCountLogic(report),
-                    );
-                    validation.execute(`${label} Report Name`, () =>
-                        validator.validateReportNameMapping(
-                            report,
-                            expectedReportNames,
-                        ),
-                    );
-                    validation.execute(`${label} No NaN`, () =>
-                        validator.validateNoNaN(report),
-                    );
-                    validation.execute(`${label} No Nullish Counts`, () =>
-                        validator.validateNoNullishCounts(report),
-                    );
-                    validation.execute(`${label} Availability`, () =>
-                        validator.validateAvailability(report),
-                    );
-                    validation.execute(`${label} Dom/Non-Dom Split`, () =>
-                        validator.validateDomesticNonDomesticSplit(report),
-                    );
-                });
-            } finally {
-                validation.finalize("Commercial Summary API", responseTime);
-            }
-        },
-    );
+        validation.execute("Success", () => validator.validateSuccess(mapped.success));
+        validation.execute("Root Structure", () => validator.validateRootStructure(mapped));
+        validation.execute("Month", () => validator.validateMonth(mapped.month));
+        validation.execute("Year", () => validator.validateYear(mapped.year));
+        validation.execute("Query Echo", () => validator.validateQueryEcho(mapped, month, year));
+        validation.execute("Reports Exist", () => validator.validateReportsExist(reports));
+        validation.execute("Report Count", () =>
+          validator.validateReportCount(reports, expectedReportCount),
+        );
+        validation.execute("Duplicate Analysis Types", () =>
+          validator.validateDuplicateAnalysisTypes(reports),
+        );
+        validation.execute("Expected Analysis Types", () =>
+          validator.validateExpectedAnalysisTypes(reports, expectedAnalysisTypes),
+        );
+        validation.execute("Reports Order", () =>
+          validator.validateReportsOrder(reports, expectedAnalysisTypes),
+        );
+        validation.execute("Report Groups", () =>
+          validator.validateReportGroupsPresent(reports, reportGroups),
+        );
+        validation.execute("Commercial Category", () =>
+          validator.validateCommercialCategory(reports, expectedCategory),
+        );
+        validation.execute("Unavailable reports", () =>
+          validator.validateNightReportsPlaceholder(reports, reportsExpectedUnavailable),
+        );
+        validation.execute("Aggregate Totals", () => validator.validateAggregateTotals(reports));
+        validation.execute("Likely Data Presence", () =>
+          validator.validateLikelyDataPresence(reports),
+        );
+        validation.execute("Business Rules", () => validator.validateBusinessRules(mapped));
+        reports.forEach((report) => {
+          const label = report.analysisType;
+          validation.execute(`${label} Required Fields`, () =>
+            validator.validateReportRequiredFields(report),
+          );
+          validation.execute(`${label} Field Whitelist`, () =>
+            validator.validateReportFieldWhitelist(report),
+          );
+          validation.execute(`${label} Structure`, () => validator.validateReportStructure(report));
+          validation.execute(`${label} Integer Counts`, () =>
+            validator.validateIntegerCounts(report),
+          );
+          validation.execute(`${label} Counts`, () => validator.validateReportCounts(report));
+          validation.execute(`${label} Zero Count Logic`, () =>
+            validator.validateZeroCountLogic(report),
+          );
+          validation.execute(`${label} Report Name`, () =>
+            validator.validateReportNameMapping(report, expectedReportNames),
+          );
+          validation.execute(`${label} No NaN`, () => validator.validateNoNaN(report));
+          validation.execute(`${label} No Nullish Counts`, () =>
+            validator.validateNoNullishCounts(report),
+          );
+          validation.execute(`${label} Availability`, () => validator.validateAvailability(report));
+          validation.execute(`${label} Dom/Non-Dom Split`, () =>
+            validator.validateDomesticNonDomesticSplit(report),
+          );
+        });
+      } finally {
+        validation.finalize("Commercial Summary API", responseTime);
+      }
+    },
+  );
 });

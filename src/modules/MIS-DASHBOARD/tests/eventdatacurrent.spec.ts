@@ -4,51 +4,36 @@ import { EventCurrentMapper } from "../Mapper/eventdatacurrent.mapper";
 import { EventCurrentValidator } from "../Validator/eventdatacurrent.validator";
 import { eventCurrentTestCases } from "../Data/eventdatacurrent.data";
 import { MisDashboardEdgesValidator } from "../Validator/mis-dashboard.edges.validator";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Current problems", () => {
   test.setTimeout(180_000);
   for (const testCase of eventCurrentTestCases) {
     test(testCase.testName, { tag: testCase.tags }, async ({ authenticatedApi }) => {
       const api = new EventCurrentApi(authenticatedApi);
-      const { rawResponse, responseBody, responseTime } = await api.getCurrentData(
-        testCase.params,
-      );
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const { rawResponse, responseBody, responseTime } = await api.getCurrentData(testCase.params);
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new EventCurrentValidator();
       const edges = new MisDashboardEdgesValidator();
 
       validation.execute("Status", () =>
-        assert.validateStatusCode(
-          rawResponse,
-          testCase.expectedStatus,
-          responseBody,
-        ),
+        assert.validateStatusCode(rawResponse, testCase.expectedStatus, responseBody),
       );
       validation.execute("Content", () =>
         assert.validateContentType(rawResponse, "application/json"),
       );
-      validation.execute("Performance", () =>
-        assert.validateResponseTime(responseTime, 120000),
-      );
-      validation.execute("Sensitive Data", () =>
-        assert.validateSensitiveData(responseBody),
-      );
+      validation.execute("Performance", () => assert.validateResponseTime(responseTime, 120000));
+      validation.execute("Sensitive Data", () => assert.validateSensitiveData(responseBody));
 
       if (testCase.expectedStatus !== 200) {
-        validation.execute("Error code", () =>
-          edges.validateValidationError(responseBody),
-        );
+        validation.execute("Error code", () => edges.validateValidationError(responseBody));
         validation.printSummary(testCase.testName, responseTime);
         return;
       }
 
       const mapped = EventCurrentMapper.map(responseBody.data);
-      validation.execute("Response", () =>
-        validator.validateResponse(responseBody),
-      );
+      validation.execute("Response", () => validator.validateResponse(responseBody));
       validation.execute("Current chart", () =>
         validator.validate(mapped, {
           reportType: testCase.expectedReportType,
@@ -73,8 +58,8 @@ test.describe("Current problems", () => {
     { tag: ["@mis-dashboard", "@event-data", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new EventCurrentApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new EventCurrentValidator();
       const query = {
         reportType: "phase-wise",
@@ -93,9 +78,7 @@ test.describe("Current problems", () => {
       validation.execute("Consumer status", () =>
         assert.validateStatusCode(consumerResult.rawResponse, 200),
       );
-      validation.execute("DTR status", () =>
-        assert.validateStatusCode(dtrResult.rawResponse, 200),
-      );
+      validation.execute("DTR status", () => assert.validateStatusCode(dtrResult.rawResponse, 200));
 
       const allMeters = EventCurrentMapper.map(allResult.responseBody.data);
       const consumers = EventCurrentMapper.map(consumerResult.responseBody.data);

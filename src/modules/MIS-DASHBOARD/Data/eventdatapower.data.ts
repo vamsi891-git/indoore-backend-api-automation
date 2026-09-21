@@ -1,7 +1,4 @@
-import {
-  misGroupingWords,
-  misPeriodWords,
-} from "./mis-dashboard-titles.data";
+import { misGroupingWords, misPeriodWords } from "./mis-dashboard-titles.data";
 
 export const eventPowerQuery = {
   reportType: "phase-wise",
@@ -40,6 +37,8 @@ export type EventPowerTestCase = {
   expectedReportType?: string;
   expectedPeriod?: string;
   tags: string[];
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 };
 
 const tags = ["@mis-dashboard", "@event-data", "@edge"];
@@ -59,9 +58,7 @@ function happyCases(): EventPowerTestCase[] {
     for (const period of periods) {
       for (const asset of assets) {
         const isSmoke =
-          reportType === "phase-wise" &&
-          period === "daily" &&
-          asset.assetType === "all";
+          reportType === "phase-wise" && period === "daily" && asset.assetType === "all";
         cases.push({
           testName: `Power problems — ${misGroupingWords(reportType)}, ${misPeriodWords(period)}, ${asset.words}`,
           params: { reportType, period, assetType: asset.assetType },

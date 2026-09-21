@@ -1,0 +1,300 @@
+﻿Hardcoded dates in *.data.ts: 209 hits in 44 files
+
+src/modules/ALARMS-AND-EVENTS/Data/alarms-events-category-chart.data.ts (1 hits) ΓÇö 2099-01-01
+  L110: 2099-01-01  |  params: { category: "Power", date: "2099-01-01" },
+
+src/modules/ALARMS-AND-EVENTS/Data/alarms-events-category-wise.data.ts (1 hits) ΓÇö 2025-08-23
+  L3: 2025-08-23  |  date: "2025-08-23",
+
+src/modules/ALARMS-AND-EVENTS/Data/alarms-events-chart.data.ts (2 hits) ΓÇö 2025-08-23, 2099-01-01
+  L3: 2025-08-23  |  date:"2025-08-23",
+  L123: 2099-01-01  |  date: "2099-01-01",
+
+src/modules/ALARMS-AND-EVENTS/Data/alarms-events-priority-chart.data.ts (1 hits) ΓÇö 2099-01-01
+  L143: 2099-01-01  |  params: { priority: "Priority 1", date: "2099-01-01" },
+
+src/modules/ALARMS-AND-EVENTS/Data/alarms-events-priority-drill.data.ts (2 hits) ΓÇö 2099-01-01
+  L302: 2099-01-01  |  date: "2099-01-01",
+  L309: 2099-01-01  |  expectedDate: "2099-01-01",
+
+src/modules/ALARMS-AND-EVENTS/Data/alarms-events-priority-wise.data.ts (1 hits) ΓÇö 2025-08-23
+  L3: 2025-08-23  |  date: "2025-08-23",
+
+src/modules/BILLING/Data/billingdata.data.ts (8 hits) ΓÇö 2025-10-01 00:00, 2025-11-17 23:15, 2025-09-01 08:25, 2025-11-17 00:46, 2025-11-08 01:23, 2025-09-01 19:15
+  L307: 2025-10-01 00:00  |  const billingPeriod = "2025-10-01 00:00";
+  L332: 2025-11-17 23:15  |  entryDateTime: "2025-11-17 23:15",
+  L353: 2025-09-01 08:25  |  mdKwOt: "2025-09-01 08:25",
+  L355: 2025-09-01 08:25  |  mdKvaOt: "2025-09-01 08:25",
+  L400: 2025-11-17 00:46  |  entryDateTime: "2025-11-17 00:46",
+  L450: 2025-11-08 01:23  |  entryDateTime: "2025-11-08 01:23",
+  L471: 2025-09-01 19:15  |  mdKwOt: "2025-09-01 19:15",
+  L473: 2025-09-01 19:15  |  mdKvaOt: "2025-09-01 19:15",
+
+src/modules/COMMERICIAL-ANALYSIS/Data/consumptioncompare.data.ts (20 hits) ΓÇö 2024-09-01, 2024-10-01, 2025-03-01, 2025-04-01, 2025-05-01, 2025-06-01
+  L31: 2024-09-01  |  "Consumption Compare Same Month Last Year": ["2024-09-01", "2024-10-01"],
+  L31: 2024-10-01  |  "Consumption Compare Same Month Last Year": ["2024-09-01", "2024-10-01"],
+  L33: 2025-03-01  |  "2025-03-01",
+  L34: 2025-04-01  |  "2025-04-01",
+  L35: 2025-05-01  |  "2025-05-01",
+  L36: 2025-06-01  |  "2025-06-01",
+  L39: 2025-03-01  |  "2025-03-01",
+  L40: 2025-04-01  |  "2025-04-01",
+  L41: 2025-05-01  |  "2025-05-01",
+  L42: 2025-06-01  |  "2025-06-01",
+  L51: 2024-09-01  |  "BILLING_PERIOD_NOT_READY (missing 2024-09-01, 2024-10-01)",
+  L51: 2024-10-01  |  "BILLING_PERIOD_NOT_READY (missing 2024-09-01, 2024-10-01)",
+  L53: 2025-03-01  |  "BILLING_PERIOD_NOT_READY (missing 2025-03-01, 2025-04-01, 2025-05-01, 2025-06-01)",
+  L53: 2025-04-01  |  "BILLING_PERIOD_NOT_READY (missing 2025-03-01, 2025-04-01, 2025-05-01, 2025-06-01)",
+  L53: 2025-05-01  |  "BILLING_PERIOD_NOT_READY (missing 2025-03-01, 2025-04-01, 2025-05-01, 2025-06-01)",
+  L53: 2025-06-01  |  "BILLING_PERIOD_NOT_READY (missing 2025-03-01, 2025-04-01, 2025-05-01, 2025-06-01)",
+  L55: 2025-03-01  |  "BILLING_PERIOD_NOT_READY (missing 2025-03-01, 2025-04-01, 2025-05-01, 2025-06-01)",
+  L55: 2025-04-01  |  "BILLING_PERIOD_NOT_READY (missing 2025-03-01, 2025-04-01, 2025-05-01, 2025-06-01)",
+  L55: 2025-05-01  |  "BILLING_PERIOD_NOT_READY (missing 2025-03-01, 2025-04-01, 2025-05-01, 2025-06-01)",
+  L55: 2025-06-01  |  "BILLING_PERIOD_NOT_READY (missing 2025-03-01, 2025-04-01, 2025-05-01, 2025-06-01)",
+
+src/modules/COMMERICIAL-ANALYSIS/Data/consumptionpattern.data.ts (35 hits) ΓÇö 2025-04-01, 2025-05-01, 2025-01-01, 2025-02-01, 2025-03-01, 2024-10-01, 2024-11-01, 2024-12-01, 2024-09-01
+  L118: 2025-04-01  |  "Zero Consumption for Last 6 months": ["2025-04-01", "2025-05-01"],
+  L118: 2025-05-01  |  "Zero Consumption for Last 6 months": ["2025-04-01", "2025-05-01"],
+  L120: 2025-01-01  |  "2025-01-01",
+  L121: 2025-02-01  |  "2025-02-01",
+  L122: 2025-03-01  |  "2025-03-01",
+  L123: 2025-04-01  |  "2025-04-01",
+  L124: 2025-05-01  |  "2025-05-01",
+  L127: 2024-10-01  |  "2024-10-01",
+  L128: 2024-11-01  |  "2024-11-01",
+  L129: 2024-12-01  |  "2024-12-01",
+  L130: 2025-01-01  |  "2025-01-01",
+  L131: 2025-02-01  |  "2025-02-01",
+  L132: 2025-03-01  |  "2025-03-01",
+  L133: 2025-04-01  |  "2025-04-01",
+  L134: 2025-05-01  |  "2025-05-01",
+  L137: 2024-09-01  |  "2024-09-01",
+  L138: 2024-10-01  |  "2024-10-01",
+  L139: 2024-11-01  |  "2024-11-01",
+  L140: 2024-12-01  |  "2024-12-01",
+  L141: 2025-01-01  |  "2025-01-01",
+  L142: 2025-02-01  |  "2025-02-01",
+  L143: 2025-03-01  |  "2025-03-01",
+  L144: 2025-04-01  |  "2025-04-01",
+  L145: 2025-05-01  |  "2025-05-01",
+  L148: 2025-04-01  |  "2025-04-01",
+  L149: 2025-05-01  |  "2025-05-01",
+  L152: 2025-01-01  |  "2025-01-01",
+  L153: 2025-02-01  |  "2025-02-01",
+  L154: 2025-03-01  |  "2025-03-01",
+  L155: 2025-04-01  |  "2025-04-01",
+  L156: 2025-05-01  |  "2025-05-01",
+  L162: 2025-04-01  |  "BILLING_PERIOD_NOT_READY (zeroMonths=6, missing 2025-04-01, 2025-05-01)",
+  L162: 2025-05-01  |  "BILLING_PERIOD_NOT_READY (zeroMonths=6, missing 2025-04-01, 2025-05-01)",
+  L170: 2025-04-01  |  "BILLING_PERIOD_NOT_READY (consumptionMonthCount=6, missing 2025-04-01, 2025-05-01)",
+  L170: 2025-05-01  |  "BILLING_PERIOD_NOT_READY (consumptionMonthCount=6, missing 2025-04-01, 2025-05-01)",
+
+src/modules/CONSUMERS/Data/communicationstatus.data.ts (3 hits) ΓÇö 2026-06-22
+  L20: 2026-06-22  |  export const communicationStatusSampleDate = "2026-06-22";
+  L28: 2026-06-22  |  date: "2026-06-22",
+  L50: 2026-06-22  |  date: "2026-06-22",
+
+src/modules/CONSUMERS/Data/liveloadprofile.data.ts (2 hits) ΓÇö 2026-05-19T08:30:00.000Z, 2026-06-10T12:15:00.000Z
+  L31: 2026-05-19T08:30:00.000Z  |  lastReadingIso: "2026-05-19T08:30:00.000Z",
+  L48: 2026-06-10T12:15:00.000Z  |  lastReadingIso: "2026-06-10T12:15:00.000Z",
+
+src/modules/CONSUMPTION/Data/consumption-report-window.data.ts (2 hits) ΓÇö 2025-12-19, 2025-12-20
+  L5: 2025-12-19  |  process.env.CONSUMPTION_FROM_DATE?.trim() || "2025-12-19";
+  L7: 2025-12-20  |  process.env.CONSUMPTION_TO_DATE?.trim() || "2025-12-20";
+
+src/modules/DASHBOARD/Data/dashboardmetrics.data.ts (4 hits) ΓÇö 2026-08-13T05:21:27.437Z
+  L39: 2026-08-13T05:21:27.437Z  |  timestamp: "2026-08-13T05:21:27.437Z",
+  L238: 2026-08-13T05:21:27.437Z  |  timestamp: "2026-08-13T05:21:27.437Z",
+  L255: 2026-08-13T05:21:27.437Z  |  timestamp: "2026-08-13T05:21:27.437Z",
+  L290: 2026-08-13T05:21:27.437Z  |  timestamp: "2026-08-13T05:21:27.437Z",
+
+src/modules/DASHBOARD/Data/dtrloadunbalancedetails.data.ts (1 hits) ΓÇö 2026-08-12T10:00:00.000Z
+  L131: 2026-08-12T10:00:00.000Z  |  logDate: "2026-08-12T10:00:00.000Z",
+
+src/modules/DASHBOARD/Data/dtrvoltageunbalancedetails.data.ts (1 hits) ΓÇö 2026-08-12T10:00:00.000Z
+  L134: 2026-08-12T10:00:00.000Z  |  logDate: "2026-08-12T10:00:00.000Z",
+
+src/modules/DASHBOARD/Data/revenuesubsidypf.data.ts (8 hits) ΓÇö 2026-08-02T19:48:55.813Z, 2026-08-04T16:03:04.812Z, 2026-01-01T00:00:00.000Z, 2025-12-01T00:00:00.000Z, 2025-12-15T00:00:00.000Z, 2026-08-13T06:05:03.287Z
+  L62: 2026-08-02T19:48:55.813Z  |  createdAt: "2026-08-02T19:48:55.813Z",
+  L63: 2026-08-04T16:03:04.812Z  |  updatedAt: "2026-08-04T16:03:04.812Z",
+  L88: 2026-01-01T00:00:00.000Z  |  createdAt: "2026-01-01T00:00:00.000Z",
+  L89: 2026-01-01T00:00:00.000Z  |  updatedAt: "2026-01-01T00:00:00.000Z",
+  L118: 2025-12-01T00:00:00.000Z  |  createdAt: "2025-12-01T00:00:00.000Z",
+  L119: 2025-12-15T00:00:00.000Z  |  updatedAt: "2025-12-15T00:00:00.000Z",
+  L156: 2026-08-13T06:05:03.287Z  |  createdAt: "2026-08-13T06:05:03.287Z",
+  L157: 2026-08-13T06:05:03.287Z  |  updatedAt: "2026-08-13T06:05:03.287Z",
+
+src/modules/DTR-LOAD/Data/dtrload.data.ts (2 hits) ΓÇö 2025-10-01, 2025-10-30
+  L2: 2025-10-01  |  process.env.DTR_LOAD_FROM_DATE?.trim() || "2025-10-01";
+  L4: 2025-10-30  |  process.env.DTR_LOAD_TO_DATE?.trim() || "2025-10-30";
+
+src/modules/ENERGY-AUDITS/Data/energy-audits.common.data.ts (2 hits) ΓÇö 2025-12-20
+  L10: 2025-12-20  |  fromDate: process.env.ENERGY_AUDIT_FROM_DATE?.trim() || "2025-12-20",
+  L11: 2025-12-20  |  toDate: process.env.ENERGY_AUDIT_TO_DATE?.trim() || "2025-12-20",
+
+src/modules/MASTER-DATA/Data/bulk-upload-consumers.data.ts (1 hits) ΓÇö 2026-07-27
+  L313: 2026-07-27  |  "Date Of Service": "2026-07-27",
+
+src/modules/MASTER-DATA/Data/bulk-upload-dtr.data.ts (2 hits) ΓÇö 2099-01-01
+  L723: 2099-01-01  |  row["Service Date"] = "2099-01-01";
+  L739: 2099-01-01  |  row.EntryDateTime = "2099-01-01";
+
+src/modules/MASTER-DATA/Data/bulk-upload-meters.data.ts (6 hits) ΓÇö 2026-06-01, 2026-06-15, 2099-01-01
+  L108: 2026-06-01  |  "Meter PO Date": "2026-06-01",
+  L109: 2026-06-15  |  "Meter Testing Date": "2026-06-15",
+  L527: 2026-06-15  |  row["Meter PO Date"] = "2026-06-15";
+  L528: 2026-06-01  |  row["Meter Testing Date"] = "2026-06-01";
+  L541: 2099-01-01  |  row["Meter PO Date"] = "2099-01-01";
+  L542: 2099-01-01  |  row["Meter Testing Date"] = "2099-01-01";
+
+src/modules/MASTER-DATA/Data/create-dtr.data.ts (2 hits) ΓÇö 2099-01-01
+  L360: 2099-01-01  |  "Service Date": "2099-01-01",
+  L372: 2099-01-01  |  "Installation Date": "2099-01-01",
+
+src/modules/MASTER-DATA/Data/create-meter.data.ts (8 hits) ΓÇö 2026-06-01, 2026-06-15, 2099-01-01
+  L71: 2026-06-01  |  meterPoDate: "2026-06-01",
+  L72: 2026-06-15  |  meterTestingDate: "2026-06-15",
+  L236: 2026-06-01  |  meterPoDate: "2026-06-01",
+  L237: 2026-06-15  |  meterTestingDate: "2026-06-15",
+  L248: 2026-06-15  |  meterPoDate: "2026-06-15",
+  L249: 2026-06-01  |  meterTestingDate: "2026-06-01",
+  L260: 2099-01-01  |  meterPoDate: "2099-01-01",
+  L261: 2099-01-01  |  meterTestingDate: "2099-01-01",
+
+src/modules/METER-REPLACEMENT/Data/submission-history.data.ts (3 hits) ΓÇö 2026-07-01, 2026-07-31, 2026-99-99
+  L26: 2026-07-01  |  validDateFrom: "2026-07-01",
+  L27: 2026-07-31  |  vaidDateTo: "2026-07-31",
+  L28: 2026-99-99  |  invalidDate: "2026-99-99",
+
+src/modules/MIS-DASHBOARD/Data/communication-category.data.ts (2 hits) ΓÇö 2025-10-01, 2026-10-30
+  L2: 2025-10-01  |  fromDate: "2025-10-01",
+  L3: 2026-10-30  |  toDate: "2026-10-30",
+
+src/modules/MIS-DASHBOARD/Data/communication-overview.data.ts (2 hits) ΓÇö 2025-10-01, 2025-10-30
+  L2: 2025-10-01  |  fromDate: "2025-10-01",
+  L3: 2025-10-30  |  toDate: "2025-10-30",
+
+src/modules/MIS-DASHBOARD/Data/communication-trend.data.ts (2 hits) ΓÇö 2025-10-01, 2025-10-30
+  L2: 2025-10-01  |  fromDate: "2025-10-01",
+  L3: 2025-10-30  |  toDate: "2025-10-30",
+
+src/modules/MIS-DASHBOARD/Data/communication.data.ts (2 hits) ΓÇö 2025-10-01, 2025-10-30
+  L2: 2025-10-01  |  fromDate: "2025-10-01",
+  L3: 2025-10-30  |  toDate: "2025-10-30",
+
+src/modules/MIS-DASHBOARD/Data/communicationstats.data.ts (2 hits) ΓÇö 2025-10-01, 2025-10-30
+  L2: 2025-10-01  |  fromDate: "2025-10-01",
+  L3: 2025-10-30  |  toDate: "2025-10-30",
+
+src/modules/MIS-DASHBOARD/Data/priority-overview.data.ts (2 hits) ΓÇö 2025-10-01, 2025-10-30
+  L2: 2025-10-01  |  fromDate: "2025-10-01",
+  L3: 2025-10-30  |  toDate: "2025-10-30",
+
+src/modules/REPORTS/Data/billingmdsnapshot.data.ts (10 hits) ΓÇö 2025-10-01 00:00, 2025-09-01 08:25, 2025-09-04 11:25, 2025-09-04 11:15, 2025-09-01 19:15
+  L87: 2025-10-01 00:00  |  meterTimestamp: "2025-10-01 00:00",
+  L89: 2025-09-01 08:25  |  mdKwOt: "2025-09-01 08:25",
+  L91: 2025-09-01 08:25  |  mdKvaOt: "2025-09-01 08:25",
+  L112: 2025-10-01 00:00  |  meterTimestamp: "2025-10-01 00:00",
+  L114: 2025-09-04 11:25  |  mdKwOt: "2025-09-04 11:25",
+  L116: 2025-09-04 11:15  |  mdKvaOt: "2025-09-04 11:15",
+  L160: 2025-10-01 00:00  |  meterTimestamp: "2025-10-01 00:00",
+  L162: 2025-09-01 19:15  |  mdKwOt: "2025-09-01 19:15",
+  L164: 2025-09-01 19:15  |  mdKvaOt: "2025-09-01 19:15",
+  L185: 2025-10-01 00:00  |  meterTimestamp: "2025-10-01 00:00",
+
+src/modules/REPORTS/Data/communicationconsumers.data.ts (5 hits) ΓÇö 2025-10-01, 2025-10-30
+  L18: 2025-10-01  |  export const communicationConsumersDefaultDate = "2025-10-01";
+  L20: 2025-10-01  |  export const communicationConsumersDefaultFromDate = "2025-10-01";
+  L21: 2025-10-30  |  export const communicationConsumersDefaultToDate = "2025-10-30";
+  L193: 2025-10-30  |  fromDate: "2025-10-30",
+  L194: 2025-10-01  |  toDate: "2025-10-01",
+
+src/modules/REPORTS/Data/communicationdtrs.data.ts (7 hits) ΓÇö 2025-10-01, 2025-10-30, 2019-12-17 14:27:41.44, 2019-07-19 12:03:03.42
+  L18: 2025-10-01  |  export const communicationDtrsDefaultDate = "2025-10-01";
+  L20: 2025-10-01  |  export const communicationDtrsDefaultFromDate = "2025-10-01";
+  L21: 2025-10-30  |  export const communicationDtrsDefaultToDate = "2025-10-30";
+  L87: 2019-12-17 14:27:41.44  |  serviceDate: "2019-12-17 14:27:41.44",
+  L115: 2019-07-19 12:03:03.42  |  serviceDate: "2019-07-19 12:03:03.42",
+  L203: 2025-10-30  |  fromDate: "2025-10-30",
+  L204: 2025-10-01  |  toDate: "2025-10-01",
+
+src/modules/REPORTS/Data/consumerreport.data.ts (10 hits) ΓÇö 2025-10-01, 2025-10-30, 2025-10-01 00:00, 2025-10-01 00:15, 2025-10-01 00:00:00, 2025-10-02 00:00:00, 2025-10-30 23:45:22, 2025-10-30 23:30:22
+  L17: 2025-10-01  |  export const consumerReportDefaultFromDate = "2025-10-01";
+  L18: 2025-10-30  |  export const consumerReportDefaultToDate = "2025-10-30";
+  L104: 2025-10-01 00:00  |  dateTime: "2025-10-01 00:00",
+  L114: 2025-10-01 00:15  |  dateTime: "2025-10-01 00:15",
+  L142: 2025-10-01 00:00:00  |  dateTime: "2025-10-01 00:00:00",
+  L151: 2025-10-02 00:00:00  |  dateTime: "2025-10-02 00:00:00",
+  L177: 2025-10-30 23:45:22  |  dateTime: "2025-10-30 23:45:22",
+  L194: 2025-10-30 23:30:22  |  dateTime: "2025-10-30 23:30:22",
+  L263: 2025-10-30  |  fromDate: "2025-10-30",
+  L264: 2025-10-01  |  toDate: "2025-10-01",
+
+src/modules/REPORTS/Data/currentwithoutvoltage.data.ts (1 hits) ΓÇö 2025-10-31 23:30:00.000
+  L144: 2025-10-31 23:30:00.000  |  nextCursor: "2025-10-31 23:30:00.000|91603",
+
+src/modules/REPORTS/Data/dtrbilling.data.ts (6 hits) ΓÇö 2025-10-01, 2025-10-30
+  L17: 2025-10-01  |  /** Live primary ΓÇö GET /reports/dtr-billing?fromDate=2025-10-01&toDate=2025-10-30&includeTotal=false */
+  L17: 2025-10-30  |  /** Live primary ΓÇö GET /reports/dtr-billing?fromDate=2025-10-01&toDate=2025-10-30&includeTotal=false */
+  L18: 2025-10-01  |  export const dtrBillingDefaultFromDate = "2025-10-01";
+  L19: 2025-10-30  |  export const dtrBillingDefaultToDate = "2025-10-30";
+  L182: 2025-10-30  |  fromDate: "2025-10-30",
+  L183: 2025-10-01  |  toDate: "2025-10-01",
+
+src/modules/REPORTS/Data/dtrcommunication.data.ts (4 hits) ΓÇö 2025-10-01, 2025-10-30
+  L19: 2025-10-01  |  export const dtrCommunicationReportDefaultFromDate = "2025-10-01";
+  L20: 2025-10-30  |  export const dtrCommunicationReportDefaultToDate = "2025-10-30";
+  L147: 2025-10-30  |  fromDate: "2025-10-30",
+  L148: 2025-10-01  |  toDate: "2025-10-01",
+
+src/modules/REPORTS/Data/dtrdata.data.ts (6 hits) ΓÇö 2025-10-01, 2025-10-30, 2025-10-24
+  L18: 2025-10-01  |  export const dtrDataDefaultFromDate = "2025-10-01";
+  L19: 2025-10-30  |  export const dtrDataDefaultToDate = "2025-10-30";
+  L25: 2025-10-24  |  export const dtrDataDpWeekFromDate = "2025-10-24";
+  L26: 2025-10-30  |  export const dtrDataDpWeekToDate = "2025-10-30";
+  L302: 2025-10-30  |  fromDate: "2025-10-30",
+  L303: 2025-10-01  |  toDate: "2025-10-01",
+
+src/modules/REPORTS/Data/dtrevent.data.ts (4 hits) ΓÇö 2025-10-01, 2025-10-30
+  L17: 2025-10-01  |  export const dtrEventDefaultFromDate = "2025-10-01";
+  L18: 2025-10-30  |  export const dtrEventDefaultToDate = "2025-10-30";
+  L135: 2025-10-30  |  fromDate: "2025-10-30",
+  L136: 2025-10-01  |  toDate: "2025-10-01",
+
+src/modules/REPORTS/Data/dtreventdetail.data.ts (6 hits) ΓÇö 2025-10-01, 2025-10-30
+  L17: 2025-10-01  |  export const dtrEventDetailDefaultFromDate = "2025-10-01";
+  L18: 2025-10-30  |  export const dtrEventDetailDefaultToDate = "2025-10-30";
+  L72: 2025-10-30  |  logDate: "2025-10-30",
+  L94: 2025-10-30  |  logDate: "2025-10-30",
+  L154: 2025-10-30  |  fromDate: "2025-10-30",
+  L155: 2025-10-01  |  toDate: "2025-10-01",
+
+src/modules/REPORTS/Data/eventdetail.data.ts (4 hits) ΓÇö 2025-10-01, 2025-10-30
+  L15: 2025-10-01  |  export const eventDetailDefaultFromDate = "2025-10-01";
+  L16: 2025-10-30  |  export const eventDetailDefaultToDate = "2025-10-30";
+  L146: 2025-10-30  |  fromDate: "2025-10-30",
+  L147: 2025-10-01  |  toDate: "2025-10-01",
+
+src/modules/REPORTS/Data/eventreport.data.ts (4 hits) ΓÇö 2025-10-01, 2025-10-30
+  L12: 2025-10-01  |  export const eventReportDefaultFromDate = "2025-10-01";
+  L13: 2025-10-01  |  export const eventReportDefaultToDate = "2025-10-01";
+  L115: 2025-10-30  |  fromDate: "2025-10-30",
+  L116: 2025-10-01  |  toDate: "2025-10-01",
+
+src/modules/REPORTS/Data/eventrestoration.data.ts (4 hits) ΓÇö 2025-10-01, 2025-10-30
+  L18: 2025-10-01  |  export const eventRestorationDefaultFromDate = "2025-10-01";
+  L19: 2025-10-30  |  export const eventRestorationDefaultToDate = "2025-10-30";
+  L151: 2025-10-30  |  fromDate: "2025-10-30",
+  L152: 2025-10-01  |  toDate: "2025-10-01",
+
+src/modules/REPORTS/Data/overview.data.ts (8 hits) ΓÇö 2026-07-15T09:12:42.591Z, 2026-08-14T09:12:42.591Z, 2026-06-15T09:12:42.591Z
+  L39: 2026-07-15T09:12:42.591Z  |  from: "2026-07-15T09:12:42.591Z",
+  L40: 2026-08-14T09:12:42.591Z  |  to: "2026-08-14T09:12:42.591Z",
+  L43: 2026-06-15T09:12:42.591Z  |  from: "2026-06-15T09:12:42.591Z",
+  L44: 2026-07-15T09:12:42.591Z  |  to: "2026-07-15T09:12:42.591Z",
+  L80: 2026-07-15T09:12:42.591Z  |  from: "2026-07-15T09:12:42.591Z",
+  L81: 2026-08-14T09:12:42.591Z  |  to: "2026-08-14T09:12:42.591Z",
+  L84: 2026-06-15T09:12:42.591Z  |  from: "2026-06-15T09:12:42.591Z",
+  L85: 2026-07-15T09:12:42.591Z  |  to: "2026-07-15T09:12:42.591Z",
+
+LIST ONLY ΓÇö no files were modified. Review this list, then approve a replace pass.

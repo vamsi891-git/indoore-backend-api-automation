@@ -72,6 +72,8 @@ export interface MeterCommunicationTestCase {
   searchTerm?: string;
   communicationStatusFilter?: CommunicationStatus;
   skipCommunicatingTimestampCheck?: boolean;
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export const meterCommunicationTestCases: MeterCommunicationTestCase[] = [
@@ -79,21 +81,25 @@ export const meterCommunicationTestCases: MeterCommunicationTestCase[] = [
     testName: "Meter communication — first page shows columns, records, and page numbers",
     query: { ...meterCommunicationDefaultQuery },
     tags: ["@smoke", "@master-data", "@meter-communication"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Meter communication — page 2 shows the next set of records",
     query: { ...meterCommunicationPage2Query },
     tags: ["@master-data", "@meter-communication"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Meter communication — a smaller page size shows fewer records",
     query: { ...meterCommunicationSmallPageQuery },
     tags: ["@master-data", "@meter-communication"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Meter communication — communicating filter shows only communicating meters",
     query: { ...meterCommunicationCommunicatingFilterQuery },
     tags: ["@master-data", "@meter-communication"],
+    nonEmptyExpected: false,
     communicationStatusFilter: "communicating",
     skipCommunicatingTimestampCheck: true,
   },
@@ -101,6 +107,7 @@ export const meterCommunicationTestCases: MeterCommunicationTestCase[] = [
     testName: "Meter communication — non-communicating filter shows only non-communicating meters",
     query: { ...meterCommunicationNonCommunicatingFilterQuery },
     tags: ["@master-data", "@meter-communication"],
+    nonEmptyExpected: false,
     communicationStatusFilter: "non-communicating",
   },
   {
@@ -110,6 +117,7 @@ export const meterCommunicationTestCases: MeterCommunicationTestCase[] = [
       q: resolveMeterCommunicationSearchTerm(),
     },
     tags: ["@master-data", "@meter-communication"],
+    nonEmptyExpected: false,
     searchTerm: resolveMeterCommunicationSearchTerm(),
     skipCommunicatingTimestampCheck: true,
   },
@@ -117,10 +125,12 @@ export const meterCommunicationTestCases: MeterCommunicationTestCase[] = [
     testName: "Meter communication — an empty search shows the full list",
     query: { ...meterCommunicationDefaultQuery, q: "" },
     tags: ["@master-data", "@meter-communication", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Meter communication — a page past the last page shows no records",
     query: { page: 99999, limit: 20 },
     tags: ["@master-data", "@meter-communication", "@edge"],
+    nonEmptyExpected: false,
   },
 ];

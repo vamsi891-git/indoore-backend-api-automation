@@ -16,12 +16,7 @@ export interface TechnicalAnalysisLiveConfig {
   hasData: boolean;
   pageSize: number;
   maxResponseTime: number;
-  validationType:
-    | "duration100"
-    | "duration12"
-    | "duration10"
-    | "count"
-    | "phase";
+  validationType: "duration100" | "duration12" | "duration10" | "count" | "phase";
 }
 
 export const technicalAnalysisDefaultAnalysisType = "power_failure";
@@ -43,8 +38,7 @@ export const technicalAnalysisReportNames: Record<string, string> = {
   current_unbalance: "Current Unbalance",
   earth_loading: "Earth Loading",
   low_power_factor: "Low Power Factor",
-  phase_neutral_mismatch:
-    "Ip!=In (Phase current is not equal to neutral current)",
+  phase_neutral_mismatch: "Ip!=In (Phase current is not equal to neutral current)",
   phase_zero_neutral_nonzero: "Ip=0 & In!=0",
   phase_nonzero_neutral_zero: "Ip!=0 & In=0",
   magnet_event: "Magnet Event",
@@ -357,6 +351,8 @@ export interface TechnicalReportTestCase {
   expectedStatus?: number;
   isContractFixture?: boolean;
   liveConfig?: TechnicalAnalysisLiveConfig;
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 const contractDurationRow: TechnicalReportRow = {
@@ -385,15 +381,14 @@ export const technicalReportContractEmptyResponse: TechnicalReportResponse = {
   },
 };
 
-export const technicalReportContractDurationRowResponse: TechnicalReportResponse =
-  {
-    success: true,
-    data: {
-      columns: [],
-      rows: [contractDurationRow],
-      pagination: { page: 1, limit: 10, total: 1, totalPages: 1 },
-    },
-  };
+export const technicalReportContractDurationRowResponse: TechnicalReportResponse = {
+  success: true,
+  data: {
+    columns: [],
+    rows: [contractDurationRow],
+    pagination: { page: 1, limit: 10, total: 1, totalPages: 1 },
+  },
+};
 
 export function resolveTechnicalReportContractBody(
   scenario: TechnicalReportScenario,
@@ -527,43 +522,48 @@ export function resolveTechnicalReportQuery(
 
 const technicalReportEdgeCases: TechnicalReportTestCase[] = [
   {
-    testName:
-      "Technical report — a page past the last page shows no records",
+    testName: "Technical report — a page past the last page shows no records",
     scenario: "dev_page_beyond",
     tags: ["@technical-analysis", "@report", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Technical report — a smaller page size shows fewer records",
     scenario: "dev_custom_page_size",
     tags: ["@technical-analysis", "@report", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Technical report — household filter shows household meters",
     scenario: "dev_category_domestic",
     tags: ["@technical-analysis", "@report", "@edge"],
+    nonEmptyExpected: false,
   },
   {
-    testName:
-      "Technical report — non-household filter shows non-household meters",
+    testName: "Technical report — non-household filter shows non-household meters",
     scenario: "dev_category_non_domestic",
     tags: ["@technical-analysis", "@report", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Technical report — unknown query params are ignored",
     scenario: "dev_ignore_unknown_query",
     tags: ["@technical-analysis", "@report", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Technical report — empty page fixture",
     scenario: "contract_empty_page",
     isContractFixture: true,
     tags: ["@technical-analysis", "@report", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Technical report — duration row fixture",
     scenario: "contract_duration_row",
     isContractFixture: true,
     tags: ["@technical-analysis", "@report", "@edge"],
+    nonEmptyExpected: false,
   },
 ];
 
@@ -573,42 +573,49 @@ const technicalReportNegativeCases: TechnicalReportTestCase[] = [
     scenario: "invalid_analysis_type",
     expectedStatus: 400,
     tags: ["@technical-analysis", "@report", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Technical report — missing analysis type is rejected",
     scenario: "missing_analysis_type",
     expectedStatus: 400,
     tags: ["@technical-analysis", "@report", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Technical report — invalid month is rejected",
     scenario: "invalid_month",
     expectedStatus: 400,
     tags: ["@technical-analysis", "@report", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Technical report — missing month is rejected",
     scenario: "missing_month",
     expectedStatus: 400,
     tags: ["@technical-analysis", "@report", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Technical report — page size zero is rejected",
     scenario: "invalid_page_size_zero",
     expectedStatus: 400,
     tags: ["@technical-analysis", "@report", "@negative"],
+    nonEmptyExpected: false,
   },
 ];
 
-const technicalReportLiveCases: TechnicalReportTestCase[] =
-  technicalAnalysisLiveConfigs.map((liveConfig) => ({
+const technicalReportLiveCases: TechnicalReportTestCase[] = technicalAnalysisLiveConfigs.map(
+  (liveConfig) => ({
     testName: liveConfig.hasData
       ? `${technicalAnalysisReportTitle(liveConfig.analysisType)} report — first page shows columns and meters`
       : `${technicalAnalysisReportTitle(liveConfig.analysisType)} report — empty list is valid`,
     scenario: "dev_live_report",
     liveConfig,
     tags: ["@technical-analysis", "@report", "@smoke"],
-  }));
+    nonEmptyExpected: true,
+  }),
+);
 
 export const technicalReportTestCases: TechnicalReportTestCase[] = [
   ...technicalReportLiveCases,

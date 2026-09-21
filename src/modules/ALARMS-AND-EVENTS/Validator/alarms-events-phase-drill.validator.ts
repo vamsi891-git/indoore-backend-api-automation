@@ -6,7 +6,7 @@ import {
 import {
   AlarmsEventsPhaseDrillData,
   AlarmsEventsPhaseDrillResponse,
-} from "../Mappper/alarms-events-phase-drill.mapper";
+} from "../Mapper/alarms-events-phase-drill.mapper";
 import { assertZodSchema } from "../../../core/utils/zod-validation.helper";
 import {
   AlarmsEventsPhaseDrillSuccessResponseSchema,
@@ -17,11 +17,7 @@ const DURATION = /^\d+:\d{2}$/;
 
 export class AlarmsEventsPhaseDrillValidator {
   validateResponse(response: AlarmsEventsPhaseDrillResponse) {
-    assertZodSchema(
-      AlarmsEventsPhaseDrillSuccessResponseSchema,
-      response,
-      "Zod Response Schema",
-    );
+    assertZodSchema(AlarmsEventsPhaseDrillSuccessResponseSchema, response, "Zod Response Schema");
   }
 
   validateColumns(data: AlarmsEventsPhaseDrillData) {
@@ -55,7 +51,7 @@ export class AlarmsEventsPhaseDrillValidator {
     expect(new Set(keys).size).toBe(keys.length);
     expect(new Set(headers).size).toBe(headers.length);
   }
-  
+
   validateUniqueRows(data: AlarmsEventsPhaseDrillData) {
     const ids = data.rows.map((row) => row.id);
     const eventIds = data.rows.map((row) => row.eventId);
@@ -107,6 +103,4 @@ export class AlarmsEventsPhaseDrillValidator {
     assertZodSchema(ApiErrorResponseSchema, body, "Zod Error Schema");
     expect(body.error?.code).toBe("VALIDATION_ERROR");
   }
-  
-  
 }

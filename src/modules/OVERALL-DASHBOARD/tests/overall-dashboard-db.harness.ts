@@ -1,7 +1,6 @@
 import type pg from "pg";
 import type { APIRequestContext } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { DashboardMetricsApi } from "../Api/dashboardmetrics.api";
 import { InstallationSummaryApi } from "../Api/installationsummary.api";
 import { DisconnectionDetailsApi } from "../Api/disconnectiondetails.api";
@@ -14,6 +13,7 @@ import { logOverallDashboardDataQualityFindings } from "../Db/overall-dashboard-
 import { skipIfOverallDashboardInternalError } from "../utils/overall-dashboard-env.helper";
 import { INSTALLATION_SUMMARY_PATH } from "../Data/installationsummary.data";
 import { DISCONNECTION_DETAILS_PATH } from "../Data/disconnectiondetails.data";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 /**
  * Tier 3 — API soft coverage only (no SQL).
@@ -26,10 +26,8 @@ export async function runOverallDashboardDbCoverage(
   _db: pg.Pool,
 ): Promise<void> {
   void _db;
-  const validation = new ValidationEngine();
-  const { responseBody } = await new DashboardMetricsApi(
-    authenticatedApi,
-  ).getDashboardMetrics();
+  const validation = new ApiValidationHelper();
+  const { responseBody } = await new DashboardMetricsApi(authenticatedApi).getDashboardMetrics();
   const metrics = DashboardMetricsMapper.mapData(
     responseBody.data as unknown as Record<string, unknown>,
   );
@@ -48,10 +46,7 @@ export async function runOverallDashboardDbCoverage(
     }
   });
   validation.execute("installationSummary percent ≈ 100", () => {
-    const sum = metrics.installationSummary.reduce(
-      (acc, row) => acc + row.percent,
-      0,
-    );
+    const sum = metrics.installationSummary.reduce((acc, row) => acc + row.percent, 0);
     expect(Math.abs(100 - sum)).toBeLessThanOrEqual(1);
   });
 
@@ -63,9 +58,7 @@ export async function runOverallDashboardDbCoverage(
     INSTALLATION_SUMMARY_PATH,
   );
   if (installResult.rawResponse.status() === 200) {
-    const installMapped = InstallationSummaryMapper.map(
-      installResult.responseBody,
-    );
+    const installMapped = InstallationSummaryMapper.map(installResult.responseBody);
     const installValidator = new InstallationSummaryValidator();
     validation.execute("installation-summary mapped + unmapped = total", () =>
       installValidator.validateCounts(installMapped),
@@ -84,16 +77,11 @@ export async function runOverallDashboardDbCoverage(
     DISCONNECTION_DETAILS_PATH,
   );
   if (disconnectResult.rawResponse.status() === 200) {
-    const disconnectMapped = DisconnectionDetailsMapper.map(
-      disconnectResult.responseBody,
-    );
+    const disconnectMapped = DisconnectionDetailsMapper.map(disconnectResult.responseBody);
     validation.execute("disconnection-details six unique months", () =>
       new DisconnectionDetailsValidator().validateMonthSeries(disconnectMapped),
     );
   }
 
-  validation.printSummary(
-    "Overall Dashboard API soft coverage (no SQL — Tier 3)",
-    0,
-  );
+  validation.printSummary("Overall Dashboard API soft coverage (no SQL — Tier 3)", 0);
 }

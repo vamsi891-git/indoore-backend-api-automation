@@ -1,18 +1,27 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { BulkUploadMetersApi } from "../Api/bulk-upload-meters.api";
-import { bulkUploadMetersMaxResponseTimeMs, bulkUploadMetersTestCases,} from "../Data/bulk-upload-meters.data";
+import {
+  bulkUploadMetersMaxResponseTimeMs,
+  bulkUploadMetersTestCases,
+} from "../Data/bulk-upload-meters.data";
 import { BulkUploadMetersMapper } from "../Mapper/bulk-upload-meters.mapper";
 import { BulkUploadMetersValidator } from "../Validator/bulk-upload-meters.validator";
 import { MasterDataCommonValidator } from "../Validator/master-data-common.validator";
-import {BulkUploadMetersRowOutcomeResponseSchema,BulkUploadMetersSuccessResponseSchema,} from "../schemas/master-data.schemas";
+import {
+  BulkUploadMetersRowOutcomeResponseSchema,
+  BulkUploadMetersSuccessResponseSchema,
+} from "../schemas/master-data.schemas";
 import { shouldSkipMasterDataTestForEnv } from "../utils/master-data-env.helper";
 import { assertNegativeMasterDataHttpStatus } from "../utils/master-data-negative-outcome.helper";
-import { ensureValidateMeterRuntimeContext, getValidateMeterSerial, runtimeMeterSerialEnvKey,} from "../utils/validate-meter-runtime.helper";
+import {
+  ensureValidateMeterRuntimeContext,
+  getValidateMeterSerial,
+  runtimeMeterSerialEnvKey,
+} from "../utils/validate-meter-runtime.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 const FILE_ERROR_SCENARIOS = new Set([
   "file_invalid_type",
   "file_missing_columns",
@@ -56,109 +65,78 @@ test.describe.skip("Master data — Excel upload (meters)", () => {
   });
 
   for (const testCase of bulkUploadMetersTestCases) {
-    test(
-      testCase.testName,
-      { tag: testCase.tags },
-      async ({ authenticatedApi }) => {
-        if (shouldSkipForEnv(testCase)) {
-          test.skip(
-            true,
-            `Set ${testCase.envKeys?.join(", ") ?? "required env vars"} in .env`,
-          );
-          return;
-        }
+    test(testCase.testName, { tag: testCase.tags }, async ({ authenticatedApi }) => {
+      if (shouldSkipForEnv(testCase)) {
+        test.skip(true, `Set ${testCase.envKeys?.join(", ") ?? "required env vars"} in .env`);
+        return;
+      }
 
-        if (missingRuntimeMeterSerial(testCase.scenario)) {
-          test.skip(
-            true,
-            `Could not resolve runtime meter serial for ${testCase.scenario}`,
-          );
-          return;
-        }
+      if (missingRuntimeMeterSerial(testCase.scenario)) {
+        test.skip(true, `Could not resolve runtime meter serial for ${testCase.scenario}`);
+        return;
+      }
 
-        const upload = await testCase.buildUpload();
-        const api = new BulkUploadMetersApi(authenticatedApi);
-        const { rawResponse, responseBody, responseTime } =
-          await api.bulkUploadMeters(upload);
-        if (testCase.scenario === "bulk_success") {
-          console.log(JSON.stringify(responseBody, null, 2));
-        }
-        await PerformanceTracker.track(
+      const upload = await testCase.buildUpload();
+      const api = new BulkUploadMetersApi(authenticatedApi);
+      const { rawResponse, responseBody, responseTime } = await api.bulkUploadMeters(upload);
+      if (testCase.scenario === "bulk_success") {
+        console.log(JSON.stringify(responseBody, null, 2));
+      }
+      await PerformanceTracker.track(
         rawResponse,
         testCase.testName,
         rawResponse.url(),
-        responseTime
+        responseTime,
       );
-        const assert = new AssertionEngine();
-        const validation = new ValidationEngine();
-        const validator = new BulkUploadMetersValidator();
-        const mapped = BulkUploadMetersMapper.map(responseBody);
-        validation.execute("Status Validation", () => {
-          if (BULK_SUCCESS_SCENARIOS.has(testCase.scenario)) {
-            expect(rawResponse.status()).toBe(testCase.expectedStatus);
-            return;
-          }
-          assertNegativeMasterDataHttpStatus(
-            rawResponse,
-            testCase.expectedStatus,
-          );
-        });
-        validation.execute("Content Validation", () =>
-          assert.validateContentType(rawResponse),
-        );
-        validation.execute("Response Time", () =>
-          assert.validateResponseTime(
-            responseTime,
-            bulkUploadMetersMaxResponseTimeMs,
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
+      const validator = new BulkUploadMetersValidator();
+      const mapped = BulkUploadMetersMapper.map(responseBody);
+      validation.execute("Status Validation", () => {
+        if (BULK_SUCCESS_SCENARIOS.has(testCase.scenario)) {
+          expect(rawResponse.status()).toBe(testCase.expectedStatus);
+          return;
+        }
+        assertNegativeMasterDataHttpStatus(rawResponse, testCase.expectedStatus);
+      });
+      validation.execute("Content Validation", () => assert.validateContentType(rawResponse));
+      validation.execute("Response Time", () =>
+        assert.validateResponseTime(responseTime, bulkUploadMetersMaxResponseTimeMs),
+      );
+      validation.execute("Security Validation", () => assert.validateSensitiveData(responseBody));
+
+      if (BULK_SUCCESS_SCENARIOS.has(testCase.scenario)) {
+        validation.execute("Zod Response Schema", () =>
+          MasterDataCommonValidator.validateZodResponseSchema(
+            responseBody,
+            BulkUploadMetersSuccessResponseSchema,
           ),
         );
-        validation.execute("Security Validation", () =>
-          assert.validateSensitiveData(responseBody),
+        validation.execute("Required Fields", () =>
+          assert.validateRequiredFields(responseBody, ["success", "message", "data"]),
         );
-
-        if (BULK_SUCCESS_SCENARIOS.has(testCase.scenario)) {
-          validation.execute("Zod Response Schema", () =>
-            MasterDataCommonValidator.validateZodResponseSchema(
-              responseBody,
-              BulkUploadMetersSuccessResponseSchema,
-            ),
-          );
-          validation.execute("Required Fields", () =>
-            assert.validateRequiredFields(responseBody, [
-              "success",
-              "message",
-              "data",
-            ]),
-          );
-        } else if (!FILE_ERROR_SCENARIOS.has(testCase.scenario)) {
-          validation.execute("Zod Response Schema", () =>
-            MasterDataCommonValidator.validateZodResponseSchema(
-              responseBody,
-              BulkUploadMetersRowOutcomeResponseSchema,
-            ),
-          );
-          validation.execute("Required Fields", () =>
-            assert.validateRequiredFields(responseBody, [
-              "success",
-              "message",
-              "data",
-            ]),
-          );
-        } else {
-          validation.execute("Required Fields", () => {
-            expect(responseBody.success).toBeFalsy();
-            expect(
-              responseBody.error ?? responseBody.message,
-            ).toBeTruthy();
-          });
-        }
-
-        validation.execute("Response", () => validator.validateResponse(mapped));
-        validation.execute("Scenario Outcome", () =>
-          validator.validateScenario(mapped, testCase.scenario),
+      } else if (!FILE_ERROR_SCENARIOS.has(testCase.scenario)) {
+        validation.execute("Zod Response Schema", () =>
+          MasterDataCommonValidator.validateZodResponseSchema(
+            responseBody,
+            BulkUploadMetersRowOutcomeResponseSchema,
+          ),
         );
-        validation.printSummary(testCase.testName, responseTime);
-      },
-    );
+        validation.execute("Required Fields", () =>
+          assert.validateRequiredFields(responseBody, ["success", "message", "data"]),
+        );
+      } else {
+        validation.execute("Required Fields", () => {
+          expect(responseBody.success).toBeFalsy();
+          expect(responseBody.error ?? responseBody.message).toBeTruthy();
+        });
+      }
+
+      validation.execute("Response", () => validator.validateResponse(mapped));
+      validation.execute("Scenario Outcome", () =>
+        validator.validateScenario(mapped, testCase.scenario),
+      );
+      validation.printSummary(testCase.testName, responseTime);
+    });
   }
 });

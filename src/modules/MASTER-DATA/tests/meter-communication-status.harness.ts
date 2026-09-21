@@ -1,7 +1,5 @@
 import { APIResponse } from "@playwright/test";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { MeterCommunicationStatusApi } from "../Api/meter-communication-status.api";
 import { meterCommunicationMaxResponseTimeMs } from "../Data/meter-communication-status.data";
 import { MeterCommunicationStatusMapper } from "../Mapper/meter-communication-status.mapper";
@@ -9,6 +7,7 @@ import type { MeterCommunicationStatusQuery } from "../Mapper/meter-communicatio
 import { MeterCommunicationStatusValidator } from "../Validator/meter-communication-status.validator";
 import { MasterDataCommonValidator } from "../Validator/master-data-common.validator";
 import { MeterCommunicationStatusSuccessResponseSchema } from "../schemas/master-data.schemas";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 export interface RunMeterCommunicationValidationOptions {
   api: MeterCommunicationStatusApi;
@@ -40,8 +39,7 @@ export async function runMeterCommunicationValidation(
     skipSummaryCountEquality = Boolean(communicationStatusFilter),
   } = options;
 
-  const { rawResponse, responseBody, responseTime } =
-    await api.getMeterCommunicationStatus(query);
+  const { rawResponse, responseBody, responseTime } = await api.getMeterCommunicationStatus(query);
 
   const qs = new URLSearchParams(
     Object.entries(query).reduce(
@@ -53,33 +51,19 @@ export async function runMeterCommunicationValidation(
     ),
   ).toString();
 
-  await PerformanceTracker.track(
-        rawResponse,
-        testLabel,
-        rawResponse.url(),
-        responseTime
-      );
+  await PerformanceTracker.track(rawResponse, testLabel, rawResponse.url(), responseTime);
 
-  const assert = new AssertionEngine();
-  const validation = new ValidationEngine();
+  const assert = new ApiValidationHelper();
+  const validation = new ApiValidationHelper();
   const validator = new MeterCommunicationStatusValidator();
-  const data = MeterCommunicationStatusMapper.mapData(
-    responseBody.data,
-    query.limit ?? 20,
-  );
+  const data = MeterCommunicationStatusMapper.mapData(responseBody.data, query.limit ?? 20);
 
-  validation.execute("Status Validation", () =>
-    assert.validateStatusCode(rawResponse, 200),
-  );
-  validation.execute("Content Validation", () =>
-    assert.validateContentType(rawResponse),
-  );
+  validation.execute("Status Validation", () => assert.validateStatusCode(rawResponse, 200));
+  validation.execute("Content Validation", () => assert.validateContentType(rawResponse));
   validation.execute("Response Time", () =>
     assert.validateResponseTime(responseTime, maxResponseTimeMs),
   );
-  validation.execute("Security Validation", () =>
-    assert.validateSensitiveData(responseBody),
-  );
+  validation.execute("Security Validation", () => assert.validateSensitiveData(responseBody));
   validation.execute("Zod Response Schema", () =>
     MasterDataCommonValidator.validateZodResponseSchema(
       responseBody,
@@ -96,9 +80,7 @@ export async function runMeterCommunicationValidation(
   validation.execute("Items", () => validator.validateItemsExist(data));
   validation.execute("Fields", () => validator.validateFields(data));
   validation.execute("Pagination", () => validator.validatePagination(data));
-  validation.execute("Query Params", () =>
-    validator.validateQueryParams(data, query),
-  );
+  validation.execute("Query Params", () => validator.validateQueryParams(data, query));
   validation.execute("Sl No Sequence", () => validator.validateSlNoSequence(data));
   validation.execute("Unique Meter Serials On Page", () =>
     validator.validateUniqueMeterSerialsOnPage(data),
@@ -106,9 +88,7 @@ export async function runMeterCommunicationValidation(
   validation.execute("Page Status Within Summary", () =>
     validator.validatePageStatusCountsWithinSummary(data),
   );
-  validation.execute("Row Keys Match Columns", () =>
-    validator.validateRowKeysMatchColumns(data),
-  );
+  validation.execute("Row Keys Match Columns", () => validator.validateRowKeysMatchColumns(data));
 
   if (communicationStatusFilter) {
     validation.execute("Communication Status Filter", () =>
@@ -120,9 +100,7 @@ export async function runMeterCommunicationValidation(
   }
 
   if (searchTerm) {
-    validation.execute("Search Results", () =>
-      validator.validateSearchResults(data, searchTerm),
-    );
+    validation.execute("Search Results", () => validator.validateSearchResults(data, searchTerm));
   }
 
   if (!skipCommunicatingTimestampCheck) {
@@ -134,8 +112,7 @@ export async function runMeterCommunicationValidation(
   validation.printSummary(testLabel, responseTime);
 
   const firstNonNullSerial =
-    data.items.find((row) => row.meterSerialNumber?.trim())?.meterSerialNumber ??
-    null;
+    data.items.find((row) => row.meterSerialNumber?.trim())?.meterSerialNumber ?? null;
 
   return { rawResponse, responseTime, firstNonNullSerial };
 }

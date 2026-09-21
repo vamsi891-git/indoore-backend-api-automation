@@ -2,13 +2,11 @@ import { test, expect } from "../../../fixtures/observability.fixture";
 import {
   assertContractSnapshot,
   buildLookupItemsContractSnapshot,
-} from "../../../core/contract/contract-snapshot.helper";
+} from "../../../extras/contract/contract-snapshot.helper";
 import { ModulePermissionApi } from "../Api/modulepermission.api";
 
 function asRecord(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === "object"
-    ? (value as Record<string, unknown>)
-    : {};
+  return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
 test.describe("MODULES-PERMISSIONS — Contract Snapshots", () => {
@@ -29,8 +27,7 @@ test.describe("MODULES-PERMISSIONS — Contract Snapshots", () => {
         buildLookupItemsContractSnapshot({
           pathPattern: "/indore/permissions/modules",
           dataKeys: Object.keys(data).sort(),
-          itemKeys:
-            modules.length > 0 ? Object.keys(asRecord(modules[0])).sort() : [],
+          itemKeys: modules.length > 0 ? Object.keys(asRecord(modules[0])).sort() : [],
         }),
       );
     },

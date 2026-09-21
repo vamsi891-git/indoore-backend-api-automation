@@ -36,9 +36,9 @@ import { mapMdAnalysisResponse } from "../Mapper/mdanalysis.mapper";
 import { MdAnalysisValidator } from "../Validator/mdanalysis.validator";
 import { PowerFactorMapper } from "../Mapper/powerfactor.mapper";
 import { PowerFactorValidator } from "../Validator/powerfactoranalysis.validator";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { shouldSkipCommercialResponse } from "../utils/commercial-request.helper";
 import { CommercialCommonValidator } from "../Validator/commercial-common.validator";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Commercial Analysis — extra report checks", () => {
   test.describe.configure({ retries: 2 });
@@ -57,7 +57,7 @@ test.describe("Commercial Analysis — extra report checks", () => {
         return;
       }
 
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const validator = new PowerFactorValidator();
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
@@ -82,7 +82,7 @@ test.describe("Commercial Analysis — extra report checks", () => {
         return;
       }
 
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const rows = PowerFactorMapper.mapPfRows(responseBody?.data?.rows ?? []);
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
@@ -107,32 +107,24 @@ test.describe("Commercial Analysis — extra report checks", () => {
         return;
       }
 
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const validator = new LFAnalysisValidator();
       const cfg = LF_TYPE_CONFIG[params.type];
       const rows = mapLFAnalysisResponse(responseBody);
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
       });
-      validation.execute("Query echo", () =>
-        validator.validateQueryParams(responseBody, params),
-      );
+      validation.execute("Query echo", () => validator.validateQueryParams(responseBody, params));
       validation.execute("Grid columns", () =>
         validator.validateGridColumns(responseBody, params.type),
       );
       validation.execute("LF > 100", () =>
-        validator.validateLfAgainstThreshold(
-          rows,
-          cfg.threshold,
-          cfg.operator,
-        ),
+        validator.validateLfAgainstThreshold(rows, cfg.threshold, cfg.operator),
       );
       validation.execute("LF>100% is sanctioned load, not 100", () =>
         validator.validateSanctionedLoadColumn(rows),
       );
-      validation.execute("Duplicate LF", () =>
-        validator.validateDuplicateContract(rows),
-      );
+      validation.execute("Duplicate LF", () => validator.validateDuplicateContract(rows));
       validation.printSummary("LF — gt 100", 0);
     },
   );
@@ -150,32 +142,24 @@ test.describe("Commercial Analysis — extra report checks", () => {
         return;
       }
 
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const validator = new LFAnalysisValidator();
       const cfg = LF_TYPE_CONFIG[params.type];
       const rows = mapLFAnalysisResponse(responseBody);
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
       });
-      validation.execute("Query echo", () =>
-        validator.validateQueryParams(responseBody, params),
-      );
+      validation.execute("Query echo", () => validator.validateQueryParams(responseBody, params));
       validation.execute("Grid columns", () =>
         validator.validateGridColumns(responseBody, params.type),
       );
       validation.execute("LF threshold", () =>
-        validator.validateLfAgainstThreshold(
-          rows,
-          cfg.threshold,
-          cfg.operator,
-        ),
+        validator.validateLfAgainstThreshold(rows, cfg.threshold, cfg.operator),
       );
       validation.execute("LF<5% echoes 5", () =>
         validator.validateReportThresholdColumn(rows, cfg.threshold),
       );
-      validation.execute("Duplicate LF", () =>
-        validator.validateDuplicateContract(rows),
-      );
+      validation.execute("Duplicate LF", () => validator.validateDuplicateContract(rows));
       validation.printSummary("LF — lt 5 last 3m", 0);
     },
   );
@@ -185,10 +169,9 @@ test.describe("Commercial Analysis — extra report checks", () => {
     { tag: ["@commercial", "@lf-analysis", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new LFAnalysisApi(authenticatedApi);
-      const { rawResponse, responseBody } = await api.getLFAnalysis(
-        lfAnalysisLt5Last6mData,
-        { maxAttempts: 1 },
-      );
+      const { rawResponse, responseBody } = await api.getLFAnalysis(lfAnalysisLt5Last6mData, {
+        maxAttempts: 1,
+      });
       CommercialCommonValidator.validateBillingPeriodNotReady(
         rawResponse.status(),
         responseBody,
@@ -203,32 +186,27 @@ test.describe("Commercial Analysis — extra report checks", () => {
     async ({ authenticatedApi }) => {
       const api = new ConsumptionPatternApi(authenticatedApi);
       const params = commercialEdgeCases.patternLow3m;
-      const { rawResponse, responseBody } =
-        await api.getConsumptionPattern(params);
+      const { rawResponse, responseBody } = await api.getConsumptionPattern(params);
 
       if (shouldSkipCommercialResponse(rawResponse.status(), responseBody)) {
         test.skip(true, "Pattern low 3m returned persistent INTERNAL_ERROR");
         return;
       }
 
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const validator = new ConsumptionPatternValidator();
       const rows = mapConsumptionPatternResponse(responseBody);
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
       });
-      validation.execute("Grid columns", () =>
-        validator.validateGridColumns(responseBody),
-      );
+      validation.execute("Grid columns", () => validator.validateGridColumns(responseBody));
       validation.execute("Pattern", () =>
         validator.validateReportForPattern(responseBody, params.pattern),
       );
       validation.execute("Business rules", () =>
         validator.validatePatternRows(rows, params.pattern, params.threshold),
       );
-      validation.execute("Duplicate contract", () =>
-        validator.validateDuplicateContract(rows),
-      );
+      validation.execute("Duplicate contract", () => validator.validateDuplicateContract(rows));
       validation.printSummary("Pattern — low 3m", 0);
     },
   );
@@ -239,27 +217,20 @@ test.describe("Commercial Analysis — extra report checks", () => {
     async ({ authenticatedApi }) => {
       const api = new ConsumptionPatternApi(authenticatedApi);
       const params = commercialEdgeCases.patternZero3m;
-      const { rawResponse, responseBody } =
-        await api.getConsumptionPattern(params);
+      const { rawResponse, responseBody } = await api.getConsumptionPattern(params);
       if (shouldSkipCommercialResponse(rawResponse.status(), responseBody)) {
         test.skip(true, "Pattern zero 3m returned persistent INTERNAL_ERROR");
         return;
       }
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const validator = new ConsumptionPatternValidator();
       const rows = mapConsumptionPatternResponse(responseBody);
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
       });
-      validation.execute("Grid columns", () =>
-        validator.validateGridColumns(responseBody),
-      );
-      validation.execute("Business rules", () =>
-        validator.validatePatternRows(rows, "zero", 100),
-      );
-      validation.execute("Duplicate contract", () =>
-        validator.validateDuplicateContract(rows),
-      );
+      validation.execute("Grid columns", () => validator.validateGridColumns(responseBody));
+      validation.execute("Business rules", () => validator.validatePatternRows(rows, "zero", 100));
+      validation.execute("Duplicate contract", () => validator.validateDuplicateContract(rows));
       validation.printSummary("Pattern — zero 3m", 0);
     },
   );
@@ -270,13 +241,12 @@ test.describe("Commercial Analysis — extra report checks", () => {
     async ({ authenticatedApi }) => {
       const api = new ConsumptionPatternApi(authenticatedApi);
       const params = commercialEdgeCases.patternZero1mPage2;
-      const { rawResponse, responseBody } =
-        await api.getConsumptionPattern(params);
+      const { rawResponse, responseBody } = await api.getConsumptionPattern(params);
       if (shouldSkipCommercialResponse(rawResponse.status(), responseBody)) {
         test.skip(true, "Pattern zero 1m page 2 returned persistent INTERNAL_ERROR");
         return;
       }
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const validator = new ConsumptionPatternValidator();
       const rows = mapConsumptionPatternResponse(responseBody);
       validation.execute("Status 200", () => {
@@ -285,12 +255,8 @@ test.describe("Commercial Analysis — extra report checks", () => {
       validation.execute("Pagination page 2", () =>
         validator.validatePagination(responseBody, params),
       );
-      validation.execute("kWh is zero", () =>
-        validator.validatePatternRows(rows, "zero", 100),
-      );
-      validation.execute("Duplicate contract", () =>
-        validator.validateDuplicateContract(rows),
-      );
+      validation.execute("kWh is zero", () => validator.validatePatternRows(rows, "zero", 100));
+      validation.execute("Duplicate contract", () => validator.validateDuplicateContract(rows));
       validation.printSummary("Pattern — zero 1m page 2", 0);
     },
   );
@@ -301,13 +267,12 @@ test.describe("Commercial Analysis — extra report checks", () => {
     async ({ authenticatedApi }) => {
       const api = new ConsumptionPatternApi(authenticatedApi);
       const params = commercialEdgeCases.patternZero1mPageSize1;
-      const { rawResponse, responseBody } =
-        await api.getConsumptionPattern(params);
+      const { rawResponse, responseBody } = await api.getConsumptionPattern(params);
       if (shouldSkipCommercialResponse(rawResponse.status(), responseBody)) {
         test.skip(true, "Pattern zero 1m pageSize 1 returned persistent INTERNAL_ERROR");
         return;
       }
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const validator = new ConsumptionPatternValidator();
       const rows = mapConsumptionPatternResponse(responseBody);
       validation.execute("Status 200", () => {
@@ -316,9 +281,7 @@ test.describe("Commercial Analysis — extra report checks", () => {
       validation.execute("Exactly one row", () => {
         expect(rows).toHaveLength(1);
       });
-      validation.execute("Duplicate contract", () =>
-        validator.validateDuplicateContract(rows),
-      );
+      validation.execute("Duplicate contract", () => validator.validateDuplicateContract(rows));
       validation.printSummary("Pattern — zero 1m pageSize 1", 0);
     },
   );
@@ -335,7 +298,7 @@ test.describe("Commercial Analysis — extra report checks", () => {
         test.skip(true, "Pattern omitted type unavailable after retries");
         return;
       }
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const validator = new ConsumptionPatternValidator();
       const rows = mapConsumptionPatternResponse(responseBody);
       validation.execute("Status 200", () => {
@@ -344,9 +307,7 @@ test.describe("Commercial Analysis — extra report checks", () => {
       validation.execute("Success", () => {
         expect(responseBody.success).toBe(true);
       });
-      validation.execute("Duplicate contract", () =>
-        validator.validateDuplicateContract(rows),
-      );
+      validation.execute("Duplicate contract", () => validator.validateDuplicateContract(rows));
       validation.printSummary("Pattern — default type", 0);
     },
   );
@@ -357,16 +318,13 @@ test.describe("Commercial Analysis — extra report checks", () => {
     async ({ authenticatedApi }) => {
       const api = new ConsumptionPatternApi(authenticatedApi);
       const params = commercialEdgeCases.patternZero6m;
-      const { rawResponse, responseBody } = await api.getConsumptionPattern(
-        params,
-        { maxAttempts: 1 },
-      );
+      const { rawResponse, responseBody } = await api.getConsumptionPattern(params, {
+        maxAttempts: 1,
+      });
       CommercialCommonValidator.validateBillingPeriodNotReady(
         rawResponse.status(),
         responseBody,
-        CONSUMPTION_PATTERN_COVERAGE_GATED_MISSING_MONTHS[
-          "Zero Consumption for Last 6 months"
-        ],
+        CONSUMPTION_PATTERN_COVERAGE_GATED_MISSING_MONTHS["Zero Consumption for Last 6 months"],
       );
     },
   );
@@ -410,7 +368,7 @@ test.describe("Commercial Analysis — extra report checks", () => {
           return;
         }
 
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const validator = new MdAnalysisValidator();
         const rows = mapMdAnalysisResponse(responseBody);
         validation.execute("Status 200", () => {
@@ -425,9 +383,7 @@ test.describe("Commercial Analysis — extra report checks", () => {
         validation.execute("Business rules", () =>
           validator.validateBusinessRules(rows, data.type),
         );
-        validation.execute("Duplicate contract", () =>
-          validator.validateDuplicateContract(rows),
-        );
+        validation.execute("Duplicate contract", () => validator.validateDuplicateContract(rows));
         validation.printSummary(`MD — ${label}`, 0);
       },
     );
@@ -439,29 +395,24 @@ test.describe("Commercial Analysis — extra report checks", () => {
     async ({ authenticatedApi }) => {
       const api = new ConsumptionCompareApi(authenticatedApi);
       const params = commercialEdgeCases.comparePage2;
-      const { rawResponse, responseBody } =
-        await api.getConsumptionCompare(params);
+      const { rawResponse, responseBody } = await api.getConsumptionCompare(params);
 
       if (shouldSkipCommercialResponse(rawResponse.status(), responseBody)) {
         test.skip(true, "Compare page 2 returned persistent INTERNAL_ERROR");
         return;
       }
 
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const validator = new ConsumptionCompareValidator();
       const rows = mapConsumptionCompareResponse(responseBody);
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
       });
-      validation.execute("Pagination", () =>
-        validator.validatePagination(responseBody, params),
-      );
+      validation.execute("Pagination", () => validator.validatePagination(responseBody, params));
       validation.execute("Business rules", () =>
         validator.validateBusinessRules(rows, params.type),
       );
-      validation.execute("Duplicate contract", () =>
-        validator.validateDuplicateContract(rows),
-      );
+      validation.execute("Duplicate contract", () => validator.validateDuplicateContract(rows));
       validation.printSummary("Compare — Page 2", 0);
     },
   );
@@ -474,7 +425,7 @@ test.describe("Commercial Analysis — extra report checks", () => {
       const { rawResponse, responseBody } = await api.getPfAnalysis(
         commercialEdgeCases.pfMissingThreshold,
       );
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
       });
@@ -493,7 +444,7 @@ test.describe("Commercial Analysis — extra report checks", () => {
       const { rawResponse, responseBody } = await api.getLFAnalysis(
         commercialEdgeCases.lfMissingOperator,
       );
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
       });
@@ -512,7 +463,7 @@ test.describe("Commercial Analysis — extra report checks", () => {
       const { rawResponse, responseBody } = await api.getMdAnalysis(
         commercialEdgeCases.mdMissingType,
       );
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
       });
@@ -535,7 +486,7 @@ test.describe("Commercial Analysis — extra report checks", () => {
         test.skip(true, "Compare omitted type unavailable after retries");
         return;
       }
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const validator = new ConsumptionCompareValidator();
       const rows = mapConsumptionCompareResponse(responseBody);
       validation.execute("Status 200", () => {
@@ -544,19 +495,14 @@ test.describe("Commercial Analysis — extra report checks", () => {
       validation.execute("Success", () => {
         expect(responseBody.success).toBe(true);
       });
-      validation.execute("Duplicate contract", () =>
-        validator.validateDuplicateContract(rows),
-      );
+      validation.execute("Duplicate contract", () => validator.validateDuplicateContract(rows));
       validation.printSummary("Compare — default type", 0);
     },
   );
 
   for (const [label, params] of [
     ["Night Zero Consumption", commercialEdgeCases.dayNightZero],
-    [
-      "Night consumption <= 10% of Day consumption",
-      commercialEdgeCases.dayNightLte,
-    ],
+    ["Night consumption <= 10% of Day consumption", commercialEdgeCases.dayNightLte],
   ] as const) {
     test(
       `Day and Night — ${label}: report opens and usage follows the rule`,
@@ -570,28 +516,20 @@ test.describe("Commercial Analysis — extra report checks", () => {
           return;
         }
 
-        const validation = new ValidationEngine();
+        const validation = new ApiValidationHelper();
         const validator = new DayNightValidator();
         const rows = mapDayNightResponse(responseBody);
         const cfg = DAY_NIGHT_TYPE_CONFIG[params.type];
         validation.execute("Status 200", () => {
           expect(rawResponse.status()).toBe(200);
         });
-        validation.execute("Empty grid allowed", () =>
-          validator.validateResponse(responseBody),
-        );
+        validation.execute("Empty grid allowed", () => validator.validateResponse(responseBody));
         validation.execute("Grid columns", () =>
           validator.validateGridColumns(responseBody, params.type),
         );
-        validation.execute("Pagination", () =>
-          validator.validatePagination(responseBody, params),
-        );
-        validation.execute("Business rules", () =>
-          validator.validateBusinessRules(rows, cfg.kind),
-        );
-        validation.execute("Duplicate contract", () =>
-          validator.validateDuplicateContract(rows),
-        );
+        validation.execute("Pagination", () => validator.validatePagination(responseBody, params));
+        validation.execute("Business rules", () => validator.validateBusinessRules(rows, cfg.kind));
+        validation.execute("Duplicate contract", () => validator.validateDuplicateContract(rows));
         validation.printSummary(`Day-night — ${label}`, 0);
       },
     );

@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { compareApiToDb } from "../../../../core/db/db-compare.engine";
+import { compareApiToDb } from "../../../../extras/db/db-compare.engine";
 import { compareAuthCountLteDb } from "../../Db/auth-db-compare";
 
 test.describe("Mutation proof — AUTH DB (fixture)", () => {
@@ -24,9 +24,9 @@ test.describe("Mutation proof — AUTH DB (fixture)", () => {
     "MUT-AUTH-DB-002 — lte assert fails when API > DB",
     { tag: ["@mutation-proof", "@auth"] },
     async () => {
-      expect(() =>
-        compareAuthCountLteDb({ label: "total", apiCount: 5, dbCount: 1 }),
-      ).toThrow(/exceeds|total/i);
+      expect(() => compareAuthCountLteDb({ label: "total", apiCount: 5, dbCount: 1 })).toThrow(
+        /exceeds|total/i,
+      );
     },
   );
 });

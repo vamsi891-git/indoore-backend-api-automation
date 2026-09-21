@@ -6,31 +6,22 @@ import { registerCatalogLookupTests } from "../utils/lookup-catalog.harness";
 import { getLookupResponseData } from "../utils/lookup-spec.harness";
 import type { CatalogScenario } from "../Data/lookup-catalogs.data";
 import type { EventPriorityData } from "../Mapper/eventpriority.mapper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 function validateEventPriority(
   scenario: CatalogScenario,
   responseBody: unknown,
-  validation: import("../../../core/engine/validation.engine").ValidationEngine,
+  validation: ApiValidationHelper,
 ): void {
-  const data = EventPriorityMapper.mapData(
-    getLookupResponseData<EventPriorityData>(responseBody),
-  );
+  const data = EventPriorityMapper.mapData(getLookupResponseData<EventPriorityData>(responseBody));
   const validator = new EventPriorityValidator();
-  validation.execute("Response", () =>
-    validator.validateResponse(responseBody as never),
-  );
+  validation.execute("Response", () => validator.validateResponse(responseBody as never));
   validation.execute("Items", () => validator.validateItemsExist(data));
   validation.execute("Fields", () => validator.validateFields(data));
-  validation.execute("Duplicate Priorities", () =>
-    validator.validateDuplicatePriorities(data),
-  );
-  validation.execute("Ascending Order", () =>
-    validator.validateAscendingOrder(data),
-  );
+  validation.execute("Duplicate Priorities", () => validator.validateDuplicatePriorities(data));
+  validation.execute("Ascending Order", () => validator.validateAscendingOrder(data));
   if (scenario === "smoke") {
-    validation.execute("Expected Values", () =>
-      validator.validateExpectedValues(data),
-    );
+    validation.execute("Expected Values", () => validator.validateExpectedValues(data));
   }
 }
 

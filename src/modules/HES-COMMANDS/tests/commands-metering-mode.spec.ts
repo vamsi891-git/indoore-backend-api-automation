@@ -1,10 +1,8 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
 import { HES_COMMANDS_E2E_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { CommandsMeteringModeApi } from "../Api/commands-metering-mode.api";
 import { CommandsQueryMeterJobApi } from "../Api/commands-query-meter-job.api";
@@ -37,13 +35,7 @@ test.describe("HES Commands — Metering Mode (E2E)", () => {
   test(
     "Validate POST /commands/metering-mode → query-meter-job — metering_mode_get E2E",
     {
-      tag: [
-        "@smoke",
-        "@commands",
-        "@hes",
-        "@commands-metering-mode",
-        "@e2e",
-      ],
+      tag: ["@smoke", "@commands", "@hes", "@commands-metering-mode", "@e2e"],
     },
     async ({ authenticatedApi }, testInfo) => {
       await waitForHesJobQueueSlot();
@@ -51,8 +43,8 @@ test.describe("HES Commands — Metering Mode (E2E)", () => {
       const requestedMeters = normalizeMeters(body.meters);
       const meteringApi = new CommandsMeteringModeApi(authenticatedApi);
       const queryApi = new CommandsQueryMeterJobApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const initValidator = new CommandsJobInitValidator();
       const queryValidator = new CommandsQueryMeterJobValidator();
       const meteringValidator = new CommandsMeteringModeValidator();
@@ -67,7 +59,7 @@ test.describe("HES Commands — Metering Mode (E2E)", () => {
         postRaw,
         "Commands Metering Mode — Init Job",
         postRaw.url(),
-        postTime
+        postTime,
       );
 
       const postStatus = postRaw.status();
@@ -82,23 +74,19 @@ test.describe("HES Commands — Metering Mode (E2E)", () => {
         validation.execute("Error Response (500 backend defect)", () =>
           initValidator.validateErrorResponse(postBody),
         );
-        validation.printSummary(
-          "Commands Metering Mode — Init Job",
-          postTime,
-          {
-            testInfo,
-            defectContext: {
-              module: "HES-COMMANDS",
-              endpoint: postRaw.url(),
-              method: "POST",
-              requestParams: body,
-              responseStatus: postStatus,
-              responseBody: postBody,
-              expectedBehavior:
-                "200 with jobName in meterResults for metering_mode_get (backend intermittently returns 500).",
-            },
+        validation.printSummary("Commands Metering Mode — Init Job", postTime, {
+          testInfo,
+          defectContext: {
+            module: "HES-COMMANDS",
+            endpoint: postRaw.url(),
+            method: "POST",
+            requestParams: body,
+            responseStatus: postStatus,
+            responseBody: postBody,
+            expectedBehavior:
+              "200 with jobName in meterResults for metering_mode_get (backend intermittently returns 500).",
           },
-        );
+        });
         return;
       }
 
@@ -113,9 +101,7 @@ test.describe("HES Commands — Metering Mode (E2E)", () => {
       validation.execute("Init Response Envelope", () =>
         meteringValidator.validateInitResponseEnvelope(postBody),
       );
-      validation.execute("Init Success Response", () =>
-        initValidator.validateResponse(postBody),
-      );
+      validation.execute("Init Success Response", () => initValidator.validateResponse(postBody));
 
       const mappedInit = CommandsJobInitMapper.mapResponse(postBody);
 
@@ -131,9 +117,7 @@ test.describe("HES Commands — Metering Mode (E2E)", () => {
       validation.execute("Init HES Callback Configured", () =>
         initValidator.validateHesCallbackConfigured(mappedInit.init),
       );
-      validation.execute("Init Note", () =>
-        meteringValidator.validateInitNote(mappedInit),
-      );
+      validation.execute("Init Note", () => meteringValidator.validateInitNote(mappedInit));
       validation.execute("Init Meter Results", () =>
         initValidator.validateAllMeterResults(
           mappedInit.init.meterResults,
@@ -143,9 +127,7 @@ test.describe("HES Commands — Metering Mode (E2E)", () => {
       validation.execute("Init IN_PROGRESS Status", () =>
         meteringValidator.validateInitInProgressStatus(mappedInit),
       );
-      validation.execute("Init Message", () =>
-        meteringValidator.validateInitMessage(mappedInit),
-      );
+      validation.execute("Init Message", () => meteringValidator.validateInitMessage(mappedInit));
       validation.execute("Init Full Contract", () =>
         initValidator.validateFullInitContract(mappedInit, requestedMeters),
       );
@@ -172,18 +154,16 @@ test.describe("HES Commands — Metering Mode (E2E)", () => {
         softSkipHesE2eInfraFailure(error, testInfo);
       }
 
-      logCommandE2eResponses(
-        "Commands Metering Mode",
-        postBody,
-        pollResult.responseBody,
-        { pollAttempts: pollResult.pollAttempts, jobName },
-      );
+      logCommandE2eResponses("Commands Metering Mode", postBody, pollResult.responseBody, {
+        pollAttempts: pollResult.pollAttempts,
+        jobName,
+      });
 
       await PerformanceTracker.track(
         pollResult.rawResponse,
         "Commands Metering Mode — Query Meter Job",
         pollResult.rawResponse.url(),
-        pollResult.responseTime
+        pollResult.responseTime,
       );
 
       ApiValidationHelper.runStandardChecks(validation, assert, {
@@ -205,9 +185,7 @@ test.describe("HES Commands — Metering Mode (E2E)", () => {
             meteringValidator.validateQueryResponseEnvelope(pollResult.mapped),
           );
           validation.execute("Query Finished Message", () =>
-            meteringValidator.validateQueryFinishedMessage(
-              pollResult.mapped.message,
-            ),
+            meteringValidator.validateQueryFinishedMessage(pollResult.mapped.message),
           );
           validation.execute("Query HES Job Status FINISHED", () => {
             expect(pollResult.mapped.job.hesJobStatus).toBe("FINISHED");
@@ -228,9 +206,7 @@ test.describe("HES Commands — Metering Mode (E2E)", () => {
             ),
           );
           validation.execute("Query All Meter Results", () =>
-            queryValidator.validateAllMeterResults(
-              pollResult.mapped.job.meterResults,
-            ),
+            queryValidator.validateAllMeterResults(pollResult.mapped.job.meterResults),
           );
           validation.execute("Query Metering Mode HES Response — All Fields", () =>
             meteringValidator.validateMeteringModeQueryMeterResults(
@@ -239,11 +215,7 @@ test.describe("HES Commands — Metering Mode (E2E)", () => {
             ),
           );
           validation.execute("Query Full Contract", () =>
-            queryValidator.validateFullContract(
-              pollResult.mapped,
-              jobName,
-              requestedMeters[0],
-            ),
+            queryValidator.validateFullContract(pollResult.mapped, jobName, requestedMeters[0]),
           );
         },
       });
@@ -285,29 +257,21 @@ test.describe("HES Commands — Metering Mode (E2E)", () => {
       };
 
       const api = new CommandsMeteringModeApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const initValidator = new CommandsJobInitValidator();
 
-      const { rawResponse, responseBody, responseTime } =
-        await api.postMeteringMode(
-          body as Parameters<CommandsMeteringModeApi["postMeteringMode"]>[0],
-        );
-
-      logCommandE2eResponses(
-        "Commands Metering Mode — Invalid Type",
-        responseBody,
+      const { rawResponse, responseBody, responseTime } = await api.postMeteringMode(
+        body as Parameters<CommandsMeteringModeApi["postMeteringMode"]>[0],
       );
+
+      logCommandE2eResponses("Commands Metering Mode — Invalid Type", responseBody);
 
       validation.execute("Status (validation error)", () =>
         assert.validateStatusCode(rawResponse, 400, responseBody),
       );
-      validation.execute("Content Type", () =>
-        assert.validateContentType(rawResponse),
-      );
-      validation.execute("Error Response", () =>
-        initValidator.validateErrorResponse(responseBody),
-      );
+      validation.execute("Content Type", () => assert.validateContentType(rawResponse));
+      validation.execute("Error Response", () => initValidator.validateErrorResponse(responseBody));
 
       ApiValidationHelper.finalize(validation, {
         apiName: "Commands Metering Mode — Invalid Type",
@@ -320,8 +284,7 @@ test.describe("HES Commands — Metering Mode (E2E)", () => {
           requestParams: body,
           responseStatus: rawResponse.status(),
           responseBody,
-          expectedBehavior:
-            "Invalid metering mode type returns 400 VALIDATION_ERROR.",
+          expectedBehavior: "Invalid metering mode type returns 400 VALIDATION_ERROR.",
         },
       });
     },

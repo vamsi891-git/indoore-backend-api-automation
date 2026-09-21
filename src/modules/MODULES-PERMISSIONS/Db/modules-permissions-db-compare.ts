@@ -2,7 +2,7 @@
   compareApiToDb,
   logDbVsApiSection,
   type DbCompareObs,
-} from "../../../core/db/db-compare.engine";
+} from "../../../extras/db/db-compare.engine";
 import type { DbModulesPermissionsModuleRow } from "./modules-permissions.db";
 
 /**
@@ -52,11 +52,9 @@ export function compareModuleSpotToDb(options: {
   const { api, dbRow, obs } = options;
   if (!dbRow) {
     throw new Error(
-      [
-        "DB modules row missing",
-        `  id=${api.id}`,
-        "  Hint: confirm general.modules catalog.",
-      ].join("\n"),
+      ["DB modules row missing", `  id=${api.id}`, "  Hint: confirm general.modules catalog."].join(
+        "\n",
+      ),
     );
   }
 

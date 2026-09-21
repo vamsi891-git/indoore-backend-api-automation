@@ -1,13 +1,12 @@
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { DtrEventApi } from "../Api/dtrevent.api";
 import { dtrEventMaxResponseTimeMs, dtrEventTestCases, resolveDtrEventContractBody, resolveDtrEventQuery,} from "../Data/dtrevent.data";
 import { DtrEventMapper, type DtrEventErrorBody,} from "../Mapper/dtrevent.mapper";
 import { DtrEventValidator } from "../Validator/dtrevent.validator";
 import { skipIfReportsInternalError } from "../utils/reports-env.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 test.describe("DTR event report", () => {
     test.describe.configure({ retries: 0 });
     test.setTimeout(MASTER_DATA_TEST_TIMEOUT_MS);
@@ -17,8 +16,8 @@ test.describe("DTR event report", () => {
             async ({ authenticatedApi }) => {
                 const expectedStatus = testCase.expectedStatus ?? 200;
                 const validator = new DtrEventValidator();
-                const assert = new AssertionEngine();
-                const validation = new ValidationEngine();
+                const assert = new ApiValidationHelper();
+                const validation = new ApiValidationHelper();
                 if (testCase.isContractFixture) {
                     const fixtureBody = resolveDtrEventContractBody(
                         testCase.scenario,

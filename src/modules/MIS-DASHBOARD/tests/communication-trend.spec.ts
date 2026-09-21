@@ -7,42 +7,29 @@ import {
   communicationTrendTestCases,
 } from "../Data/communication-trend.data";
 import { MisDashboardEdgesValidator } from "../Validator/mis-dashboard.edges.validator";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 test.describe("Daily talking chart", () => {
   for (const testCase of communicationTrendTestCases) {
     test(testCase.testName, { tag: testCase.tags }, async ({ authenticatedApi }) => {
       const api = new CommunicationTrendApi(authenticatedApi);
-      const { rawResponse, responseBody, responseTime } = await api.getTrend(
-        testCase.params,
-      );
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const { rawResponse, responseBody, responseTime } = await api.getTrend(testCase.params);
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new CommunicationTrendValidator();
       const edges = new MisDashboardEdgesValidator();
 
       validation.execute("Status", () =>
-        assert.validateStatusCode(
-          rawResponse,
-          testCase.expectedStatus,
-          responseBody,
-        ),
+        assert.validateStatusCode(rawResponse, testCase.expectedStatus, responseBody),
       );
       validation.execute("Content", () =>
         assert.validateContentType(rawResponse, "application/json"),
       );
-      validation.execute("Performance", () =>
-        assert.validateResponseTime(responseTime, 120000),
-      );
-      validation.execute("Sensitive Data", () =>
-        assert.validateSensitiveData(responseBody),
-      );
+      validation.execute("Performance", () => assert.validateResponseTime(responseTime, 120000));
+      validation.execute("Sensitive Data", () => assert.validateSensitiveData(responseBody));
 
       if (testCase.expectedStatus !== 200) {
-        validation.execute("Error code", () =>
-          edges.validateValidationError(responseBody),
-        );
+        validation.execute("Error code", () => edges.validateValidationError(responseBody));
         validation.printSummary(testCase.testName, responseTime);
         return;
       }
@@ -78,8 +65,8 @@ test.describe("Daily talking chart", () => {
     { tag: ["@mis-dashboard", "@edge"] },
     async ({ authenticatedApi }) => {
       const api = new CommunicationTrendApi(authenticatedApi);
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const validator = new CommunicationTrendValidator();
       const [allResult, consumerResult, dtrResult] = await Promise.all([
         api.getTrend({ ...communicationTrendQuery, assetType: "all" }),
@@ -93,27 +80,17 @@ test.describe("Daily talking chart", () => {
       validation.execute("Consumer status", () =>
         assert.validateStatusCode(consumerResult.rawResponse, 200),
       );
-      validation.execute("DTR status", () =>
-        assert.validateStatusCode(dtrResult.rawResponse, 200),
-      );
+      validation.execute("DTR status", () => assert.validateStatusCode(dtrResult.rawResponse, 200));
 
       const allMeters = CommunicationTrendMapper.map(allResult.responseBody.data);
-      const consumers = CommunicationTrendMapper.map(
-        consumerResult.responseBody.data,
-      );
+      const consumers = CommunicationTrendMapper.map(consumerResult.responseBody.data);
       const dtrs = CommunicationTrendMapper.map(dtrResult.responseBody.data);
 
       validation.execute("Same dates for all and consumer", () =>
-        validator.validateSameDates(
-          allMeters.communicationTrend,
-          consumers.communicationTrend,
-        ),
+        validator.validateSameDates(allMeters.communicationTrend, consumers.communicationTrend),
       );
       validation.execute("Same dates for all and DTR", () =>
-        validator.validateSameDates(
-          allMeters.communicationTrend,
-          dtrs.communicationTrend,
-        ),
+        validator.validateSameDates(allMeters.communicationTrend, dtrs.communicationTrend),
       );
       validation.execute("Consumer counts do not exceed all meters", () =>
         validator.validateSubsetDoesNotExceedAll(allMeters, consumers),

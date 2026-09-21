@@ -8,7 +8,7 @@ import { test, expect } from "../../../fixtures/observability.fixture";
 import {
   assertContractSnapshot,
   buildLookupItemsContractSnapshot,
-} from "../../../core/contract/contract-snapshot.helper";
+} from "../../../extras/contract/contract-snapshot.helper";
 import { DashboardMetricsApi } from "../Api/dashboardmetrics.api";
 import { DtrSummaryApi } from "../Api/dtrsummary.api";
 import { DtrConsumptionApi } from "../Api/dtrconsumption.api";
@@ -29,9 +29,7 @@ import { ConsumerOemDistributionApi } from "../Api/consumeroemdistribution.api";
 import { RevenueSubsidyPfApi } from "../Api/revenuesubsidypf.api";
 
 function asRecord(value: unknown): Record<string, unknown> {
-  return value !== null && typeof value === "object"
-    ? (value as Record<string, unknown>)
-    : {};
+  return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : {};
 }
 
 async function snapshotWidget(
@@ -46,8 +44,7 @@ async function snapshotWidget(
   const columnsRaw = Array.isArray(data.columns) ? data.columns : [];
   const hasColumnsGrid = columnsRaw.length > 0;
   const items = itemSource ?? (hasColumnsGrid ? columnsRaw : []);
-  const itemKeys =
-    items.length > 0 ? Object.keys(asRecord(items[0])) : Object.keys(data);
+  const itemKeys = items.length > 0 ? Object.keys(asRecord(items[0])) : Object.keys(data);
   const columns = hasColumnsGrid
     ? columnsRaw.map((column) => {
         const row = asRecord(column);
@@ -91,14 +88,10 @@ test.describe("Dashboard — response shape", () => {
     "DTR summary cards — response shape stays the same",
     { tag: ["@contract-snapshot", "@dashboard", "@dtr-summary"] },
     async ({ authenticatedApi }) => {
-      const { responseBody } = await new DtrSummaryApi(
-        authenticatedApi,
-      ).getDtrSummary({ period: "daily" });
-      await snapshotWidget(
-        "dashboard/dtr-summary",
-        "/indore/dashboard/dtr/summary",
-        responseBody,
-      );
+      const { responseBody } = await new DtrSummaryApi(authenticatedApi).getDtrSummary({
+        period: "daily",
+      });
+      await snapshotWidget("dashboard/dtr-summary", "/indore/dashboard/dtr/summary", responseBody);
     },
   );
 
@@ -106,9 +99,9 @@ test.describe("Dashboard — response shape", () => {
     "DTR consumption chart — response shape stays the same",
     { tag: ["@contract-snapshot", "@dashboard", "@dtr-consumption"] },
     async ({ authenticatedApi }) => {
-      const { responseBody } = await new DtrConsumptionApi(
-        authenticatedApi,
-      ).getDtrConsumption({ period: "daily" });
+      const { responseBody } = await new DtrConsumptionApi(authenticatedApi).getDtrConsumption({
+        period: "daily",
+      });
       const points = asRecord(asRecord(responseBody).data).points;
       await snapshotWidget(
         "dashboard/dtr-consumption",
@@ -140,9 +133,9 @@ test.describe("Dashboard — response shape", () => {
     "DTR power on/off chart — response shape stays the same",
     { tag: ["@contract-snapshot", "@dashboard", "@dtr-power-status"] },
     async ({ authenticatedApi }) => {
-      const { responseBody } = await new DtrPowerStatusApi(
-        authenticatedApi,
-      ).getDtrPowerStatus({ period: "daily" });
+      const { responseBody } = await new DtrPowerStatusApi(authenticatedApi).getDtrPowerStatus({
+        period: "daily",
+      });
       const points = asRecord(asRecord(responseBody).data).points;
       await snapshotWidget(
         "dashboard/dtr-power-status",
@@ -190,11 +183,7 @@ test.describe("Dashboard — response shape", () => {
   test(
     "DTR load unbalance list — response shape stays the same",
     {
-      tag: [
-        "@contract-snapshot",
-        "@dashboard",
-        "@dtr-load-unbalance-details",
-      ],
+      tag: ["@contract-snapshot", "@dashboard", "@dtr-load-unbalance-details"],
     },
     async ({ authenticatedApi }) => {
       const { responseBody } = await new DtrLoadUnbalanceDetailsApi(
@@ -218,11 +207,7 @@ test.describe("Dashboard — response shape", () => {
   test(
     "DTR voltage unbalance list — response shape stays the same",
     {
-      tag: [
-        "@contract-snapshot",
-        "@dashboard",
-        "@dtr-voltage-unbalance-details",
-      ],
+      tag: ["@contract-snapshot", "@dashboard", "@dtr-voltage-unbalance-details"],
     },
     async ({ authenticatedApi }) => {
       const { responseBody } = await new DtrVoltageUnbalanceDetailsApi(
@@ -246,11 +231,7 @@ test.describe("Dashboard — response shape", () => {
   test(
     "DTR power on/off list — response shape stays the same",
     {
-      tag: [
-        "@contract-snapshot",
-        "@dashboard",
-        "@dtr-power-status-details",
-      ],
+      tag: ["@contract-snapshot", "@dashboard", "@dtr-power-status-details"],
     },
     async ({ authenticatedApi }) => {
       const { responseBody } = await new DtrPowerStatusDetailsApi(
@@ -274,11 +255,7 @@ test.describe("Dashboard — response shape", () => {
   test(
     "DTR communication list — response shape stays the same",
     {
-      tag: [
-        "@contract-snapshot",
-        "@dashboard",
-        "@dtr-communication-details",
-      ],
+      tag: ["@contract-snapshot", "@dashboard", "@dtr-communication-details"],
     },
     async ({ authenticatedApi }) => {
       const { responseBody } = await new DtrCommunicationDetailsApi(
@@ -302,11 +279,7 @@ test.describe("Dashboard — response shape", () => {
   test(
     "DTR consumption list — response shape stays the same",
     {
-      tag: [
-        "@contract-snapshot",
-        "@dashboard",
-        "@dtr-consumption-details",
-      ],
+      tag: ["@contract-snapshot", "@dashboard", "@dtr-consumption-details"],
     },
     async ({ authenticatedApi }) => {
       const { responseBody } = await new DtrConsumptionDetailsApi(
@@ -330,11 +303,7 @@ test.describe("Dashboard — response shape", () => {
   test(
     "DTR loading list — response shape stays the same",
     {
-      tag: [
-        "@contract-snapshot",
-        "@dashboard",
-        "@dtr-percentage-loading-details",
-      ],
+      tag: ["@contract-snapshot", "@dashboard", "@dtr-percentage-loading-details"],
     },
     async ({ authenticatedApi }) => {
       const { responseBody } = await new DtrPercentageLoadingDetailsApi(
@@ -358,11 +327,7 @@ test.describe("Dashboard — response shape", () => {
   test(
     "Consumers by connection status — response shape stays the same",
     {
-      tag: [
-        "@contract-snapshot",
-        "@dashboard",
-        "@consumer-connection-status",
-      ],
+      tag: ["@contract-snapshot", "@dashboard", "@consumer-connection-status"],
     },
     async ({ authenticatedApi }) => {
       const { responseBody } = await new ConsumerConnectionStatusApi(
@@ -386,11 +351,7 @@ test.describe("Dashboard — response shape", () => {
   test(
     "Consumers by category — response shape stays the same",
     {
-      tag: [
-        "@contract-snapshot",
-        "@dashboard",
-        "@consumer-category-distribution",
-      ],
+      tag: ["@contract-snapshot", "@dashboard", "@consumer-category-distribution"],
     },
     async ({ authenticatedApi }) => {
       const { responseBody } = await new ConsumerCategoryDistributionApi(
@@ -414,11 +375,7 @@ test.describe("Dashboard — response shape", () => {
   test(
     "Consumers by meter phase — response shape stays the same",
     {
-      tag: [
-        "@contract-snapshot",
-        "@dashboard",
-        "@consumer-phase-distribution",
-      ],
+      tag: ["@contract-snapshot", "@dashboard", "@consumer-phase-distribution"],
     },
     async ({ authenticatedApi }) => {
       const { responseBody } = await new ConsumerPhaseDistributionApi(
@@ -442,11 +399,7 @@ test.describe("Dashboard — response shape", () => {
   test(
     "Consumers by meter make — response shape stays the same",
     {
-      tag: [
-        "@contract-snapshot",
-        "@dashboard",
-        "@consumer-oem-distribution",
-      ],
+      tag: ["@contract-snapshot", "@dashboard", "@consumer-oem-distribution"],
     },
     async ({ authenticatedApi }) => {
       const { responseBody } = await new ConsumerOemDistributionApi(

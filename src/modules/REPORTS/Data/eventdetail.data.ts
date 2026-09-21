@@ -126,7 +126,8 @@ export interface EventDetailTestCase {
   scenario: EventDetailScenario;
   tags: string[];
   isContractFixture?: boolean;
-  expectedStatus?: number;
+  expectedStatus?: number;  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export function resolveEventDetailQuery(
@@ -195,79 +196,93 @@ export const eventDetailTestCases: EventDetailTestCase[] = [
       "Event detail — 1–30 Oct 2025 first page shows columns and meter events",
     scenario: "dev_live_primary",
     tags: ["@smoke", "@reports", "@event-detail"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Event detail — page 2 has more unique meter-event rows",
     scenario: "dev_live_page2",
     tags: ["@reports", "@event-detail", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event detail — showing 1 per page returns at most 1 record",
     scenario: "dev_limit_one",
     tags: ["@reports", "@event-detail", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event detail — a page past the last page shows no records",
     scenario: "dev_live_page_beyond",
     tags: ["@reports", "@event-detail", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event detail — unknown query params are ignored",
     scenario: "dev_ignore_unknown_query",
     tags: ["@reports", "@event-detail", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event detail — 1–30 Oct 2025 fixture",
     scenario: "contract_live_full",
     isContractFixture: true,
     tags: ["@reports", "@event-detail", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event detail — empty page fixture",
     scenario: "contract_empty_page",
     isContractFixture: true,
     tags: ["@reports", "@event-detail", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event detail — fromDate after toDate is rejected",
     scenario: "invalid_date_range",
     expectedStatus: 400,
     tags: ["@reports", "@event-detail", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event detail — invalid fromDate is rejected",
     scenario: "invalid_date_format",
     expectedStatus: 400,
     tags: ["@reports", "@event-detail", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event detail — invalid toDate is rejected",
     scenario: "invalid_to_date",
     expectedStatus: 400,
     tags: ["@reports", "@event-detail", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event detail — missing fromDate is rejected",
     scenario: "missing_from_date",
     expectedStatus: 400,
     tags: ["@reports", "@event-detail", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event detail — missing toDate is rejected",
     scenario: "missing_to_date",
     expectedStatus: 400,
     tags: ["@reports", "@event-detail", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event detail — page 0 is rejected (page must start at 1)",
     scenario: "invalid_page",
     expectedStatus: 400,
     tags: ["@reports", "@event-detail", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Event detail — limit 0 is rejected (limit must be at least 1)",
     scenario: "invalid_limit",
     expectedStatus: 400,
     tags: ["@reports", "@event-detail", "@negative"],
+    nonEmptyExpected: false,
   },
 ];

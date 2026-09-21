@@ -7,7 +7,7 @@ import {
   AlarmsEventsCategoryChartData,
   AlarmsEventsCategoryChartPeriod,
   AlarmsEventsCategoryChartResponse,
-} from "../Mappper/alarms-events-category-chart.mapper";
+} from "../Mapper/alarms-events-category-chart.mapper";
 import { assertZodSchema } from "../../../core/utils/zod-validation.helper";
 import {
   AlarmsEventsCategoryChartSuccessResponseSchema,
@@ -44,10 +44,7 @@ export class AlarmsEventsCategoryChartValidator {
     }
   }
 
-  validatePeriod(
-    period: AlarmsEventsCategoryChartPeriod,
-    expectedName: string,
-  ) {
+  validatePeriod(period: AlarmsEventsCategoryChartPeriod, expectedName: string) {
     expect(period.period).toBe(expectedName);
     expect(period.totalMeterCount).toBeGreaterThanOrEqual(0);
     expect(Object.keys(period.categories).sort()).toEqual(

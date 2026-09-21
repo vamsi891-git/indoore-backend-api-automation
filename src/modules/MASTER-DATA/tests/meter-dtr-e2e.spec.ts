@@ -1,20 +1,12 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { CreateMeterApi } from "../Api/create-meter.api";
 import { CreateDtrApi } from "../Api/create-dtr.api";
 import { ValidateDtrMeterApi } from "../Api/validate-dtr-meter.api";
-import {
-  buildCreateMeterRequest,
-  createMeterMaxResponseTimeMs,
-} from "../Data/create-meter.data";
-import {
-  buildCreateDtrRequest,
-  createDtrMaxResponseTimeMs,
-} from "../Data/create-dtr.data";
+import { buildCreateMeterRequest, createMeterMaxResponseTimeMs } from "../Data/create-meter.data";
+import { buildCreateDtrRequest, createDtrMaxResponseTimeMs } from "../Data/create-dtr.data";
 import { CreateMeterMapper } from "../Mapper/create-meter.mapper";
 import { CreateDtrMapper } from "../Mapper/create-dtr.mapper";
 import { CreateMeterValidator } from "../Validator/create-meter.validator";
@@ -30,9 +22,9 @@ import {
   ensureNetworkHierarchyCascadeContext,
   getNetworkHierarchyCascade,
 } from "../utils/network-hierarchy-cascade.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
-const E2E_LABEL =
-  "Add a meter, check it can go on a DTR, then create the DTR";
+const E2E_LABEL = "Add a meter, check it can go on a DTR, then create the DTR";
 const VALIDATE_SETTLE_MS = 1500;
 const VALIDATE_RETRIES = 6;
 
@@ -54,29 +46,17 @@ test.describe.skip("Master data — add meter then put it on a DTR", () => {
   test(
     E2E_LABEL,
     {
-      tag: [
-        "@e2e",
-        "@master-data",
-        "@create-meter",
-        "@create-dtr",
-        "@validate-dtr-meter",
-      ],
+      tag: ["@e2e", "@master-data", "@create-meter", "@create-dtr", "@validate-dtr-meter"],
     },
     async ({ authenticatedApi }) => {
       const cascade = getNetworkHierarchyCascade();
-      if (
-        !cascade?.subStationNetworkLookupId ||
-        !cascade?.feederNetworkLookupId
-      ) {
-        test.skip(
-          true,
-          "Could not resolve Sub Station → Feeder cascade for create-dtr",
-        );
+      if (!cascade?.subStationNetworkLookupId || !cascade?.feederNetworkLookupId) {
+        test.skip(true, "Could not resolve Sub Station → Feeder cascade for create-dtr");
         return;
       }
 
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const meterValidator = new CreateMeterValidator();
       const validateDtrMeterValidator = new ValidateDtrMeterValidator();
       const dtrValidator = new CreateDtrValidator();
@@ -106,10 +86,7 @@ test.describe.skip("Master data — add meter then put it on a DTR", () => {
         assert.validateContentType(meterResult.rawResponse),
       );
       validation.execute("Create Meter Response Time", () =>
-        assert.validateResponseTime(
-          meterResult.responseTime,
-          createMeterMaxResponseTimeMs,
-        ),
+        assert.validateResponseTime(meterResult.responseTime, createMeterMaxResponseTimeMs),
       );
       validation.execute("Create Meter Schema", () =>
         MasterDataCommonValidator.validateZodResponseSchema(
@@ -120,9 +97,7 @@ test.describe.skip("Master data — add meter then put it on a DTR", () => {
       validation.execute("Create Meter Backend Rules", () =>
         meterValidator.validateScenario(meterMapped, "success", meterPayload),
       );
-      expect(String(meterMapped.data?.meterSerialNumber ?? "")).toBe(
-        meterSerial,
-      );
+      expect(String(meterMapped.data?.meterSerialNumber ?? "")).toBe(meterSerial);
 
       // ── 2. Validate DTR meter (poll until assignable) ─────────────────────
       const validateDtrMeterApi = new ValidateDtrMeterApi(authenticatedApi);
@@ -159,10 +134,7 @@ test.describe.skip("Master data — add meter then put it on a DTR", () => {
         expect(validateResult.rawResponse.status()).toBe(200),
       );
       validation.execute("Validate DTR Meter Assignable", () =>
-        validateDtrMeterValidator.validateScenario(
-          validateResult.responseBody,
-          "valid_unmapped",
-        ),
+        validateDtrMeterValidator.validateScenario(validateResult.responseBody, "valid_unmapped"),
       );
 
       // ── 3. Create DTR (assigns meter via MSN) ─────────────────────────────
@@ -185,9 +157,7 @@ test.describe.skip("Master data — add meter then put it on a DTR", () => {
 
       // One retry on 409 — usually modem/SIM collision.
       if (dtrResult.rawResponse.status() === 409) {
-        console.warn(
-          "[meter-dtr-e2e] create-dtr got 409 — rebuilding unique modem fields",
-        );
+        console.warn("[meter-dtr-e2e] create-dtr got 409 — rebuilding unique modem fields");
         dtrPayload = {
           ...buildCreateDtrRequest("meter-dtr-e2e-retry", {
             msn: meterSerial,
@@ -218,10 +188,7 @@ test.describe.skip("Master data — add meter then put it on a DTR", () => {
         assert.validateContentType(dtrResult.rawResponse),
       );
       validation.execute("Create DTR Response Time", () =>
-        assert.validateResponseTime(
-          dtrResult.responseTime,
-          createDtrMaxResponseTimeMs,
-        ),
+        assert.validateResponseTime(dtrResult.responseTime, createDtrMaxResponseTimeMs),
       );
       validation.execute("Create DTR Schema", () =>
         MasterDataCommonValidator.validateZodResponseSchema(

@@ -4,8 +4,7 @@ import type {
   OverallMetricsScenario,
 } from "../Mapper/dashboardmetrics.mapper";
 
-export const dashboardMetricsMaxResponseTimeMs =
-  MASTER_DATA_MAX_RESPONSE_TIME_MS;
+export const dashboardMetricsMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 
 export const OVERALL_METRICS_PATH = "/indore/dashboard/overall-metrics";
 
@@ -101,14 +100,7 @@ export const overallMetricsContractBody: DashboardMetricsResponse = {
     ],
     lineChartData: { categories: [], series: [] },
     disconnectionData: {
-      categories: [
-        "Mar 2026",
-        "Apr 2026",
-        "May 2026",
-        "Jun 2026",
-        "Jul 2026",
-        "Aug 2026",
-      ],
+      categories: ["Mar 2026", "Apr 2026", "May 2026", "Jun 2026", "Jul 2026", "Aug 2026"],
       series: [
         {
           name: "Disconnected Meters",
@@ -122,14 +114,7 @@ export const overallMetricsContractBody: DashboardMetricsResponse = {
     },
     disconnectionSummary: { categories: [], series: [] },
     billingEfficiencyChart: {
-      categories: [
-        "Mar 2026",
-        "Apr 2026",
-        "May 2026",
-        "Jun 2026",
-        "Jul 2026",
-        "Aug 2026",
-      ],
+      categories: ["Mar 2026", "Apr 2026", "May 2026", "Jun 2026", "Jul 2026", "Aug 2026"],
       series: [
         {
           name: "Avg Billing after Smart meter",
@@ -163,6 +148,8 @@ export interface OverallMetricsTestCase {
   scenario: OverallMetricsScenario;
   tags: string[];
   isContractFixture?: boolean;
+  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export const dashboardMetricsTestCases: OverallMetricsTestCase[] = [
@@ -170,26 +157,31 @@ export const dashboardMetricsTestCases: OverallMetricsTestCase[] = [
     testName: "Home dashboard — cards, charts, and mapped vs unmapped meters load",
     scenario: "success",
     tags: ["@smoke", "@overall-dashboard", "@overall-metrics"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Home dashboard — the main number cards look complete",
     scenario: "kpi-cards",
     tags: ["@regression", "@overall-dashboard", "@overall-metrics"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Home dashboard — mapped vs unmapped meter shares add up",
     scenario: "installation-summary",
     tags: ["@regression", "@overall-dashboard", "@overall-metrics"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Home dashboard — charts and pie charts load",
     scenario: "charts-and-donuts",
     tags: ["@regression", "@overall-dashboard", "@overall-metrics"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Home dashboard — saved example still matches (offline)",
     scenario: "success",
     tags: ["@contract", "@overall-dashboard", "@overall-metrics"],
+    nonEmptyExpected: false,
     isContractFixture: true,
   },
 ];

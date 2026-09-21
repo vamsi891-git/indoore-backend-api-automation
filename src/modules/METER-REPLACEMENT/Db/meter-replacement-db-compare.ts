@@ -1,4 +1,4 @@
-﻿import { compareApiToDb, type DbCompareObs } from "../../../core/db/db-compare.engine";
+﻿import { compareApiToDb, type DbCompareObs } from "../../../extras/db/db-compare.engine";
 import type {
   DbMrConsumerRow,
   DbMrDashboardOverall,
@@ -217,7 +217,10 @@ export function compareMrSubmissionDetailToDb(options: {
       },
       {
         label: "status",
-        apiValue: String(api.status ?? "").trim().toUpperCase() || null,
+        apiValue:
+          String(api.status ?? "")
+            .trim()
+            .toUpperCase() || null,
         dbValue: dbRow.status.trim().toUpperCase() || null,
       },
       {

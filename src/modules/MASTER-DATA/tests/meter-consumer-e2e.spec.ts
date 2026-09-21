@@ -1,8 +1,6 @@
 import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { CreateMeterApi } from "../Api/create-meter.api";
 import { CreateConsumerApi } from "../Api/create-consumer.api";
@@ -10,10 +8,7 @@ import { ConsumerProfileApi } from "../../CONSUMERS/Api/consumerprofile.api";
 import { ValidateMeterApi } from "../../CONSUMERS/Api/validatemeter.api";
 import { ValidateMeterMapper } from "../../CONSUMERS/Mapper/validatemeter.mapper";
 import { ValidateMeterValidator } from "../../CONSUMERS/Validator/validatemeter.validator";
-import {
-  buildCreateMeterRequest,
-  createMeterMaxResponseTimeMs,
-} from "../Data/create-meter.data";
+import { buildCreateMeterRequest, createMeterMaxResponseTimeMs } from "../Data/create-meter.data";
 import {
   buildValidCreateConsumerRequest,
   createConsumerData,
@@ -31,9 +26,9 @@ import { CreateMeterSuccessResponseSchema } from "../schemas/master-data.schemas
 import { ensureMeterManufacturerContext } from "../utils/meter-manufacturer.helper";
 import { ensureConsumerLookupContext } from "../utils/consumer-lookup.helper";
 import { resolveConsumerMeterCascadeContext } from "../utils/network-hierarchy-cascade.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
-const E2E_LABEL =
-  "Add a meter, then create a consumer and open the consumer profile";
+const E2E_LABEL = "Add a meter, then create a consumer and open the consumer profile";
 const VALIDATE_SETTLE_MS = 1500;
 const VALIDATE_RETRIES = 6;
 
@@ -56,25 +51,16 @@ test.describe.skip("Master data — add meter then assign it to a consumer", () 
   test(
     E2E_LABEL,
     {
-      tag: [
-        "@e2e",
-        "@master-data",
-        "@create-meter",
-        "@create-consumer",
-        "@validate-meter",
-      ],
+      tag: ["@e2e", "@master-data", "@create-meter", "@create-consumer", "@validate-meter"],
     },
     async ({ authenticatedApi }) => {
       if (!hasBulkConsumerNearestAcctId()) {
-        test.skip(
-          true,
-          "No valid Nearest Acct. ID resolved from consumer master or env",
-        );
+        test.skip(true, "No valid Nearest Acct. ID resolved from consumer master or env");
         return;
       }
 
-      const assert = new AssertionEngine();
-      const validation = new ValidationEngine();
+      const assert = new ApiValidationHelper();
+      const validation = new ApiValidationHelper();
       const meterValidator = new CreateMeterValidator();
       const validateMeterValidator = new ValidateMeterValidator();
       const consumerValidator = new CreateConsumerValidator();
@@ -104,10 +90,7 @@ test.describe.skip("Master data — add meter then assign it to a consumer", () 
         assert.validateContentType(meterResult.rawResponse),
       );
       validation.execute("Create Meter Response Time", () =>
-        assert.validateResponseTime(
-          meterResult.responseTime,
-          createMeterMaxResponseTimeMs,
-        ),
+        assert.validateResponseTime(meterResult.responseTime, createMeterMaxResponseTimeMs),
       );
       validation.execute("Create Meter Schema", () =>
         MasterDataCommonValidator.validateZodResponseSchema(
@@ -118,17 +101,12 @@ test.describe.skip("Master data — add meter then assign it to a consumer", () 
       validation.execute("Create Meter Backend Rules", () =>
         meterValidator.validateScenario(meterMapped, "success", meterPayload),
       );
-      expect(String(meterMapped.data?.meterSerialNumber ?? "")).toBe(
-        meterSerial,
-      );
+      expect(String(meterMapped.data?.meterSerialNumber ?? "")).toBe(meterSerial);
 
       // ── 2. Validate meter (poll until assignable) ─────────────────────────
       const validateMeterApi = new ValidateMeterApi(authenticatedApi);
       const orgLookupId = createConsumerData.organisationLookupId || undefined;
-      let validateResult = await validateMeterApi.validateMeter(
-        meterSerial,
-        orgLookupId,
-      );
+      let validateResult = await validateMeterApi.validateMeter(meterSerial, orgLookupId);
       let validateData = ValidateMeterMapper.mapData(validateResult.responseBody);
 
       for (
@@ -138,10 +116,7 @@ test.describe.skip("Master data — add meter then assign it to a consumer", () 
         attempt += 1
       ) {
         await sleep(VALIDATE_SETTLE_MS);
-        validateResult = await validateMeterApi.validateMeter(
-          meterSerial,
-          orgLookupId,
-        );
+        validateResult = await validateMeterApi.validateMeter(meterSerial, orgLookupId);
         validateData = ValidateMeterMapper.mapData(validateResult.responseBody);
       }
 
@@ -169,8 +144,7 @@ test.describe.skip("Master data — add meter then assign it to a consumer", () 
           meterLookupId: validateData.meterLookupId,
           networkLookupId: validateData.networkLookupId,
         },
-        validateData.organisationLookupId ??
-          createConsumerData.organisationLookupId,
+        validateData.organisationLookupId ?? createConsumerData.organisationLookupId,
       );
       if (!cascadeContext) {
         test.skip(
@@ -190,20 +164,16 @@ test.describe.skip("Master data — add meter then assign it to a consumer", () 
       expect(String(consumerPayload.MSN ?? "")).toBe(meterSerial);
 
       const createConsumerApi = new CreateConsumerApi(authenticatedApi);
-      let consumerResult =
-        await createConsumerApi.createConsumer(consumerPayload);
+      let consumerResult = await createConsumerApi.createConsumer(consumerPayload);
 
       // Brief retry if create races meter indexing / collision.
       if ([400, 409].includes(consumerResult.rawResponse.status())) {
         await sleep(2000);
-        consumerResult =
-          await createConsumerApi.createConsumer(consumerPayload);
+        consumerResult = await createConsumerApi.createConsumer(consumerPayload);
       }
       console.log(JSON.stringify(consumerResult.responseBody, null, 2));
 
-      const consumerMapped = CreateConsumerMapper.map(
-        consumerResult.responseBody,
-      );
+      const consumerMapped = CreateConsumerMapper.map(consumerResult.responseBody);
 
       await PerformanceTracker.track(
         consumerResult.rawResponse,
@@ -219,17 +189,10 @@ test.describe.skip("Master data — add meter then assign it to a consumer", () 
         assert.validateContentType(consumerResult.rawResponse),
       );
       validation.execute("Create Consumer Response Time", () =>
-        assert.validateResponseTime(
-          consumerResult.responseTime,
-          createConsumerMaxResponseTimeMs,
-        ),
+        assert.validateResponseTime(consumerResult.responseTime, createConsumerMaxResponseTimeMs),
       );
       validation.execute("Create Consumer Backend Rules", () =>
-        consumerValidator.validateScenario(
-          consumerMapped,
-          "create_success",
-          consumerPayload,
-        ),
+        consumerValidator.validateScenario(consumerMapped, "create_success", consumerPayload),
       );
       expect(String(consumerMapped.data?.MSN ?? "").trim()).toBe(meterSerial);
 
@@ -248,11 +211,7 @@ test.describe.skip("Master data — add meter then assign it to a consumer", () 
       );
 
       validation.execute("Profile Status", () =>
-        assert.validateStatusCode(
-          profileResult.rawResponse,
-          200,
-          profileResult.responseBody,
-        ),
+        assert.validateStatusCode(profileResult.rawResponse, 200, profileResult.responseBody),
       );
       validation.execute("Profile Matches Create Request", () =>
         consumerValidator.validatePostCreateProfileBackendRules(

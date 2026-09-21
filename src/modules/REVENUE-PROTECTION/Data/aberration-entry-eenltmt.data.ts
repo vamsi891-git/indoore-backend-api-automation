@@ -30,14 +30,9 @@ export const aberrationEntryEenltmtZeroRowsQuery: AberrationEntryQuery = {
 export const aberrationEntryEenltmtTestCases = [
   {
     testCaseId: "IND-REV-ABE-EEN-001",
-    testName:
-      "IND-REV-ABE-EEN-001 — Fetch EENLTMT Aberration Entry without optional filters",
-    tags: [
-      "@revenue-protection",
-      "@aberration-entry-eenltmt",
-      "@positive",
-      "@smoke",
-    ],
+    testName: "IND-REV-ABE-EEN-001 — Fetch EENLTMT Aberration Entry without optional filters",
+    tags: ["@revenue-protection", "@aberration-entry-eenltmt", "@positive", "@smoke"],
+    nonEmptyExpected: true,
     query: {
       entryType: "eenltmt",
       page: 1,
@@ -46,9 +41,9 @@ export const aberrationEntryEenltmtTestCases = [
   },
   {
     testCaseId: "IND-REV-ABE-EEN-002",
-    testName:
-      "IND-REV-ABE-EEN-002 — Fetch EENLTMT Aberration Entry using month + year",
+    testName: "IND-REV-ABE-EEN-002 — Fetch EENLTMT Aberration Entry using month + year",
     tags: ["@revenue-protection", "@aberration-entry-eenltmt", "@positive"],
+    nonEmptyExpected: false,
     query: {
       entryType: "eenltmt",
       month: "April",
@@ -59,9 +54,9 @@ export const aberrationEntryEenltmtTestCases = [
   },
   {
     testCaseId: "IND-REV-ABE-EEN-003",
-    testName:
-      "IND-REV-ABE-EEN-003 — Fetch EENLTMT Aberration Entry using only year",
+    testName: "IND-REV-ABE-EEN-003 — Fetch EENLTMT Aberration Entry using only year",
     tags: ["@revenue-protection", "@aberration-entry-eenltmt", "@positive"],
+    nonEmptyExpected: false,
     query: {
       entryType: "eenltmt",
       year: 2026,
@@ -71,9 +66,9 @@ export const aberrationEntryEenltmtTestCases = [
   },
   {
     testCaseId: "IND-REV-ABE-EEN-004",
-    testName:
-      "IND-REV-ABE-EEN-004 — Fetch EENLTMT Aberration Entry using only month",
+    testName: "IND-REV-ABE-EEN-004 — Fetch EENLTMT Aberration Entry using only month",
     tags: ["@revenue-protection", "@aberration-entry-eenltmt", "@positive"],
+    nonEmptyExpected: false,
     query: {
       entryType: "eenltmt",
       month: "March",
@@ -83,9 +78,9 @@ export const aberrationEntryEenltmtTestCases = [
   },
   {
     testCaseId: "IND-REV-ABE-EEN-005",
-    testName:
-      "IND-REV-ABE-EEN-005 — Fetch EENLTMT Aberration Entry pagination (limit 5)",
+    testName: "IND-REV-ABE-EEN-005 — Fetch EENLTMT Aberration Entry pagination (limit 5)",
     tags: ["@revenue-protection", "@aberration-entry-eenltmt", "@positive"],
+    nonEmptyExpected: false,
     query: {
       entryType: "eenltmt",
       page: 1,
@@ -94,9 +89,9 @@ export const aberrationEntryEenltmtTestCases = [
   },
   {
     testCaseId: "IND-REV-ABE-EEN-006",
-    testName:
-      "IND-REV-ABE-EEN-006 — Fetch EENLTMT Aberration Entry pagination (page 2, limit 2)",
+    testName: "IND-REV-ABE-EEN-006 — Fetch EENLTMT Aberration Entry pagination (page 2, limit 2)",
     tags: ["@revenue-protection", "@aberration-entry-eenltmt", "@positive"],
+    nonEmptyExpected: false,
     query: {
       entryType: "eenltmt",
       page: 2,

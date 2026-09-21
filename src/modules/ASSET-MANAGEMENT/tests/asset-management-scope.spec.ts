@@ -1,6 +1,5 @@
 import type { APIRequestContext } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
 import { DtrDetailApi } from "../Api/DtrId.api";
 import { NetworkHierarchyApi } from "../Api/networkhierarchy.api";
 import { OrganisationHierarchyApi } from "../Api/organizationhierarchy.api";
@@ -24,6 +23,7 @@ import {
 } from "../utils/asset-management.helper";
 import { loginAndCreateApiContext } from "../utils/scoped-auth.helper";
 import { resolveAssetManagementScopedRoles } from "../utils/scoped-roles.resolver";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 const hierarchyOptions = {
   maxResponseTimeMs: assetManagementHierarchyMaxResponseTimeMs,
   requestTimeoutMs: assetManagementHierarchyRequestTimeoutMs,
@@ -32,7 +32,7 @@ async function runRoleBasedScopeCoverage(
   adminApi: APIRequestContext,
   roles: ScopedRoleCredentials[],
 ): Promise<void> {
-  const validation = new ValidationEngine();
+  const validation = new ApiValidationHelper();
   const adminNetworkApi = new NetworkHierarchyApi(adminApi);
   const adminOrgApi = new OrganisationHierarchyApi(adminApi);
   const adminDtrApi = new DtrDetailApi(adminApi);
@@ -49,8 +49,7 @@ async function runRoleBasedScopeCoverage(
   const dtrId =
     process.env.ASSET_DTR_LOOKUP_ID != null
       ? AssetDtrLookupId
-      : (findDtrWithHighestConsumerCount(adminNetwork)?.networkLookupId ??
-        AssetDtrLookupId);
+      : (findDtrWithHighestConsumerCount(adminNetwork)?.networkLookupId ?? AssetDtrLookupId);
   const adminDetail = DtrDetailMapper.mapData(
     (
       await adminDtrApi.getDtrDetails(
@@ -119,7 +118,7 @@ async function runRoleBasedScopeCoverage(
 }
 
 async function runAdminSubtreeScopeFallback(adminApi: APIRequestContext): Promise<void> {
-  const validation = new ValidationEngine();
+  const validation = new ApiValidationHelper();
   const networkApi = new NetworkHierarchyApi(adminApi);
   const orgApi = new OrganisationHierarchyApi(adminApi);
 
@@ -137,12 +136,8 @@ async function runAdminSubtreeScopeFallback(adminApi: APIRequestContext): Promis
 
   if (networkRootId != null) {
     const subtreeNetwork = NetworkHierarchyMapper.mapData(
-      (
-        await networkApi.getNetworkHierarchy(
-          networkRootId,
-          hierarchyOptions.requestTimeoutMs,
-        )
-      ).responseBody.data,
+      (await networkApi.getNetworkHierarchy(networkRootId, hierarchyOptions.requestTimeoutMs))
+        .responseBody.data,
     ).hierarchy;
 
     validation.execute("Admin rootId — network hierarchy subset", () => {
@@ -156,9 +151,8 @@ async function runAdminSubtreeScopeFallback(adminApi: APIRequestContext): Promis
 
   if (orgRootId != null) {
     const subtreeOrg = OrganisationHierarchyMapper.mapData(
-      (
-        await orgApi.getOrganisationHierarchy(orgRootId, hierarchyOptions.requestTimeoutMs)
-      ).responseBody.data,
+      (await orgApi.getOrganisationHierarchy(orgRootId, hierarchyOptions.requestTimeoutMs))
+        .responseBody.data,
     ).hierarchy;
 
     validation.execute("Admin rootId — organisation hierarchy subset", () => {
@@ -173,9 +167,7 @@ async function runAdminSubtreeScopeFallback(adminApi: APIRequestContext): Promis
   validation.printSummary("Asset Management Data Scope Coverage (rootId fallback)", 0);
 }
 
-export async function runAssetManagementScopeCoverage(
-  adminApi: APIRequestContext,
-): Promise<void> {
+export async function runAssetManagementScopeCoverage(adminApi: APIRequestContext): Promise<void> {
   const roles = await resolveAssetManagementScopedRoles(adminApi);
 
   if (roles.length > 0) {

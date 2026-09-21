@@ -9,7 +9,8 @@ export type MisDashboardEdgeCase = {
   priority?: string;
   expectedStatus: 200 | 400 | 404;
   expectedErrorCode?: MisDashboardErrorCode;
-  tags: string[];
+  tags: string[]; /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 };
 
 const edgeTags = ["@mis-dashboard", "@edge"];

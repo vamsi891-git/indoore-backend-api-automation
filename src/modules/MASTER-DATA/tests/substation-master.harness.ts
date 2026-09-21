@@ -1,16 +1,12 @@
 import { APIResponse } from "@playwright/test";
-import { AssertionEngine } from "../../../core/engine/assertion.engine";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import { PerformanceTracker } from "../../../core/utils/performancetracker";
+import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { SubstationMasterApi } from "../Api/substation-master.api";
 import { masterDataMaxResponseTimeMs } from "../Data/master-data.common.data";
-import {
-  SubstationMasterMapper,
-  SubstationMasterQuery,
-} from "../Mapper/substation-master.mapper";
+import { SubstationMasterMapper, SubstationMasterQuery } from "../Mapper/substation-master.mapper";
 import { SubstationMasterValidator } from "../Validator/substation-master.validator";
 import { MasterDataCommonValidator } from "../Validator/master-data-common.validator";
 import { SubstationMasterSuccessResponseSchema } from "../schemas/master-data.schemas";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 export interface RunSubstationMasterValidationOptions {
   api: SubstationMasterApi;
@@ -43,33 +39,21 @@ export async function runSubstationMasterValidation(
     searchTerm,
   } = options;
 
-  const { rawResponse, responseBody, responseTime } =
-    await api.getSubstationMasterData(query);
+  const { rawResponse, responseBody, responseTime } = await api.getSubstationMasterData(query);
 
-  await PerformanceTracker.track(
-    rawResponse,
-    testLabel,
-    rawResponse.url(),
-    responseTime,
-  );
+  await PerformanceTracker.track(rawResponse, testLabel, rawResponse.url(), responseTime);
 
-  const assert = new AssertionEngine();
-  const validation = new ValidationEngine();
+  const assert = new ApiValidationHelper();
+  const validation = new ApiValidationHelper();
   const validator = new SubstationMasterValidator();
   const data = SubstationMasterMapper.mapData(responseBody.data, query.limit ?? 20);
 
-  validation.execute("Status Validation", () =>
-    assert.validateStatusCode(rawResponse, 200),
-  );
-  validation.execute("Content Validation", () =>
-    assert.validateContentType(rawResponse),
-  );
+  validation.execute("Status Validation", () => assert.validateStatusCode(rawResponse, 200));
+  validation.execute("Content Validation", () => assert.validateContentType(rawResponse));
   validation.execute("Response Time", () =>
     assert.validateResponseTime(responseTime, maxResponseTimeMs),
   );
-  validation.execute("Security Validation", () =>
-    assert.validateSensitiveData(responseBody),
-  );
+  validation.execute("Security Validation", () => assert.validateSensitiveData(responseBody));
   validation.execute("Zod Response Schema", () =>
     MasterDataCommonValidator.validateZodResponseSchema(
       responseBody,
@@ -81,19 +65,11 @@ export async function runSubstationMasterValidation(
   validation.execute("Items", () => validator.validateItemsExist(data));
   validation.execute("Fields", () => validator.validateFields(data));
   validation.execute("Pagination", () => validator.validatePagination(data));
-  validation.execute("Query Params", () =>
-    validator.validateQueryParams(data, query),
-  );
+  validation.execute("Query Params", () => validator.validateQueryParams(data, query));
   validation.execute("Sl No Sequence", () => validator.validateSlNoSequence(data));
-  validation.execute("Row Keys Match Columns", () =>
-    validator.validateRowKeysMatchColumns(data),
-  );
-  validation.execute("Hierarchy Fields", () =>
-    validator.validateHierarchyFields(data),
-  );
-  validation.execute("Consumer DTR Relation", () =>
-    validator.validateConsumerDtrRelation(data),
-  );
+  validation.execute("Row Keys Match Columns", () => validator.validateRowKeysMatchColumns(data));
+  validation.execute("Hierarchy Fields", () => validator.validateHierarchyFields(data));
+  validation.execute("Consumer DTR Relation", () => validator.validateConsumerDtrRelation(data));
   validation.execute("Unique Substation Names", () =>
     validator.validateUniqueSubstationNames(data),
   );
@@ -102,9 +78,7 @@ export async function runSubstationMasterValidation(
   );
 
   if (searchTerm) {
-    validation.execute("Search Results", () =>
-      validator.validateSearchResults(data, searchTerm),
-    );
+    validation.execute("Search Results", () => validator.validateSearchResults(data, searchTerm));
   }
 
   validation.printSummary(testLabel, responseTime);

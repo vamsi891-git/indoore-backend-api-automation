@@ -12,11 +12,8 @@ import { FeederAlertsMapper } from "../Mapper/feeder-alerts.mapper";
 import { FeederAlertsValidator } from "../Validator/feeder-alerts.validator";
 import { FeederDailyConsumptionMapper } from "../Mapper/feeder-daily-consumption.mapper";
 import { FeederDailyConsumptionValidator } from "../Validator/feeder-daily-consumption.validator";
-import { ValidationEngine } from "../../../core/engine/validation.engine";
-import {
-  resolveFeederCode,
-  skipIfFeederInternalError,
-} from "../utils/feeder-env.helper";
+import { resolveFeederCode, skipIfFeederInternalError } from "../utils/feeder-env.helper";
+import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 
 function expectUnknownQueryIgnored(status: number, body: unknown): void {
   expect(status).toBe(200);
@@ -46,10 +43,9 @@ test.describe("Feeder — unusual cases", () => {
     { tag: ["@feeder", "@electrical-parameters", "@edge"] },
     async ({ authenticatedApi }) => {
       const code = resolveFeederCode(feederElectricalParametersData.feederCode);
-      const { rawResponse, responseBody } =
-        await new FeederElectricalParametersApi(
-          authenticatedApi,
-        ).getElectricalParameters(code, { foo: "bar" });
+      const { rawResponse, responseBody } = await new FeederElectricalParametersApi(
+        authenticatedApi,
+      ).getElectricalParameters(code, { foo: "bar" });
       skipIfFeederInternalError(
         rawResponse.status(),
         responseBody,
@@ -64,11 +60,14 @@ test.describe("Feeder — unusual cases", () => {
     { tag: ["@feeder", "@feeder-alerts", "@edge"] },
     async ({ authenticatedApi }) => {
       const code = resolveFeederCode(feederAlertsData.feederCode);
-      const { rawResponse, responseBody } = await new FeederAlertsApi(
-        authenticatedApi,
-      ).getAlerts(code, feederAlertsData.page, feederAlertsData.limit, {
-        foo: "bar",
-      });
+      const { rawResponse, responseBody } = await new FeederAlertsApi(authenticatedApi).getAlerts(
+        code,
+        feederAlertsData.page,
+        feederAlertsData.limit,
+        {
+          foo: "bar",
+        },
+      );
       skipIfFeederInternalError(
         rawResponse.status(),
         responseBody,
@@ -83,15 +82,17 @@ test.describe("Feeder — unusual cases", () => {
     { tag: ["@feeder", "@feeder-alerts", "@edge"] },
     async ({ authenticatedApi }) => {
       const code = resolveFeederCode(feederAlertsData.feederCode);
-      const { rawResponse, responseBody } = await new FeederAlertsApi(
-        authenticatedApi,
-      ).getAlerts(code, 1, 1);
+      const { rawResponse, responseBody } = await new FeederAlertsApi(authenticatedApi).getAlerts(
+        code,
+        1,
+        1,
+      );
       skipIfFeederInternalError(
         rawResponse.status(),
         responseBody,
         `/indore/feeder/${code}/alerts`,
       );
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const mapped = FeederAlertsMapper.map(responseBody);
       const validator = new FeederAlertsValidator();
       validation.execute("Status 200", () => {
@@ -118,9 +119,11 @@ test.describe("Feeder — unusual cases", () => {
     { tag: ["@feeder", "@feeder-alerts", "@edge"] },
     async ({ authenticatedApi }) => {
       const code = resolveFeederCode(feederAlertsData.feederCode);
-      const { rawResponse, responseBody } = await new FeederAlertsApi(
-        authenticatedApi,
-      ).getAlerts(code, 99999, feederAlertsData.limit);
+      const { rawResponse, responseBody } = await new FeederAlertsApi(authenticatedApi).getAlerts(
+        code,
+        99999,
+        feederAlertsData.limit,
+      );
       skipIfFeederInternalError(
         rawResponse.status(),
         responseBody,
@@ -158,34 +161,24 @@ test.describe("Feeder — unusual cases", () => {
       const code = resolveFeederCode(feederDailyConsumptionData.feederCode);
       const { rawResponse, responseBody } = await new FeederDailyConsumptionApi(
         authenticatedApi,
-      ).getDailyConsumption(
-        code,
-        feederDailyConsumptionData.monthlyGranularity,
-      );
+      ).getDailyConsumption(code, feederDailyConsumptionData.monthlyGranularity);
       skipIfFeederInternalError(
         rawResponse.status(),
         responseBody,
         `/indore/feeder/${code}/daily-consumption`,
       );
-      const validation = new ValidationEngine();
+      const validation = new ApiValidationHelper();
       const mapped = FeederDailyConsumptionMapper.map(responseBody);
       const validator = new FeederDailyConsumptionValidator();
       validation.execute("Status 200", () => {
         expect(rawResponse.status()).toBe(200);
       });
       validation.execute("Granularity echo", () =>
-        validator.validateGranularityEcho(
-          mapped,
-          feederDailyConsumptionData.monthlyGranularity,
-        ),
+        validator.validateGranularityEcho(mapped, feederDailyConsumptionData.monthlyGranularity),
       );
       if (mapped.points.length > 0) {
-        validation.execute("Unique month keys", () =>
-          validator.validateUniqueKeys(mapped.points),
-        );
-        validation.execute("kWh values", () =>
-          validator.validateKwhValues(mapped.points),
-        );
+        validation.execute("Unique month keys", () => validator.validateUniqueKeys(mapped.points));
+        validation.execute("kWh values", () => validator.validateKwhValues(mapped.points));
       }
       validation.printSummary(
         "Feeder daily energy — month-by-month kWh (an empty chart is still OK)",

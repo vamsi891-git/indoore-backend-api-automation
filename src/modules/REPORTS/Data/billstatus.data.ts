@@ -89,7 +89,8 @@ export interface BillStatusTestCase {
   scenario: BillStatusScenario;
   tags: string[];
   isContractFixture?: boolean;
-  expectedStatus?: number;
+  expectedStatus?: number;  /** Smoke: primary list/table must be non-empty. */
+  nonEmptyExpected?: boolean;
 }
 
 export function resolveBillStatusQuery(
@@ -142,73 +143,86 @@ export const billStatusTestCases: BillStatusTestCase[] = [
     testName: "Bill status — Oct 2025 summary (empty list is valid)",
     scenario: "dev_live_include_total",
     tags: ["@smoke", "@reports", "@bill-status"],
+    nonEmptyExpected: true,
   },
   {
     testName: "Bill status — first page without a total still shows columns",
     scenario: "dev_live_without_total",
     tags: ["@reports", "@bill-status", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Bill status — showing 1 per page still returns the summary",
     scenario: "dev_limit_one",
     tags: ["@reports", "@bill-status", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Bill status — a far page still returns the summary",
     scenario: "dev_live_page_beyond",
     tags: ["@reports", "@bill-status", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Bill status — unknown query params are ignored",
     scenario: "dev_ignore_unknown_query",
     tags: ["@reports", "@bill-status", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Bill status — Oct 2025 fixture (summary with empty rows)",
     scenario: "contract_live_oct_2025",
     isContractFixture: true,
     tags: ["@reports", "@bill-status", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Bill status — zero summary fixture",
     scenario: "contract_empty_summary_zero",
     isContractFixture: true,
     tags: ["@reports", "@bill-status", "@edge"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Bill status — invalid month is rejected",
     scenario: "invalid_month",
     expectedStatus: 400,
     tags: ["@reports", "@bill-status", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Bill status — invalid year is rejected",
     scenario: "invalid_year",
     expectedStatus: 400,
     tags: ["@reports", "@bill-status", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Bill status — missing year is rejected",
     scenario: "missing_year",
     expectedStatus: 400,
     tags: ["@reports", "@bill-status", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Bill status — missing month is rejected",
     scenario: "missing_month",
     expectedStatus: 400,
     tags: ["@reports", "@bill-status", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Bill status — page 0 is rejected (page must start at 1)",
     scenario: "invalid_page",
     expectedStatus: 400,
     tags: ["@reports", "@bill-status", "@negative"],
+    nonEmptyExpected: false,
   },
   {
     testName: "Bill status — limit 0 is rejected (limit must be at least 1)",
     scenario: "invalid_limit",
     expectedStatus: 400,
     tags: ["@reports", "@bill-status", "@negative"],
+    nonEmptyExpected: false,
   },
 ];
