@@ -44,7 +44,6 @@ export const communicationTrendTestCases: CommunicationTrendTestCase[] = [
     expectedStatus: 200,
     expectedFromDate: query.fromDate,
     expectedToDate: query.toDate,
-    expectZeroCounts: true,
     tags,
   },
   {
@@ -69,7 +68,6 @@ export const communicationTrendTestCases: CommunicationTrendTestCase[] = [
     expectedStatus: 200,
     expectedFromDate: query.fromDate,
     expectedToDate: query.toDate,
-    expectZeroCounts: true,
     tags,
   },
   {

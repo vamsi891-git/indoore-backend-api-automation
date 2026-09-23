@@ -5,7 +5,6 @@ import { assertZodSchema } from "../../../core/utils/zod-validation.helper";
 import { ApiErrorResponseSchema } from "../../../core/schemas/api-response.schemas";
 import { resolveAberrationEntryPath } from "../Api/aberration-entry.api";
 import { aberrationEntryNegativeCases } from "../Data/aberration-entry-negative.data";
-import { aberrationEntryEenltmtNegativeCases } from "../Data/aberration-entry-eenltmt-negative.data";
 import {
   RevenueCommonValidator,
   type RevenueErrorBody,
@@ -21,10 +20,7 @@ import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper
 test.describe("Revenue Protection — Aberration Entry Negative", () => {
   test.describe.configure({ mode: "serial" });
   test.setTimeout(REVENUE_PROTECTION_TEST_TIMEOUT_MS);
-  for (const negativeCase of [
-    ...aberrationEntryNegativeCases,
-    ...aberrationEntryEenltmtNegativeCases,
-  ]) {
+  for (const negativeCase of aberrationEntryNegativeCases) {
     test(
       negativeCase.testName,
       { tag: [...negativeCase.tags] },

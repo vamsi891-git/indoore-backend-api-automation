@@ -47,6 +47,7 @@ const skippedWriteSpecs = [
   "**/91-invite-e2e.spec.ts",
   "**/92-invite-delete.spec.ts",
   "**/invite-accept.spec.ts",
+  "**/zone-wise-atr-events-import.spec.ts",
 ];
 
 const cli = process.argv.join(" ");

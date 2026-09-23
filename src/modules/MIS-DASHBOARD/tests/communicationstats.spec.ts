@@ -33,7 +33,7 @@ test.describe("How many meters we have", () => {
 
       const data = CommStatsMapper.mapCommStats(responseBody.data);
       validation.execute("Response", () => validator.validateResponse(responseBody));
-      validation.execute("Live date is today", () => validator.validateDates(data));
+      validation.execute("Date range", () => validator.validateDates(data));
       validation.execute("Meter counts", () => validator.validateMeterCounts(data));
       validation.execute("Counts stay within total", () => validator.validateRelationships(data));
       validation.execute("Card totals", () => validator.validateAggregation(data));

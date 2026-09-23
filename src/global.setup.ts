@@ -120,6 +120,35 @@ async function assertApiReachable(): Promise<void> {
   );
 }
 
+async function probeAccessToken(accessToken: string): Promise<boolean> {
+  const baseURL = normalizeApiBaseUrl(env.BASE_URL);
+  const mePaths = Array.from(
+    new Set([resolveApiPath("/indore/auth/me"), "/auth/me", "/indore/auth/me"]),
+  );
+
+  for (const mePath of mePaths) {
+    try {
+      const response = await fetch(`${baseURL}${mePath}`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        signal: AbortSignal.timeout(15_000),
+      });
+      if (response.status === 200) {
+        return true;
+      }
+      if (response.status === 401 || response.status === 403) {
+        return false;
+      }
+    } catch {
+      // try next path
+    }
+  }
+  return false;
+}
+
 async function globalSetup(): Promise<void> {
   dotenv.config();
   loadEnv();
@@ -142,17 +171,25 @@ async function globalSetup(): Promise<void> {
 
   const cachedSession = TokenManager.loadValidSession();
   if (cachedSession) {
-    TokenManager.seed(
-      cachedSession.accessToken,
-      cachedSession.expiresInSeconds,
-      cachedSession.csrfToken,
+    const stillValid = await probeAccessToken(cachedSession.accessToken);
+    if (stillValid) {
+      TokenManager.seed(
+        cachedSession.accessToken,
+        cachedSession.expiresInSeconds,
+        cachedSession.csrfToken,
+      );
+      const msg =
+        "Session reused (access token still valid). Captcha and OTP run only on first login; later tests use this token, then refresh when it expires.";
+      LoggerEngine.info("Global setup reused valid cached auth token");
+      console.error(msg);
+      LoggerEngine.info("Global setup completed");
+      return;
+    }
+    TokenManager.discardStoredSession();
+    console.error(
+      "Cached access token rejected by GET /auth/me (expired or revoked). Logging in fresh.",
     );
-    const msg =
-      "Session reused (access token still valid). Captcha and OTP run only on first login; later tests use this token, then refresh when it expires.";
-    LoggerEngine.info("Global setup reused valid cached auth token");
-    console.error(msg);
-    LoggerEngine.info("Global setup completed");
-    return;
+    LoggerEngine.info("Global setup discarded stale cached auth token");
   }
 
   console.error(
@@ -164,6 +201,16 @@ async function globalSetup(): Promise<void> {
   }
 
   TokenManager.seed(login.accessToken, login.expiresIn, login.csrfToken);
+
+  const loginOk = await probeAccessToken(login.accessToken);
+  if (!loginOk) {
+    TokenManager.discardStoredSession();
+    throw new Error(
+      "Login returned an access token that GET /auth/me rejects (INVALID_TOKEN). " +
+        "Often caused by device-limit session thrash — wait a minute, clear other dashboard sessions, and re-run.",
+    );
+  }
+
   LoggerEngine.info("Global setup completed");
 }
 

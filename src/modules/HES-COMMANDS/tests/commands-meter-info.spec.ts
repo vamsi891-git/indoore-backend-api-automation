@@ -1,3 +1,4 @@
+import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 import { PerformanceTracker } from "../../../core/utils/performance.tracker";
@@ -6,6 +7,7 @@ import { CommandsMeterInfoApi } from "../Api/commands-meter-info.api";
 import { buildCommandsMeterInfoPath, commandsMeterData } from "../Data/commands-meter.data";
 import { CommandsMeterInfoMapper } from "../Mapper/commands-meter-info.mapper";
 import { CommandsMeterInfoValidator } from "../Validator/commands-meter-info.validator";
+
 test.describe("HES Commands — Meter Info", () => {
   test.setTimeout(120_000);
   test(
@@ -18,7 +20,6 @@ test.describe("HES Commands — Meter Info", () => {
       const validation = new ApiValidationHelper();
       const validator = new CommandsMeterInfoValidator();
       const { rawResponse, responseBody, responseTime } = await api.getMeterInfo(serial);
-      const url = `${process.env.BASE_URL}${buildCommandsMeterInfoPath(serial)}`;
       await PerformanceTracker.track(
         rawResponse,
         "Commands Meter Info",
@@ -33,7 +34,10 @@ test.describe("HES Commands — Meter Info", () => {
         maxResponseTimeMs: commandsMeterData.maxResponseTimeMs,
       });
       validation.execute("Success Response", () => validator.validateResponse(responseBody));
+      expect(responseBody.data).toBeDefined();
+      const rawData = responseBody.data!;
       const row = CommandsMeterInfoMapper.mapResponse(responseBody);
+      validation.execute("Data Keys", () => validator.validateDataKeys(rawData));
       validation.execute("Meter ID", () => validator.validateMeterId(row, serial));
       validation.execute("Node ID", () => validator.validateNodeId(row));
       validation.execute("Vendor", () => validator.validateVendor(row));
@@ -41,7 +45,9 @@ test.describe("HES Commands — Meter Info", () => {
       validation.execute("String Fields Trimmed", () => validator.validateStringFieldsTrimmed(row));
       validation.execute("Hardware Version", () => validator.validateHardwareVersion(row));
       validation.execute("Timestamps", () => validator.validateTimestamps(row));
-      validation.execute("Full API Contract", () => validator.validateFullMeterInfo(row, serial));
+      validation.execute("Full API Contract", () =>
+        validator.validateFullMeterInfo(row, serial, rawData),
+      );
       ApiValidationHelper.finalize(validation, {
         apiName: "Commands Meter Info",
         responseTime,

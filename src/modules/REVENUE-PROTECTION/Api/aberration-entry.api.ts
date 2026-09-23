@@ -17,9 +17,7 @@ import { REVENUE_PROTECTION_REQUEST_TIMEOUT_MS } from "../../../core/constants/a
 export const REVENUE_PROTECTION_ABERRATION_ENTRY_BASE =
   "/indore/revenue-protection/aberration-entry";
 
-export function resolveAberrationEntryPath(
-  entryType: AberrationEntryType = "zone",
-): string {
+export function resolveAberrationEntryPath(entryType: AberrationEntryType = "zone"): string {
   return `${REVENUE_PROTECTION_ABERRATION_ENTRY_BASE}/${entryType}`;
 }
 
@@ -34,8 +32,7 @@ export function resolveAberrationEntryByIvrsPath(ivrsNo: string): string {
   return `${REVENUE_PROTECTION_ABERRATION_ENTRY_BASE}/${encodeURIComponent(ivrsNo.trim())}`;
 }
 
-export const REVENUE_PROTECTION_ABERRATION_ENTRY_PATH =
-  resolveAberrationEntryPath("zone");
+export const REVENUE_PROTECTION_ABERRATION_ENTRY_PATH = resolveAberrationEntryPath("zone");
 
 export interface AberrationEntryApiResult {
   rawResponse: APIResponse;
@@ -49,15 +46,25 @@ export interface AberrationEntryByIvrsApiResult {
   responseTime: number;
 }
 
-export function buildAberrationEntryQueryString(
-  query: AberrationEntryQuery,
-): string {
+export function buildAberrationEntryQueryString(query: AberrationEntryQuery): string {
   const params = new URLSearchParams();
   if (query.month !== undefined && query.month !== "") {
     params.set("month", String(query.month));
   }
   if (query.year !== undefined && query.year !== "") {
     params.set("year", String(query.year));
+  }
+  if (query.eventName !== undefined && query.eventName !== "") {
+    params.set("eventName", String(query.eventName));
+  }
+  if (query.actionStatus !== undefined && query.actionStatus !== "") {
+    params.set("actionStatus", String(query.actionStatus));
+  }
+  if (query.networkLookupId !== undefined && query.networkLookupId !== "") {
+    params.set("networkLookupId", String(query.networkLookupId));
+  }
+  if (query.organisationLookupId !== undefined && query.organisationLookupId !== "") {
+    params.set("organisationLookupId", String(query.organisationLookupId));
   }
   params.set("page", String(query.page ?? 1));
   params.set("limit", String(query.limit ?? 10));
@@ -67,9 +74,7 @@ export function buildAberrationEntryQueryString(
 export class AberrationEntryApi {
   constructor(private readonly authenticatedApi: APIRequestContext) {}
 
-  async getAberrationEntry(
-    query: AberrationEntryQuery,
-  ): Promise<AberrationEntryApiResult> {
+  async getAberrationEntry(query: AberrationEntryQuery): Promise<AberrationEntryApiResult> {
     const entryType = query.entryType ?? "zone";
     const url = `${resolveAberrationEntryPath(entryType)}?${buildAberrationEntryQueryString(query)}`;
     const { response, responseTime } = await getRevenueProtectionWithRetry(

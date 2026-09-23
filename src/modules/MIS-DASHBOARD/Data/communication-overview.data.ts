@@ -4,9 +4,7 @@ export const communicationOverviewQuery = {
   assetType: "all",
 };
 
-export const EXPECTED_OVERVIEW_PHASES = ["1 PH", "3PH 4CT", "3PH WC", "HT", "Unknown"];
-
-export const EXPECTED_OVERVIEW_PHASES_DTR = ["1 PH", "3PH 4CT", "3PH WC", "HT"];
+export const EXPECTED_OVERVIEW_PHASES = ["1 PH", "3PH 4CT", "3PH WC", "HT"];
 
 export type CommunicationOverviewTestCase = {
   testName: string;
@@ -50,7 +48,6 @@ export const communicationOverviewTestCases: CommunicationOverviewTestCase[] = [
     expectedStatus: 200,
     expectedFromDate: query.fromDate,
     expectedToDate: query.toDate,
-    expectedPhaseLabels: EXPECTED_OVERVIEW_PHASES_DTR,
     tags,
   },
   {
@@ -75,7 +72,6 @@ export const communicationOverviewTestCases: CommunicationOverviewTestCase[] = [
     expectedStatus: 200,
     expectedFromDate: query.fromDate,
     expectedToDate: query.toDate,
-    expectedPhaseLabels: EXPECTED_OVERVIEW_PHASES_DTR,
     tags,
   },
   {
@@ -92,7 +88,6 @@ export const communicationOverviewTestCases: CommunicationOverviewTestCase[] = [
     expectedStatus: 200,
     expectedFromDate: query.fromDate,
     expectedToDate: query.toDate,
-    expectedPhaseLabels: EXPECTED_OVERVIEW_PHASES_DTR,
     checkChartMembership: false,
     tags,
   },
@@ -102,7 +97,6 @@ export const communicationOverviewTestCases: CommunicationOverviewTestCase[] = [
     expectedStatus: 200,
     expectedFromDate: query.fromDate,
     expectedToDate: query.toDate,
-    expectedPhaseLabels: EXPECTED_OVERVIEW_PHASES_DTR,
     checkChartMembership: false,
     tags,
   },

@@ -1,11 +1,7 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
-import { postWithAutoRefresh } from "../../../core/utils/authenticated.request";
 import type { CreateSubmissionRequestBody } from "../Data/create-submission.data";
 import { CreateSubmissionResponse } from "../Mapper/create-submission.mapper";
-import {
-  safeResponseJson,
-  withRateLimitRetry,
-} from "../utils/response.helper";
+import { safeResponseJson, withRateLimitRetry } from "../utils/response.helper";
 
 export interface CreateSubmissionApiResult {
   rawResponse: APIResponse;
@@ -21,12 +17,11 @@ export class CreateSubmissionApi {
   ): Promise<CreateSubmissionApiResult> {
     const start = Date.now();
 
+    // authenticatedApi.post already auto-refreshes; do not wrap postWithAutoRefresh again.
     const response = await withRateLimitRetry(() =>
-      postWithAutoRefresh(
-        this.authenticatedApi,
-        "/indore/meter-replacement/submissions",
-        { data: payload },
-      ),
+      this.authenticatedApi.post("/indore/meter-replacement/submissions", {
+        data: payload,
+      }),
     );
 
     return {

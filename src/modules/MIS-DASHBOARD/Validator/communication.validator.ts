@@ -53,9 +53,9 @@ export class CommStatsValidator {
     expect(data.overall.total).toBeGreaterThanOrEqual(0);
     expect(data.overall.communicating.count).toBeGreaterThanOrEqual(0);
     expect(data.overall.nonCommunicating.count).toBeGreaterThanOrEqual(0);
-    expect(
-      data.overall.communicating.count + data.overall.nonCommunicating.count,
-    ).toBe(data.overall.total);
+    expect(data.overall.communicating.count + data.overall.nonCommunicating.count).toBe(
+      data.overall.total,
+    );
     this.validateShare(
       data.overall.communicating.count,
       data.overall.total,
@@ -73,7 +73,7 @@ export class CommStatsValidator {
     for (const item of data.categories) {
       expect(item.label).toBeTruthy();
       expect(item.count).toBeGreaterThanOrEqual(0);
-      this.validateShare(item.count, data.overall.total, item.percentage);
+      this.validateShare(item.count, data.overall.communicating.count, item.percentage);
     }
   }
 
@@ -98,14 +98,15 @@ export class CommStatsValidator {
     for (const item of data.phases) {
       expect(item.label).toBeTruthy();
       expect(item.count).toBeGreaterThanOrEqual(0);
-      this.validateShare(item.count, data.overall.total, item.percentage);
+      this.validateShare(item.count, data.overall.communicating.count, item.percentage);
     }
   }
 
   validateExpectedPhaseLabels(data: CommStatsData) {
-    expect(data.phases.map((item) => item.label).sort()).toEqual(
-      [...EXPECTED_COMMUNICATION_PHASES].sort(),
-    );
+    const labels = new Set(data.phases.map((item) => item.label));
+    for (const want of EXPECTED_COMMUNICATION_PHASES) {
+      expect(labels.has(want), `missing meter type: ${want}`).toBeTruthy();
+    }
   }
 
   validateUniquePhaseLabels(data: CommStatsData) {

@@ -1,6 +1,7 @@
 import { test } from "../../../fixtures/api.fixture";
 import { expect } from "@playwright/test";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
+import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { CommandsHistoryApi } from "../Api/commands-history.api";
 import { buildCommandsHistoryPath, commandsHistoryData } from "../Data/commands-history.data";
@@ -57,6 +58,48 @@ test.describe("HES Commands — History", () => {
         responseTime,
       );
       const data = CommandsHistoryMapper.mapResponse(responseBody);
+      validation.execute("Response Keys", () => validator.validateResponseKeys(responseBody));
+      validation.execute("Pagination Keys", () =>
+        validator.validatePaginationKeys(responseBody.pagination!),
+      );
+      validation.execute("Row Keys", () => validator.validateRowKeys(responseBody.data!));
+
+      if (data.rows.length === 0) {
+        BackendResponse.logFinding(
+          "Commands history page 1 empty",
+          `totalRecords=${data.pagination.totalRecords}`,
+        );
+        validation.execute("Empty history pagination", () => {
+          expect(data.pagination.totalRecords).toBe(0);
+          expect(data.pagination.hasPreviousPage).toBe(false);
+          expect(data.pagination.hasNextPage).toBe(false);
+        });
+        validation.execute("Full API Contract", () =>
+          validator.validateFullHistory(data, query.page, query.limit, responseBody),
+        );
+        ApiValidationHelper.finalize(validation, {
+          apiName: "Commands History — Page 1 (empty)",
+          responseTime,
+          testInfo,
+          defectContext: {
+            module: "HES-COMMANDS",
+            endpoint: rawResponse.url(),
+            method: "GET",
+            requestParams: query,
+            responseStatus: rawResponse.status(),
+            responseBody,
+            expectedBehavior: "Empty history returns data=[] and totalRecords=0.",
+          },
+        });
+        return;
+      }
+
+      validation.execute("Meter Identity", () => validator.validateMeterIdentity(data.rows));
+      validation.execute("Meter Counts", () => validator.validateMeterCounts(data.rows));
+      validation.execute("Timing Fields", () => validator.validateTimingFields(data.rows));
+      validation.execute("Meter Response Rows", () =>
+        validator.validateMeterResponseRows(data.rows),
+      );
       validation.execute("Requested Time DESC", () =>
         validator.validateRequestedTimeDescending(data.rows),
       );
@@ -71,7 +114,7 @@ test.describe("HES Commands — History", () => {
       );
       validation.execute("Total Records", () => validator.validateTotalRecords(data, query.limit));
       validation.execute("Full API Contract", () =>
-        validator.validateFullHistory(data, query.page, query.limit),
+        validator.validateFullHistory(data, query.page, query.limit, responseBody),
       );
       ApiValidationHelper.finalize(validation, {
         apiName: "Commands History — Page 1",

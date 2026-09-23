@@ -1,8 +1,12 @@
-export type AberrationEntryType = "zone" | "eenltmt";
+export type AberrationEntryType = "zone" | "eenltmt" | "cvo";
 export interface AberrationEntryQuery {
   entryType?: AberrationEntryType;
-  month?: string;
+  month?: string | number;
   year?: number | string;
+  eventName?: string;
+  actionStatus?: string;
+  networkLookupId?: number | string;
+  organisationLookupId?: number | string;
   page?: number;
   limit?: number;
 }
@@ -24,7 +28,6 @@ export interface AberrationEntryRow {
   subStation: string;
   feeder: string;
   dtr: string;
-
   name: string;
   address: string;
   ivrsNo: string;
@@ -33,6 +36,7 @@ export interface AberrationEntryRow {
   occurrenceTime: string;
   restorationTime: string;
   remarks: string;
+  sourceRemarks: string;
   amountBilled: number;
   amountRealised: number;
   fieldOfficerRemarks: string;
@@ -42,7 +46,10 @@ export interface AberrationEntryRow {
   p4No: string;
   p4Date: string;
   inspectionDate: string;
+  actionStatus: string;
+  enteredByName: string;
   entryDate: string;
+  updatedOn: string;
   month: string;
   year: string;
 }
@@ -109,6 +116,7 @@ export class AberrationEntryMapper {
         occurrenceTime: toText(row.occurrenceTime),
         restorationTime: toText(row.restorationTime),
         remarks: toText(row.remarks),
+        sourceRemarks: toText(row.sourceRemarks),
         amountBilled: toNumber(row.amountBilled),
         amountRealised: toNumber(row.amountRealised),
         fieldOfficerRemarks: toText(row.fieldOfficerRemarks),
@@ -118,7 +126,10 @@ export class AberrationEntryMapper {
         p4No: toText(row.p4No),
         p4Date: toText(row.p4Date),
         inspectionDate: toText(row.inspectionDate),
+        actionStatus: toText(row.actionStatus),
+        enteredByName: toText(row.enteredByName),
         entryDate: toText(row.entryDate),
+        updatedOn: toText(row.updatedOn),
         month: toText(row.month),
         year: toText(row.year),
       })),

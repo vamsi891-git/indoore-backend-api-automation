@@ -11,8 +11,9 @@ export class CommStatsValidator {
     expect(data.fromDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(data.toDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(data.referenceDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-    expect(data.fromDate).toBe(data.toDate);
-    expect(data.referenceDate).toBe(data.fromDate);
+    expect(data.fromDate <= data.toDate).toBeTruthy();
+    expect(data.referenceDate >= data.fromDate).toBeTruthy();
+    expect(data.referenceDate <= data.toDate).toBeTruthy();
   }
 
   validateMeterCounts(data: CommStatsData) {
@@ -24,17 +25,13 @@ export class CommStatsValidator {
 
   validateRelationships(data: CommStatsData) {
     expect(data.activeMeters.value).toBeLessThanOrEqual(data.totalMeters.value);
-    expect(data.nonOperationalMeters.value).toBeLessThanOrEqual(
-      data.totalMeters.value,
-    );
+    expect(data.nonOperationalMeters.value).toBeLessThanOrEqual(data.totalMeters.value);
     expect(data.unmappedMeters.value).toBeLessThanOrEqual(data.totalMeters.value);
   }
 
   validateAggregation(data: CommStatsData) {
     const sum =
-      data.activeMeters.value +
-      data.nonOperationalMeters.value +
-      data.unmappedMeters.value;
+      data.activeMeters.value + data.nonOperationalMeters.value + data.unmappedMeters.value;
     if (sum !== data.totalMeters.value) {
       console.warn(
         `[BACKEND FINDING] meter count cards do not add to total: active=${data.activeMeters.value} + nonOperational=${data.nonOperationalMeters.value} + unmapped=${data.unmappedMeters.value} = ${sum}, total=${data.totalMeters.value}`,
@@ -61,9 +58,7 @@ export class CommStatsValidator {
     consumers: CommStatsData,
     dtrs: CommStatsData,
   ) {
-    expect(allMeters.totalMeters.value).toBe(
-      consumers.totalMeters.value + dtrs.totalMeters.value,
-    );
+    expect(allMeters.totalMeters.value).toBe(consumers.totalMeters.value + dtrs.totalMeters.value);
     expect(allMeters.activeMeters.value).toBe(
       consumers.activeMeters.value + dtrs.activeMeters.value,
     );

@@ -3,7 +3,7 @@ import { ApiCallResult } from "../../../core/models/api-result.model";
 import { AuthPaths } from "../Data/auth.data";
 import { AuthMapper } from "../Mapper/auth.mapper";
 import { generateTotp, getTotpSecret } from "../../../core/utils/totp.util";
-import { solveCaptchaSvg } from "../../../core/utils/captcha-ocr.util";
+import { solveCaptchaSvg, warmupCaptchaOcr } from "../../../core/utils/captcha-ocr.util";
 import {
   AuthLoginSuccessResponseSchema,
   isDeviceSelectionPayload,
@@ -38,6 +38,7 @@ export class AuthenticationApi {
   }
 
   async getLoginCaptcha(): Promise<{ captchaId: string; captcha: string } | undefined> {
+    await warmupCaptchaOcr();
     const rawResponse = await this.request.get(AuthPaths.captcha, {
       headers: { Accept: "application/json" },
     });
@@ -86,9 +87,7 @@ export class AuthenticationApi {
       data: {
         email,
         password,
-        ...(captcha
-          ? { captchaId: captcha.captchaId, captcha: captcha.captcha }
-          : {}),
+        ...(captcha ? { captchaId: captcha.captchaId, captcha: captcha.captcha } : {}),
       },
     });
     const responseBody = await rawResponse.json();
@@ -153,15 +152,12 @@ export class AuthenticationApi {
    * Logs in within this request context so refresh cookies are available.
    * Completes device-selection release when the account is at the device limit.
    */
-  async loginUntilSession(
-    email: string,
-    password: string,
-  ): Promise<EstablishedAuthSession> {
+  async loginUntilSession(email: string, password: string): Promise<EstablishedAuthSession> {
     await this.getLoginPreflight();
     let csrfToken = await AuthMapper.resolveCsrfToken(this.request, {});
     const captcha = await this.getLoginCaptcha();
 
-    let login = await this.postLogin(email, password, csrfToken, captcha);
+    const login = await this.postLogin(email, password, csrfToken, captcha);
     if (login.rawResponse.status() !== 200) {
       throw new Error(
         `Login failed with status ${login.rawResponse.status()}: ${JSON.stringify(login.responseBody)}`,
@@ -213,9 +209,7 @@ export class AuthenticationApi {
           );
         }
         if (verify.rawResponse.status() !== 200) {
-          throw new Error(
-            `2FA verification failed: ${JSON.stringify(verify.responseBody)}`,
-          );
+          throw new Error(`2FA verification failed: ${JSON.stringify(verify.responseBody)}`);
         }
         parsed = AuthLoginSuccessResponseSchema.parse(verify.responseBody);
         continue;
@@ -247,16 +241,10 @@ export class AuthenticationApi {
       let challengeToken = selection.challengeToken;
 
       for (const deviceToRelease of targets) {
-        const release = await this.postReleaseDevice(
-          challengeToken,
-          deviceToRelease.id,
-          csrfToken,
-        );
+        const release = await this.postReleaseDevice(challengeToken, deviceToRelease.id, csrfToken);
 
         if (release.rawResponse.status() !== 200) {
-          throw new Error(
-            `Device release failed: ${JSON.stringify(release.responseBody)}`,
-          );
+          throw new Error(`Device release failed: ${JSON.stringify(release.responseBody)}`);
         }
 
         parsed = AuthLoginSuccessResponseSchema.parse(release.responseBody);

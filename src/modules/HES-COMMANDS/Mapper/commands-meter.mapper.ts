@@ -4,6 +4,7 @@ export interface CommandsMeterLookupRow {
   consumerName: string | null;
   phase: string | null;
   ivrsNumber: string | null;
+  meterMake: string | null;
   feeder: string | null;
   dtr: string | null;
 }
@@ -24,6 +25,7 @@ export class CommandsMeterMapper {
       consumerName: data.consumerName?.trim() ?? null,
       phase: data.phase?.trim() ?? null,
       ivrsNumber: data.ivrsNumber?.trim() ?? null,
+      meterMake: data.meterMake?.trim() ?? null,
       feeder: data.feeder?.trim() ?? null,
       dtr: data.dtr?.trim() ?? null,
     };

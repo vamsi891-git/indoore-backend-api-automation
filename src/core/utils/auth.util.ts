@@ -4,7 +4,7 @@ import path from "path";
 import { LoggerEngine } from "../engine/logger.engine";
 import { enableStripIndorePrefix, resolveApiPath, normalizeApiBaseUrl } from "./api-path.util";
 import { generateTotp, getTotpSecret } from "./totp.util";
-import { solveCaptchaSvg } from "./captcha-ocr.util";
+import { solveCaptchaSvg, warmupCaptchaOcr } from "./captcha-ocr.util";
 import { env, getLoginIdentity } from "../config/env.schema";
 
 export interface LoginResponse {
@@ -40,7 +40,6 @@ export class AuthApi {
   private static readonly login2faPath = "/indore/auth/login/2fa";
   private static readonly refreshPath = "/indore/auth/refresh";
   private static readonly releaseDevicePath = "/indore/auth/login/release-device";
-  private static readonly devicesPath = "/indore/auth/devices";
   /**
    * Login backoff for 503 / pool contention. Keep this short: many login POSTs
    * trip CAPTCHA_REQUIRED on the same account.
@@ -474,91 +473,6 @@ export class AuthApi {
     return releasable.length > 0 ? releasable : sorted;
   }
 
-  private static pickDeviceToRelease(devices: DeviceSelectionDevice[]): DeviceSelectionDevice {
-    return this.pickDevicesToTerminate(devices)[0] ?? devices[0]!;
-  }
-
-  private static flattenCatalogDevices(body: {
-    data?: {
-      devices?: Array<{ id?: string; isCurrentDevice?: boolean; revokedAt?: string | null }>;
-      deviceGroups?: Array<{
-        devices?: Array<{ id?: string; isCurrentDevice?: boolean; revokedAt?: string | null }>;
-      }>;
-    };
-  }): Array<{ id: string; isCurrentDevice?: boolean; revokedAt?: string | null }> {
-    const data = body.data ?? {};
-    const fromRoot = Array.isArray(data.devices) ? data.devices : [];
-    const fromGroups = Array.isArray(data.deviceGroups)
-      ? data.deviceGroups.flatMap((group) => (Array.isArray(group.devices) ? group.devices : []))
-      : [];
-    const seen = new Set<string>();
-    const merged: Array<{
-      id: string;
-      isCurrentDevice?: boolean;
-      revokedAt?: string | null;
-    }> = [];
-    for (const device of [...fromRoot, ...fromGroups]) {
-      const id = device.id?.trim();
-      if (!id || seen.has(id)) {
-        continue;
-      }
-      seen.add(id);
-      merged.push(device as { id: string; isCurrentDevice?: boolean; revokedAt?: string | null });
-    }
-    return merged;
-  }
-
-  /** After a device-limit login, revoke every other session so the cap of 4 does not block the next run. */
-  private static async revokeOtherSessions(
-    apiContext: Awaited<ReturnType<typeof request.newContext>>,
-    session: LoginResponse,
-  ): Promise<void> {
-    const listResponse = await apiContext.get(this.path(this.devicesPath), {
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${session.accessToken}`,
-      },
-    });
-    if (!listResponse.ok()) {
-      LoggerEngine.info(
-        `Could not list sessions to terminate (${listResponse.status()}); continuing with current login`,
-      );
-      return;
-    }
-
-    const listBody = (await listResponse.json()) as {
-      data?: {
-        devices?: Array<{ id?: string; isCurrentDevice?: boolean; revokedAt?: string | null }>;
-        deviceGroups?: Array<{
-          devices?: Array<{ id?: string; isCurrentDevice?: boolean; revokedAt?: string | null }>;
-        }>;
-      };
-    };
-    const keepDeviceId = env.DEVICE_ID;
-    const targets = this.flattenCatalogDevices(listBody).filter((device) => {
-      if (device.isCurrentDevice || device.revokedAt) {
-        return false;
-      }
-      if (keepDeviceId && device.id === keepDeviceId) {
-        return false;
-      }
-      return true;
-    });
-
-    for (const device of targets) {
-      const csrfToken = this.readCsrfToken((await this.snapshotCookies(apiContext)).cookies, {});
-      const deleted = await apiContext.delete(this.path(`${this.devicesPath}/${device.id}`), {
-        headers: {
-          ...this.buildAuthHeaders(csrfToken),
-          Authorization: `Bearer ${session.accessToken}`,
-        },
-      });
-      LoggerEngine.info(
-        `Terminated session ${device.id} (${deleted.status()}) after device-limit login`,
-      );
-    }
-  }
-
   private static async completeTwoFactor(
     apiContext: Awaited<ReturnType<typeof request.newContext>>,
     initialBody: TwoFactorBody,
@@ -743,6 +657,7 @@ export class AuthApi {
     try {
       const startTime = Date.now();
       const csrfToken = await this.fetchCsrf(apiContext);
+      await warmupCaptchaOcr();
 
       let loginResponse: Awaited<ReturnType<typeof apiContext.post>> | undefined;
       let loginRaw = "";

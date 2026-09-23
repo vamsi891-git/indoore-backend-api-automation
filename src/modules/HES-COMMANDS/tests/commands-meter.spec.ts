@@ -1,3 +1,4 @@
+import { expect } from "@playwright/test";
 import { test } from "../../../fixtures/api.fixture";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 import { PerformanceTracker } from "../../../core/utils/performance.tracker";
@@ -33,7 +34,10 @@ test.describe("HES Commands — Meter Lookup", () => {
         maxResponseTimeMs: commandsMeterData.maxResponseTimeMs,
       });
       validation.execute("Success Response", () => validator.validateResponse(responseBody));
+      expect(responseBody.data).toBeDefined();
+      const rawData = responseBody.data!;
       const row = CommandsMeterMapper.mapResponse(responseBody);
+      validation.execute("Data Keys", () => validator.validateDataKeys(rawData));
       validation.execute("Meter Lookup ID", () => validator.validateMeterLookupId(row));
       validation.execute("Meter Serial Number", () =>
         validator.validateMeterSerialNumber(row, serial),
@@ -41,6 +45,7 @@ test.describe("HES Commands — Meter Lookup", () => {
       validation.execute("Consumer Name", () => validator.validateConsumerName(row));
       validation.execute("Phase", () => validator.validatePhase(row));
       validation.execute("IVRS Number", () => validator.validateIvrsNumber(row));
+      validation.execute("Meter Make", () => validator.validateMeterMake(row));
       validation.execute("Nullable Fields Trimmed", () =>
         validator.validateNullableFieldsTrimmed(row),
       );
@@ -48,7 +53,7 @@ test.describe("HES Commands — Meter Lookup", () => {
       validation.execute("DTR", () => validator.validateDtr(row));
       validation.execute("Network Hierarchy", () => validator.validateNetworkHierarchy(row));
       validation.execute("Full API Contract", () =>
-        validator.validateFullMeterDetails(row, serial),
+        validator.validateFullMeterDetails(row, serial, rawData),
       );
       const defectContext = {
         module: "HES-COMMANDS",

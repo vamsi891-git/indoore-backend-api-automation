@@ -58,9 +58,10 @@ export const masterDataAuditLogsAscQuery = {
   sort: "createdAt_asc",
 } as const satisfies MasterDataAuditLogsQuery;
 
+/** One row per page so a second page exists when there are at least two changes. */
 export const masterDataAuditLogsPage2Query = {
   page: 2,
-  limit: 20,
+  limit: 1,
   sort: "createdAt_desc",
 } as const satisfies MasterDataAuditLogsQuery;
 

@@ -1,11 +1,6 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
 import { ConsumerDetailResponse } from "../Mapper/consumer-detail.mapper";
-import {
-  encodePathSegment,
-  safeResponseJson,
-  withRateLimitRetry,
-} from "../utils/response.helper";
+import { encodePathSegment, safeResponseJson, withRateLimitRetry } from "../utils/response.helper";
 
 export interface ConsumerDetailApiResult {
   rawResponse: APIResponse;
@@ -16,14 +11,11 @@ export interface ConsumerDetailApiResult {
 export class ConsumerDetailApi {
   constructor(private readonly authenticatedApi: APIRequestContext) {}
 
-  async getConsumerDetail(
-    consumerId: number | string,
-  ): Promise<ConsumerDetailApiResult> {
+  async getConsumerDetail(consumerId: number | string): Promise<ConsumerDetailApiResult> {
     const start = Date.now();
 
     const response = await withRateLimitRetry(() =>
-      getWithAutoRefresh(
-        this.authenticatedApi,
+      this.authenticatedApi.get(
         `/indore/meter-replacement/consumers/${encodePathSegment(String(consumerId))}`,
       ),
     );

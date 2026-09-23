@@ -13,8 +13,13 @@ export const commandsMeteringModeData = {
   maxResponseTimeMs: 120_000,
   ...commandsJobPollConfig,
   expectedInitAction: "GET_CONFIG",
-  initMessagePattern: /get metering mode/i,
-  queryFinishedMessagePattern: /job finished|synced from meterStatusForJob|job status fetched successfully/i,
+  expectedHesResponseType: "METERING_MODE",
+  meteringModes: ["IMPORT", "IMPORT_EXPORT"] as const,
+  expectedDisplayLabels: ["Metering Mode"] as const,
+  initMessagePattern: /metering mode/i,
+  setInitMessagePattern: /metering mode|import/i,
+  queryFinishedMessagePattern:
+    /job finished|synced from meterStatusForJob|job status fetched successfully/i,
   hesCallbackNotePattern: /final completion status will be delivered via hes callback/i,
 } as const;
 
@@ -24,6 +29,8 @@ export interface MeteringModeRequestBody {
   type: MeteringModeCommandType;
   /** UI sends a single serial string; API also accepts string[]. */
   meters: string | string[];
+  /** Step-up 2FA — required for metering_mode_set_* when 2FA is enabled. */
+  otp?: string;
 }
 
 export function buildMeteringModeBody(
@@ -34,6 +41,60 @@ export function buildMeteringModeBody(
     meters: commandsMeteringModeData.defaultMeterSerial,
     ...overrides,
   };
+}
+
+export function buildMeteringModeSetImportBody(
+  overrides: Partial<MeteringModeRequestBody> = {},
+): MeteringModeRequestBody {
+  return buildMeteringModeBody({
+    type: "metering_mode_set_import",
+    ...overrides,
+  });
+}
+
+export function buildMeteringModeSetImportExportBody(
+  overrides: Partial<MeteringModeRequestBody> = {},
+): MeteringModeRequestBody {
+  return buildMeteringModeBody({
+    type: "metering_mode_set_import_export",
+    ...overrides,
+  });
+}
+
+/** Parse "Metering Mode: Import" / "Import Export" → IMPORT | IMPORT_EXPORT. */
+export function parseMeteringMode(
+  meterResponse: string | null | undefined,
+): (typeof commandsMeteringModeData.meteringModes)[number] | null {
+  const match = /metering mode:\s*([A-Za-z]+(?:[\s_]+[A-Za-z]+)?)/i.exec(meterResponse ?? "");
+  if (!match) return null;
+  const normalized = match[1].toUpperCase().replace(/[\s]+/g, "_");
+  const candidate =
+    normalized === "IMPORT_EXPORT" || normalized === "IMPORTEXPORT"
+      ? "IMPORT_EXPORT"
+      : normalized === "IMPORT"
+        ? "IMPORT"
+        : null;
+  if (
+    candidate &&
+    commandsMeteringModeData.meteringModes.includes(
+      candidate as (typeof commandsMeteringModeData.meteringModes)[number],
+    )
+  ) {
+    return candidate as (typeof commandsMeteringModeData.meteringModes)[number];
+  }
+  return null;
+}
+
+export function pickAlternateMeteringModeSetType(
+  current: (typeof commandsMeteringModeData.meteringModes)[number],
+): "metering_mode_set_import" | "metering_mode_set_import_export" {
+  return current === "IMPORT" ? "metering_mode_set_import_export" : "metering_mode_set_import";
+}
+
+export function expectedModeAfterSet(
+  setType: "metering_mode_set_import" | "metering_mode_set_import_export",
+): (typeof commandsMeteringModeData.meteringModes)[number] {
+  return setType === "metering_mode_set_import" ? "IMPORT" : "IMPORT_EXPORT";
 }
 
 export function normalizeMeters(meters: string | string[]): string[] {

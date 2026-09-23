@@ -33,6 +33,29 @@ function getOcrWorker(): Promise<Worker> {
   return ocrWorker;
 }
 
+/** Load Tesseract before GET /captcha so OCR does not burn the captcha TTL. */
+export async function warmupCaptchaOcr(): Promise<void> {
+  await getOcrWorker();
+}
+
+function decodeCaptchaSvg(svg: string): string {
+  const trimmed = svg.trim();
+  const dataUri = /^data:image\/svg\+xml([^,]*),(.*)$/is.exec(trimmed);
+  if (!dataUri) {
+    return trimmed;
+  }
+  const meta = dataUri[1] ?? "";
+  const payload = dataUri[2] ?? "";
+  if (/base64/i.test(meta)) {
+    return Buffer.from(payload, "base64").toString("utf8");
+  }
+  try {
+    return decodeURIComponent(payload);
+  } catch {
+    return payload;
+  }
+}
+
 export function normalizeCaptchaOcrText(raw: string): string {
   return raw
     .replace(/\s+/g, "")
@@ -137,7 +160,7 @@ function pickBestGuess(candidates: OcrCandidate[]): OcrCandidate | undefined {
  * Runs several soft passes + PSM modes, then votes (majority / confidence).
  */
 export async function solveCaptchaSvg(svg: string): Promise<string> {
-  const trimmed = svg.trim();
+  const trimmed = decodeCaptchaSvg(svg);
   if (!trimmed) {
     throw new Error("CAPTCHA SVG is empty");
   }
@@ -146,6 +169,8 @@ export async function solveCaptchaSvg(svg: string): Promise<string> {
   const worker = await getOcrWorker();
   const candidates: OcrCandidate[] = [];
   let bestPartial = "";
+  /** Stop extra raster/OCR work so login POSTs before the captcha expires. */
+  const highConfidence = 62;
 
   const psmModes: Array<{ name: string; mode: PSM }> = [
     { name: "single-line", mode: PSM.SINGLE_LINE },
@@ -187,6 +212,12 @@ export async function solveCaptchaSvg(svg: string): Promise<string> {
           LoggerEngine.debug(
             `CAPTCHA OCR pass=${pass.name}/${psm.name} guess=${guess} conf=${confidence.toFixed(1)}`,
           );
+          if (confidence >= highConfidence) {
+            LoggerEngine.debug(
+              `CAPTCHA OCR early accept guess=${guess} via ${pass.name}/${psm.name} conf=${confidence.toFixed(1)}`,
+            );
+            return guess;
+          }
         } else {
           LoggerEngine.debug(
             `CAPTCHA OCR pass=${pass.name}/${psm.name} guess=${guess || "(empty)"} (rejected length)`,

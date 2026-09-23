@@ -22,6 +22,8 @@ export interface CommandJobInitData {
   rejectedMeters: string[];
   meterResults: CommandJobInitMeterResult[];
   hesCallbackConfigured?: boolean;
+  commandExecutionTimeMs?: number | null;
+  meterResponseTimeMs?: number | null;
   note?: string;
 }
 
@@ -66,6 +68,10 @@ export class CommandsJobInitMapper {
           errorMessage: row.errorMessage?.trim() ?? null,
         })),
         hesCallbackConfigured: data.hesCallbackConfigured,
+        commandExecutionTimeMs:
+          data.commandExecutionTimeMs == null ? null : Number(data.commandExecutionTimeMs),
+        meterResponseTimeMs:
+          data.meterResponseTimeMs == null ? null : Number(data.meterResponseTimeMs),
         note: data.note?.trim(),
       },
     };
@@ -73,9 +79,7 @@ export class CommandsJobInitMapper {
 }
 
 /** Extract unique job names from POST init meterResults (one per meter batch). */
-export function extractJobNamesFromInitResponse(
-  body: CommandJobInitResponse,
-): string[] {
+export function extractJobNamesFromInitResponse(body: CommandJobInitResponse): string[] {
   if (!body.success || !body.data?.meterResults?.length) {
     throw new Error("No meterResults with jobName in command job-init response");
   }

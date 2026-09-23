@@ -1,16 +1,25 @@
 export interface AtrZoneQuery {
   year: number | string;
+  reportType?: string;
+  month?: string | number;
   organisationLookupId?: number;
+  networkLookupId?: number;
+  feeder?: string;
+  search?: string;
+  source?: string;
+  communicationStatus?: "communicating" | "non-communicating" | string;
   servicePointMeterPhaseTblRefId?: number;
   categoryTblRefId?: number;
   eventTblRefId?: number;
   page?: number;
   limit?: number;
 }
+
 export interface AtrZoneGridColumn {
   key: string;
   header: string;
 }
+
 export interface AtrZoneRowRaw {
   id?: string | number;
   circle?: string | null;
@@ -32,27 +41,34 @@ export interface AtrZoneRowRaw {
   fieldRemarks?: string | null;
   p4Number?: string | null;
   p4Date?: string | null;
+  enteredByName?: string | null;
+  enteredByScopeKind?: string | null;
+  enteredByScopeLabel?: string | null;
   entryDateTime?: string | null;
   year?: string | number | null;
   month?: string | null;
 }
+
 export interface AtrZonePaginationRaw {
   page?: number | string | null;
   limit?: number | string | null;
   total?: number | string | null;
   totalPages?: number | string | null;
 }
+
 export interface AtrZoneRawData {
   columns?: AtrZoneGridColumn[];
   rows?: AtrZoneRowRaw[];
   pagination?: AtrZonePaginationRaw;
 }
+
 export interface AtrZoneResponse {
   success: boolean;
   data?: AtrZoneRawData;
   error?: { code?: string; message?: string };
   message?: string;
 }
+
 export interface AtrZoneRow {
   id: string;
   circle: string;
@@ -74,30 +90,36 @@ export interface AtrZoneRow {
   fieldRemarks: string;
   p4Number: string;
   p4Date: string;
+  enteredByName: string;
   entryDateTime: string;
   year: string;
   month: string;
 }
+
 export interface AtrZonePagination {
   page: number;
   limit: number;
   total: number;
   totalPages: number;
 }
+
 export interface AtrZoneData {
   columns: AtrZoneGridColumn[];
   rows: AtrZoneRow[];
   pagination: AtrZonePagination;
 }
+
 function toNumber(value: unknown, fallback = 0): number {
   if (value === null || value === undefined || value === "") return fallback;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : fallback;
 }
+
 function toText(value: unknown, fallback = ""): string {
   if (value === null || value === undefined) return fallback;
   return String(value);
 }
+
 export class AtrZoneMapper {
   static mapRow(row: AtrZoneRowRaw): AtrZoneRow {
     return {
@@ -121,18 +143,18 @@ export class AtrZoneMapper {
       fieldRemarks: toText(row.fieldRemarks),
       p4Number: toText(row.p4Number),
       p4Date: toText(row.p4Date).trim(),
+      enteredByName: toText(row.enteredByName),
       entryDateTime: toText(row.entryDateTime).trim(),
       year: toText(row.year).trim(),
       month: toText(row.month).trim(),
     };
   }
+
   static mapData(data: AtrZoneRawData | undefined): AtrZoneData {
     const pagination = data?.pagination ?? {};
     return {
       columns: Array.isArray(data?.columns) ? data!.columns : [],
-      rows: Array.isArray(data?.rows)
-        ? data!.rows.map((row) => AtrZoneMapper.mapRow(row))
-        : [],
+      rows: Array.isArray(data?.rows) ? data!.rows.map((row) => AtrZoneMapper.mapRow(row)) : [],
       pagination: {
         page: toNumber(pagination.page, 1),
         limit: toNumber(pagination.limit, 10),

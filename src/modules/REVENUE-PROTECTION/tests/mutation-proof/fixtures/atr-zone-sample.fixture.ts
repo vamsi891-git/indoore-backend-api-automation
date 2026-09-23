@@ -20,8 +20,9 @@ export const sampleAtrZoneRow = {
   fieldRemarks: "",
   p4Number: "P4-001",
   p4Date: "10-07-2026",
+  enteredByName: "Test User",
   entryDateTime: "10 Jul 2026, 1:38 pm",
-  year: "2026",
+  year: "2025",
   month: "APR",
 };
 

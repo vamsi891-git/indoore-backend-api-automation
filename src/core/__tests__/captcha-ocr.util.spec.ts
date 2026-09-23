@@ -22,4 +22,8 @@ test.describe("captcha-ocr.util", () => {
   test("solveCaptchaSvg rejects an empty SVG", async () => {
     await expect(solveCaptchaSvg("   ")).rejects.toThrow("CAPTCHA SVG is empty");
   });
+
+  test("solveCaptchaSvg rejects an empty data-URI payload", async () => {
+    await expect(solveCaptchaSvg("data:image/svg+xml,")).rejects.toThrow("CAPTCHA SVG is empty");
+  });
 });

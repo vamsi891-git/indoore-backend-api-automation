@@ -1,10 +1,6 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
 import { ConsumerSearchResponse } from "../Mapper/consumer-search.mapper";
-import {
-  safeResponseJson,
-  withRateLimitRetry,
-} from "../utils/response.helper";
+import { safeResponseJson, withRateLimitRetry } from "../utils/response.helper";
 
 export interface ConsumerSearchApiResult {
   rawResponse: APIResponse;
@@ -19,15 +15,9 @@ export class ConsumerSearchApi {
     const start = Date.now();
 
     const response = await withRateLimitRetry(() =>
-      getWithAutoRefresh(
-        this.authenticatedApi,
-        "/indore/meter-replacement/consumers/search",
-        {
-          params: {
-            search,
-          },
-        },
-      ),
+      this.authenticatedApi.get("/indore/meter-replacement/consumers/search", {
+        params: { search },
+      }),
     );
 
     return {
