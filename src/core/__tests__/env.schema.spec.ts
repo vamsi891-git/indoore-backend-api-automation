@@ -18,6 +18,7 @@ test.describe("env.schema", () => {
   });
 
   test("lists every missing/invalid field in one ZodError", () => {
+    // Field-level failures only — Zod does not run superRefine when the object parse fails.
     const parsed = EnvSchema.safeParse({
       BASE_URL: "not-a-url",
       PASSWORD: "",
@@ -25,7 +26,19 @@ test.describe("env.schema", () => {
     expect(parsed.success).toBe(false);
     if (!parsed.success) {
       const paths = parsed.error.issues.map((i) => i.path.join("."));
-      expect(paths).toEqual(expect.arrayContaining(["BASE_URL", "PASSWORD", "EMAIL", "USERNAME"]));
+      expect(paths).toEqual(expect.arrayContaining(["BASE_URL", "PASSWORD"]));
+    }
+  });
+
+  test("requires EMAIL or USERNAME when core fields are otherwise valid", () => {
+    const parsed = EnvSchema.safeParse({
+      BASE_URL: "https://api.example.com",
+      PASSWORD: "secret",
+    });
+    expect(parsed.success).toBe(false);
+    if (!parsed.success) {
+      const paths = parsed.error.issues.map((i) => i.path.join("."));
+      expect(paths).toEqual(expect.arrayContaining(["EMAIL", "USERNAME"]));
     }
   });
 
