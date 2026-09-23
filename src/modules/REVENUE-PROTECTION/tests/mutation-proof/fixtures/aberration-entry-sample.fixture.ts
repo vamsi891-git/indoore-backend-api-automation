@@ -15,6 +15,7 @@ export const sampleAberrationEntryRow = {
   occurrenceTime: "22 Jan 2026, 12:00 am",
   restorationTime: "",
   remarks: "Sample",
+  sourceRemarks: "",
   amountBilled: 2800,
   amountRealised: 1500,
   fieldOfficerRemarks: "",
@@ -24,7 +25,10 @@ export const sampleAberrationEntryRow = {
   p4No: "P4-001",
   p4Date: "10-07-2026",
   inspectionDate: "10-07-2026",
+  actionStatus: "Pending",
+  enteredByName: "Test User",
   entryDate: "10 Jul 2026, 1:38 pm",
+  updatedOn: "10 Jul 2026, 1:38 pm",
   month: "January",
   year: "2026",
 };
