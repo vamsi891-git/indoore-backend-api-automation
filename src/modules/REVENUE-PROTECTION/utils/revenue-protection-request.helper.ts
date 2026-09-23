@@ -1,6 +1,6 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
+import { getWithAutoRefresh, postWithAutoRefresh } from "../../../core/utils/authenticated.request";
 import { REVENUE_PROTECTION_REQUEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
 
 const RETRY_STATUSES = new Set([429, 500, 502, 503, 504]);
 const MAX_ATTEMPTS = 6;
@@ -42,10 +42,7 @@ export async function requestRevenueProtectionWithRetry(
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     try {
       lastResponse = await execute();
-      if (
-        !RETRY_STATUSES.has(lastResponse.status()) ||
-        attempt === MAX_ATTEMPTS
-      ) {
+      if (!RETRY_STATUSES.has(lastResponse.status()) || attempt === MAX_ATTEMPTS) {
         return lastResponse;
       }
     } catch (error) {
@@ -66,7 +63,10 @@ export async function requestRevenueProtectionWithRetry(
  * network blips. Prefer this over raw authenticatedApi.get for RP specs
  * that fire many requests in a short window (negative suites).
  */
-export async function getRevenueProtectionWithRetry(request: APIRequestContext,url: string,options: RequestOptions = {},
+export async function getRevenueProtectionWithRetry(
+  request: APIRequestContext,
+  url: string,
+  options: RequestOptions = {},
 ): Promise<RevenueProtectionRequestResult> {
   const start = Date.now();
   const response = await requestRevenueProtectionWithRetry(() =>
@@ -77,8 +77,27 @@ export async function getRevenueProtectionWithRetry(request: APIRequestContext,u
   );
   return { response, responseTime: Date.now() - start };
 }
+
+export async function postRevenueProtectionWithRetry(
+  request: APIRequestContext,
+  url: string,
+  options: RequestOptions = {},
+): Promise<RevenueProtectionRequestResult> {
+  const start = Date.now();
+  const response = await requestRevenueProtectionWithRetry(() =>
+    postWithAutoRefresh(request, url, {
+      timeout: REVENUE_PROTECTION_REQUEST_TIMEOUT_MS,
+      ...options,
+    }),
+  );
+  return { response, responseTime: Date.now() - start };
+}
+
 /** Build a path+query URL from a path and string/number param map. */
-export function buildRevenueProtectionUrl(path: string,params?: Record<string, string | number | undefined | null>,): string {
+export function buildRevenueProtectionUrl(
+  path: string,
+  params?: Record<string, string | number | undefined | null>,
+): string {
   if (!params) return path;
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {

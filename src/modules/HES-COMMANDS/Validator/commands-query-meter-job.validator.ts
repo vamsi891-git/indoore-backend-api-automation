@@ -15,7 +15,8 @@ export const METER_JOB_STATUSES = [
   "COMPLETED",
 ] as const;
 
-const ACTION_PATTERN = /^[A-Z][A-Z0-9_]*$/;
+// Catalog/job actions may be UPPER_SNAKE ("GET_DEMAND") or human labels ("HES Ping").
+const ACTION_PATTERN = /^[A-Za-z][A-Za-z0-9_ ]*$/;
 
 export class CommandsQueryMeterJobValidator {
   validateResponse(body: QueryMeterJobResponse): void {
@@ -68,10 +69,7 @@ export class CommandsQueryMeterJobValidator {
     }
 
     expect(summary.requested).toBe(
-      summary.successful +
-        summary.failed +
-        summary.inProgress +
-        summary.rejected,
+      summary.successful + summary.failed + summary.inProgress + summary.rejected,
     );
   }
 
@@ -144,7 +142,9 @@ export class CommandsQueryMeterJobValidator {
       expect(String(row.hesResponse.meterId).trim().length).toBeGreaterThan(0);
     }
     if (row.hesResponse.response !== undefined && row.hesResponse.response !== null) {
-      expect(Array.isArray(row.hesResponse.response)).toBe(true);
+      const response = row.hesResponse.response;
+      // Config GETs return arrays; ping/connect often return a single object.
+      expect(Array.isArray(response) || typeof response === "object").toBe(true);
     }
   }
 
@@ -209,16 +209,10 @@ export class CommandsQueryMeterJobValidator {
     this.validateHesJobStatus(mapped);
     this.validateHesStatusCode(mapped);
     this.validateSummaryCounts(mapped.job.summary);
-    this.validateSummaryMatchesMeterResults(
-      mapped.job.summary,
-      mapped.job.meterResults,
-    );
+    this.validateSummaryMatchesMeterResults(mapped.job.summary, mapped.job.meterResults);
     this.validateMeterResultsPresent(mapped.job.meterResults);
     this.validateAllMeterResults(mapped.job.meterResults);
-    this.validateStatusSummaryAlignment(
-      mapped.job.summary,
-      mapped.job.meterResults,
-    );
+    this.validateStatusSummaryAlignment(mapped.job.summary, mapped.job.meterResults);
     this.validateHesUnreachableMessage(mapped);
     if (expectedMeterId) {
       this.validateExpectedMeterPresent(mapped.job.meterResults, expectedMeterId);

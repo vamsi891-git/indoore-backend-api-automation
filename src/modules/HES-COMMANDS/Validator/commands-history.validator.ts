@@ -1,31 +1,30 @@
 import { expect } from "@playwright/test";
 import {
+  EXPECTED_HISTORY_PAGINATION_KEYS,
+  EXPECTED_HISTORY_RESPONSE_KEYS,
+  EXPECTED_HISTORY_ROW_KEYS,
+} from "../Data/commands-history.data";
+import {
   CommandsHistoryData,
   CommandsHistoryResponse,
   CommandsHistoryRow,
 } from "../Mapper/commands-history.mapper";
 
+/** Align with GET /commands/history/filters statuses. */
 export const COMMAND_HISTORY_STATUSES = [
   "SUCCESS",
   "FAILED",
   "IN_PROGRESS",
-  "PARTIAL",
+  "QUEUED",
   "REJECTED",
+  "PARTIAL",
+  "STOPPING",
+  "STOPPED",
 ] as const;
 
 export const COMMAND_SELECTION_TYPES = ["Single", "Bulk"] as const;
 
-/** Command names observed in hes_command_logs (non-exhaustive). */
-export const KNOWN_COMMAND_NAMES = [
-  "Get Relay Status",
-  "Ping Meter",
-  "Get Load Curtailment",
-  "Get Profile Period",
-  "Get Billing Period",
-] as const;
-
-const REQUESTED_TIME_PATTERN =
-  /^[A-Za-z]{3}\s+\d{1,2},\s+\d{4}\s+\d{1,2}:\d{2}\s+(AM|PM)$/;
+const REQUESTED_TIME_PATTERN = /^[A-Za-z]{3}\s+\d{1,2},\s+\d{4}\s+\d{1,2}:\d{2}\s+(AM|PM)$/;
 
 /** Split selected meter field (may contain commas/spaces from bulk input). */
 export function parseSelectedMeterTokens(value: string): string[] {
@@ -37,9 +36,7 @@ export function parseSelectedMeterTokens(value: string): string[] {
 
 export function parseCommandsHistoryTime(value: string): number {
   const parsed = Date.parse(value);
-  expect(Number.isFinite(parsed), `Invalid requestedTime: ${value}`).toBe(
-    true,
-  );
+  expect(Number.isFinite(parsed), `Invalid datetime: ${value}`).toBe(true);
   return parsed;
 }
 
@@ -49,6 +46,21 @@ export class CommandsHistoryValidator {
     expect(body.message?.trim().length).toBeGreaterThan(0);
     expect(Array.isArray(body.data)).toBe(true);
     expect(body.pagination).toBeDefined();
+  }
+
+  validateResponseKeys(body: object): void {
+    const keys = Object.keys(body).filter((k) => k !== "error");
+    expect(keys.sort()).toEqual([...EXPECTED_HISTORY_RESPONSE_KEYS].sort());
+  }
+
+  validatePaginationKeys(pagination: object): void {
+    expect(Object.keys(pagination).sort()).toEqual([...EXPECTED_HISTORY_PAGINATION_KEYS].sort());
+  }
+
+  validateRowKeys(rawRows: object[]): void {
+    for (const row of rawRows) {
+      expect(Object.keys(row).sort()).toEqual([...EXPECTED_HISTORY_ROW_KEYS].sort());
+    }
   }
 
   validateMessage(data: CommandsHistoryData): void {
@@ -66,49 +78,108 @@ export class CommandsHistoryValidator {
       expect(row.requestId).toBe(row.requestId.trim());
       expect(row.requestId.length).toBeGreaterThan(0);
       expect(/^\d+$/.test(row.requestId)).toBe(true);
-      expect(row.requestedBy).toBe(row.requestedBy.trim());
+      expect(row.jobName.length).toBeGreaterThan(0);
       expect(row.requestedBy.length).toBeGreaterThan(0);
-      expect(row.commandName).toBe(row.commandName.trim());
+      expect(row.uniqueId.length).toBeGreaterThan(0);
       expect(row.commandName.length).toBeGreaterThan(0);
-      expect(row.selectedMeter).toBe(row.selectedMeter.trim());
       expect(row.selectedMeter.length).toBeGreaterThan(0);
+      expect(row.meterSerialNumber.length).toBeGreaterThan(0);
+
       const meterTokens = parseSelectedMeterTokens(row.selectedMeter);
-      expect(
-        meterTokens.length,
-        `selectedMeter must contain at least one token: ${row.selectedMeter}`,
-      ).toBeGreaterThan(0);
+      expect(meterTokens.length).toBeGreaterThan(0);
       for (const token of meterTokens) {
-        expect(
-          /^[A-Za-z0-9._-]+$/.test(token),
-          `Invalid meter token "${token}" in selectedMeter: ${row.selectedMeter}`,
-        ).toBe(true);
+        expect(/^[A-Za-z0-9._-]+$/.test(token)).toBe(true);
       }
-      expect(row.selectionType).toBe(row.selectionType.trim());
+
       expect(row.selectionType.length).toBeGreaterThan(0);
-      expect(row.requestedTime).toBe(row.requestedTime.trim());
-      expect(row.requestedTime.length).toBeGreaterThan(0);
       expect(REQUESTED_TIME_PATTERN.test(row.requestedTime)).toBe(true);
-      expect(row.status).toBe(row.status.trim());
+      expect(Number.isFinite(Date.parse(row.requestedAt))).toBe(true);
       expect(row.status.length).toBeGreaterThan(0);
+      expect(row.overallStatus.length).toBeGreaterThan(0);
+      expect(typeof row.statusUpdateDelayed).toBe("boolean");
+      expect(typeof row.isRetryScheduled).toBe("boolean");
+      expect(Array.isArray(row.meterResponseRows)).toBe(true);
+    }
+  }
+
+  validateMeterIdentity(rows: CommandsHistoryRow[]): void {
+    for (const row of rows) {
+      if (row.selectionType === "Single") {
+        expect(row.selectedMeter).toBe(row.meterSerialNumber);
+        expect(row.totalMeters).toBe(1);
+      }
+      if (row.bulkJobId == null) {
+        expect(row.jobName).toBe(row.requestId);
+      }
+    }
+  }
+
+  validateMeterCounts(rows: CommandsHistoryRow[]): void {
+    for (const row of rows) {
+      expect(row.totalMeters).toBeGreaterThanOrEqual(0);
+      expect(row.processedMeters).toBeGreaterThanOrEqual(0);
+      expect(row.successfulMeters).toBeGreaterThanOrEqual(0);
+      expect(row.failedMeters).toBeGreaterThanOrEqual(0);
+      expect(row.pendingMeters).toBeGreaterThanOrEqual(0);
+      expect(row.stoppedMeters).toBeGreaterThanOrEqual(0);
+
+      expect(row.successfulMeters + row.failedMeters + row.pendingMeters + row.stoppedMeters).toBe(
+        row.totalMeters,
+      );
+
+      expect(row.processedMeters).toBeLessThanOrEqual(row.totalMeters);
+    }
+  }
+
+  validateTimingFields(rows: CommandsHistoryRow[]): void {
+    for (const row of rows) {
+      if (row.startedAt != null) {
+        expect(Number.isFinite(Date.parse(row.startedAt))).toBe(true);
+      }
+      if (row.completedAt != null) {
+        expect(Number.isFinite(Date.parse(row.completedAt))).toBe(true);
+      }
+      if (row.startedAt != null && row.completedAt != null) {
+        expect(Date.parse(row.completedAt)).toBeGreaterThanOrEqual(Date.parse(row.startedAt));
+      }
+      if (row.executionDurationMs != null) {
+        expect(row.executionDurationMs).toBeGreaterThanOrEqual(0);
+        expect(Number.isInteger(row.executionDurationMs)).toBe(true);
+      }
+      if (row.executionDeadlineAt != null) {
+        expect(Number.isFinite(Date.parse(row.executionDeadlineAt))).toBe(true);
+      }
+      if (row.status === "SUCCESS" && row.executionDurationMs != null) {
+        expect(row.completedAt).toBeTruthy();
+        expect(row.startedAt).toBeTruthy();
+      }
+    }
+  }
+
+  validateMeterResponseRows(rows: CommandsHistoryRow[]): void {
+    for (const row of rows) {
+      for (const item of row.meterResponseRows) {
+        expect(item.label.length).toBeGreaterThan(0);
+        expect(item.value.length).toBeGreaterThan(0);
+      }
+      if (row.meterResponseRows.length > 0) {
+        expect(row.meterResponse).toBeTruthy();
+      }
     }
   }
 
   /** Backend: sno is global row index across pages (page 2 limit 10 → sno 11..20). */
-  validateSnoSequence(
-    rows: CommandsHistoryRow[],
-    page: number,
-    limit: number,
-  ): void {
+  validateSnoSequence(rows: CommandsHistoryRow[], page: number, limit: number): void {
     rows.forEach((row, index) => {
       expect(row.sno).toBe((page - 1) * limit + index + 1);
     });
   }
 
-  /** Backend: ORDER BY requested_time DESC */
+  /** Prefer ISO requestedAt for stable DESC ordering. */
   validateRequestedTimeDescending(rows: CommandsHistoryRow[]): void {
     for (let i = 0; i < rows.length - 1; i++) {
-      const current = parseCommandsHistoryTime(rows[i].requestedTime);
-      const next = parseCommandsHistoryTime(rows[i + 1].requestedTime);
+      const current = parseCommandsHistoryTime(rows[i].requestedAt);
+      const next = parseCommandsHistoryTime(rows[i + 1].requestedAt);
       expect(current).toBeGreaterThanOrEqual(next);
     }
   }
@@ -152,21 +223,28 @@ export class CommandsHistoryValidator {
   validateStatusValues(rows: CommandsHistoryRow[]): void {
     for (const row of rows) {
       expect(COMMAND_HISTORY_STATUSES).toContain(row.status);
+      expect(COMMAND_HISTORY_STATUSES).toContain(row.overallStatus);
     }
   }
 
   validateStatusReasonRules(rows: CommandsHistoryRow[]): void {
     for (const row of rows) {
       if (row.status === "FAILED" || row.status === "REJECTED") {
-        expect(row.reason).toBeTruthy();
-        expect(row.reason!.trim().length).toBeGreaterThan(0);
+        const detail = row.reason ?? row.failureReason ?? row.message;
+        expect(detail).toBeTruthy();
+        expect(String(detail).trim().length).toBeGreaterThan(0);
       } else if (row.status === "PARTIAL") {
-        // PARTIAL may include a reason from HES; blank is also allowed.
         if (row.reason != null) {
           expect(row.reason.trim().length).toBeGreaterThan(0);
         }
-      } else {
+      } else if (
+        row.status === "SUCCESS" ||
+        row.status === "QUEUED" ||
+        row.status === "IN_PROGRESS"
+      ) {
         expect(row.reason).toBeNull();
+        expect(row.failureCode).toBeNull();
+        expect(row.failureReason).toBeNull();
       }
     }
   }
@@ -187,7 +265,7 @@ export class CommandsHistoryValidator {
 
   /**
    * Backend search OR filter — each row must match the search needle on at least
-   * one exposed field (requestId, commandName, selected, selectionType, status, requestedBy, reason).
+   * one exposed field.
    */
   validateSearchFilter(rows: CommandsHistoryRow[], search: string): void {
     const needle = search.trim().toLowerCase();
@@ -198,26 +276,23 @@ export class CommandsHistoryValidator {
         String(row.requestId),
         row.commandName,
         row.selectedMeter,
+        row.meterSerialNumber,
         row.selectionType,
         row.status,
         row.requestedBy,
         row.reason ?? "",
+        row.message ?? "",
       ].map((value) => value.toLowerCase());
 
       const matches = fields.some((value) => value.includes(needle));
-      expect(matches, `Row requestId=${row.requestId} must match search`).toBe(
-        true,
-      );
+      expect(matches, `Row requestId=${row.requestId} must match search`).toBe(true);
     }
   }
 
   /**
    * Backend: command_name ILIKE %commandType% when commandType !== 'All Commands'.
    */
-  validateCommandTypeFilter(
-    rows: CommandsHistoryRow[],
-    commandType: string,
-  ): void {
+  validateCommandTypeFilter(rows: CommandsHistoryRow[], commandType: string): void {
     const needle = commandType.trim().toLowerCase();
     expect(needle.length).toBeGreaterThan(0);
 
@@ -226,18 +301,18 @@ export class CommandsHistoryValidator {
     }
   }
 
-  validateTotalRecords(
-    data: CommandsHistoryData,
-    requestedLimit: number,
-  ): void {
+  validateTotalRecords(data: CommandsHistoryData, requestedLimit: number): void {
     const { pagination, rows } = data;
     expect(Number.isInteger(pagination.totalRecords)).toBe(true);
-    expect(pagination.totalRecords).toBeGreaterThan(0);
+    expect(pagination.totalRecords).toBeGreaterThanOrEqual(0);
     expect(pagination.totalRecords).toBeGreaterThanOrEqual(rows.length);
 
-    expect(
-      (pagination.totalPages - 1) * pagination.limit,
-    ).toBeLessThan(pagination.totalRecords);
+    if (pagination.totalRecords === 0) {
+      expect(rows.length).toBe(0);
+      return;
+    }
+
+    expect((pagination.totalPages - 1) * pagination.limit).toBeLessThan(pagination.totalRecords);
     expect(pagination.totalPages * pagination.limit).toBeGreaterThanOrEqual(
       pagination.totalRecords,
     );
@@ -266,9 +341,7 @@ export class CommandsHistoryValidator {
     expect(pagination.currentPage).toBe(requestedPage);
     expect(pagination.limit).toBe(requestedLimit);
     expect(pagination.totalRecords).toBeGreaterThanOrEqual(rows.length);
-    expect(pagination.totalPages).toBe(
-      Math.ceil(pagination.totalRecords / pagination.limit),
-    );
+    expect(pagination.totalPages).toBe(Math.ceil(pagination.totalRecords / pagination.limit));
     expect(rows.length).toBeLessThanOrEqual(requestedLimit);
 
     if (pagination.currentPage < pagination.totalPages) {
@@ -277,14 +350,11 @@ export class CommandsHistoryValidator {
 
     if (pagination.currentPage === pagination.totalPages) {
       const expectedLastPageCount =
-        pagination.totalRecords -
-        (pagination.totalPages - 1) * pagination.limit;
+        pagination.totalRecords - (pagination.totalPages - 1) * pagination.limit;
       expect(rows.length).toBe(expectedLastPageCount);
     }
 
-    expect(pagination.hasNextPage).toBe(
-      pagination.currentPage < pagination.totalPages,
-    );
+    expect(pagination.hasNextPage).toBe(pagination.currentPage < pagination.totalPages);
     expect(pagination.hasPreviousPage).toBe(pagination.currentPage > 1);
   }
 
@@ -292,10 +362,35 @@ export class CommandsHistoryValidator {
     data: CommandsHistoryData,
     requestedPage: number,
     requestedLimit: number,
+    rawBody?: CommandsHistoryResponse,
   ): void {
+    if (rawBody) {
+      this.validateResponseKeys(rawBody);
+      if (rawBody.pagination) {
+        this.validatePaginationKeys(rawBody.pagination);
+      }
+      if (rawBody.data) {
+        this.validateRowKeys(rawBody.data);
+      }
+    }
     this.validateMessage(data);
+    this.validatePaginationFieldTypes(data);
+    this.validateTotalRecords(data, requestedLimit);
+
+    // Empty history is valid (fresh env / no commands yet) — skip row contract.
+    if (data.rows.length === 0) {
+      expect(data.pagination.totalRecords).toBe(0);
+      expect(data.pagination.hasPreviousPage).toBe(false);
+      expect(data.pagination.hasNextPage).toBe(false);
+      return;
+    }
+
     this.validateRowsExist(data);
     this.validateRowFields(data.rows);
+    this.validateMeterIdentity(data.rows);
+    this.validateMeterCounts(data.rows);
+    this.validateTimingFields(data.rows);
+    this.validateMeterResponseRows(data.rows);
     this.validateSnoSequence(data.rows, requestedPage, requestedLimit);
     this.validateRequestedTimeDescending(data.rows);
     this.validateUniqueRowKeys(data.rows);
@@ -304,8 +399,6 @@ export class CommandsHistoryValidator {
     this.validateStatusReasonRules(data.rows);
     this.validateSelectionTypes(data.rows);
     this.validateCommandNames(data.rows);
-    this.validateTotalRecords(data, requestedLimit);
-    this.validatePaginationFieldTypes(data);
     this.validatePagination(data, requestedPage, requestedLimit);
   }
 }

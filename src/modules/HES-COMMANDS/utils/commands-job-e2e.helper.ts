@@ -320,6 +320,48 @@ export function logCommandE2eResponses(
 }
 
 /**
+ * Clear before/after-style console lines so GET-only vs SET E2E is obvious in the terminal.
+ * When SET did not run, "After setting" / "After values" print n/a.
+ */
+export function logCommandConfigValueSnapshot(options: {
+  label: string;
+  meterId: string;
+  commandType: string;
+  /** false = GET-only smoke; true = SET was posted. */
+  setRan: boolean;
+  jobName?: string;
+  /** Values from first GET (or only GET). */
+  initialValues?: string | null;
+  /** What we attempted to set (human summary), if SET ran. */
+  setPayloadSummary?: string | null;
+  /** Values from GET after SET. */
+  afterValues?: string | null;
+}): void {
+  const {
+    label,
+    meterId,
+    commandType,
+    setRan,
+    jobName,
+    initialValues,
+    setPayloadSummary,
+    afterValues,
+  } = options;
+
+  console.log(`\n========== ${label} — value clarity ==========`);
+  console.log(`Meter:          ${meterId}`);
+  console.log(`Command type:   ${commandType}`);
+  console.log(`Job name:       ${jobName ?? "n/a"}`);
+  console.log(`SET job ran:    ${setRan ? "YES" : "NO (GET only — SET not executed)"}`);
+  console.log(`Initial value:  ${initialValues?.trim() || "(none)"}`);
+  console.log(
+    `After setting:  ${setRan ? setPayloadSummary?.trim() || "(set payload not logged)" : "n/a (SET skipped)"}`,
+  );
+  console.log(`After value:    ${setRan ? afterValues?.trim() || "(none)" : "n/a (SET skipped)"}`);
+  console.log(`================================================\n`);
+}
+
+/**
  * Shared query-phase assertions for command E2E.
  * If poll completed → run onFinished (FINISHED / hesResponse checks).
  * If still pending → assert async RUNNING/IN_PROGRESS contract and pass.

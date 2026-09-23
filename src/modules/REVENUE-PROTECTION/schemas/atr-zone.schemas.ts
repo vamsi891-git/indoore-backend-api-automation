@@ -1,17 +1,16 @@
 import { z } from "zod";
-import {ColumnSchema,PaginationSchema,} from "../../../core/schemas/api-response.schemas";
-import { P4_DATE_REGEX, ENTRY_DATE_TIME_REGEX } from "./cases.schemas";
+import { ColumnSchema, PaginationSchema } from "../../../core/schemas/api-response.schemas";
 
-/**
- * occurrenceTime uses the same human-readable format as entryDateTime
- * ("28 Apr 2026, 12:00 am"), confirmed from the sample. restorationTime
- * appears empty in every sample row — treat as empty-or-same-format until
- * a populated example is seen. FLAG: confirm with backend whether
- * restorationTime is ever non-empty for this endpoint.
- */
+/** Backend returns Indian display dates (DD-MM-YYYY); empty allowed. */
+export const P4_DATE_REGEX = /^(\d{2}-\d{2}-\d{4})?$/;
+
+/** Human-readable timestamps like "26 Aug 2025, 4:45 pm" or "25 Sept 2025, 4:45 pm". */
+export const ENTRY_DATE_TIME_REGEX =
+  /^\d{1,2} (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec) \d{4}, \d{1,2}:\d{2} (am|pm)$/i;
+
 export const AtrZoneRowSchema = z
   .object({
-    id: z.string().min(1), // NOTE: not sourced from DB — see mapper comment
+    id: z.string().min(1),
     circle: z.string(),
     division: z.string(),
     zone: z.string(),
@@ -22,42 +21,47 @@ export const AtrZoneRowSchema = z
     ivrs: z.string(),
     meterSerialNumber: z.string(),
     eventName: z.string(),
-    eventCategory: z.string(), // observed always empty — see DQ notes
-    occurrenceTime: z.string().regex(ENTRY_DATE_TIME_REGEX, {
-      message: 'occurrenceTime must match "D MMM YYYY, h:mm am/pm"',
-    }),
-    restorationTime: z.string().refine(
-      (val) => val === "" || ENTRY_DATE_TIME_REGEX.test(val),
-      { message: "restorationTime must be empty or match the datetime format" },
-    ),
+    eventCategory: z.string(),
+    occurrenceTime: z
+      .string()
+      .refine((val) => val === "" || ENTRY_DATE_TIME_REGEX.test(val), {
+        message: 'occurrenceTime must be empty or match "D MMM YYYY, h:mm am/pm"',
+      }),
+    restorationTime: z
+      .string()
+      .refine((val) => val === "" || ENTRY_DATE_TIME_REGEX.test(val), {
+        message: "restorationTime must be empty or match the datetime format",
+      }),
     remarks: z.string(),
     amountBilled: z.number(),
-    amountRealised: z.number(), // NOTE: spelled differently than Cases' amountRealisation
+    amountRealised: z.number(),
     fieldRemarks: z.string(),
     p4Number: z.string(),
     p4Date: z.string().regex(P4_DATE_REGEX, {
       message: "p4Date must be DD-MM-YYYY or empty string",
     }),
-    entryDateTime: z.string().regex(ENTRY_DATE_TIME_REGEX, {
-      message: 'entryDateTime must match "D MMM YYYY, h:mm am/pm"',
-    }),
+    enteredByName: z.string(),
+    entryDateTime: z
+      .string()
+      .refine((val) => val === "" || ENTRY_DATE_TIME_REGEX.test(val), {
+        message: 'entryDateTime must be empty or match "D MMM YYYY, h:mm am/pm"',
+      }),
     year: z.string(),
     month: z.string(),
   })
-  .strict();
+  .passthrough();
+
 export const AtrZoneDataSchema = z
   .object({
     columns: z.array(ColumnSchema),
     rows: z.array(AtrZoneRowSchema),
     pagination: PaginationSchema,
   })
-  .strict();
-export const AtrZoneSuccessResponseSchema = z
-  .object({
-    success: z.literal(true),
-    data: AtrZoneDataSchema,
-  })
-  .strict();
-export type AtrZoneRow = z.infer<typeof AtrZoneRowSchema>;
-export type AtrZoneData = z.infer<typeof AtrZoneDataSchema>;
+  .passthrough();
+
+export const AtrZoneSuccessResponseSchema = z.object({
+  success: z.literal(true),
+  data: AtrZoneDataSchema,
+});
+
 export type ParsedAtrZoneResponse = z.infer<typeof AtrZoneSuccessResponseSchema>;

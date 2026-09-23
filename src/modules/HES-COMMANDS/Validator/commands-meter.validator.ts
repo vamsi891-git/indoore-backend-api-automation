@@ -1,4 +1,5 @@
 import { expect } from "@playwright/test";
+import { EXPECTED_COMMANDS_METER_COLUMNS } from "../Data/commands-meter.data";
 import {
   CommandsMeterLookupResponse,
   CommandsMeterLookupRow,
@@ -31,10 +32,7 @@ export class CommandsMeterValidator {
   }
 
   /** API: meterSerialNumber matches request; numeric; no surrounding whitespace. */
-  validateMeterSerialNumber(
-    row: CommandsMeterLookupRow,
-    requestedSerial: string,
-  ): void {
+  validateMeterSerialNumber(row: CommandsMeterLookupRow, requestedSerial: string): void {
     const expected = requestedSerial.trim();
     expect(row.meterSerialNumber).toBe(expected);
     expect(row.meterSerialNumber).toBe(row.meterSerialNumber.trim());
@@ -62,12 +60,27 @@ export class CommandsMeterValidator {
     expect(row.ivrsNumber).toMatch(/^N\d+$/);
   }
 
+  /** API: meterMake present for a resolved in-scope meter. */
+  validateMeterMake(row: CommandsMeterLookupRow): void {
+    expect(row.meterMake).toBeTruthy();
+    expect(row.meterMake!.trim().length).toBeGreaterThan(0);
+    expect(row.meterMake).toBe(row.meterMake!.trim());
+  }
+
+  /** API: data object keys match live contract (no silent field drop). */
+  validateDataKeys(data: object): void {
+    expect(Object.keys(data).sort()).toEqual([...EXPECTED_COMMANDS_METER_COLUMNS].sort());
+  }
+
   validateNullableFieldsTrimmed(row: CommandsMeterLookupRow): void {
     if (row.consumerName !== null) {
       expect(row.consumerName).toBe(row.consumerName.trim());
     }
     if (row.phase !== null) {
       expect(row.phase).toBe(row.phase.trim());
+    }
+    if (row.meterMake !== null) {
+      expect(row.meterMake).toBe(row.meterMake.trim());
     }
     if (row.feeder !== null) {
       expect(row.feeder).toBe(row.feeder.trim());
@@ -100,12 +113,17 @@ export class CommandsMeterValidator {
   validateFullMeterDetails(
     row: CommandsMeterLookupRow,
     requestedSerial: string,
+    rawData?: object,
   ): void {
+    if (rawData) {
+      this.validateDataKeys(rawData);
+    }
     this.validateMeterLookupId(row);
     this.validateMeterSerialNumber(row, requestedSerial);
     this.validateConsumerName(row);
     this.validatePhase(row);
     this.validateIvrsNumber(row);
+    this.validateMeterMake(row);
     this.validateFeeder(row);
     this.validateDtr(row);
     this.validateNetworkHierarchy(row);

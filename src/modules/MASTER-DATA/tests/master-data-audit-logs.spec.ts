@@ -60,6 +60,13 @@ test.describe("Master data — change history", () => {
       validation.execute("Response Envelope", () => validator.validateResponse(responseBody));
 
       const mapped = MasterDataAuditLogsMapper.mapData(responseBody.data);
+      const requestedPage = testCase.query.page ?? 1;
+      if (requestedPage > 1 && mapped.totalPages < requestedPage) {
+        test.skip(
+          true,
+          `Change history has ${mapped.total} change(s); page ${requestedPage} does not exist`,
+        );
+      }
 
       validation.execute("Live Validations", () =>
         validator.validateLiveOk(mapped, testCase.query, testCase.sortDirection),

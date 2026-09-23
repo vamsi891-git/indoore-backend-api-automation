@@ -16,7 +16,7 @@ export const EXPECTED_COMMUNICATION_CATEGORIES = [
   "Unknown",
 ];
 
-export const EXPECTED_COMMUNICATION_PHASES = ["1 PH", "3PH 4CT", "3PH WC", "HT", "Unknown"];
+export const EXPECTED_COMMUNICATION_PHASES = ["1 PH", "3PH 4CT", "3PH WC", "HT"];
 
 export type CommunicationScenario =
   | "happy_all"

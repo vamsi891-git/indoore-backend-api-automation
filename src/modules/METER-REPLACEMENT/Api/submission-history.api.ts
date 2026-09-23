@@ -1,10 +1,6 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
 import { SubmissionHistoryResponse } from "../Mapper/submission-history.mapper";
-import {
-  safeResponseJson,
-  withRateLimitRetry,
-} from "../utils/response.helper";
+import { safeResponseJson, withRateLimitRetry } from "../utils/response.helper";
 
 export interface SubmissionHistoryApiResult {
   rawResponse: APIResponse;
@@ -26,20 +22,16 @@ export class SubmissionHistoryApi {
     const start = Date.now();
 
     const response = await withRateLimitRetry(() =>
-      getWithAutoRefresh(
-        this.authenticatedApi,
-        "/indore/meter-replacement/submissions/history",
-        {
-          params: {
-            page,
-            limit,
-            ...(search ? { search } : {}),
-            ...(status ? { status } : {}),
-            ...(dateFrom ? { dateFrom } : {}),
-            ...(dateTo ? { dateTo } : {}),
-          },
+      this.authenticatedApi.get("/indore/meter-replacement/submissions/history", {
+        params: {
+          page,
+          limit,
+          ...(search ? { search } : {}),
+          ...(status ? { status } : {}),
+          ...(dateFrom ? { dateFrom } : {}),
+          ...(dateTo ? { dateTo } : {}),
         },
-      ),
+      }),
     );
 
     return {

@@ -33,17 +33,10 @@ function isLossPercentageRow(row: HourlyLossReportRow): boolean {
   return normalizeRowKind(row.rowKind) === "LOSSPERCENTAGE";
 }
 function isConsumerDetailRow(row: HourlyLossReportRow): boolean {
-  return (
-    normalizeRowKind(row.rowKind) === "CONSUMER" &&
-    Boolean(row.meterSerialNumber?.length)
-  );
+  return normalizeRowKind(row.rowKind) === "CONSUMER" && Boolean(row.meterSerialNumber?.length);
 }
 function isSummaryRowKind(row: HourlyLossReportRow): boolean {
-  return (
-    isDtrConsumptionRow(row) ||
-    isConsumerConsumptionRow(row) ||
-    isLossPercentageRow(row)
-  );
+  return isDtrConsumptionRow(row) || isConsumerConsumptionRow(row) || isLossPercentageRow(row);
 }
 
 function parseMf(mf: string | number | null | undefined): number | null {
@@ -96,10 +89,7 @@ export class HourlyLossReportValidator {
     }
 
     expect(view.totalPages).toBeGreaterThan(0);
-    const expectedTotalPages = Math.max(
-      1,
-      Math.ceil(view.totalCount / view.pageSize),
-    );
+    const expectedTotalPages = Math.max(1, Math.ceil(view.totalCount / view.pageSize));
     expect(view.totalPages).toBe(expectedTotalPages);
   }
 
@@ -169,9 +159,7 @@ export class HourlyLossReportValidator {
     }
   }
 
-  validateSummaryRowCount(
-    view: HourlyLossReportPaginatedView,
-  ): void {
+  validateSummaryRowCount(view: HourlyLossReportPaginatedView): void {
     if (view.totalCount === 0) {
       return;
     }
@@ -183,9 +171,7 @@ export class HourlyLossReportValidator {
 
     expect(summaryRows.length % 3).toBe(0);
     expect(view.rows.length).toBeGreaterThanOrEqual(summaryRows.length);
-    expect(view.rows.length).toBeLessThanOrEqual(
-      Math.max(view.pageSize * 3, view.totalCount),
-    );
+    expect(view.rows.length).toBeLessThanOrEqual(Math.max(view.pageSize * 3, view.totalCount));
   }
 
   validateSummaryKindCounts(rows: HourlyLossReportRow[]): void {
@@ -202,9 +188,7 @@ export class HourlyLossReportValidator {
   }
 
   validateNoDuplicateRowIds(rows: HourlyLossReportRow[]): void {
-    const ids = rows
-      .map((row) => row.id)
-      .filter((id): id is string => Boolean(id?.trim()));
+    const ids = rows.map((row) => row.id).filter((id): id is string => Boolean(id?.trim()));
     expect(new Set(ids).size).toBe(ids.length);
   }
 
@@ -228,7 +212,9 @@ export class HourlyLossReportValidator {
       expect(row.circle?.length, `Row ${row.rowKind}: circle is required`).toBeGreaterThan(0);
       expect(row.division?.length, `Row ${row.rowKind}: division is required`).toBeGreaterThan(0);
       expect(row.zone?.length, `Row ${row.rowKind}: zone is required`).toBeGreaterThan(0);
-      expect(row.substation?.length, `Row ${row.rowKind}: substation is required`).toBeGreaterThan(0);
+      expect(row.substation?.length, `Row ${row.rowKind}: substation is required`).toBeGreaterThan(
+        0,
+      );
       expect(row.feeder?.length, `Row ${row.rowKind}: feeder is required`).toBeGreaterThan(0);
     }
   }
@@ -242,9 +228,13 @@ export class HourlyLossReportValidator {
       expect(row.substation === null || typeof row.substation === "string").toBe(true);
       expect(row.feeder === null || typeof row.feeder === "string").toBe(true);
       expect(row.dtrName === null || typeof row.dtrName === "string").toBe(true);
-      expect(row.dtrMeterSerialNumber === null || typeof row.dtrMeterSerialNumber === "string").toBe(true);
+      expect(
+        row.dtrMeterSerialNumber === null || typeof row.dtrMeterSerialNumber === "string",
+      ).toBe(true);
       expect(row.consumerName === null || typeof row.consumerName === "string").toBe(true);
-      expect(row.meterSerialNumber === null || typeof row.meterSerialNumber === "string").toBe(true);
+      expect(row.meterSerialNumber === null || typeof row.meterSerialNumber === "string").toBe(
+        true,
+      );
       if (row.mf !== null && row.mf !== undefined) {
         expect(["string", "number"]).toContain(typeof row.mf);
       }
@@ -256,21 +246,33 @@ export class HourlyLossReportValidator {
     }
   }
 
-  validateMandatoryFields(rows: HourlyLossReportRow[],hierarchyType: HourlyLossHierarchyType,): void {
+  validateMandatoryFields(
+    rows: HourlyLossReportRow[],
+    hierarchyType: HourlyLossHierarchyType,
+  ): void {
     for (const row of rows) {
       expect(row.rowKind.trim().length).toBeGreaterThan(0);
       if (isSummaryRowKind(row) || isConsumerDetailRow(row)) {
-        expect(row.dtrName?.length,`Row ${row.rowKind}: dtrName is required`,).toBeGreaterThan(0);
-        expect(row.consumerName?.length,`Row ${row.rowKind}: consumerName is required`,).toBeGreaterThan(0);
+        expect(row.dtrName?.length, `Row ${row.rowKind}: dtrName is required`).toBeGreaterThan(0);
+        expect(
+          row.consumerName?.length,
+          `Row ${row.rowKind}: consumerName is required`,
+        ).toBeGreaterThan(0);
       }
       if (isDtrConsumptionRow(row) || isConsumerConsumptionRow(row) || isLossPercentageRow(row)) {
-        expect(row.dtrMeterSerialNumber?.length,`Row ${row.rowKind}: dtrMeterSerialNumber is required`,).toBeGreaterThan(0);
+        expect(
+          row.dtrMeterSerialNumber?.length,
+          `Row ${row.rowKind}: dtrMeterSerialNumber is required`,
+        ).toBeGreaterThan(0);
       }
       if (isConsumerDetailRow(row)) {
-        expect(row.meterSerialNumber?.length,`Row ${row.rowKind}: meterSerialNumber is required`,).toBeGreaterThan(0);
+        expect(
+          row.meterSerialNumber?.length,
+          `Row ${row.rowKind}: meterSerialNumber is required`,
+        ).toBeGreaterThan(0);
       }
       if (hierarchyType === "feeder" && !row.feeder?.length) {
-        console.log(`BACKEND FINDING: feeder hourly-loss row '${row.rowKind}' missing feeder name`,);
+        console.log(`BACKEND FINDING: feeder hourly-loss row '${row.rowKind}' missing feeder name`);
       }
     }
   }
@@ -292,7 +294,10 @@ export class HourlyLossReportValidator {
   validateTotalEqualsHourlySum(rows: HourlyLossReportRow[]): void {
     for (const row of rows) {
       const hourlySum = getHourlyBucketValues(row).reduce((sum, value) => sum + value, 0);
-      expect(Math.abs(row.total - hourlySum),`Row ${row.rowKind}: total ${row.total} != sum(H1..H24) ${hourlySum}`,).toBeLessThanOrEqual(METRIC_EPSILON);
+      expect(
+        Math.abs(row.total - hourlySum),
+        `Row ${row.rowKind}: total ${row.total} != sum(H1..H24) ${hourlySum}`,
+      ).toBeLessThanOrEqual(METRIC_EPSILON);
     }
   }
   validateSummaryLossMath(rows: HourlyLossReportRow[]): void {
@@ -313,21 +318,73 @@ export class HourlyLossReportValidator {
       const expectedPct = ((dtrValue - consumerValue) / dtrValue) * 100;
       expect(lossPct).toBeGreaterThanOrEqual(0);
       expect(lossPct).toBeLessThanOrEqual(100);
-      expect(Math.abs(lossPct - expectedPct),`${key}: lossPercentage mismatch`,).toBeLessThanOrEqual(METRIC_EPSILON);
+      expect(
+        Math.abs(lossPct - expectedPct),
+        `${key}: lossPercentage mismatch`,
+      ).toBeLessThanOrEqual(METRIC_EPSILON);
     }
     if (dtrRow.total === 0) {
       expect(lossRow.total).toBe(0);
       return;
     }
-    const expectedTotalPct =
-      ((dtrRow.total - consumerRow.total) / dtrRow.total) * 100;
-    expect(Math.abs(lossRow.total - expectedTotalPct),"lossPercentage total mismatch",).toBeLessThanOrEqual(METRIC_EPSILON);
+    const expectedTotalPct = ((dtrRow.total - consumerRow.total) / dtrRow.total) * 100;
+    expect(
+      Math.abs(lossRow.total - expectedTotalPct),
+      "lossPercentage total mismatch",
+    ).toBeLessThanOrEqual(METRIC_EPSILON);
   }
+
+  /**
+   * Hard fail: sum of CONSUMER detail rows must equal CONSUMERCONSUMPTION
+   * for the same DTR (H1..H24 + total). Skip when no detail rows on the page.
+   */
+  validateConsumerDetailSumEqualsSummary(rows: HourlyLossReportRow[]): void {
+    const consumerSummaries = rows.filter(isConsumerConsumptionRow);
+    const detailRows = rows.filter(isConsumerDetailRow);
+    if (consumerSummaries.length === 0 || detailRows.length === 0) {
+      return;
+    }
+
+    for (const summary of consumerSummaries) {
+      const dtrName = String(summary.dtrName ?? "").trim();
+      const matchingDetails = detailRows.filter(
+        (row) => String(row.dtrName ?? "").trim() === dtrName,
+      );
+      if (matchingDetails.length === 0) {
+        continue;
+      }
+
+      for (const key of [...HOURLY_BUCKET_KEYS, "total"] as const) {
+        const childSum = matchingDetails.reduce((sum, row) => sum + Number(row[key] ?? 0), 0);
+        const expected = Number(summary[key] ?? 0);
+        expect(
+          Math.abs(childSum - expected),
+          `DTR "${dtrName}" ${key}: CONSUMER detail sum (${childSum}) must equal CONSUMERCONSUMPTION (${expected})`,
+        ).toBeLessThanOrEqual(METRIC_EPSILON);
+      }
+    }
+  }
+
+  /**
+   * When the response is a single page, pagination.total must equal rows returned
+   * (hard fail on count mismatch).
+   */
+  validateSinglePageRowCount(view: HourlyLossReportPaginatedView): void {
+    if (view.totalCount === 0) {
+      expect(view.rows.length).toBe(0);
+      return;
+    }
+    if (view.totalPages === 1) {
+      expect(
+        view.rows.length,
+        `single-page total (${view.totalCount}) must equal rows.length (${view.rows.length})`,
+      ).toBe(view.totalCount);
+    }
+  }
+
   validateNoDuplicateConsumerMeters(rows: HourlyLossReportRow[]): void {
     const consumerRows = rows.filter(isConsumerDetailRow);
-    const keys = consumerRows.map(
-      (row) => `${row.dtrName ?? ""}::${row.meterSerialNumber ?? ""}`,
-    );
+    const keys = consumerRows.map((row) => `${row.dtrName ?? ""}::${row.meterSerialNumber ?? ""}`);
     expect(new Set(keys).size).toBe(keys.length);
   }
   validateCrossFieldLogic(view: HourlyLossReportPaginatedView): void {
@@ -339,9 +396,7 @@ export class HourlyLossReportValidator {
     }
     if (view.page === view.totalPages && view.totalCount > 0) {
       expect(view.rows.length).toBeGreaterThan(0);
-      expect(view.rows.length).toBeLessThanOrEqual(
-        Math.max(view.pageSize * 3, view.totalCount),
-      );
+      expect(view.rows.length).toBeLessThanOrEqual(Math.max(view.pageSize * 3, view.totalCount));
     }
   }
 }

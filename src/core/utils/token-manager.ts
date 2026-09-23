@@ -136,12 +136,16 @@ export class TokenManager {
       return null;
     }
     const remainingMs = stored.expiresAt - Date.now();
-    if (remainingMs <= this.refreshBufferMs) {
+    // seed() → applyToken() subtracts refreshBufferMs once. Require 2× buffer so
+    // refreshAt stays in the future after seeding (avoids immediate refresh of a
+    // wall-clock-valid but server-revoked session).
+    if (remainingMs <= this.refreshBufferMs * 2) {
       return null;
     }
     return {
       accessToken: stored.accessToken,
-      expiresInSeconds: Math.max(60, Math.floor((remainingMs - this.refreshBufferMs) / 1000)),
+      // Pass full remaining lifetime; applyToken subtracts the buffer once.
+      expiresInSeconds: Math.max(60, Math.floor(remainingMs / 1000)),
       csrfToken: stored.csrfToken,
     };
   }

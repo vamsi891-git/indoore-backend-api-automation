@@ -1,10 +1,6 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
 import { ProgressResponse } from "../Mapper/progress.mapper";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
-import {
-  safeResponseJson,
-  withRateLimitRetry,
-} from "../utils/response.helper";
+import { safeResponseJson, withRateLimitRetry } from "../utils/response.helper";
 
 export interface ProgressApiResult {
   rawResponse: APIResponse;
@@ -21,11 +17,9 @@ export class ProgressApi {
     const start = Date.now();
 
     const response = await withRateLimitRetry(() =>
-      getWithAutoRefresh(
-        this.authenticatedApi,
-        "/indore/meter-replacement/progress",
-        params ? { params } : undefined,
-      ),
+      this.authenticatedApi.get("/indore/meter-replacement/progress", {
+        ...(params ? { params } : {}),
+      }),
     );
 
     return {
@@ -39,10 +33,7 @@ export class ProgressApi {
     const start = Date.now();
 
     const response = await withRateLimitRetry(() =>
-      getWithAutoRefresh(
-        this.authenticatedApi,
-        "/indore/meter-replacement/progress/",
-      ),
+      this.authenticatedApi.get("/indore/meter-replacement/progress/"),
     );
 
     return {

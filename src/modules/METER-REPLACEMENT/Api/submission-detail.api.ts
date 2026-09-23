@@ -1,11 +1,6 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
 import { SubmissionDetailResponse } from "../Mapper/submission-detail.mapper";
-import {
-  encodePathSegment,
-  safeResponseJson,
-  withRateLimitRetry,
-} from "../utils/response.helper";
+import { encodePathSegment, safeResponseJson, withRateLimitRetry } from "../utils/response.helper";
 
 export interface SubmissionDetailApiResult {
   rawResponse: APIResponse;
@@ -16,14 +11,11 @@ export interface SubmissionDetailApiResult {
 export class SubmissionDetailApi {
   constructor(private readonly authenticatedApi: APIRequestContext) {}
 
-  async getSubmissionDetail(
-    submissionId: number | string,
-  ): Promise<SubmissionDetailApiResult> {
+  async getSubmissionDetail(submissionId: number | string): Promise<SubmissionDetailApiResult> {
     const start = Date.now();
 
     const response = await withRateLimitRetry(() =>
-      getWithAutoRefresh(
-        this.authenticatedApi,
+      this.authenticatedApi.get(
         `/indore/meter-replacement/submissions/${encodePathSegment(String(submissionId))}`,
       ),
     );

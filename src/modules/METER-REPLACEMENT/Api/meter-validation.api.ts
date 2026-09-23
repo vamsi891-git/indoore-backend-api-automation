@@ -1,10 +1,6 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
 import { MeterValidationResponse } from "../Mapper/meter-validation.mapper";
-import {
-  safeResponseJson,
-  withRateLimitRetry,
-} from "../utils/response.helper";
+import { safeResponseJson, withRateLimitRetry } from "../utils/response.helper";
 
 export interface MeterValidationApiResult {
   rawResponse: APIResponse;
@@ -19,15 +15,9 @@ export class MeterValidationApi {
     const start = Date.now();
 
     const response = await withRateLimitRetry(() =>
-      getWithAutoRefresh(
-        this.authenticatedApi,
-        "/indore/meter-replacement/meters/validate",
-        {
-          params: {
-            meterSerial,
-          },
-        },
-      ),
+      this.authenticatedApi.get("/indore/meter-replacement/meters/validate", {
+        params: { meterSerial },
+      }),
     );
 
     return {
@@ -41,10 +31,7 @@ export class MeterValidationApi {
     const start = Date.now();
 
     const response = await withRateLimitRetry(() =>
-      getWithAutoRefresh(
-        this.authenticatedApi,
-        "/indore/meter-replacement/meters/validate",
-      ),
+      this.authenticatedApi.get("/indore/meter-replacement/meters/validate"),
     );
 
     return {

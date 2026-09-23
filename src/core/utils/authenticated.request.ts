@@ -172,6 +172,14 @@ async function requestWithAutoRefresh(
     LoggerEngine.info(`${method} ${resolvedUrl} received 401; starting a new session`);
     token = await TokenManager.handleUnauthorized(token);
     response = await executeWithToken(request, method, resolvedUrl, normalizedOptions, token);
+    if (response.status() === 401) {
+      // Fresh login still rejected (device-limit / revoked JWT). Drop cache so the
+      // next call does not keep hammering with the same dead token.
+      TokenManager.discardStoredSession();
+      LoggerEngine.warn(
+        `${method} ${resolvedUrl} still 401 after re-login; discarded cached session`,
+      );
+    }
   }
 
   if (await isCsrfMismatchResponse(response)) {

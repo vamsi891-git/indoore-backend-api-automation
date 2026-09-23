@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-09-21T11:53:07.639Z",
+  "updatedAt": "2026-09-23T12:01:43.114Z",
   "reports": {
     "Consumption Compare Last Month": {
-      "updatedAt": "2026-09-21T11:47:23.785Z",
+      "updatedAt": "2026-09-23T11:34:41.809Z",
       "window": {
         "month": 10,
         "year": 2025
@@ -29,7 +29,7 @@
       ]
     },
     "LF < 5%": {
-      "updatedAt": "2026-09-21T11:53:07.639Z",
+      "updatedAt": "2026-09-23T11:41:53.371Z",
       "window": {
         "month": 10,
         "year": 2025
@@ -76,7 +76,7 @@
       ]
     },
     "LF > 100%": {
-      "updatedAt": "2026-09-18T09:48:35.502Z",
+      "updatedAt": "2026-09-23T11:59:36.515Z",
       "window": {
         "month": 10,
         "year": 2025
@@ -90,7 +90,7 @@
       "sameMeterOnMoreThanOneDtr": []
     },
     "LF < 5% Last Three month": {
-      "updatedAt": "2026-09-18T09:50:49.669Z",
+      "updatedAt": "2026-09-23T12:01:43.114Z",
       "window": {
         "month": 10,
         "year": 2025

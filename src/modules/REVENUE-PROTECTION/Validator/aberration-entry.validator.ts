@@ -1,5 +1,9 @@
 import { expect } from "@playwright/test";
-import type { AberrationEntryData, AberrationEntryQuery, AberrationEntryResponse,} from "../Mapper/aberration-entry.mapper";
+import type {
+  AberrationEntryData,
+  AberrationEntryQuery,
+  AberrationEntryResponse,
+} from "../Mapper/aberration-entry.mapper";
 import { EXPECTED_ABERRATION_ENTRY_COLUMN_KEYS } from "../Data/aberration-entry.data";
 export class AberrationEntryValidator {
   validateResponse(response: AberrationEntryResponse): void {
@@ -20,39 +24,31 @@ export class AberrationEntryValidator {
     }
   }
   /**
-   * Every row should expose exactly the same keys
-   * as defined in columns[].
+   * Every expected column key must exist on each row.
+   * Extra row fields (canEdit, enteredByScope*) are allowed.
    */
   validateColumnKeysMatchRows(data: AberrationEntryData): void {
-    const columnKeys = data.columns.map((c) => c.key).sort();
+    const columnKeys = data.columns.map((c) => c.key);
     for (const expected of EXPECTED_ABERRATION_ENTRY_COLUMN_KEYS) {
       expect(columnKeys).toContain(expected);
     }
     data.rows.forEach((row) => {
-      const rowKeys = Object.keys(row)
-        .filter((key) => key !== "id")
-        .sort();
-      expect(rowKeys).toEqual(columnKeys);
+      const rowKeys = Object.keys(row);
+      for (const key of columnKeys) {
+        expect(rowKeys, `row ${row.id} missing column key ${key}`).toContain(key);
+      }
     });
   }
   validateRowsExist(data: AberrationEntryData): void {
     expect(Array.isArray(data.rows)).toBeTruthy();
-    if (
-      data.pagination.total > 0 &&
-      data.pagination.page <= data.pagination.totalPages
-    ) {
+    if (data.pagination.total > 0 && data.pagination.page <= data.pagination.totalPages) {
       expect(data.rows.length).toBeGreaterThan(0);
     } else {
       expect(data.rows.length).toBe(0);
     }
   }
   validatePagination(data: AberrationEntryData): void {
-    const {
-      page,
-      limit,
-      total,
-      totalPages,
-    } = data.pagination;
+    const { page, limit, total, totalPages } = data.pagination;
     expect(page).toBeGreaterThan(0);
     expect(limit).toBeGreaterThan(0);
     expect(total).toBeGreaterThanOrEqual(0);
@@ -63,18 +59,12 @@ export class AberrationEntryValidator {
       expect(data.rows.length).toEqual(0);
       return;
     }
-    expect(totalPages).toEqual(
-      Math.ceil(total / limit),
-    );
+    expect(totalPages).toEqual(Math.ceil(total / limit));
     if (page < totalPages) {
       expect(data.rows.length).toEqual(limit);
     } else if (page === totalPages) {
       const remainder = total % limit;
-      expect(data.rows.length).toEqual(
-        remainder === 0
-          ? limit
-          : remainder,
-      );
+      expect(data.rows.length).toEqual(remainder === 0 ? limit : remainder);
     }
   }
   validateUniqueRowIds(data: AberrationEntryData): void {
@@ -86,19 +76,56 @@ export class AberrationEntryValidator {
    *
    * Repository confirms month/year are optional.
    */
-  validateQueryEcho(data: AberrationEntryData,query: AberrationEntryQuery,): void {
+  validateQueryEcho(data: AberrationEntryData, query: AberrationEntryQuery): void {
     expect(data.pagination.page).toEqual(query.page ?? 1);
     expect(data.pagination.limit).toEqual(query.limit ?? 10);
   }
-  validateMonthEcho(data: AberrationEntryData,query: AberrationEntryQuery,): void {
-    if (!query.month) {
+  validateMonthEcho(data: AberrationEntryData, query: AberrationEntryQuery): void {
+    if (query.month === undefined || query.month === "") {
       return;
     }
+    const abbrToName: Record<string, string> = {
+      JAN: "January",
+      FEB: "February",
+      MAR: "March",
+      APR: "April",
+      MAY: "May",
+      JUN: "June",
+      JUL: "July",
+      AUG: "August",
+      SEP: "September",
+      OCT: "October",
+      NOV: "November",
+      DEC: "December",
+    };
+    const numericToName: Record<string, string> = {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December",
+    };
+    const requested = String(query.month).trim();
+    const expectedFull =
+      abbrToName[requested.toUpperCase()] ??
+      numericToName[String(Number(requested))] ??
+      numericToName[requested] ??
+      requested;
     data.rows.forEach((row) => {
-      expect(row.month).toEqual(query.month);
+      const ok =
+        row.month.toLowerCase() === expectedFull.toLowerCase() ||
+        row.month.toLowerCase() === requested.toLowerCase();
+      expect(ok, `row month "${row.month}" does not match query month "${requested}"`).toBeTruthy();
     });
   }
-  validateYearEcho(data: AberrationEntryData,query: AberrationEntryQuery,): void {
+  validateYearEcho(data: AberrationEntryData, query: AberrationEntryQuery): void {
     if (!query.year) {
       return;
     }
@@ -111,7 +138,7 @@ export class AberrationEntryValidator {
    * SQL uses COALESCE(...,0)
    * therefore values should never be negative.
    */
-  validateNonNegativeAmounts(data: AberrationEntryData,): void {
+  validateNonNegativeAmounts(data: AberrationEntryData): void {
     data.rows.forEach((row) => {
       expect(row.amountBilled).toBeGreaterThanOrEqual(0);
       expect(row.amountRealised).toBeGreaterThanOrEqual(0);
@@ -123,13 +150,11 @@ export class AberrationEntryValidator {
    * occurrence_time DESC,
    * created_at DESC
    */
-  validateOccurrenceSorting(data: AberrationEntryData,): void {
+  validateOccurrenceSorting(data: AberrationEntryData): void {
     for (let i = 1; i < data.rows.length; i++) {
-      const previous = new Date(
-        data.rows[i - 1].occurrenceTime,
-      ).getTime();
-      const current = new Date(data.rows[i].occurrenceTime,).getTime();
-      if (Number.isNaN(previous) ||Number.isNaN(current)) {
+      const previous = new Date(data.rows[i - 1].occurrenceTime).getTime();
+      const current = new Date(data.rows[i].occurrenceTime).getTime();
+      if (Number.isNaN(previous) || Number.isNaN(current)) {
         continue;
       }
       expect(previous).toBeGreaterThanOrEqual(current);

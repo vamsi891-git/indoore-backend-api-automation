@@ -14,6 +14,7 @@ export interface AtrZoneNegativeCase {
 
 const base = {
   year: String(atrZoneDefaultQuery.year),
+  reportType: String(atrZoneDefaultQuery.reportType ?? "aberrations_details"),
   page: "1",
   limit: "10",
 };

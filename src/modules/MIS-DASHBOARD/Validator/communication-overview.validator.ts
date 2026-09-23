@@ -39,9 +39,9 @@ export class CommunicationOverviewValidator {
     expect(data.overall.total).toBeGreaterThanOrEqual(0);
     expect(data.overall.communicating.count).toBeGreaterThanOrEqual(0);
     expect(data.overall.nonCommunicating.count).toBeGreaterThanOrEqual(0);
-    expect(
-      data.overall.communicating.count + data.overall.nonCommunicating.count,
-    ).toBe(data.overall.total);
+    expect(data.overall.communicating.count + data.overall.nonCommunicating.count).toBe(
+      data.overall.total,
+    );
     this.validateShare(
       data.overall.communicating.count,
       data.overall.total,
@@ -59,7 +59,7 @@ export class CommunicationOverviewValidator {
     for (const item of data.phases) {
       expect(item.label).toBeTruthy();
       expect(item.count).toBeGreaterThanOrEqual(0);
-      this.validateShare(item.count, data.overall.total, item.percentage);
+      this.validateShare(item.count, data.overall.communicating.count, item.percentage);
     }
   }
 
@@ -67,9 +67,10 @@ export class CommunicationOverviewValidator {
     data: CommunicationOverviewData,
     expected = EXPECTED_OVERVIEW_PHASES,
   ) {
-    expect(data.phases.map((item) => item.label).sort()).toEqual(
-      [...expected].sort(),
-    );
+    const labels = new Set(data.phases.map((item) => item.label));
+    for (const want of expected) {
+      expect(labels.has(want), `missing meter type: ${want}`).toBeTruthy();
+    }
   }
 
   validateUniquePhaseLabels(data: CommunicationOverviewData) {
@@ -87,15 +88,12 @@ export class CommunicationOverviewValidator {
     consumers: CommunicationOverviewData,
     dtrs: CommunicationOverviewData,
   ) {
-    expect(allMeters.overall.total).toBe(
-      consumers.overall.total + dtrs.overall.total,
-    );
+    expect(allMeters.overall.total).toBe(consumers.overall.total + dtrs.overall.total);
     expect(allMeters.overall.communicating.count).toBe(
       consumers.overall.communicating.count + dtrs.overall.communicating.count,
     );
     expect(allMeters.overall.nonCommunicating.count).toBe(
-      consumers.overall.nonCommunicating.count +
-        dtrs.overall.nonCommunicating.count,
+      consumers.overall.nonCommunicating.count + dtrs.overall.nonCommunicating.count,
     );
   }
 

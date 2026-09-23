@@ -1,10 +1,6 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
 import { DashboardSummaryResponse } from "../Mapper/dashboard-summary.mapper";
-import { getWithAutoRefresh } from "../../../core/utils/authenticated.request";
-import {
-  safeResponseJson,
-  withRateLimitRetry,
-} from "../utils/response.helper";
+import { safeResponseJson, withRateLimitRetry } from "../utils/response.helper";
 
 export interface DashboardSummaryApiResult {
   rawResponse: APIResponse;
@@ -21,11 +17,9 @@ export class DashboardSummaryApi {
     const start = Date.now();
 
     const response = await withRateLimitRetry(() =>
-      getWithAutoRefresh(
-        this.authenticatedApi,
-        "/indore/meter-replacement/dashboard-summary",
-        params ? { params } : undefined,
-      ),
+      this.authenticatedApi.get("/indore/meter-replacement/dashboard-summary", {
+        ...(params ? { params } : {}),
+      }),
     );
 
     return {
@@ -39,10 +33,7 @@ export class DashboardSummaryApi {
     const start = Date.now();
 
     const response = await withRateLimitRetry(() =>
-      getWithAutoRefresh(
-        this.authenticatedApi,
-        "/indore/meter-replacement/dashboard-summary/",
-      ),
+      this.authenticatedApi.get("/indore/meter-replacement/dashboard-summary/"),
     );
 
     return {

@@ -18,28 +18,6 @@ const FILE_ERROR_SCENARIOS = new Set([
   "file_no_data_rows",
 ]);
 const FILE_SOFT_ERROR_SCENARIOS = new Set(["file_duplicate_columns"]);
-const ROW_LEVEL_SCENARIOS = new Set([
-  "validate_all_valid",
-  "validate_mixed",
-  "row_missing_old_meter_serial",
-  "row_old_meter_not_found",
-  "row_old_meter_inactive",
-  "row_missing_new_meter_serial",
-  "row_new_meter_not_found",
-  "row_new_meter_inactive",
-  "row_new_meter_already_assigned",
-  "row_new_meter_in_active_replacement",
-  "row_old_new_same_serial",
-  "row_duplicate_old_meter_serial_in_file",
-  "row_duplicate_new_meter_serial_in_file",
-  "row_consumer_has_pending_replacement",
-  "row_missing_replacement_reason",
-  "row_invalid_old_meter_reading",
-  "row_invalid_new_meter_reading",
-  "row_negative_reading",
-  "row_invalid_latitude",
-  "row_invalid_longitude",
-]);
 function shouldSkipForEnv(
   testCase: (typeof bulkValidateMeterReplacementTestCases)[number],
 ): boolean {

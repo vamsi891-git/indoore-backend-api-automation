@@ -107,11 +107,17 @@ export function registerHourlyLossReportTest(
           validation.execute("Summary Loss Math", () =>
             validator.validateSummaryLossMath(view.rows),
           );
+          validation.execute("Consumer Detail Sum Equals Summary", () =>
+            validator.validateConsumerDetailSumEqualsSummary(view.rows),
+          );
           validation.execute("Duplicate Consumer Meters", () =>
             validator.validateNoDuplicateConsumerMeters(view.rows),
           );
         }
 
+        validation.execute("Single Page Row Count", () =>
+          validator.validateSinglePageRowCount(view),
+        );
         validation.execute("Cross Field Logic", () => validator.validateCrossFieldLogic(view));
       } finally {
         ApiValidationHelper.finalize(validation, {

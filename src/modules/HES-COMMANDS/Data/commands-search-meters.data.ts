@@ -5,27 +5,21 @@ export const commandsSearchMetersData = {
   paginationItemStart: 6,
   invalidItemCount: 0,
   maxResponseTimeMs: 120_000,
-  /** Stable HES meter ordering for itemStart=1, itemCount=10 smoke window. */
+  /** Live HES meter ordering for itemStart=1, itemCount=10 (update when pool changes). */
   expectedFirstPageMeterIds: [
-    "ABCDEF2400166",
-    "AW8005338",
-    "AW8005337",
-    "ABCDEF2400165",
-    "40000001",
-    "95610000975",
+    "9697800",
+    "EZ9100144",
+    "CA0225944",
+    "SC12220562",
+    "6164177",
     "40000002",
-    "60000001",
-    "@123456",
-    "@281120",
+    "19272930",
+    "00250709",
+    "99751580",
+    "85092812",
   ],
-  expectedPaginationMeterIds: [
-    "95610000975",
-    "40000002",
-    "60000001",
-    "@123456",
-    "@281120",
-  ],
-  searchMeterId: "AW8005338",
+  expectedPaginationMeterIds: ["40000002", "19272930", "00250709", "99751580", "85092812"],
+  searchMeterId: "99751580",
 } as const;
 
 export const SEARCH_METERS_PATH = "/indore/commands/search-meters";

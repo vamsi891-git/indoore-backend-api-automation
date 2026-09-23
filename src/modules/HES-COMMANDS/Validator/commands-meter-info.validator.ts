@@ -1,4 +1,5 @@
 import { expect } from "@playwright/test";
+import { EXPECTED_COMMANDS_METER_INFO_COLUMNS } from "../Data/commands-meter.data";
 import {
   CommandsMeterInfoResponse,
   CommandsMeterInfoRow,
@@ -21,6 +22,11 @@ export class CommandsMeterInfoValidator {
 
   validateNotFoundResponse(body: CommandsMeterInfoResponse): void {
     this.validateErrorResponse(body);
+  }
+
+  /** API: data object keys match live contract (no silent field drop). */
+  validateDataKeys(data: object): void {
+    expect(Object.keys(data).sort()).toEqual([...EXPECTED_COMMANDS_METER_INFO_COLUMNS].sort());
   }
 
   validateMeterId(row: CommandsMeterInfoRow, requestedSerial: string): void {
@@ -51,6 +57,8 @@ export class CommandsMeterInfoValidator {
     expect(row.vendor).toBe(row.vendor.trim());
     expect(row.firmwareVersion).toBe(row.firmwareVersion.trim());
     expect(row.hardwareVersion).toBe(row.hardwareVersion.trim());
+    expect(row.createTime).toBe(row.createTime.trim());
+    expect(row.updateTime).toBe(row.updateTime.trim());
   }
 
   validateFirmwareVersion(row: CommandsMeterInfoRow): void {
@@ -65,7 +73,11 @@ export class CommandsMeterInfoValidator {
   validateFullMeterInfo(
     row: CommandsMeterInfoRow,
     requestedSerial: string,
+    rawData?: object,
   ): void {
+    if (rawData) {
+      this.validateDataKeys(rawData);
+    }
     this.validateMeterId(row, requestedSerial);
     this.validateNodeId(row);
     this.validateVendor(row);

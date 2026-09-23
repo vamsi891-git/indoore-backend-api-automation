@@ -28,7 +28,7 @@ export class LossAnalysisStatsValidator {
     expect(response.data.peakLossHour).toBeDefined();
     expect(response.data.lowestLossHour).toBeDefined();
   }
-  validateQueryEcho(data: LossAnalysisStatsData,query: LossAnalysisStatsQuery,): void {
+  validateQueryEcho(data: LossAnalysisStatsData, query: LossAnalysisStatsQuery): void {
     expect(data.networkLookupId).toBe(query.networkLookupId);
     expect(data.fromDate).toBe(query.fromDate);
     expect(data.toDate).toBe(query.toDate);
@@ -53,21 +53,16 @@ export class LossAnalysisStatsValidator {
     expect(data.totalLoss).toBeGreaterThanOrEqual(0);
   }
   validateTotalLossMath(data: LossAnalysisStatsData): void {
-    const expected = expectedTotalLoss(
-      data.totalEnergyInput,
-      data.totalConsumption,
-    );
+    const expected = expectedTotalLoss(data.totalEnergyInput, data.totalConsumption);
     expect(
       Math.abs(data.totalLoss - expected),
       `totalLoss should equal max(0, input - consumption)`,
     ).toBeLessThanOrEqual(METRIC_EPSILON);
   }
   validateLossNotExceedingInput(data: LossAnalysisStatsData): void {
-    expect(data.totalLoss).toBeLessThanOrEqual(
-      data.totalEnergyInput + METRIC_EPSILON,
-    );
+    expect(data.totalLoss).toBeLessThanOrEqual(data.totalEnergyInput + METRIC_EPSILON);
   }
-  validateHourBucket(bucket: LossAnalysisStatsHourBucket,label: string,): void {
+  validateHourBucket(bucket: LossAnalysisStatsHourBucket, label: string): void {
     expect(bucket.hour.trim().length, `${label}.hour`).toBeGreaterThan(0);
     expect(bucket.time.trim().length, `${label}.time`).toBeGreaterThan(0);
     expect(bucket.hour).toMatch(/^H([1-9]|1\d|2[0-4])$/);
@@ -87,9 +82,7 @@ export class LossAnalysisStatsValidator {
     this.validateHourBucket(data.lowestLossHour, "lowestLossHour");
   }
   validatePeakVsLowest(data: LossAnalysisStatsData): void {
-    expect(data.peakLossHour.lossPct).toBeGreaterThanOrEqual(
-      data.lowestLossHour.lossPct,
-    );
+    expect(data.peakLossHour.lossPct).toBeGreaterThanOrEqual(data.lowestLossHour.lossPct);
   }
   validateZeroDataConsistency(data: LossAnalysisStatsData): void {
     if (data.totalEnergyInput !== 0 || data.totalConsumption !== 0) {
@@ -100,7 +93,52 @@ export class LossAnalysisStatsValidator {
     expect(data.lowestLossHour.lossPct).toBe(0);
   }
 
-  validateCrossFieldLogic(data: LossAnalysisStatsData,query: LossAnalysisStatsQuery,): void {
+  /**
+   * Same-day stats must agree with trends series max/min lossPct (and hour).
+   * Ties: any trends hour with the same lossPct is accepted.
+   */
+  validateMatchesTrendsPeakLowest(
+    stats: LossAnalysisStatsData,
+    trends: { date: string; items: Array<{ hour: string; lossPct: number }> },
+  ): void {
+    expect(
+      stats.fromDate === stats.toDate,
+      "stats↔trends peak/lowest requires single-day stats range",
+    ).toBe(true);
+    expect(
+      trends.date,
+      `trends.date (${trends.date}) must equal stats day (${stats.fromDate})`,
+    ).toEqual(stats.fromDate);
+    expect(trends.items.length).toBeGreaterThan(0);
+
+    const maxPct = Math.max(...trends.items.map((i) => i.lossPct));
+    const minPct = Math.min(...trends.items.map((i) => i.lossPct));
+    expect(
+      Math.abs(stats.peakLossHour.lossPct - maxPct),
+      `stats.peakLossHour.lossPct (${stats.peakLossHour.lossPct}) must equal trends max (${maxPct})`,
+    ).toBeLessThanOrEqual(METRIC_EPSILON);
+    expect(
+      Math.abs(stats.lowestLossHour.lossPct - minPct),
+      `stats.lowestLossHour.lossPct (${stats.lowestLossHour.lossPct}) must equal trends min (${minPct})`,
+    ).toBeLessThanOrEqual(METRIC_EPSILON);
+
+    const peakHours = trends.items
+      .filter((i) => Math.abs(i.lossPct - maxPct) <= METRIC_EPSILON)
+      .map((i) => i.hour);
+    const lowHours = trends.items
+      .filter((i) => Math.abs(i.lossPct - minPct) <= METRIC_EPSILON)
+      .map((i) => i.hour);
+    expect(
+      peakHours,
+      `stats.peakLossHour.hour (${stats.peakLossHour.hour}) not among trends max hours ${peakHours.join(",")}`,
+    ).toContain(stats.peakLossHour.hour);
+    expect(
+      lowHours,
+      `stats.lowestLossHour.hour (${stats.lowestLossHour.hour}) not among trends min hours ${lowHours.join(",")}`,
+    ).toContain(stats.lowestLossHour.hour);
+  }
+
+  validateCrossFieldLogic(data: LossAnalysisStatsData, query: LossAnalysisStatsQuery): void {
     this.validateQueryEcho(data, query);
     this.validateDateFields(data);
     this.validateEnergyMetricTypes(data);
@@ -113,7 +151,10 @@ export class LossAnalysisStatsValidator {
     this.validateZeroDataConsistency(data);
   }
 
-  validateAll( response: LossAnalysisStatsResponse, query: LossAnalysisStatsQuery): LossAnalysisStatsData {
+  validateAll(
+    response: LossAnalysisStatsResponse,
+    query: LossAnalysisStatsQuery,
+  ): LossAnalysisStatsData {
     this.validateResponse(response);
     const data = mapLossAnalysisStatsData(response);
     this.validateCrossFieldLogic(data, query);

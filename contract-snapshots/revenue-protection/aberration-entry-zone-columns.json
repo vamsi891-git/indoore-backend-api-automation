@@ -1,6 +1,14 @@
 {
   "columns": [
     {
+      "key": "year",
+      "header": "Year"
+    },
+    {
+      "key": "month",
+      "header": "Month"
+    },
+    {
       "key": "circle",
       "header": "Circle"
     },
@@ -14,7 +22,7 @@
     },
     {
       "key": "subStation",
-      "header": "Sub Station"
+      "header": "Substation"
     },
     {
       "key": "feeder",
@@ -26,7 +34,7 @@
     },
     {
       "key": "name",
-      "header": "Name"
+      "header": "Consumer Name"
     },
     {
       "key": "address",
@@ -46,7 +54,7 @@
     },
     {
       "key": "occurrenceTime",
-      "header": "Occurence Time"
+      "header": "Occurrence Time"
     },
     {
       "key": "restorationTime",
@@ -55,6 +63,10 @@
     {
       "key": "remarks",
       "header": "Remarks"
+    },
+    {
+      "key": "sourceRemarks",
+      "header": "Source Remarks"
     },
     {
       "key": "amountBilled",
@@ -67,14 +79,6 @@
     {
       "key": "fieldOfficerRemarks",
       "header": "Field Officer Remarks"
-    },
-    {
-      "key": "fieldOfficerName",
-      "header": "Field Officer Name"
-    },
-    {
-      "key": "fieldOfficerDesignation",
-      "header": "Field Officer Designation"
     },
     {
       "key": "mrTransactionNo",
@@ -93,25 +97,31 @@
       "header": "Inspection Date"
     },
     {
+      "key": "actionStatus",
+      "header": "Action Status"
+    },
+    {
+      "key": "enteredByName",
+      "header": "Entered By"
+    },
+    {
       "key": "entryDate",
       "header": "Entry Date"
     },
     {
-      "key": "month",
-      "header": "Month"
-    },
-    {
-      "key": "year",
-      "header": "Year"
+      "key": "updatedOn",
+      "header": "Updated On"
     }
   ],
   "rowFieldKeys": [
+    "actionStatus",
     "address",
     "amountBilled",
     "amountRealised",
     "circle",
     "division",
     "dtr",
+    "enteredByName",
     "entryDate",
     "eventName",
     "feeder",
@@ -129,7 +139,9 @@
     "p4No",
     "remarks",
     "restorationTime",
+    "sourceRemarks",
     "subStation",
+    "updatedOn",
     "year",
     "zone"
   ]

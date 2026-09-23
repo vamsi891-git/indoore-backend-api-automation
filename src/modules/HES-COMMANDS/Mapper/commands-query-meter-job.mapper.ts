@@ -1,9 +1,28 @@
+export interface MeterResponseDisplayRow {
+  label: string;
+  value: string;
+}
+
 export interface QueryMeterJobSummary {
   requested: number;
   successful: number;
   failed: number;
   inProgress: number;
   rejected: number;
+}
+
+export interface QueryMeterJobMdmsMeta {
+  startedAt?: string;
+  completedAt?: string;
+  executionDurationMs?: number;
+  publicRequestId?: string;
+  commandApiType?: string;
+  commandData?: Record<string, unknown>;
+  executionDeadlineAt?: string;
+  leaseOwner?: string | null;
+  leaseExpiresAt?: string | null;
+  retryAt?: string | null;
+  [key: string]: unknown;
 }
 
 export interface QueryMeterJobHesResponse {
@@ -14,6 +33,7 @@ export interface QueryMeterJobHesResponse {
   failureStep?: string;
   progress?: unknown;
   response?: unknown[];
+  __mdmsMeta?: QueryMeterJobMdmsMeta;
   [key: string]: unknown;
 }
 
@@ -23,8 +43,11 @@ export interface QueryMeterJobMeterResult {
   status: string;
   hesStatusCode: number;
   errorMessage?: string | null;
+  reason?: string | null;
   message?: string | null;
   note?: string | null;
+  meterResponse?: string | null;
+  meterResponseRows?: MeterResponseDisplayRow[];
   hesResponse?: QueryMeterJobHesResponse | null;
 }
 
@@ -36,8 +59,11 @@ export interface QueryMeterJobData {
   hesStatusCode: number;
   summary: QueryMeterJobSummary;
   meterResults: QueryMeterJobMeterResult[];
+  reason?: string | null;
   message?: string | null;
   note?: string | null;
+  meterResponse?: string | null;
+  meterResponseRows?: MeterResponseDisplayRow[];
 }
 
 export interface QueryMeterJobResponse {
@@ -50,6 +76,19 @@ export interface QueryMeterJobResponse {
 export interface MappedQueryMeterJobData {
   message: string;
   job: QueryMeterJobData;
+}
+
+function trimOrNull(value: string | null | undefined): string | null {
+  if (value == null) return null;
+  const trimmed = String(value).trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function mapDisplayRows(rows: MeterResponseDisplayRow[] | undefined): MeterResponseDisplayRow[] {
+  return (rows ?? []).map((item) => ({
+    label: String(item.label ?? "").trim(),
+    value: String(item.value ?? "").trim(),
+  }));
 }
 
 export class CommandsQueryMeterJobMapper {
@@ -79,13 +118,19 @@ export class CommandsQueryMeterJobMapper {
           action: row.action.trim(),
           status: row.status.trim(),
           hesStatusCode: row.hesStatusCode,
-          errorMessage: row.errorMessage?.trim() ?? null,
-          message: row.message?.trim() ?? null,
-          note: row.note?.trim() ?? null,
+          errorMessage: trimOrNull(row.errorMessage),
+          reason: trimOrNull(row.reason),
+          message: trimOrNull(row.message),
+          note: trimOrNull(row.note),
+          meterResponse: trimOrNull(row.meterResponse),
+          meterResponseRows: mapDisplayRows(row.meterResponseRows),
           hesResponse: row.hesResponse ?? null,
         })),
-        message: data.message?.trim() ?? null,
-        note: data.note?.trim() ?? null,
+        reason: trimOrNull(data.reason),
+        message: trimOrNull(data.message),
+        note: trimOrNull(data.note),
+        meterResponse: trimOrNull(data.meterResponse),
+        meterResponseRows: mapDisplayRows(data.meterResponseRows),
       },
     };
   }

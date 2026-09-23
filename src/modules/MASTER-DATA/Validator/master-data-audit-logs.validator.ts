@@ -9,11 +9,9 @@ import type {
   MasterDataAuditLogsResponse,
 } from "../Mapper/master-data-audit-logs.mapper";
 
-const UUID_REGEX =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 /** Live master-data audit timestamps are IST (+05:30), not always Z. */
-const IST_OR_UTC_ISO =
-  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?(Z|[+-]\d{2}:\d{2})$/;
+const IST_OR_UTC_ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?(Z|[+-]\d{2}:\d{2})$/;
 const DETAIL_KEY_SET = new Set<string>(MASTER_DATA_AUDIT_DETAIL_KEYS);
 const ACTION_SET = new Set<string>(MASTER_DATA_AUDIT_ACTIONS);
 
@@ -32,7 +30,8 @@ export class MasterDataAuditLogsValidator {
 
   validateLogsExist(data: MasterDataAuditLogsData): void {
     expect(Array.isArray(data.logs)).toBeTruthy();
-    if (data.total > 0) {
+    // Empty is valid when there is no data, or the requested page is past the last page.
+    if (data.total > 0 && data.page <= data.totalPages) {
       expect(data.logs.length).toBeGreaterThan(0);
     } else {
       expect(data.logs.length).toBe(0);
@@ -54,6 +53,11 @@ export class MasterDataAuditLogsValidator {
 
     expect(data.totalPages).toEqual(Math.ceil(data.total / data.limit));
 
+    if (data.page > data.totalPages) {
+      expect(data.logs.length).toEqual(0);
+      return;
+    }
+
     if (data.page < data.totalPages) {
       expect(data.logs.length).toEqual(data.limit);
     } else if (data.page === data.totalPages) {
@@ -63,10 +67,7 @@ export class MasterDataAuditLogsValidator {
     }
   }
 
-  validateQueryParams(
-    data: MasterDataAuditLogsData,
-    query: MasterDataAuditLogsQuery,
-  ): void {
+  validateQueryParams(data: MasterDataAuditLogsData, query: MasterDataAuditLogsQuery): void {
     expect(data.page).toEqual(query.page ?? 1);
     expect(data.limit).toEqual(query.limit ?? 20);
   }
@@ -131,10 +132,14 @@ export class MasterDataAuditLogsValidator {
   }
 
   validateNextCursor(data: MasterDataAuditLogsData): void {
-    if (data.total > data.limit && data.logs.length > 0) {
+    if (data.page < data.totalPages && data.logs.length > 0) {
       expect(data.nextCursor).toBeTruthy();
       const lastLog = data.logs[data.logs.length - 1]!;
       expect(data.nextCursor).toEqual(lastLog.id);
+      return;
+    }
+    if (data.page >= data.totalPages) {
+      expect(data.nextCursor).toBeNull();
     }
   }
 
@@ -158,9 +163,7 @@ export class MasterDataAuditLogsValidator {
    * actionFilterOptions must be exactly MASTER_DATA_AUDIT_ACTIONS (UI allowlist).
    */
   validateActionFilterOptions(data: MasterDataAuditLogsData): void {
-    expect(data.actionFilterOptions.length).toBe(
-      MASTER_DATA_AUDIT_ACTIONS.length,
-    );
+    expect(data.actionFilterOptions.length).toBe(MASTER_DATA_AUDIT_ACTIONS.length);
     const values = data.actionFilterOptions.map((opt) => opt.value);
     expect(values).toEqual([...MASTER_DATA_AUDIT_ACTIONS]);
     expect(new Set(values).size).toEqual(values.length);
@@ -173,28 +176,20 @@ export class MasterDataAuditLogsValidator {
   }
 
   /** Every log action must be a master-data owned action (no user/auth bleed). */
-  validateLogsConstrainedToMasterDataActions(
-    data: MasterDataAuditLogsData,
-  ): void {
+  validateLogsConstrainedToMasterDataActions(data: MasterDataAuditLogsData): void {
     data.logs.forEach((log) => {
       expect(ACTION_SET.has(log.action)).toBeTruthy();
     });
   }
 
-  validateExactActionFilter(
-    data: MasterDataAuditLogsData,
-    action: string,
-  ): void {
+  validateExactActionFilter(data: MasterDataAuditLogsData, action: string): void {
     expect(ACTION_SET.has(action)).toBeTruthy();
     data.logs.forEach((log) => {
       expect(log.action).toBe(action);
     });
   }
 
-  validateActionPrefixFilter(
-    data: MasterDataAuditLogsData,
-    prefix: string,
-  ): void {
+  validateActionPrefixFilter(data: MasterDataAuditLogsData, prefix: string): void {
     data.logs.forEach((log) => {
       expect(log.action.startsWith(prefix)).toBeTruthy();
       expect(ACTION_SET.has(log.action)).toBeTruthy();

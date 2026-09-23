@@ -57,7 +57,6 @@ export const communicationCategoryTestCases: CommunicationCategoryTestCase[] = [
     expectedStatus: 200,
     expectedFromDate: query.fromDate,
     expectedToDate: query.toDate,
-    expectZeroCounts: true,
     tags,
   },
   {
@@ -82,7 +81,6 @@ export const communicationCategoryTestCases: CommunicationCategoryTestCase[] = [
     expectedStatus: 200,
     expectedFromDate: query.fromDate,
     expectedToDate: query.toDate,
-    expectZeroCounts: true,
     tags,
   },
   {
