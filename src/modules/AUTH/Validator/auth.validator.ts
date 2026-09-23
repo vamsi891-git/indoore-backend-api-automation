@@ -73,7 +73,7 @@ export class AuthValidator {
   validateAuthResponseSecurity(json: unknown) {
     const jsonString = JSON.stringify(json);
     const forbidden = [
-      /Bearer\s+[A-Za-z0-9-_\.]+/,
+      /Bearer\s+[A-Za-z0-9-_.]+/,
       /"(?:password|passwd|pwd|secret|apiKey|api_key)"\s*:\s*"(?!null)[^"]+"/i,
       /"refreshToken"\s*:\s*"(?!null)[^"]+"/i,
       /"refresh_token"\s*:\s*"(?!null)[^"]+"/i,
@@ -83,10 +83,7 @@ export class AuthValidator {
     }
   }
 
-  validateRefreshSession(
-    before: AuthSessionModel,
-    after: AuthSessionModel,
-  ) {
+  validateRefreshSession(before: AuthSessionModel, after: AuthSessionModel) {
     expect(after.accessToken.length).toBeGreaterThan(10);
     expect(after.expiresIn).toBeGreaterThan(0);
     expect(after.csrfToken.length).toBeGreaterThan(0);
@@ -109,9 +106,7 @@ export class AuthValidator {
 
   validateMeUser(user: AuthMeUser) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    expect(user.id).toMatch(
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
-    );
+    expect(user.id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
     expect(emailRegex.test(user.email)).toBeTruthy();
     expect(user.firstName.length).toBeGreaterThan(0);
     expect(user.lastName.length).toBeGreaterThan(0);
@@ -122,9 +117,7 @@ export class AuthValidator {
     expect(user.sessionTimeoutMinutes).toBeGreaterThan(0);
     expect(user.sessionRefreshExpiresDays).toBeGreaterThan(0);
     expect(user.sessionAbsoluteLifetimeDays).toBeGreaterThan(0);
-    expect(user.sessionRefreshExpiresDays).toBeLessThan(
-      user.sessionAbsoluteLifetimeDays,
-    );
+    expect(user.sessionRefreshExpiresDays).toBeLessThan(user.sessionAbsoluteLifetimeDays);
     expect(typeof user.isTwoFactorEnabled).toBe("boolean");
     expect(typeof user.isTwoFactorSetupCompleted).toBe("boolean");
     expect(typeof user.isTwoFactorEnforced).toBe("boolean");

@@ -40,9 +40,7 @@ function resolveGmailCapturePollMs(): number {
 
 function resolveImapHost(): string {
   return (
-    process.env.GMAIL_IMAP_HOST?.trim() ||
-    process.env.INVITE_IMAP_HOST?.trim() ||
-    "imap.gmail.com"
+    process.env.GMAIL_IMAP_HOST?.trim() || process.env.INVITE_IMAP_HOST?.trim() || "imap.gmail.com"
   );
 }
 
@@ -53,7 +51,10 @@ function isGoogleImapHost(host: string): boolean {
 function resolveGmailMailboxes(): string[] {
   const custom = process.env.GMAIL_INVITE_MAILBOXES?.trim();
   if (custom) {
-    return custom.split(",").map((box) => box.trim()).filter(Boolean);
+    return custom
+      .split(",")
+      .map((box) => box.trim())
+      .filter(Boolean);
   }
   const host = resolveImapHost();
   if (isGoogleImapHost(host)) {
@@ -63,10 +64,7 @@ function resolveGmailMailboxes(): string[] {
 }
 
 function resolveGmailScanLimit(): number {
-  const parsed = Number.parseInt(
-    process.env.GMAIL_INVITE_SCAN_LIMIT?.trim() ?? "12",
-    10,
-  );
+  const parsed = Number.parseInt(process.env.GMAIL_INVITE_SCAN_LIMIT?.trim() ?? "12", 10);
   return Number.isFinite(parsed) && parsed > 0 ? Math.min(parsed, 20) : 12;
 }
 
@@ -78,9 +76,7 @@ function envelopeIncludesRecipient(
     return false;
   }
   const needle = normalizeEmail(recipientEmail);
-  return addresses.some(
-    (entry) => entry.address && normalizeEmail(entry.address) === needle,
-  );
+  return addresses.some((entry) => entry.address && normalizeEmail(entry.address) === needle);
 }
 
 function messageMatchesEnvelope(
@@ -223,9 +219,7 @@ export async function captureInviteTokenFromGmail(
   const pass = process.env.GMAIL_IMAP_APP_PASSWORD?.trim().replace(/\s+/g, "");
 
   if (!user || !pass) {
-    throw new Error(
-      "Gmail capture requires GMAIL_IMAP_USER and GMAIL_IMAP_APP_PASSWORD in .env",
-    );
+    throw new Error("Gmail capture requires GMAIL_IMAP_USER and GMAIL_IMAP_APP_PASSWORD in .env");
   }
 
   const timeoutMs = options.timeoutMs ?? resolveGmailCaptureTimeoutMs();
@@ -257,13 +251,13 @@ export async function captureInviteTokenFromGmail(
     try {
       await client.connect();
     } catch (connectError) {
-      const detail =
-        connectError instanceof Error ? connectError.message : String(connectError);
+      const detail = connectError instanceof Error ? connectError.message : String(connectError);
       throw new Error(
         `IMAP login failed for ${user} on ${imapHost}. ${detail}. ` +
           (isGoogleImapHost(imapHost)
             ? "Use a 16-character Google App Password and enable IMAP in Gmail settings."
             : "Check IMAP is enabled, GMAIL_IMAP_HOST / INVITE_IMAP_HOST, and your mailbox password."),
+        { cause: connectError },
       );
     }
 
