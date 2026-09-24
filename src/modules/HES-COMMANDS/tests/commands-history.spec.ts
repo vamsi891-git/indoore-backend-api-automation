@@ -4,7 +4,7 @@ import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper
 import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { CommandsHistoryApi } from "../Api/commands-history.api";
-import { buildCommandsHistoryPath, commandsHistoryData } from "../Data/commands-history.data";
+import { commandsHistoryData } from "../Data/commands-history.data";
 import { CommandsHistoryMapper } from "../Mapper/commands-history.mapper";
 import { CommandsHistoryValidator } from "../Validator/commands-history.validator";
 function runHistoryStandardChecks(
@@ -41,7 +41,6 @@ test.describe("HES Commands — History", () => {
       const validation = new ApiValidationHelper();
       const validator = new CommandsHistoryValidator();
       const { rawResponse, responseBody, responseTime } = await api.getHistory(query);
-      const url = `${process.env.BASE_URL}${buildCommandsHistoryPath(query)}`;
       await PerformanceTracker.track(
         rawResponse,
         "Commands History — Page 1",

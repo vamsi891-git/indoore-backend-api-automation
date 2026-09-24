@@ -48,14 +48,6 @@ test.describe("Dashboard — DTR communication", () => {
       const api = new DtrCommunicationApi(authenticatedApi);
       const query = resolveDtrCommunicationQuery(testCase.scenario);
       const expectedPeriod = resolveDtrCommunicationExpectedPeriod(testCase.scenario);
-      const queryString = new URLSearchParams(
-        Object.entries(query).reduce<Record<string, string>>((acc, [key, value]) => {
-          if (value !== undefined) {
-            acc[key] = String(value);
-          }
-          return acc;
-        }, {}),
-      ).toString();
 
       const { rawResponse, responseBody, responseTime } =
         await api.getDtrCommunicationStatus(query);

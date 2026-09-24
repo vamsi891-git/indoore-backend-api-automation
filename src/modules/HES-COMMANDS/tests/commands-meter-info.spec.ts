@@ -4,7 +4,7 @@ import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper
 import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { CommandsMeterInfoApi } from "../Api/commands-meter-info.api";
-import { buildCommandsMeterInfoPath, commandsMeterData } from "../Data/commands-meter.data";
+import { commandsMeterData } from "../Data/commands-meter.data";
 import { CommandsMeterInfoMapper } from "../Mapper/commands-meter-info.mapper";
 import { CommandsMeterInfoValidator } from "../Validator/commands-meter-info.validator";
 

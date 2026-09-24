@@ -9,8 +9,6 @@ export const CAPTCHA_OCR_CHARSET = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvw
 export const CAPTCHA_MIN_LENGTH = 4;
 export const CAPTCHA_MAX_LENGTH = 6;
 
-const DEFAULT_CAPTCHA_ATTEMPTS = 5;
-
 const TESS_DEBUG_FILE = process.platform === "win32" ? "nul" : "/dev/null";
 
 let ocrWorker: Promise<Worker> | undefined;
@@ -242,34 +240,4 @@ export async function solveCaptchaSvg(svg: string): Promise<string> {
     `CAPTCHA OCR could not read ${CAPTCHA_MIN_LENGTH}–${CAPTCHA_MAX_LENGTH} characters` +
       (bestPartial ? ` (best guess length ${bestPartial.length}: ${bestPartial})` : " (empty)"),
   );
-}
-
-function isInvalidCaptchaError(error: unknown): boolean {
-  const message = error instanceof Error ? error.message : String(error);
-  return /INVALID_CAPTCHA/i.test(message);
-}
-
-/**
- * Staff login with OCR CAPTCHA. Retries live inside AuthApi.login (INVALID_CAPTCHA).
- */
-export async function getAuthenticatedSession(
-  email: string,
-  password: string,
-  maxAttempts = DEFAULT_CAPTCHA_ATTEMPTS,
-): Promise<{ accessToken: string }> {
-  const { AuthApi } = await import("./auth.util");
-  try {
-    const session = await AuthApi.login({ email, password });
-    LoggerEngine.debug(`CAPTCHA login succeeded (maxAttempts=${maxAttempts})`);
-    return { accessToken: session.accessToken };
-  } catch (error) {
-    const lastError = error instanceof Error ? error : new Error(String(error));
-    if (isInvalidCaptchaError(lastError) && !/after \d+ CAPTCHA attempt/i.test(lastError.message)) {
-      throw new Error(
-        `Login failed after ${maxAttempts} CAPTCHA attempt(s). ${lastError.message}`,
-        { cause: error },
-      );
-    }
-    throw lastError;
-  }
 }

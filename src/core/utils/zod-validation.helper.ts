@@ -15,7 +15,3 @@ export function assertZodSchema<T>(
   ).toBe(true);
   return result.data!;
 }
-
-export function formatZodError(error: { format: () => unknown }): string {
-  return JSON.stringify(error.format(), null, 2);
-}

@@ -6,7 +6,6 @@ import {
   addMonths,
   formatDpPeriodLabel,
   isDailyTrendData,
-  isHourlyTrendData,
   isMonthlyTrendData,
   mapNetworkTrendData,
   monthYearKey,
@@ -57,10 +56,10 @@ export class NetworkTrendsValidator {
     expect(Array.isArray(response.data.items)).toBe(true);
   }
 
-  validateReportTypeEcho(data: NetworkTrendData,query: NetworkTrendQuery,): void {
+  validateReportTypeEcho(data: NetworkTrendData, query: NetworkTrendQuery): void {
     expect(data.reportType).toBe(query["report-type"]);
   }
-  validateAnchorFields(data: NetworkTrendData,reportType: NetworkTrendReportType,): void {
+  validateAnchorFields(data: NetworkTrendData, reportType: NetworkTrendReportType): void {
     if (reportType === "billing") {
       expect(data.anchorDate, "billing anchorDate must be null").toBeNull();
       expect(data.anchorMonth, "billing anchorMonth must be set").not.toBeNull();
@@ -72,9 +71,9 @@ export class NetworkTrendsValidator {
       return;
     }
     if (reportType === "dp" || reportType === "ls") {
-      expect(data.anchorMonth,`${reportType} anchorMonth must be null`,).toBeNull();
-      expect(data.anchorYear,`${reportType} anchorYear must be null`,).toBeNull();
-      expect(data.anchorDate,`${reportType} anchorDate must be set`,).not.toBeNull();
+      expect(data.anchorMonth, `${reportType} anchorMonth must be null`).toBeNull();
+      expect(data.anchorYear, `${reportType} anchorYear must be null`).toBeNull();
+      expect(data.anchorDate, `${reportType} anchorDate must be set`).not.toBeNull();
       expect(data.anchorDate!).toMatch(ISO_DATE_RE);
     }
   }
@@ -137,7 +136,10 @@ export class NetworkTrendsValidator {
       const hasMonthToken = abbrevs.some((token) =>
         item.periodLabel.toLowerCase().includes(token.toLowerCase()),
       );
-      expect(hasMonthToken,`items[${index}].periodLabel "${item.periodLabel}" should reference month ${item.month}`,).toBe(true);
+      expect(
+        hasMonthToken,
+        `items[${index}].periodLabel "${item.periodLabel}" should reference month ${item.month}`,
+      ).toBe(true);
     }
   }
   validateDpPeriodLabels(items: NetworkTrendDailyItem[]): void {
@@ -166,7 +168,7 @@ export class NetworkTrendsValidator {
     }
     this.validateLsHourTimeAlignment(data.items);
   }
-  validateLossPct(items: Array<{ lossPct: number }>,): void {
+  validateLossPct(items: Array<{ lossPct: number }>): void {
     for (const [index, item] of items.entries()) {
       expect(Number.isFinite(item.lossPct), `items[${index}].lossPct`).toBe(true);
       expect(item.lossPct).toBeGreaterThanOrEqual(0);
@@ -187,7 +189,11 @@ export class NetworkTrendsValidator {
     const keys = data.items.map((item) => item.hour);
     expect(new Set(keys).size).toBe(data.items.length);
   }
-  validateMonthlySequence(items: NetworkTrendMonthlyItem[],anchorMonth: number,anchorYear: number,): void {
+  validateMonthlySequence(
+    items: NetworkTrendMonthlyItem[],
+    anchorMonth: number,
+    anchorYear: number,
+  ): void {
     const last = items[items.length - 1];
     expect(last.month).toBe(anchorMonth);
     expect(last.year).toBe(anchorYear);
@@ -207,14 +213,12 @@ export class NetworkTrendsValidator {
       expect(current.year).toBe(expected.year);
     }
   }
-  validateDailySequence(items: NetworkTrendDailyItem[],anchorDate: string,): void {
+  validateDailySequence(items: NetworkTrendDailyItem[], anchorDate: string): void {
     const anchor = parseIsoDate(anchorDate);
     const last = items[items.length - 1];
     expect(last.date).toBe(anchorDate);
     const firstExpected = new Date(anchor);
-    firstExpected.setUTCDate(
-      firstExpected.getUTCDate() - (NETWORK_TREND_DAILY_PERIOD_COUNT - 1),
-    );
+    firstExpected.setUTCDate(firstExpected.getUTCDate() - (NETWORK_TREND_DAILY_PERIOD_COUNT - 1));
     expect(items[0].date).toBe(
       `${firstExpected.getUTCFullYear()}-${String(firstExpected.getUTCMonth() + 1).padStart(2, "0")}-${String(firstExpected.getUTCDate()).padStart(2, "0")}`,
     );
@@ -236,11 +240,7 @@ export class NetworkTrendsValidator {
   }
   validateChronologicalOrder(data: NetworkTrendData): void {
     if (isMonthlyTrendData(data)) {
-      this.validateMonthlySequence(
-        data.items,
-        data.anchorMonth,
-        data.anchorYear,
-      );
+      this.validateMonthlySequence(data.items, data.anchorMonth, data.anchorYear);
       return;
     }
 
@@ -251,7 +251,7 @@ export class NetworkTrendsValidator {
 
     this.validateHourlySequence(data.items);
   }
-  validateCrossFieldLogic(data: NetworkTrendData,query: NetworkTrendQuery,): void {
+  validateCrossFieldLogic(data: NetworkTrendData, query: NetworkTrendQuery): void {
     this.validateReportTypeEcho(data, query);
     this.validateAnchorFields(data, query["report-type"]);
     this.validateItemCount(data);
@@ -261,7 +261,7 @@ export class NetworkTrendsValidator {
     this.validateNoDuplicatePeriods(data);
     this.validateChronologicalOrder(data);
   }
-  validateAll(response: NetworkTrendResponse,query: NetworkTrendQuery,): NetworkTrendData {
+  validateAll(response: NetworkTrendResponse, query: NetworkTrendQuery): NetworkTrendData {
     this.validateResponse(response);
     const data = mapNetworkTrendData(response);
     this.validateCrossFieldLogic(data, query);

@@ -41,6 +41,7 @@
     "test:consumers:contract": "playwright test src/modules/CONSUMERS/tests --grep @contract-snapshot --workers=1",
     "test:consumers:mutation-proof": "playwright test src/modules/CONSUMERS/tests --grep @mutation-proof --workers=1",
     "test:consumers:db": "playwright test src/modules/CONSUMERS/tests --grep @db --workers=1",
+    "test:data-validation": "playwright test src/modules/DATA-VALIDATION/tests --workers=1 --grep-invert @db",
     "test:consumption": "playwright test src/modules/CONSUMPTION/tests --workers=1 --grep-invert @db",
     "test:consumption:contract": "playwright test src/modules/CONSUMPTION/tests --grep @contract-snapshot --workers=1",
     "test:consumption:mutation-proof": "playwright test src/modules/CONSUMPTION/tests --grep @mutation-proof --workers=1",

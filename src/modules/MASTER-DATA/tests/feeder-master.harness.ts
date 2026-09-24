@@ -16,18 +16,6 @@ export interface RunFeederMasterValidationOptions {
   searchTerm?: string;
 }
 
-function buildQueryString(query: FeederMasterQuery): string {
-  return new URLSearchParams(
-    Object.entries(query).reduce(
-      (acc, [k, v]) => {
-        if (v != null && v !== "") acc[k] = String(v);
-        return acc;
-      },
-      {} as Record<string, string>,
-    ),
-  ).toString();
-}
-
 export async function runFeederMasterValidation(
   options: RunFeederMasterValidationOptions,
 ): Promise<{ rawResponse: APIResponse; responseTime: number }> {

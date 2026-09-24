@@ -3,11 +3,7 @@ import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper
 import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { CommandsMeterAlarmsApi } from "../Api/commands-meter-alarms.api";
-import {
-  buildMeterAlarmsBody,
-  commandsMeterAlarmsData,
-  METER_ALARMS_PATH,
-} from "../Data/commands-meter-alarms.data";
+import { buildMeterAlarmsBody, commandsMeterAlarmsData } from "../Data/commands-meter-alarms.data";
 import { CommandsMeterAlarmsMapper } from "../Mapper/commands-meter-alarms.mapper";
 import { CommandsMeterAlarmsValidator } from "../Validator/commands-meter-alarms.validator";
 
@@ -26,7 +22,6 @@ test.describe("HES Commands — Meter Alarms", () => {
 
       const { rawResponse, responseBody, responseTime } = await api.postMeterAlarms(body);
 
-      const url = `${process.env.BASE_URL}${METER_ALARMS_PATH}`;
       await PerformanceTracker.track(
         rawResponse,
         "Commands Meter Alarms",

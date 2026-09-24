@@ -50,14 +50,6 @@ test.describe("Billing history", () => {
         return;
       }
       const query = resolveBillingHistoryQuery(testCase.scenario);
-      const queryString = new URLSearchParams(
-        Object.entries(query).reduce<Record<string, string>>((acc, [key, value]) => {
-          if (value !== undefined) {
-            acc[key] = String(value);
-          }
-          return acc;
-        }, {}),
-      ).toString();
       const { rawResponse, responseBody, responseTime } = await api.getBillingHistory(
         consumerRef,
         query,

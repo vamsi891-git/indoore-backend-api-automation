@@ -48,14 +48,6 @@ test.describe("Dashboard — DTR power on/off", () => {
       const api = new DtrPowerStatusApi(authenticatedApi);
       const query = resolveDtrPowerStatusQuery(testCase.scenario);
       const expectedPeriod = resolveDtrPowerStatusExpectedPeriod(testCase.scenario);
-      const queryString = new URLSearchParams(
-        Object.entries(query).reduce<Record<string, string>>((acc, [key, value]) => {
-          if (value !== undefined) {
-            acc[key] = String(value);
-          }
-          return acc;
-        }, {}),
-      ).toString();
 
       const { rawResponse, responseBody, responseTime } = await api.getDtrPowerStatus(query);
 

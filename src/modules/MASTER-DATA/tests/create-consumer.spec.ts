@@ -4,7 +4,6 @@ import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { MASTER_DATA_TEST_TIMEOUT_MS } from "../../../core/constants/api-timeouts";
 import { CreateConsumerApi } from "../Api/create-consumer.api";
 import { ConsumerProfileApi } from "../../CONSUMERS/Api/consumerprofile.api";
-import { ValidateMeterApi } from "../../CONSUMERS/Api/validatemeter.api";
 import {
   createConsumerData,
   createConsumerMaxResponseTimeMs,
@@ -19,7 +18,6 @@ import {
 } from "../Data/create-consumer.data";
 import { CreateConsumerMapper } from "../Mapper/create-consumer.mapper";
 import { CreateConsumerValidator } from "../Validator/create-consumer.validator";
-import { ValidateMeterMapper } from "../../CONSUMERS/Mapper/validatemeter.mapper";
 import { shouldSkipMasterDataTestForEnv } from "../utils/master-data-env.helper";
 import { ensureConsumerLookupContext } from "../utils/consumer-lookup.helper";
 import {
@@ -70,7 +68,7 @@ test.describe.skip("Master data — add consumer", () => {
     await ensureConsumerLookupContext(authenticatedApi);
     await ensureValidateMeterRuntimeContext(authenticatedApi);
     const runtime = await ensureConsumerMeterRuntimeContext(authenticatedApi);
-    const nearestAcctId = await ensureBulkConsumerNearestAcctId(authenticatedApi);
+    await ensureBulkConsumerNearestAcctId(authenticatedApi);
     const existingCid = await ensureBulkConsumerExistingCid(authenticatedApi);
     console.log(
       `[create-consumer] assignable meter pool (${runtime?.pool.length ?? 0}): ${runtime?.pool.join(", ") || "empty"}`,

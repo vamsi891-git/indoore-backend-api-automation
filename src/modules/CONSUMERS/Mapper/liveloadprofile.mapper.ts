@@ -51,15 +51,11 @@ export interface MappedLiveLoadProfile {
   reactivePower: LiveLoadProfileMetric | null;
 }
 
-const METRIC_TITLES = [
-  "Active Power",
-  "Apparent Power",
-  "Reactive Power",
-] as const;
+type MetricTitle = "Active Power" | "Apparent Power" | "Reactive Power";
 
 function findMetric(
   metrics: LiveLoadProfileMetric[] | undefined,
-  title: (typeof METRIC_TITLES)[number],
+  title: MetricTitle,
 ): LiveLoadProfileMetric | null {
   if (!metrics) return null;
   return metrics.find((m) => m.title === title) ?? null;

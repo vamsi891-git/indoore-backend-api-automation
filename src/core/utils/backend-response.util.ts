@@ -3,10 +3,6 @@ export const BackendResponse = {
     return status >= 500;
   },
 
-  isGatewayTimeout(status: number): boolean {
-    return status === 504;
-  },
-
   isRequestTimeoutError(error: unknown): boolean {
     const message = error instanceof Error ? error.message : String(error);
     return (
@@ -22,11 +18,7 @@ export const BackendResponse = {
     console.log(`BACKEND FINDING: ${label} — ${detail}${suffix}`);
   },
 
-  shouldSkipServerFailure(
-    status: number,
-    label: string,
-    body?: unknown
-  ): boolean {
+  shouldSkipServerFailure(status: number, label: string, body?: unknown): boolean {
     if (!this.isServerError(status)) {
       return false;
     }

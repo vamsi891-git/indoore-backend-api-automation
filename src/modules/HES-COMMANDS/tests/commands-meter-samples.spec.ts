@@ -6,7 +6,6 @@ import { CommandsMeterSamplesApi } from "../Api/commands-meter-samples.api";
 import {
   buildMeterSamplesBody,
   commandsMeterSamplesData,
-  METER_SAMPLES_PATH,
 } from "../Data/commands-meter-samples.data";
 import { CommandsMeterSamplesMapper } from "../Mapper/commands-meter-samples.mapper";
 import { CommandsMeterSamplesValidator } from "../Validator/commands-meter-samples.validator";
@@ -26,7 +25,6 @@ test.describe("HES Commands — Meter Samples", () => {
 
       const { rawResponse, responseBody, responseTime } = await api.postMeterSamples(body);
 
-      const url = `${process.env.BASE_URL}${METER_SAMPLES_PATH}`;
       await PerformanceTracker.track(
         rawResponse,
         "Commands Meter Samples",

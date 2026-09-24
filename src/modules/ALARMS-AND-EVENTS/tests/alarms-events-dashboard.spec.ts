@@ -3,7 +3,6 @@ import { AlarmsEventsDasboardApi } from "../Api/alarms-events-dashboard.api";
 import { AlarmsEventsDashboardValidator } from "../Validator/alarms-events-dashboard.validator";
 import { AlarmsEventsDashboardMapper } from "../Mapper/alarms-events-dashboard.mapper";
 import { alarmsEventsDashboardData } from "../Data/alarms-events-dashboard.data";
-import { AuthenticationApi } from "../../AUTH/Api/auth.api";
 import { test as authTest } from "../../../fixtures/auth.fixture";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";
 test.describe("Alarms and Events Dashboard totals", () => {

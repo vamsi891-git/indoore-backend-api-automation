@@ -16,18 +16,6 @@ export interface RunSubstationMasterValidationOptions {
   searchTerm?: string;
 }
 
-function buildQueryString(query: SubstationMasterQuery): string {
-  return new URLSearchParams(
-    Object.entries(query).reduce(
-      (acc, [k, v]) => {
-        if (v != null && v !== "") acc[k] = String(v);
-        return acc;
-      },
-      {} as Record<string, string>,
-    ),
-  ).toString();
-}
-
 export async function runSubstationMasterValidation(
   options: RunSubstationMasterValidationOptions,
 ): Promise<{ rawResponse: APIResponse; responseTime: number }> {

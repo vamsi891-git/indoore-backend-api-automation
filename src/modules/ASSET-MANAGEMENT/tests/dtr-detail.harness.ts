@@ -1,10 +1,7 @@
 import type { APIResponse } from "@playwright/test";
 import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { DtrDetailApi } from "../Api/DtrId.api";
-import {
-  assetManagementMaxResponseTimeMs,
-  assetManagementPaths,
-} from "../Data/asset-management.common.data";
+import { assetManagementMaxResponseTimeMs } from "../Data/asset-management.common.data";
 import { DtrDetailMapper } from "../Mapper/dtrId.mapper";
 import { DtrDetailValidator } from "../Validator/dtrId.validator";
 import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper";

@@ -15,7 +15,6 @@ import { MdAnalysisValidator } from "../../Validator/mdanalysis.validator";
 import { ConsumptionPatternValidator } from "../../Validator/consumptionpattern.validator";
 import { ConsumptionCompareValidator } from "../../Validator/consumptioncompare.validator";
 import { DayNightValidator } from "../../Validator/daynight.validator";
-import { validateUniqueMeterIdentityFields } from "../../Validator/commercial-analysis.shared";
 
 test.describe("Mutation proof — COMMERICIAL-ANALYSIS", () => {
   test(
@@ -42,9 +41,10 @@ test.describe("Mutation proof — COMMERICIAL-ANALYSIS", () => {
     "MUT-COMMER-003 — list schema accepts fixture",
     { tag: ["@mutation-proof", "@commericial-analysis"] },
     async () => {
-      expect(CommericialAnalysisListSuccessResponseSchema.safeParse(sampleCommericialAnalysisSuccess).success).toBe(
-        true,
-      );
+      expect(
+        CommericialAnalysisListSuccessResponseSchema.safeParse(sampleCommericialAnalysisSuccess)
+          .success,
+      ).toBe(true);
     },
   );
 
@@ -509,9 +509,7 @@ test.describe("Mutation proof — COMMERICIAL-ANALYSIS", () => {
       ).toThrow(/Duplicate/i);
 
       expect(() => validator.validateUniqueIdentityFields([])).not.toThrow();
-      expect(() =>
-        validator.validatePatternRows([], "zero", 100),
-      ).not.toThrow();
+      expect(() => validator.validatePatternRows([], "zero", 100)).not.toThrow();
       expect(() =>
         validator.validatePatternRows(
           [
@@ -696,7 +694,8 @@ test.describe("Mutation proof — COMMERICIAL-ANALYSIS", () => {
       ).toThrow(/same value/i);
     },
   );
-  test("MUT-COMMER-017 — Compare same MSN with same kWh fails; different kWh is allowed",
+  test(
+    "MUT-COMMER-017 — Compare same MSN with same kWh fails; different kWh is allowed",
     { tag: ["@mutation-proof", "@commericial-analysis"] },
     async () => {
       const validator = new ConsumptionCompareValidator();

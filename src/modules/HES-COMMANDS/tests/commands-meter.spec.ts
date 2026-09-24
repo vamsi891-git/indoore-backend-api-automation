@@ -4,7 +4,7 @@ import { ApiValidationHelper } from "../../../core/helpers/api-validation.helper
 import { PerformanceTracker } from "../../../core/utils/performance.tracker";
 import { BackendResponse } from "../../../core/utils/backend-response.util";
 import { CommandsMeterApi } from "../Api/commands-meter.api";
-import { buildCommandsMeterPath, commandsMeterData } from "../Data/commands-meter.data";
+import { commandsMeterData } from "../Data/commands-meter.data";
 import { CommandsMeterMapper } from "../Mapper/commands-meter.mapper";
 import { CommandsMeterValidator } from "../Validator/commands-meter.validator";
 test.describe("HES Commands — Meter Lookup", () => {
@@ -19,7 +19,6 @@ test.describe("HES Commands — Meter Lookup", () => {
       const validation = new ApiValidationHelper();
       const validator = new CommandsMeterValidator();
       const { rawResponse, responseBody, responseTime } = await api.getMeterBySerial(serial);
-      const url = `${process.env.BASE_URL}${buildCommandsMeterPath(serial)}`;
       await PerformanceTracker.track(
         rawResponse,
         "Commands Meter Lookup",

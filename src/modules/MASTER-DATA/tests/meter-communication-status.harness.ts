@@ -41,16 +41,6 @@ export async function runMeterCommunicationValidation(
 
   const { rawResponse, responseBody, responseTime } = await api.getMeterCommunicationStatus(query);
 
-  const qs = new URLSearchParams(
-    Object.entries(query).reduce(
-      (acc, [k, v]) => {
-        if (v != null && v !== "") acc[k] = String(v);
-        return acc;
-      },
-      {} as Record<string, string>,
-    ),
-  ).toString();
-
   await PerformanceTracker.track(rawResponse, testLabel, rawResponse.url(), responseTime);
 
   const assert = new ApiValidationHelper();

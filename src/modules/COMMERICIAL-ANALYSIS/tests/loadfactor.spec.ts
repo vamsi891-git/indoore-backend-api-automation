@@ -5,7 +5,6 @@ import { mapLFAnalysisResponse } from "../Mapper/loadfactor.mapper";
 import { LFAnalysisValidator } from "../Validator/loadfactor.validator";
 import {
   LF_COVERAGE_GATED_MISSING_MONTHS,
-  LF_COVERAGE_GATED_TYPE,
   LF_TYPE_CONFIG,
   lfAnalysisLt5Last6mData,
   lfValidatableQueries,

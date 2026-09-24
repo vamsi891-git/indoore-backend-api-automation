@@ -45,14 +45,6 @@ test.describe("Dashboard — DTR summary cards", () => {
       const api = new DtrSummaryApi(authenticatedApi);
       const query = resolveDtrSummaryQuery(testCase.scenario);
       const expectedPeriod = resolveDtrSummaryExpectedPeriod(testCase.scenario);
-      const queryString = new URLSearchParams(
-        Object.entries(query).reduce<Record<string, string>>((acc, [key, value]) => {
-          if (value !== undefined) {
-            acc[key] = String(value);
-          }
-          return acc;
-        }, {}),
-      ).toString();
 
       const { rawResponse, responseBody, responseTime } = await api.getDtrSummary(query);
 

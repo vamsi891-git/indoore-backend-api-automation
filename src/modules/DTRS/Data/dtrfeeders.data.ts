@@ -1,10 +1,6 @@
 import { MASTER_DATA_MAX_RESPONSE_TIME_MS } from "../../../core/constants/api-timeouts";
 import type { DtrFeedersQuery } from "../Api/dtrfeeders.api";
-import type {
-  DtrFeedersResponse,
-  DtrFeedersScenario,
-  FeederItem,
-} from "../Mapper/dtrfeeders.mapper";
+import type { DtrFeedersResponse, DtrFeedersScenario } from "../Mapper/dtrfeeders.mapper";
 
 export const dtrFeedersMaxResponseTimeMs = MASTER_DATA_MAX_RESPONSE_TIME_MS;
 

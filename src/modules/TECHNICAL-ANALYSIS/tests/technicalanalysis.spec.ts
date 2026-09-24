@@ -165,14 +165,6 @@ test.describe("Technical report", () => {
         return;
       }
       const query = resolveTechnicalReportQuery(testCase.scenario, liveConfig);
-      const queryString = new URLSearchParams(
-        Object.entries(query).reduce<Record<string, string>>((acc, [key, value]) => {
-          if (value !== undefined) {
-            acc[key] = String(value);
-          }
-          return acc;
-        }, {}),
-      ).toString();
       const api = new TechnicalReportApi(authenticatedApi);
       const { rawResponse, responseBody, responseTime } = await api.getTechnicalReport(query);
       await PerformanceTracker.track(

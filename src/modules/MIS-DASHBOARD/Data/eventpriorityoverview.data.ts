@@ -3,8 +3,8 @@ export const eventPriorityOverviewQuery = {
 };
 
 export const backendRules = {
-  priorityIds: [0, 1, 2, 3, 4, 5, 6],
-  priorityCount: 7,
+  priorityIds: [1, 2, 3, 4, 5, 6],
+  priorityCount: 6,
 };
 
 export type EventPriorityOverviewTestCase = {

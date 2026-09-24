@@ -57,15 +57,6 @@ test.describe("Event list", () => {
         return;
       }
 
-      const queryString = new URLSearchParams(
-        Object.entries(query).reduce<Record<string, string>>((acc, [key, value]) => {
-          if (value !== undefined) {
-            acc[key] = String(value);
-          }
-          return acc;
-        }, {}),
-      ).toString();
-
       const { rawResponse, responseBody, responseTime } = await api.getEventLogList(
         consumerRef,
         query,

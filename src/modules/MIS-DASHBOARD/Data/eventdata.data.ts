@@ -25,7 +25,7 @@ export const backendRules = {
     other: "Others",
     "non-rollover-control": "NonRollover",
   },
-  priorityIds: [0, 1, 2, 3, 4, 5, 6],
+  priorityIds: [1, 2, 3, 4, 5, 6],
 };
 
 export type EventDataTestCase = {

@@ -7,7 +7,6 @@ import { CommandsMeterLocationApi } from "../Api/commands-meter-location.api";
 import {
   buildMeterLocationBody,
   commandsMeterLocationData,
-  METER_LOCATION_PATH,
 } from "../Data/commands-meter-location.data";
 import { CommandsMeterLocationMapper } from "../Mapper/commands-meter-location.mapper";
 import { CommandsMeterLocationValidator } from "../Validator/commands-meter-location.validator";
@@ -27,7 +26,6 @@ test.describe("HES Commands — Meter Location", () => {
 
       const { rawResponse, responseBody, responseTime } = await api.postMeterLocation(body);
 
-      const url = `${process.env.BASE_URL}${METER_LOCATION_PATH}`;
       await PerformanceTracker.track(
         rawResponse,
         "Commands Meter Location",

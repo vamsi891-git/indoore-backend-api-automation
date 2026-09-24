@@ -108,7 +108,7 @@ export function getLossAnalysisPaginatedView(
   response: LossAnalysisResponse,
   query: Pick<LossAnalysisQuery, "page" | "limit">,
 ): LossAnalysisPaginatedView {
-  const { pagination, rows, columns } = response.data;
+  const { pagination, columns } = response.data;
   return {
     page: pagination?.page ?? query.page,
     pageSize: pagination?.limit ?? query.limit,

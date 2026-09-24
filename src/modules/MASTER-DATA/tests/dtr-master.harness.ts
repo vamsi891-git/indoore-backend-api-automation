@@ -16,18 +16,6 @@ export interface RunDtrMasterValidationOptions {
   searchTerm?: string;
 }
 
-function buildQueryString(query: DtrMasterQuery): string {
-  return new URLSearchParams(
-    Object.entries(query).reduce(
-      (acc, [k, v]) => {
-        if (v != null && v !== "") acc[k] = String(v);
-        return acc;
-      },
-      {} as Record<string, string>,
-    ),
-  ).toString();
-}
-
 export async function runDtrMasterValidation(
   options: RunDtrMasterValidationOptions,
 ): Promise<{ rawResponse: APIResponse; responseTime: number }> {

@@ -43,10 +43,6 @@ test.describe("Master data — can this meter be put on a DTR?", () => {
         meterSerialNumber,
       });
 
-      const qs = new URLSearchParams({
-        meterSerialNumber,
-      }).toString();
-
       await PerformanceTracker.track(
         rawResponse,
         testCase.testName,

@@ -6,7 +6,6 @@ import { CommandsSearchMetersApi } from "../Api/commands-search-meters.api";
 import {
   buildSearchMetersBody,
   commandsSearchMetersData,
-  SEARCH_METERS_PATH,
 } from "../Data/commands-search-meters.data";
 import { CommandsSearchMetersMapper } from "../Mapper/commands-search-meters.mapper";
 import { CommandsSearchMetersValidator } from "../Validator/commands-search-meters.validator";
@@ -26,7 +25,6 @@ test.describe("HES Commands — Search Meters", () => {
 
       const { rawResponse, responseBody, responseTime } = await api.postSearchMeters(body);
 
-      const url = `${process.env.BASE_URL}${SEARCH_METERS_PATH}`;
       await PerformanceTracker.track(
         rawResponse,
         "Commands Search Meters",
