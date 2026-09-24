@@ -72,8 +72,8 @@ type RasterPass = {
 };
 
 /**
- * Soft rasterizations. Hard binary thresholds often wipe the glyph ink
- * (Tesseract then reports Total count=0 / 2-char garbage).
+ * Soft rasterizations optimized for path-glyph captchas on a light field.
+ * Keep the pass list short so OCR finishes before captchaId TTL expires.
  */
 function rasterPasses(): RasterPass[] {
   const base = (svg: Buffer, density: number, width: number, height: number) =>
@@ -88,29 +88,21 @@ function rasterPasses(): RasterPass[] {
   return [
     {
       name: "pad-hires",
-      build: (svg) => base(svg, 300, 1200, 300).sharpen({ sigma: 0.8 }).png().toBuffer(),
+      build: (svg) => base(svg, 360, 1400, 360).sharpen({ sigma: 0.9 }).png().toBuffer(),
     },
     {
       name: "pad-contrast",
       build: (svg) =>
-        base(svg, 280, 1100, 280).linear(1.35, -18).sharpen({ sigma: 1 }).png().toBuffer(),
+        base(svg, 320, 1200, 300).linear(1.4, -20).sharpen({ sigma: 1 }).png().toBuffer(),
     },
     {
       name: "pad-bright",
       build: (svg) =>
-        base(svg, 250, 1000, 250)
-          .modulate({ brightness: 1.15 })
+        base(svg, 300, 1100, 280)
+          .modulate({ brightness: 1.12 })
           .sharpen({ sigma: 1.1 })
           .png()
           .toBuffer(),
-    },
-    {
-      name: "soft-threshold",
-      build: (svg) => base(svg, 260, 1000, 250).threshold(170).png().toBuffer(),
-    },
-    {
-      name: "negate-soft",
-      build: (svg) => base(svg, 250, 960, 240).negate().threshold(160).png().toBuffer(),
     },
   ];
 }
@@ -167,8 +159,8 @@ export async function solveCaptchaSvg(svg: string): Promise<string> {
   const worker = await getOcrWorker();
   const candidates: OcrCandidate[] = [];
   let bestPartial = "";
-  /** Stop extra raster/OCR work so login POSTs before the captcha expires. */
-  const highConfidence = 62;
+  /** Accept a strong first-pass guess before slower alternate rasters. */
+  const highConfidence = 55;
 
   const psmModes: Array<{ name: string; mode: PSM }> = [
     { name: "single-line", mode: PSM.SINGLE_LINE },

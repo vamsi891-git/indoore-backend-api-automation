@@ -119,6 +119,15 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
+      # Reuse a warm access token so CAPTCHA OCR runs only on cold login.
+      - name: Cache auth session
+        uses: actions/cache@v4
+        with:
+          path: playwright/.auth
+          key: auth-session-${{ runner.os }}-${{ github.repository }}-v1
+          restore-keys: |
+            auth-session-${{ runner.os }}-${{ github.repository }}-v1
+
       - name: Typecheck
         run: npm run typecheck
 
@@ -201,6 +210,14 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Cache auth session
+        uses: actions/cache@v4
+        with:
+          path: playwright/.auth
+          key: auth-session-${{ runner.os }}-${{ github.repository }}-v1
+          restore-keys: |
+            auth-session-${{ runner.os }}-${{ github.repository }}-v1
 
       - name: Run module suite
         run: npm run test:${{ matrix.module }}

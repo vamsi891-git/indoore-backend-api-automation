@@ -47,7 +47,12 @@ export class AuthApi {
   private static readonly loginRetryMs = [0, 10_000, 30_000];
   /** Rate-limit (429) waits — short retries only make TOO_MANY_REQUESTS worse. */
   private static readonly rateLimitRetryMs = [0, 60_000, 120_000];
-  private static readonly captchaOcrMaxAttempts = 8;
+  /**
+   * One OCR + one login POST per captchaId.
+   * Re-guessing the same image (or hammering new captchas) causes lockouts and flaky CI.
+   * Session reuse in global.setup means captcha runs only on cold login.
+   */
+  private static readonly captchaOcrMaxAttempts = 1;
   /** One extra wait if the API already locked login behind captcha. */
   private static readonly captchaRetryWaitMs = 90_000;
   /** Cap short 429 waits; longer Retry-After fails fast (do not keep hammering). */
@@ -679,12 +684,7 @@ export class AuthApi {
         } catch (captchaError) {
           const message =
             captchaError instanceof Error ? captchaError.message : String(captchaError);
-          console.error(
-            `Login CAPTCHA attempt ${captchaAttempt}/${this.captchaOcrMaxAttempts}: OCR failed — ${message}`,
-          );
-          if (/CAPTCHA OCR/i.test(message) && captchaAttempt < this.captchaOcrMaxAttempts) {
-            continue;
-          }
+          console.error(`Login CAPTCHA OCR failed on first read — ${message}`);
           throw captchaError instanceof Error ? captchaError : new Error(message);
         }
         lastCaptchaGuess = loginCaptcha?.captcha ?? "";
@@ -762,7 +762,7 @@ export class AuthApi {
           }`,
         );
         console.error(
-          `Login CAPTCHA attempt ${captchaAttempt}/${this.captchaOcrMaxAttempts}: ${lastCaptchaGuess || "(none)"} → ${
+          `Login CAPTCHA (single attempt): ${lastCaptchaGuess || "(none)"} → ${
             invalidCaptcha
               ? "INVALID_CAPTCHA"
               : loginResponse.ok()
@@ -771,19 +771,16 @@ export class AuthApi {
           }`,
         );
 
-        if (invalidCaptcha && captchaAttempt < this.captchaOcrMaxAttempts) {
-          // Pause so a new captchaId is issued and OCR is not racing expiry.
-          await new Promise((resolve) => setTimeout(resolve, 700));
-          continue;
-        }
-
         if (!loginResponse.ok()) {
           const loginError = new Error(
             `Login failed with status ${loginResponse.status()} - ${JSON.stringify(loginBody)}`,
           );
           if (invalidCaptcha) {
             throw new Error(
-              `Login failed after ${this.captchaOcrMaxAttempts} CAPTCHA attempt(s). ${loginError.message}`,
+              `Login CAPTCHA rejected on the first attempt (no OCR re-guess). ` +
+                `Guess was "${lastCaptchaGuess || "(none)"}". ` +
+                `Reuse a warm playwright/.auth session when possible so captcha runs only once. ` +
+                loginError.message,
             );
           }
           if (this.isCaptchaRequired(loginError)) {
