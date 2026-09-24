@@ -218,7 +218,15 @@ export class TokenManager {
         }
         LoggerEngine.info("Refresh failed; falling back to login");
         try {
-          this.applySession(await AuthApi.login());
+          const ciAccessToken = env.API_TEST_ACCESS_TOKEN?.trim();
+          if (ciAccessToken && (env.GITHUB_ACTIONS || env.CI)) {
+            LoggerEngine.info(
+              "Re-seeding API_TEST_ACCESS_TOKEN after refresh failure (skip CAPTCHA OCR in CI)",
+            );
+            this.applyToken(ciAccessToken, 8 * 60 * 60);
+          } else {
+            this.applySession(await AuthApi.login());
+          }
         } catch (loginError) {
           if (isTwoFactorSecretUnavailable(loginError) && previousToken) {
             LoggerEngine.info(

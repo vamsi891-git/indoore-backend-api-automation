@@ -33,6 +33,8 @@ env:
   EMAIL: ${{ secrets.EMAIL }}
   USERNAME: ${{ secrets.USERNAME }}
   PASSWORD: ${{ secrets.PASSWORD }}
+  # Preferred on GitHub Actions — skips flaky CAPTCHA OCR. Keep EMAIL/PASSWORD as fallback.
+  API_TEST_ACCESS_TOKEN: ${{ secrets.API_TEST_ACCESS_TOKEN }}
   TOTP_SECRET: ${{ secrets.TOTP_SECRET }}
   DEVICE_ID: ${{ secrets.DEVICE_ID }}
   GMAIL_IMAP_USER: ${{ secrets.GMAIL_IMAP_USER }}
@@ -95,9 +97,12 @@ jobs:
         run: |
           missing=""
           [ -z "$BASE_URL" ] && missing="$missing BASE_URL"
-          [ -z "$PASSWORD" ] && missing="$missing PASSWORD"
-          if [ -z "$EMAIL" ] && [ -z "$USERNAME" ]; then
-            missing="$missing EMAIL (or USERNAME)"
+          if [ -z "$API_TEST_ACCESS_TOKEN" ]; then
+            [ -z "$PASSWORD" ] && missing="$missing PASSWORD"
+            if [ -z "$EMAIL" ] && [ -z "$USERNAME" ]; then
+              missing="$missing EMAIL (or USERNAME)"
+            fi
+            echo "::warning title=CI auth::API_TEST_ACCESS_TOKEN is not set — login will use CAPTCHA OCR (often fails on GitHub runners). Add a staging access token secret for reliable CI."
           fi
           if [ -n "$missing" ]; then
             echo "::error title=Missing GitHub Actions secrets::Configure:$missing"
