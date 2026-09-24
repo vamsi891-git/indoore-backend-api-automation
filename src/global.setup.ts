@@ -169,6 +169,10 @@ async function globalSetup(): Promise<void> {
   TokenManager.clearStaleLock();
   await assertApiReachable();
 
+  // One Playwright process = one module/smoke command.
+  // Flow: restore warm token for THIS run if still valid → else login once (captcha+OTP)
+  // → TokenManager seeds session → every test in this process reuses/refreshes that token.
+  // Next `npm run test:<module>` (next CI matrix job) starts a new process and repeats.
   const cachedSession = TokenManager.loadValidSession();
   if (cachedSession) {
     const stillValid = await probeAccessToken(cachedSession.accessToken);
@@ -179,7 +183,8 @@ async function globalSetup(): Promise<void> {
         cachedSession.csrfToken,
       );
       const msg =
-        "Session reused (access token still valid). Captcha and OTP run only on first login; later tests use this token, then refresh when it expires.";
+        "Session reused for this suite (access token still valid). " +
+        "Captcha/OTP only on cold login; all tests in this run reuse the same token.";
       LoggerEngine.info("Global setup reused valid cached auth token");
       console.error(msg);
       LoggerEngine.info("Global setup completed");
@@ -187,13 +192,13 @@ async function globalSetup(): Promise<void> {
     }
     TokenManager.discardStoredSession();
     console.error(
-      "Cached access token rejected by GET /auth/me (expired or revoked). Logging in fresh.",
+      "Cached access token rejected by GET /auth/me (expired or revoked). Logging in once for this suite.",
     );
     LoggerEngine.info("Global setup discarded stale cached auth token");
   }
 
   console.error(
-    "Global setup: first login for this session (captcha + OTP). Later tests reuse the token.",
+    "Global setup: login once for this suite (captcha + OTP). Remaining tests reuse the session.",
   );
   const login = await AuthApi.login();
   if (!login.accessToken) {

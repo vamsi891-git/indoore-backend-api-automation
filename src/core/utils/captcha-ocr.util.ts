@@ -159,8 +159,8 @@ export async function solveCaptchaSvg(svg: string): Promise<string> {
   const worker = await getOcrWorker();
   const candidates: OcrCandidate[] = [];
   let bestPartial = "";
-  /** Accept a strong first-pass guess before slower alternate rasters. */
-  const highConfidence = 55;
+  /** Prefer a voted winner; only early-exit on a strong confident guess. */
+  const highConfidence = 70;
 
   const psmModes: Array<{ name: string; mode: PSM }> = [
     { name: "single-line", mode: PSM.SINGLE_LINE },

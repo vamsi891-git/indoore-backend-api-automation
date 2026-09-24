@@ -119,14 +119,13 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
-      # Reuse a warm access token so CAPTCHA OCR runs only on cold login.
-      - name: Cache auth session
+      # Per-job session only: smoke logs in once (or restores smoke's own warm token).
+      # Do not share this cache with module jobs — each module logs in on its own start.
+      - name: Cache auth session (smoke)
         uses: actions/cache@v4
         with:
           path: playwright/.auth
-          key: auth-session-${{ runner.os }}-${{ github.repository }}-v1
-          restore-keys: |
-            auth-session-${{ runner.os }}-${{ github.repository }}-v1
+          key: auth-session-${{ runner.os }}-${{ github.repository }}-smoke-v1
 
       - name: Typecheck
         run: npm run typecheck
@@ -211,13 +210,13 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
-      - name: Cache auth session
+      # One login per module job (global.setup), then TokenManager reuses for that suite.
+      # Cache key includes matrix.module so dashboard ≠ consumers ≠ … sessions.
+      - name: Cache auth session (${{ matrix.module }})
         uses: actions/cache@v4
         with:
           path: playwright/.auth
-          key: auth-session-${{ runner.os }}-${{ github.repository }}-v1
-          restore-keys: |
-            auth-session-${{ runner.os }}-${{ github.repository }}-v1
+          key: auth-session-${{ runner.os }}-${{ github.repository }}-${{ matrix.module }}-v1
 
       - name: Run module suite
         run: npm run test:${{ matrix.module }}
