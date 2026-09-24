@@ -196,35 +196,8 @@ async function globalSetup(): Promise<void> {
     LoggerEngine.info("Global setup discarded stale cached auth token");
   }
 
-  // GitHub Actions: OCR captcha is unreliable. Prefer a seeded bearer token.
-  const ciAccessToken = env.API_TEST_ACCESS_TOKEN?.trim();
-  if (ciAccessToken && (env.GITHUB_ACTIONS || env.CI)) {
-    const loginOk = await probeAccessToken(ciAccessToken);
-    if (!loginOk) {
-      throw new Error(
-        "API_TEST_ACCESS_TOKEN was set, but GET /auth/me rejected it. " +
-          "Refresh the GitHub secret with a valid staging access token " +
-          "(login locally once and copy playwright/.auth/token.json accessToken).",
-      );
-    }
-    // Long TTL so TokenManager does not immediately force refresh; refresh API still extends it.
-    TokenManager.seed(ciAccessToken, 8 * 60 * 60, "");
-    console.error(
-      "Global setup authenticated with API_TEST_ACCESS_TOKEN (CAPTCHA OCR skipped in CI).",
-    );
-    LoggerEngine.info("Global setup authenticated with API_TEST_ACCESS_TOKEN");
-    LoggerEngine.info("Global setup completed");
-    return;
-  }
-
-  if (env.GITHUB_ACTIONS || env.CI) {
-    console.error(
-      "WARNING: No API_TEST_ACCESS_TOKEN in CI — falling back to CAPTCHA OCR (often flaky on GitHub runners).",
-    );
-  }
-
   console.error(
-    "Global setup: login once for this suite (captcha + OTP). Remaining tests reuse the session.",
+    "Global setup: login once for this suite (captcha OCR + OTP). Remaining tests reuse the session.",
   );
   const login = await AuthApi.login();
   if (!login.accessToken) {

@@ -6,23 +6,14 @@ import {
   EXPECTED_AUDIT_LOG_COLUMNS,
   EXPECTED_AUDIT_LOGS_DATA_COLUMNS,
 } from "../Data/auditlogs.data";
-import {
-  AuditLogsData,
-  AuditLogsQuery,
-  AuditLogsResponse,
-} from "../Mapper/auditlogs.mapper";
+import { AuditLogsData, AuditLogsQuery, AuditLogsResponse } from "../Mapper/auditlogs.mapper";
 import { AuditLogsListSuccessResponseSchema } from "../schemas/audit-logs.schemas";
-
-const UUID_REGEX =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const ISO_DATE_REGEX =
-  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z$/;
-
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const ISO_DATE_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{1,3})?Z$/;
 export class AuditLogsValidator {
   static validateZodResponseSchema<T>(body: unknown, schema: ZodType<T>): T {
     return assertZodSchema(schema, body, "Zod Response Schema");
   }
-
   static validateErrorResponse(
     status: number,
     body: { success?: boolean; error?: { code?: string; message?: string } },
@@ -33,23 +24,14 @@ export class AuditLogsValidator {
     expect(body.error?.code).toBeTruthy();
     expect(body.error?.message).toBeTruthy();
   }
-
   validateResponse(response: AuditLogsResponse): void {
     expect(response.success).toBeTruthy();
-    AuditLogsValidator.validateZodResponseSchema(
-      response,
-      AuditLogsListSuccessResponseSchema,
-    );
+    AuditLogsValidator.validateZodResponseSchema(response, AuditLogsListSuccessResponseSchema);
   }
-
   validateColumns(data: AuditLogsData): void {
-    expect(Object.keys(data).sort()).toEqual(
-      [...EXPECTED_AUDIT_LOGS_DATA_COLUMNS].sort(),
-    );
+    expect(Object.keys(data).sort()).toEqual([...EXPECTED_AUDIT_LOGS_DATA_COLUMNS].sort());
     if (data.logs.length > 0) {
-      expect(Object.keys(data.logs[0]).sort()).toEqual(
-        [...EXPECTED_AUDIT_LOG_COLUMNS].sort(),
-      );
+      expect(Object.keys(data.logs[0]).sort()).toEqual([...EXPECTED_AUDIT_LOG_COLUMNS].sort());
     }
     if (data.actionFilterOptions.length > 0) {
       expect(Object.keys(data.actionFilterOptions[0]).sort()).toEqual(
@@ -57,7 +39,6 @@ export class AuditLogsValidator {
       );
     }
   }
-
   validateAuditLogsExist(data: AuditLogsData): void {
     expect(data.logs).toBeDefined();
     if (data.total > 0 && data.page <= data.totalPages) {
@@ -66,22 +47,18 @@ export class AuditLogsValidator {
       expect(data.logs.length).toBe(0);
     }
   }
-
   validatePagination(data: AuditLogsData): void {
     expect(data.page).toBeGreaterThan(0);
     expect(data.limit).toBeGreaterThan(0);
     expect(data.total).toBeGreaterThanOrEqual(0);
     expect(data.totalPages).toBeGreaterThanOrEqual(0);
     expect(data.logs.length).toBeLessThanOrEqual(data.limit);
-
     if (data.total === 0) {
       expect(data.totalPages).toEqual(0);
       expect(data.logs.length).toEqual(0);
       return;
     }
-
     expect(data.totalPages).toEqual(Math.ceil(data.total / data.limit));
-
     if (data.page < data.totalPages) {
       expect(data.logs.length).toEqual(data.limit);
     } else if (data.page === data.totalPages) {
@@ -92,12 +69,10 @@ export class AuditLogsValidator {
       expect(data.logs.length).toEqual(0);
     }
   }
-
   validateQueryParams(data: AuditLogsData, query: AuditLogsQuery): void {
     expect(data.page).toEqual(query.page ?? 1);
     expect(data.limit).toEqual(query.limit ?? 20);
   }
-
   validateAuditLogFields(data: AuditLogsData): void {
     data.logs.forEach((log) => {
       expect(log.id).toBeTruthy();
@@ -112,7 +87,6 @@ export class AuditLogsValidator {
       expect(Array.isArray(log.detailsLines)).toBeTruthy();
     });
   }
-
   validateUuidFields(data: AuditLogsData): void {
     data.logs.forEach((log) => {
       expect(UUID_REGEX.test(log.id)).toBeTruthy();
@@ -122,7 +96,6 @@ export class AuditLogsValidator {
       }
     });
   }
-
   validateEmails(data: AuditLogsData): void {
     data.logs.forEach((log) => {
       if (log.actorEmail?.trim()) {
@@ -133,7 +106,6 @@ export class AuditLogsValidator {
       }
     });
   }
-
   validateRoles(data: AuditLogsData): void {
     data.logs.forEach((log) => {
       if (log.actorRoleName?.trim()) {
@@ -145,7 +117,6 @@ export class AuditLogsValidator {
       }
     });
   }
-
   validateFullNames(data: AuditLogsData): void {
     data.logs.forEach((log) => {
       if (log.actorFullName?.trim()) {
@@ -247,11 +218,7 @@ export class AuditLogsValidator {
   validateLogActionsInFilterOptions(data: AuditLogsData): void {
     const allowed = new Set(data.actionFilterOptions.map((opt) => opt.value));
     const outsideFilter = [
-      ...new Set(
-        data.logs
-          .map((log) => log.action)
-          .filter((action) => !allowed.has(action)),
-      ),
+      ...new Set(data.logs.map((log) => log.action).filter((action) => !allowed.has(action))),
     ];
     if (outsideFilter.length > 0) {
       console.log(
@@ -261,9 +228,7 @@ export class AuditLogsValidator {
   }
 
   validateDisplayLabels(data: AuditLogsData): void {
-    const filterByAction = new Map(
-      data.actionFilterOptions.map((opt) => [opt.value, opt.label]),
-    );
+    const filterByAction = new Map(data.actionFilterOptions.map((opt) => [opt.value, opt.label]));
 
     data.logs.forEach((log) => {
       const expectedActionLabel = filterByAction.get(log.action);

@@ -11,6 +11,11 @@ function blankToUndefined(value: unknown): unknown {
 
 const optionalString = z.preprocess(blankToUndefined, z.string().optional());
 
+const requiredString = z.preprocess(
+  blankToUndefined,
+  z.string({ error: "required" }).min(1, "required"),
+);
+
 /** "1" / "true" / "yes" → true; unset / other → false. */
 const boolFlag = z.preprocess((value) => {
   if (value == null || value === "") {
@@ -64,14 +69,7 @@ export const EnvSchema = z
 
     EMAIL: optionalString,
     USERNAME: optionalString,
-    /** Required unless `API_TEST_ACCESS_TOKEN` is set (CI bootstrap without CAPTCHA OCR). */
-    PASSWORD: optionalString,
-
-    /**
-     * Optional CI/staging bearer token. When set on GitHub Actions, global setup
-     * seeds TokenManager and skips CAPTCHA OCR (OCR is for local cold login).
-     */
-    API_TEST_ACCESS_TOKEN: optionalString,
+    PASSWORD: requiredString,
 
     TOTP_SECRET: optionalString,
     DEVICE_ID: optionalString,
@@ -122,29 +120,16 @@ export const EnvSchema = z
     GITHUB_ACTIONS: boolFlag,
   })
   .superRefine((data, ctx) => {
-    const hasCiToken = Boolean(data.API_TEST_ACCESS_TOKEN?.trim());
-    if (hasCiToken) {
-      return;
-    }
-
-    if (!data.PASSWORD) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["PASSWORD"],
-        message: "required (or set API_TEST_ACCESS_TOKEN for CI)",
-      });
-    }
-
     if (!data.EMAIL && !data.USERNAME) {
       ctx.addIssue({
         code: "custom",
         path: ["EMAIL"],
-        message: "required (or set USERNAME / API_TEST_ACCESS_TOKEN)",
+        message: "required (or set USERNAME)",
       });
       ctx.addIssue({
         code: "custom",
         path: ["USERNAME"],
-        message: "required (or set EMAIL / API_TEST_ACCESS_TOKEN)",
+        message: "required (or set EMAIL)",
       });
     }
   });

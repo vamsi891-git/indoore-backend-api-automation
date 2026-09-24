@@ -72,37 +72,36 @@ type RasterPass = {
 };
 
 /**
- * Soft rasterizations optimized for path-glyph captchas on a light field.
- * Keep the pass list short so OCR finishes before captchaId TTL expires.
+ * Path-glyph captchas on a light field. Keep passes few and fast so the
+ * captchaId does not expire before login POST.
  */
 function rasterPasses(): RasterPass[] {
   const base = (svg: Buffer, density: number, width: number, height: number) =>
     sharp(svg, { density }).resize(width, height, { fit: "fill" }).grayscale().normalize().extend({
-      top: 48,
-      bottom: 48,
-      left: 64,
-      right: 64,
+      top: 40,
+      bottom: 40,
+      left: 56,
+      right: 56,
       background: "#ffffff",
     });
 
   return [
     {
-      name: "pad-hires",
-      build: (svg) => base(svg, 360, 1400, 360).sharpen({ sigma: 0.9 }).png().toBuffer(),
+      name: "hires-sharp",
+      build: (svg) => base(svg, 400, 1600, 400).sharpen({ sigma: 1 }).png().toBuffer(),
     },
     {
-      name: "pad-contrast",
+      name: "contrast",
       build: (svg) =>
-        base(svg, 320, 1200, 300).linear(1.4, -20).sharpen({ sigma: 1 }).png().toBuffer(),
+        base(svg, 340, 1300, 320).linear(1.45, -22).sharpen({ sigma: 1.1 }).png().toBuffer(),
     },
     {
-      name: "pad-bright",
-      build: (svg) =>
-        base(svg, 300, 1100, 280)
-          .modulate({ brightness: 1.12 })
-          .sharpen({ sigma: 1.1 })
-          .png()
-          .toBuffer(),
+      name: "median-sharp",
+      build: (svg) => base(svg, 320, 1200, 300).median(1).sharpen({ sigma: 1.2 }).png().toBuffer(),
+    },
+    {
+      name: "soft-threshold",
+      build: (svg) => base(svg, 300, 1100, 280).threshold(165).png().toBuffer(),
     },
   ];
 }
@@ -147,7 +146,7 @@ function pickBestGuess(candidates: OcrCandidate[]): OcrCandidate | undefined {
 
 /**
  * Rasterize a login CAPTCHA SVG and OCR the answer (4–6 charset chars).
- * Runs several soft passes + PSM modes, then votes (majority / confidence).
+ * Votes across soft passes; early-exits when the same guess wins twice.
  */
 export async function solveCaptchaSvg(svg: string): Promise<string> {
   const trimmed = decodeCaptchaSvg(svg);
@@ -159,8 +158,7 @@ export async function solveCaptchaSvg(svg: string): Promise<string> {
   const worker = await getOcrWorker();
   const candidates: OcrCandidate[] = [];
   let bestPartial = "";
-  /** Prefer a voted winner; only early-exit on a strong confident guess. */
-  const highConfidence = 70;
+  const guessCounts = new Map<string, number>();
 
   const psmModes: Array<{ name: string; mode: PSM }> = [
     { name: "single-line", mode: PSM.SINGLE_LINE },
@@ -192,26 +190,37 @@ export async function solveCaptchaSvg(svg: string): Promise<string> {
           bestPartial = guess;
         }
 
-        if (isPlausibleCaptchaGuess(guess)) {
-          candidates.push({
-            guess,
-            confidence,
-            pass: pass.name,
-            psm: psm.name,
-          });
-          LoggerEngine.debug(
-            `CAPTCHA OCR pass=${pass.name}/${psm.name} guess=${guess} conf=${confidence.toFixed(1)}`,
-          );
-          if (confidence >= highConfidence) {
-            LoggerEngine.debug(
-              `CAPTCHA OCR early accept guess=${guess} via ${pass.name}/${psm.name} conf=${confidence.toFixed(1)}`,
-            );
-            return guess;
-          }
-        } else {
+        if (!isPlausibleCaptchaGuess(guess)) {
           LoggerEngine.debug(
             `CAPTCHA OCR pass=${pass.name}/${psm.name} guess=${guess || "(empty)"} (rejected length)`,
           );
+          continue;
+        }
+
+        candidates.push({
+          guess,
+          confidence,
+          pass: pass.name,
+          psm: psm.name,
+        });
+        const count = (guessCounts.get(guess) ?? 0) + 1;
+        guessCounts.set(guess, count);
+        LoggerEngine.debug(
+          `CAPTCHA OCR pass=${pass.name}/${psm.name} guess=${guess} conf=${confidence.toFixed(1)} votes=${count}`,
+        );
+
+        // Two independent reads agree — post before captcha TTL expires.
+        if (count >= 2) {
+          LoggerEngine.debug(
+            `CAPTCHA OCR majority accept guess=${guess} via ${pass.name}/${psm.name}`,
+          );
+          return guess;
+        }
+        if (confidence >= 78) {
+          LoggerEngine.debug(
+            `CAPTCHA OCR high-conf accept guess=${guess} via ${pass.name}/${psm.name} conf=${confidence.toFixed(1)}`,
+          );
+          return guess;
         }
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);

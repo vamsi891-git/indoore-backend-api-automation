@@ -42,26 +42,6 @@ test.describe("env.schema", () => {
     }
   });
 
-  test("accepts API_TEST_ACCESS_TOKEN without EMAIL/PASSWORD", () => {
-    const parsed = EnvSchema.safeParse({
-      BASE_URL: "https://api.example.com",
-      API_TEST_ACCESS_TOKEN: "ci-bearer-token",
-    });
-    expect(parsed.success).toBe(true);
-  });
-
-  test("requires PASSWORD when API_TEST_ACCESS_TOKEN is missing", () => {
-    const parsed = EnvSchema.safeParse({
-      BASE_URL: "https://api.example.com",
-      EMAIL: "qa@example.com",
-    });
-    expect(parsed.success).toBe(false);
-    if (!parsed.success) {
-      const paths = parsed.error.issues.map((i) => i.path.join("."));
-      expect(paths).toEqual(expect.arrayContaining(["PASSWORD"]));
-    }
-  });
-
   test("loadEnv throws a single multi-line message", () => {
     expect(() =>
       loadEnv({

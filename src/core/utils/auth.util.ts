@@ -48,11 +48,11 @@ export class AuthApi {
   /** Rate-limit (429) waits — short retries only make TOO_MANY_REQUESTS worse. */
   private static readonly rateLimitRetryMs = [0, 60_000, 120_000];
   /**
-   * Cold login only (warm suites reuse playwright/.auth and skip captcha).
-   * Each attempt fetches a NEW captchaId + OCR once — never re-guess the same image.
-   * Cap at 3 to avoid lockouts from the old 8-attempt hammering.
+   * Cold login only. Each attempt = new captchaId + OCR + one login POST.
+   * More attempts on GitHub runners where OCR is noisier; keep local lighter.
    */
-  private static readonly captchaOcrMaxAttempts = 3;
+  private static readonly captchaOcrMaxAttempts =
+    process.env.GITHUB_ACTIONS === "true" || process.env.CI === "true" ? 5 : 3;
   /** One extra wait if the API already locked login behind captcha. */
   private static readonly captchaRetryWaitMs = 90_000;
   /** Cap short 429 waits; longer Retry-After fails fast (do not keep hammering). */
