@@ -35,7 +35,14 @@ export const AuthTestData = {
     return (process.env.PASSWORD ?? "").trim();
   },
   get loginTesterPasskey(): string {
-    return (process.env.LOGIN_TESTER_PASSKEY ?? "").trim();
+    let value = (process.env.LOGIN_TESTER_PASSKEY ?? "").trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1).trim();
+    }
+    return value;
   },
   get hasValidCredentials(): boolean {
     return Boolean(this.validEmail && this.validPassword);

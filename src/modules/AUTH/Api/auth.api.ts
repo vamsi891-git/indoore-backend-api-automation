@@ -159,7 +159,7 @@ export class AuthenticationApi {
   async loginUntilSession(email: string, password: string): Promise<EstablishedAuthSession> {
     await this.getLoginPreflight();
     let csrfToken = await AuthMapper.resolveCsrfToken(this.request, {});
-    const passkey = (process.env.LOGIN_TESTER_PASSKEY ?? "").trim();
+    const passkey = (process.env.LOGIN_TESTER_PASSKEY ?? "").trim().replace(/^['"]|['"]$/g, "");
     const captcha = passkey ? undefined : await this.getLoginCaptcha();
 
     const login = await this.postLogin(email, password, csrfToken, captcha, passkey || undefined);
