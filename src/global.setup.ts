@@ -185,7 +185,7 @@ async function globalSetup(): Promise<void> {
   }
 
   console.error(
-    "Global setup: login once for this suite (captcha OCR + OTP). Remaining tests reuse the session.",
+    "Global setup: login once for this suite (passkey or captcha + OTP). Remaining tests reuse the session.",
   );
   const login = await AuthApi.login();
   if (!login.accessToken) {

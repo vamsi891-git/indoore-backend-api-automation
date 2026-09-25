@@ -665,6 +665,7 @@ export class AuthApi {
 
     const email = credentials?.email ?? getLoginIdentity();
     const password = credentials?.password ?? env.PASSWORD;
+    const passkey = (env.LOGIN_TESTER_PASSKEY ?? "").trim();
 
     if (!email || !password) {
       throw new Error("Missing EMAIL (or USERNAME) and PASSWORD environment variables");
@@ -676,6 +677,116 @@ export class AuthApi {
     try {
       const startTime = Date.now();
       const csrfToken = await this.fetchCsrf(apiContext);
+
+      if (passkey) {
+        console.error("Login: using LOGIN_TESTER_PASSKEY (captcha OCR skipped)");
+        let loginResponse: Awaited<ReturnType<typeof apiContext.post>> | undefined;
+        let loginRaw = "";
+        let loginPathUsed = this.path(this.loginPath);
+
+        for (const loginPath of this.candidatePaths(this.loginPath)) {
+          loginPathUsed = loginPath;
+          loginResponse = await apiContext.post(loginPath, {
+            headers: this.buildAuthHeaders(csrfToken),
+            data: { email, password, passkey },
+          });
+          loginRaw = await loginResponse.text();
+          if (!this.isRouteNotFound(loginResponse.status())) {
+            if (
+              loginPath === this.loginPath.slice("/indore".length) ||
+              loginPath === "/auth/login"
+            ) {
+              enableStripIndorePrefix();
+            }
+            break;
+          }
+          LoggerEngine.info(`Login POST ${loginPath} returned 404; trying next path`);
+        }
+
+        if (!loginResponse) {
+          throw new Error("Login failed: no login path was attempted");
+        }
+
+        if (this.retriableAuthStatuses.has(loginResponse.status())) {
+          const retryAfter = loginResponse.headers()["retry-after"];
+          const suffix = retryAfter ? ` retry-after=${retryAfter}` : "";
+          const err = new Error(
+            `Login failed with status ${loginResponse.status()} - ${loginRaw.slice(0, 300)}${suffix}`,
+          );
+          if (loginResponse.status() === 429 || /TOO_MANY_REQUESTS/i.test(loginRaw)) {
+            throw this.rateLimitLockoutError(
+              new Error(`${err.message}${retryAfter ? "" : " retry-after=600"}`),
+            );
+          }
+          throw err;
+        }
+
+        let loginBody: {
+          data?: TwoFactorBody & { accessToken?: string; expiresIn?: number };
+          error?: { code?: string; message?: string };
+        };
+        try {
+          loginBody = JSON.parse(loginRaw) as typeof loginBody;
+        } catch {
+          throw new Error(
+            `Login failed with status ${loginResponse.status()} - ${loginRaw.slice(0, 300)}`,
+          );
+        }
+
+        LoggerEngine.api({
+          method: "POST",
+          url: loginPathUsed,
+          status: loginResponse.status(),
+          responseTimeMs: Date.now() - startTime,
+          attempt: 1,
+        });
+
+        if (!loginResponse.ok()) {
+          const loginError = new Error(
+            `Login failed with status ${loginResponse.status()} - ${JSON.stringify(loginBody)}`,
+          );
+          if (loginResponse.status() === 429 || /TOO_MANY_REQUESTS/i.test(loginRaw)) {
+            throw this.rateLimitLockoutError(loginError);
+          }
+          throw new Error(
+            `Cold login failed with LOGIN_TESTER_PASSKEY (email/password/passkey). ${loginError.message}`,
+          );
+        }
+
+        if (loginBody.data?.accessToken) {
+          return this.toLoginResponse(apiContext, loginBody);
+        }
+
+        let nextBody = loginBody.data as TwoFactorBody;
+        const headers = loginResponse.headers();
+
+        for (let step = 0; step < 8; step += 1) {
+          if (nextBody?.accessToken) {
+            return this.toLoginResponse(apiContext, { data: nextBody });
+          }
+
+          if (nextBody?.requires2FA) {
+            nextBody = await this.completeTwoFactor(apiContext, nextBody, headers);
+            continue;
+          }
+
+          if (nextBody?.requiresDeviceSelection) {
+            nextBody = await this.completeDeviceSelection(
+              apiContext,
+              nextBody as DeviceSelectionBody,
+              headers,
+            );
+            continue;
+          }
+
+          throw new Error(
+            `Login succeeded but no access token was returned - ${JSON.stringify({ data: nextBody })}`,
+          );
+        }
+
+        throw new Error("Login did not return an access token after 2FA/device steps");
+      }
+
       await warmupCaptchaOcr();
 
       let loginResponse: Awaited<ReturnType<typeof apiContext.post>> | undefined;

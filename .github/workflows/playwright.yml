@@ -81,6 +81,7 @@ env:
   EMAIL: ${{ secrets.EMAIL }}
   USERNAME: ${{ secrets.USERNAME }}
   PASSWORD: ${{ secrets.PASSWORD }}
+  LOGIN_TESTER_PASSKEY: ${{ secrets.LOGIN_TESTER_PASSKEY }}
   TOTP_SECRET: ${{ secrets.TOTP_SECRET }}
   DEVICE_ID: ${{ secrets.DEVICE_ID }}
   GMAIL_IMAP_USER: ${{ secrets.GMAIL_IMAP_USER }}

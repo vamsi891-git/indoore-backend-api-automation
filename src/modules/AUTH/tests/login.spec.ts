@@ -46,11 +46,15 @@ test.describe("Auth Login API", () => {
         );
         validation.execute("CSRF Token Available", () => validator.validateCsrfToken(csrfToken));
 
+        const passkey = AuthTestData.loginTesterPasskey || undefined;
+        const captchaForInvalid = passkey ? undefined : await api.getLoginCaptcha();
+
         let invalidLogin = await api.postLogin(
           AuthTestData.validEmail,
           AuthTestData.invalidPassword,
           csrfToken,
-          await api.getLoginCaptcha(),
+          captchaForInvalid,
+          passkey,
         );
 
         if (invalidLogin.rawResponse.status() === 500) {
@@ -63,7 +67,8 @@ test.describe("Auth Login API", () => {
             AuthTestData.validEmail,
             AuthTestData.invalidPassword,
             retryCsrf,
-            await api.getLoginCaptcha(),
+            passkey ? undefined : await api.getLoginCaptcha(),
+            passkey,
           );
         }
 
@@ -94,7 +99,8 @@ test.describe("Auth Login API", () => {
           AuthTestData.validEmail,
           AuthTestData.validPassword,
           freshCsrf,
-          await api.getLoginCaptcha(),
+          passkey ? undefined : await api.getLoginCaptcha(),
+          passkey,
         );
 
         await PerformanceTracker.track(

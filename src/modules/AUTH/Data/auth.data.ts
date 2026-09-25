@@ -11,10 +11,8 @@ export const AuthPaths = {
   invitePreview: "/indore/auth/invite/preview",
   inviteAccept: "/indore/auth/invite/accept",
   invitationsMine: "/indore/auth/invitations/mine",
-  invitationById: (invitationId: string) =>
-    `/indore/auth/invitations/${invitationId}`,
-  invitationResend: (invitationId: string) =>
-    `/indore/auth/invitations/${invitationId}/resend`,
+  invitationById: (invitationId: string) => `/indore/auth/invitations/${invitationId}`,
+  invitationResend: (invitationId: string) => `/indore/auth/invitations/${invitationId}/resend`,
   roles: "/indore/permissions/roles",
 } as const;
 
@@ -35,6 +33,9 @@ export const AuthTestData = {
   },
   get validPassword(): string {
     return (process.env.PASSWORD ?? "").trim();
+  },
+  get loginTesterPasskey(): string {
+    return (process.env.LOGIN_TESTER_PASSKEY ?? "").trim();
   },
   get hasValidCredentials(): boolean {
     return Boolean(this.validEmail && this.validPassword);

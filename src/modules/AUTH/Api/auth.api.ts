@@ -80,15 +80,19 @@ export class AuthenticationApi {
     password: string,
     csrfToken: string,
     captcha?: { captchaId: string; captcha: string },
+    passkey?: string,
   ): Promise<ApiCallResult> {
     const start = Date.now();
+    const key = (passkey ?? "").trim();
     const rawResponse = await this.request.post(AuthPaths.login, {
       headers: this.buildCsrfHeaders(csrfToken),
-      data: {
-        email,
-        password,
-        ...(captcha ? { captchaId: captcha.captchaId, captcha: captcha.captcha } : {}),
-      },
+      data: key
+        ? { email, password, passkey: key }
+        : {
+            email,
+            password,
+            ...(captcha ? { captchaId: captcha.captchaId, captcha: captcha.captcha } : {}),
+          },
     });
     const responseBody = await rawResponse.json();
     return {
@@ -155,9 +159,10 @@ export class AuthenticationApi {
   async loginUntilSession(email: string, password: string): Promise<EstablishedAuthSession> {
     await this.getLoginPreflight();
     let csrfToken = await AuthMapper.resolveCsrfToken(this.request, {});
-    const captcha = await this.getLoginCaptcha();
+    const passkey = (process.env.LOGIN_TESTER_PASSKEY ?? "").trim();
+    const captcha = passkey ? undefined : await this.getLoginCaptcha();
 
-    const login = await this.postLogin(email, password, csrfToken, captcha);
+    const login = await this.postLogin(email, password, csrfToken, captcha, passkey || undefined);
     if (login.rawResponse.status() !== 200) {
       throw new Error(
         `Login failed with status ${login.rawResponse.status()}: ${JSON.stringify(login.responseBody)}`,
