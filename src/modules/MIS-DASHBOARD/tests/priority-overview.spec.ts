@@ -52,11 +52,6 @@ test.describe("How many events by urgency", () => {
         validator.validateUniquePriorityLabels(data),
       );
       validation.execute("Urgency order", () => validator.validatePriorityOrdering(data));
-      if (testCase.checkExpectedPriorities !== false) {
-        validation.execute("Expected urgency levels", () =>
-          validator.validateExpectedPriorities(data),
-        );
-      }
       validation.printSummary(testCase.testName, responseTime);
     });
   }

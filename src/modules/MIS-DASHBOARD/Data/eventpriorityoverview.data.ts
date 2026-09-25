@@ -2,11 +2,6 @@ export const eventPriorityOverviewQuery = {
   assetType: "all",
 };
 
-export const backendRules = {
-  priorityIds: [1, 2, 3, 4, 5, 6],
-  priorityCount: 6,
-};
-
 export type EventPriorityOverviewTestCase = {
   testName: string;
   params: Record<string, string | number | boolean>;

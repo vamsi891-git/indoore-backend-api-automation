@@ -12,14 +12,12 @@ import {
   enableStripIndorePrefix,
 } from "./core/utils/api-path.util";
 import { env, loadEnv } from "./core/config/env.schema";
-
 function ensureDirectory(dirName: string): void {
   const dirPath = path.join(process.cwd(), dirName);
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
   }
 }
-
 function apiHostLabel(baseURL: string): string {
   try {
     return new URL(baseURL).hostname;
@@ -27,7 +25,6 @@ function apiHostLabel(baseURL: string): string {
     return "(invalid BASE_URL)";
   }
 }
-
 function isPrivateOrLocalHost(hostname: string): boolean {
   return (
     /^(localhost|127\.0\.0\.1|0\.0\.0\.0|::1)$/i.test(hostname) ||
@@ -36,28 +33,22 @@ function isPrivateOrLocalHost(hostname: string): boolean {
     /^172\.(1[6-9]|2\d|3[0-1])\.\d+\.\d+$/.test(hostname)
   );
 }
-
 async function assertApiReachable(): Promise<void> {
   const baseURL = normalizeApiBaseUrl(env.BASE_URL);
   const host = apiHostLabel(baseURL);
   const onGitHub = env.GITHUB_ACTIONS;
-
   if (onGitHub && isPrivateOrLocalHost(host)) {
     throw new Error(
       `GitHub Actions cannot reach ${host}. Set repository secret BASE_URL to the public HTTPS API (not localhost or a VPN/LAN address).`,
     );
   }
-
   const delaysMs = onGitHub ? [0, 10_000, 20_000, 30_000] : [0];
   let lastStatus = 0;
   let lastCause = "";
-
   const isGateway = (status: number) => status === 502 || status === 503 || status === 504;
-
   const loginPaths = Array.from(
     new Set([resolveApiPath("/indore/auth/login"), "/auth/login", "/indore/auth/login"]),
   );
-
   for (let i = 0; i < delaysMs.length; i++) {
     if (delaysMs[i] > 0) {
       await new Promise((resolve) => setTimeout(resolve, delaysMs[i]));
@@ -112,20 +103,17 @@ async function assertApiReachable(): Promise<void> {
       }
     }
   }
-
   throw new Error(
     `API host ${host} is not ready (${lastCause || `HTTP ${lastStatus}`}). ` +
       "This is not a TOTP/password problem: the login proxy returned 502/503/504 or did not connect. " +
       "Set GitHub secret BASE_URL to https://api.mdm.mppkvvcl.bestinfra.app (API origin, not the dashboard), confirm the API is up, and re-run the workflow.",
   );
 }
-
 async function probeAccessToken(accessToken: string): Promise<boolean> {
   const baseURL = normalizeApiBaseUrl(env.BASE_URL);
   const mePaths = Array.from(
     new Set([resolveApiPath("/indore/auth/me"), "/auth/me", "/indore/auth/me"]),
   );
-
   for (const mePath of mePaths) {
     try {
       const response = await fetch(`${baseURL}${mePath}`, {

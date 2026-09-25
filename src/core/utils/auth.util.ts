@@ -5,8 +5,8 @@ import { LoggerEngine } from "../engine/logger.engine";
 import { enableStripIndorePrefix, resolveApiPath, normalizeApiBaseUrl } from "./api-path.util";
 import { generateTotp, getTotpSecret } from "./totp.util";
 import { solveCaptchaSvg, warmupCaptchaOcr } from "./captcha-ocr.util";
+import { AuthGate } from "./auth-gate.util";
 import { env, getLoginIdentity } from "../config/env.schema";
-
 export interface LoginResponse {
   accessToken: string;
   expiresIn?: number;
@@ -49,10 +49,9 @@ export class AuthApi {
   private static readonly rateLimitRetryMs = [0, 60_000, 120_000];
   /**
    * Cold login only. Each attempt = new captchaId + OCR + one login POST.
-   * More attempts on GitHub runners where OCR is noisier; keep local lighter.
+   * Keep low — more guesses amplify TOO_MANY_REQUESTS / device-limit storms in CI.
    */
-  private static readonly captchaOcrMaxAttempts =
-    process.env.GITHUB_ACTIONS === "true" || process.env.CI === "true" ? 5 : 3;
+  private static readonly captchaOcrMaxAttempts = 3;
   /** One extra wait if the API already locked login behind captcha. */
   private static readonly captchaRetryWaitMs = 90_000;
   /** Cap short 429 waits; longer Retry-After fails fast (do not keep hammering). */
@@ -187,6 +186,16 @@ export class AuthApi {
         enableStripIndorePrefix();
       }
       if (!response.ok()) {
+        if (lastStatus === 429 || /TOO_MANY_REQUESTS/i.test(raw)) {
+          const retryAfter = Number(response.headers()["retry-after"]);
+          const err = new Error(
+            `Login CAPTCHA GET failed with status ${lastStatus} - ${raw.slice(0, 300)}` +
+              (Number.isFinite(retryAfter) && retryAfter > 0
+                ? ` retry-after=${retryAfter}`
+                : " retry-after=600"),
+          );
+          throw this.rateLimitLockoutError(err);
+        }
         throw new Error(
           `Login CAPTCHA GET failed with status ${lastStatus} - ${raw.slice(0, 300)}`,
         );
@@ -411,6 +420,7 @@ export class AuthApi {
    */
   private static rateLimitLockoutError(error: unknown): Error {
     const sec = this.parseRetryAfterSeconds(error) ?? 600;
+    AuthGate.markRateLimited(sec);
     const until = new Date(Date.now() + sec * 1000).toLocaleTimeString();
     const minutes = Math.ceil(sec / 60);
     return new Error(
@@ -570,9 +580,11 @@ export class AuthApi {
     }
 
     LoggerEngine.info(
-      `Device limit reached (${devices.length} active sessions). Terminating listed sessions so login can continue.`,
+      `Device limit reached (${devices.length} active sessions). Releasing oldest session(s) until a slot opens.`,
     );
-    console.log(`Device limit reached (${devices.length} sessions). Closing all listed sessions.`);
+    console.log(
+      `Device limit reached (${devices.length} sessions). Releasing oldest session(s) (not all at once).`,
+    );
 
     const maxAttempts = Math.max(devices.length, 4) + 2;
 
@@ -649,6 +661,8 @@ export class AuthApi {
     email: string;
     password: string;
   }): Promise<LoginResponse> {
+    AuthGate.assertNotRateLimited("captcha login attempt");
+
     const email = credentials?.email ?? getLoginIdentity();
     const password = credentials?.password ?? env.PASSWORD;
 
@@ -684,6 +698,9 @@ export class AuthApi {
         } catch (captchaError) {
           const message =
             captchaError instanceof Error ? captchaError.message : String(captchaError);
+          if (/rate-limited|TOO_MANY_REQUESTS/i.test(message)) {
+            throw captchaError instanceof Error ? captchaError : new Error(message);
+          }
           console.error(
             `Login CAPTCHA OCR failed (${captchaAttempt}/${this.captchaOcrMaxAttempts}) — ${message}`,
           );
@@ -734,9 +751,15 @@ export class AuthApi {
         if (this.retriableAuthStatuses.has(loginResponse.status())) {
           const retryAfter = loginResponse.headers()["retry-after"];
           const suffix = retryAfter ? ` retry-after=${retryAfter}` : "";
-          throw new Error(
+          const err = new Error(
             `Login failed with status ${loginResponse.status()} - ${loginRaw.slice(0, 300)}${suffix}`,
           );
+          if (loginResponse.status() === 429 || /TOO_MANY_REQUESTS/i.test(loginRaw)) {
+            throw this.rateLimitLockoutError(
+              new Error(`${err.message}${retryAfter ? "" : " retry-after=600"}`),
+            );
+          }
+          throw err;
         }
 
         try {
@@ -846,9 +869,11 @@ export class AuthApi {
   }
 
   static async login(credentials?: { email: string; password: string }): Promise<LoginResponse> {
+    AuthGate.assertNotRateLimited("captcha login");
+
     let lastError: Error | null = null;
     let sawDbBusy = false;
-    let sawRateLimit = false;
+    const sawRateLimit = false;
 
     for (let attempt = 0; attempt < this.loginRetryMs.length; attempt += 1) {
       const schedule = sawRateLimit ? this.rateLimitRetryMs : this.loginRetryMs;
@@ -884,24 +909,17 @@ export class AuthApi {
           }
         }
 
+        if (this.isRateLimitedError(lastError)) {
+          // Always fail-fast on TOO_MANY_REQUESTS (default 10m if Retry-After missing).
+          const lockout = this.rateLimitLockoutError(lastError);
+          LoggerEngine.error("AuthApi.login rate-limited — fail fast", lockout);
+          console.error(lockout.message);
+          throw lockout;
+        }
+
         if (!this.isRetriableLoginError(lastError)) {
           LoggerEngine.error("AuthApi.login failed", lastError);
           throw lastError;
-        }
-
-        if (this.isRateLimitedError(lastError)) {
-          sawRateLimit = true;
-          const retryAfterSec = this.parseRetryAfterSeconds(lastError);
-          if (retryAfterSec != null && retryAfterSec >= this.rateLimitFailFastSec) {
-            const lockout = this.rateLimitLockoutError(lastError);
-            LoggerEngine.error("AuthApi.login rate-limited — fail fast", lockout);
-            console.error(lockout.message);
-            throw lockout;
-          }
-          const finding =
-            "Login rate-limited (429) — waiting before the next attempt (do not Ctrl+C and re-run)";
-          LoggerEngine.info(finding);
-          console.log(finding);
         }
 
         if (this.isDbBusyError(lastError)) {

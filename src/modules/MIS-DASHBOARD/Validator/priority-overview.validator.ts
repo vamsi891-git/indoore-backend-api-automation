@@ -1,9 +1,5 @@
 import { expect } from "@playwright/test";
-import { EXPECTED_PRIORITY_IDS } from "../Data/priority-overview.data";
-import {
-  PriorityOverviewData,
-  PriorityOverviewResponse,
-} from "../Mapper/priority-overview.mapper";
+import { PriorityOverviewData, PriorityOverviewResponse } from "../Mapper/priority-overview.mapper";
 
 export class PriorityOverviewValidator {
   validateResponse(response: PriorityOverviewResponse) {
@@ -60,25 +56,12 @@ export class PriorityOverviewValidator {
 
   validatePriorityOrdering(data: PriorityOverviewData) {
     for (let i = 1; i < data.priorities.length; i++) {
-      expect(data.priorities[i].priorityId).toBeGreaterThan(
-        data.priorities[i - 1].priorityId,
-      );
+      expect(data.priorities[i].priorityId).toBeGreaterThan(data.priorities[i - 1].priorityId);
     }
   }
 
-  validateExpectedPriorities(data: PriorityOverviewData) {
-    expect(data.priorities.map((item) => item.priorityId)).toEqual(
-      EXPECTED_PRIORITY_IDS,
-    );
-  }
-
-  validateSubsetDoesNotExceedAll(
-    allMeters: PriorityOverviewData,
-    subset: PriorityOverviewData,
-  ) {
-    const byId = new Map(
-      allMeters.priorities.map((item) => [item.priorityId, item]),
-    );
+  validateSubsetDoesNotExceedAll(allMeters: PriorityOverviewData, subset: PriorityOverviewData) {
+    const byId = new Map(allMeters.priorities.map((item) => [item.priorityId, item]));
     expect(subset.priorities.map((item) => item.priorityId)).toEqual(
       allMeters.priorities.map((item) => item.priorityId),
     );

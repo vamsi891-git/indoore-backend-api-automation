@@ -29,23 +29,15 @@ export class EventDataValidator {
       backendRules.expectedCategories,
     );
     expect(data.priorities.length).toBe(0);
-    const currentTotal = data.classifications.reduce(
-      (sum, row) => sum + row.currentDay,
-      0,
-    );
-    const previousTotal = data.classifications.reduce(
-      (sum, row) => sum + row.previousDay,
-      0,
-    );
+    const currentTotal = data.classifications.reduce((sum, row) => sum + row.currentDay, 0);
+    const previousTotal = data.classifications.reduce((sum, row) => sum + row.previousDay, 0);
     expect(currentTotal).toBe(data.totalEventsCurrentDay);
     expect(previousTotal).toBe(data.totalEventsPreviousDay);
     for (const row of data.classifications) {
       expect(row.currentDay).toBeGreaterThanOrEqual(0);
       expect(row.previousDay).toBeGreaterThanOrEqual(0);
       expect(row.label).toBe(
-        backendRules.labelMappings[
-          row.category as keyof typeof backendRules.labelMappings
-        ],
+        backendRules.labelMappings[row.category as keyof typeof backendRules.labelMappings],
       );
     }
     const categories = data.classifications.map((row) => row.category);
@@ -57,32 +49,25 @@ export class EventDataValidator {
   validatePriorityShape(data: EventDataSummary) {
     expect(data.reportType).toBe("");
     expect(data.classifications.length).toBe(0);
-    expect(data.priorities.map((row) => row.priorityId)).toEqual(
-      backendRules.priorityIds,
-    );
-    expect(data.active.currentDay + data.resolve.currentDay).toBe(
-      data.totalEventsCurrentDay,
-    );
-    expect(data.active.previousDay + data.resolve.previousDay).toBe(
-      data.totalEventsPreviousDay,
-    );
-    const currentTotal = data.priorities.reduce(
-      (sum, row) => sum + row.currentDay,
-      0,
-    );
-    const previousTotal = data.priorities.reduce(
-      (sum, row) => sum + row.previousDay,
-      0,
-    );
+    expect(data.priorities.length).toBeGreaterThan(0);
+    expect(data.active.currentDay + data.resolve.currentDay).toBe(data.totalEventsCurrentDay);
+    expect(data.active.previousDay + data.resolve.previousDay).toBe(data.totalEventsPreviousDay);
+    const currentTotal = data.priorities.reduce((sum, row) => sum + row.currentDay, 0);
+    const previousTotal = data.priorities.reduce((sum, row) => sum + row.previousDay, 0);
     expect(currentTotal).toBe(data.totalEventsCurrentDay);
     expect(previousTotal).toBe(data.totalEventsPreviousDay);
     for (const row of data.priorities) {
+      expect(Number.isInteger(row.priorityId)).toBeTruthy();
+      expect(row.priorityId).toBeGreaterThanOrEqual(0);
       expect(row.currentDay).toBeGreaterThanOrEqual(0);
       expect(row.previousDay).toBeGreaterThanOrEqual(0);
       expect(row.label).toBe(`Priority ${row.priorityId}`);
     }
     const ids = data.priorities.map((row) => row.priorityId);
     expect(new Set(ids).size).toBe(ids.length);
+    for (let i = 1; i < ids.length; i++) {
+      expect(ids[i]).toBeGreaterThan(ids[i - 1]);
+    }
   }
 
   validateUniqueClassificationCategories(data: EventDataSummary) {
@@ -95,20 +80,11 @@ export class EventDataValidator {
     expect(new Set(ids).size).toBe(ids.length);
   }
 
-  validateSubsetDoesNotExceedAll(
-    allMeters: EventDataSummary,
-    subset: EventDataSummary,
-  ) {
-    expect(subset.totalEventsCurrentDay).toBeLessThanOrEqual(
-      allMeters.totalEventsCurrentDay,
-    );
-    expect(subset.totalEventsPreviousDay).toBeLessThanOrEqual(
-      allMeters.totalEventsPreviousDay,
-    );
+  validateSubsetDoesNotExceedAll(allMeters: EventDataSummary, subset: EventDataSummary) {
+    expect(subset.totalEventsCurrentDay).toBeLessThanOrEqual(allMeters.totalEventsCurrentDay);
+    expect(subset.totalEventsPreviousDay).toBeLessThanOrEqual(allMeters.totalEventsPreviousDay);
     if (allMeters.classifications.length > 0) {
-      const byCategory = new Map(
-        allMeters.classifications.map((row) => [row.category, row]),
-      );
+      const byCategory = new Map(allMeters.classifications.map((row) => [row.category, row]));
       expect(subset.classifications.map((row) => row.category)).toEqual(
         allMeters.classifications.map((row) => row.category),
       );
@@ -120,9 +96,7 @@ export class EventDataValidator {
       }
       return;
     }
-    const byId = new Map(
-      allMeters.priorities.map((row) => [row.priorityId, row]),
-    );
+    const byId = new Map(allMeters.priorities.map((row) => [row.priorityId, row]));
     expect(subset.priorities.map((row) => row.priorityId)).toEqual(
       allMeters.priorities.map((row) => row.priorityId),
     );

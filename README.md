@@ -89,11 +89,11 @@ Workers default to **1** (`WORKERS` / `PLAYWRIGHT_WORKERS`). Module scripts forc
 
 ## Decisions & deeper docs
 
-- **[DECISIONS.md](./DECISIONS.md)** — why one session, GET-only, Zod + snapshots, retry ownership, extras fence
-- [docs/ASSERTIONS.md](./docs/ASSERTIONS.md) — canonical assertion flow
-- [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) — full layered design
-- [docs/MODULE_GUIDE.md](./docs/MODULE_GUIDE.md) — longer module walkthrough
+- **[docs/AUTOMATION-PLAN.md](./docs/AUTOMATION-PLAN.md)** — API vs UI strategy (v1.1 — expand these repos, do not rebuild)
 - [docs/SOLO-QA.md](./docs/SOLO-QA.md) — day-to-day solo maintainer guide
+- [docs/MODULE_GUIDE.md](./docs/MODULE_GUIDE.md) — add an endpoint
+- [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) — layered design
+- [docs/ASSERTIONS.md](./docs/ASSERTIONS.md) — assertion flow
 
 ## CI
 

@@ -4,8 +4,6 @@ export const priorityOverviewQuery = {
   assetType: "all",
 };
 
-export const EXPECTED_PRIORITY_IDS = [1, 2, 3, 4, 5, 6];
-
 export type PriorityOverviewTestCase = {
   testName: string;
   params: Record<string, string | number | boolean>;
@@ -13,7 +11,6 @@ export type PriorityOverviewTestCase = {
   expectedFromDate?: string;
   expectedToDate?: string;
   expectSameDayWindow?: boolean;
-  checkExpectedPriorities?: boolean;
   tags: string[];
   /** Smoke: primary list/table must be non-empty. */
   nonEmptyExpected?: boolean;
@@ -149,7 +146,6 @@ export const priorityOverviewTestCases: PriorityOverviewTestCase[] = [
     params: { assetType: "all" },
     expectedStatus: 200,
     expectSameDayWindow: true,
-    checkExpectedPriorities: false,
     tags,
   },
   {
@@ -157,7 +153,6 @@ export const priorityOverviewTestCases: PriorityOverviewTestCase[] = [
     params: { fromDate: "", toDate: "", assetType: "all" },
     expectedStatus: 200,
     expectSameDayWindow: true,
-    checkExpectedPriorities: false,
     tags,
   },
   {

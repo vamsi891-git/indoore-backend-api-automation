@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { AuthApi } from "./auth.util";
+import { AuthGate } from "./auth-gate.util";
 import { LoggerEngine } from "../engine/logger.engine";
 import { normalizeApiBaseUrl } from "./api-path.util";
 import { env } from "../config/env.schema";
@@ -26,12 +27,15 @@ export class TokenManager {
   private static csrfToken: string | null = null;
   private static refreshAtEpochMs = 0;
   private static refreshPromise: Promise<void> | null = null;
+  /** Block captcha re-login while the auth API is rate-limiting us (see AuthGate). */
+  private static loginCooldownUntilMs = 0;
 
   private static readonly defaultExpirySeconds = 900;
   /** Slow DTR endpoints can take >2 minutes; do not start a request with a token that dies mid-call. */
   private static readonly refreshBufferMs = 180_000;
   private static readonly lockWaitMs = 120_000;
   private static readonly lockPollMs = 250;
+  private static readonly loginCooldownMs = 120_000;
   private static readonly authDir = path.join(process.cwd(), "playwright", ".auth");
   private static readonly tokenFilePath = path.join(TokenManager.authDir, "token.json");
   private static readonly lockFilePath = path.join(TokenManager.authDir, "refresh.lock");
@@ -57,6 +61,33 @@ export class TokenManager {
     return this.csrfToken;
   }
   static async handleUnauthorized(currentToken: string): Promise<string> {
+    // Prefer refresh — full captcha login on every 401 causes device-limit + 429 storms in CI.
+    if (currentToken) {
+      try {
+        LoggerEngine.info("401 recovery: attempting token refresh (no captcha)");
+        const refreshed = await AuthApi.refresh(currentToken);
+        this.applySession(refreshed);
+        this.persistToken(this.token!, this.expiresAtEpochMs());
+        return this.token!;
+      } catch (error) {
+        LoggerEngine.info(
+          `401 recovery: refresh failed (${error instanceof Error ? error.message : String(error)}); will try login if cooldown allows`,
+        );
+      }
+    }
+
+    if (AuthGate.isRateLimited()) {
+      AuthGate.assertNotRateLimited("captcha re-login after 401");
+    }
+
+    if (Date.now() < this.loginCooldownUntilMs) {
+      const waitSec = Math.ceil((this.loginCooldownUntilMs - Date.now()) / 1000);
+      throw new Error(
+        `Login cooldown active (~${waitSec}s). A captcha login just ran; refusing another to avoid 429/device-limit thrash.`,
+      );
+    }
+
+    this.loginCooldownUntilMs = Date.now() + this.loginCooldownMs;
     this.discardStoredSession();
     await this.refreshToken(true);
     if (!this.token || this.token === currentToken) {

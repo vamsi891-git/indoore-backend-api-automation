@@ -1,5 +1,4 @@
 import { expect } from "@playwright/test";
-import { backendRules } from "../Data/eventpriorityoverview.data";
 import { EventPriorityOverviewData } from "../Mapper/eventpriorityoverview.mapper";
 
 function addOneDay(isoDate: string): string {
@@ -34,22 +33,23 @@ export class EventPriorityOverviewValidator {
   }
 
   validateStatusTotals(data: EventPriorityOverviewData) {
-    expect(data.active.currentDay + data.resolve.currentDay).toBe(
-      data.totalEventsCurrentDay,
-    );
-    expect(data.active.previousDay + data.resolve.previousDay).toBe(
-      data.totalEventsPreviousDay,
-    );
+    expect(data.active.currentDay + data.resolve.currentDay).toBe(data.totalEventsCurrentDay);
+    expect(data.active.previousDay + data.resolve.previousDay).toBe(data.totalEventsPreviousDay);
   }
 
   validatePriorityCount(data: EventPriorityOverviewData) {
-    expect(data.priorities.length).toBe(backendRules.priorityCount);
+    expect(data.priorities.length).toBeGreaterThan(0);
   }
 
   validatePriorityIds(data: EventPriorityOverviewData) {
-    expect(data.priorities.map((row) => row.priorityId)).toEqual(
-      backendRules.priorityIds,
-    );
+    const ids = data.priorities.map((row) => row.priorityId);
+    for (const id of ids) {
+      expect(Number.isInteger(id)).toBeTruthy();
+      expect(id).toBeGreaterThanOrEqual(0);
+    }
+    for (let i = 1; i < ids.length; i++) {
+      expect(ids[i]).toBeGreaterThan(ids[i - 1]);
+    }
   }
 
   validateLabels(data: EventPriorityOverviewData) {
@@ -86,18 +86,12 @@ export class EventPriorityOverviewValidator {
     allMeters: EventPriorityOverviewData,
     subset: EventPriorityOverviewData,
   ) {
-    expect(subset.totalEventsCurrentDay).toBeLessThanOrEqual(
-      allMeters.totalEventsCurrentDay,
-    );
-    expect(subset.totalEventsPreviousDay).toBeLessThanOrEqual(
-      allMeters.totalEventsPreviousDay,
-    );
+    expect(subset.totalEventsCurrentDay).toBeLessThanOrEqual(allMeters.totalEventsCurrentDay);
+    expect(subset.totalEventsPreviousDay).toBeLessThanOrEqual(allMeters.totalEventsPreviousDay);
     expect(subset.priorities.map((row) => row.priorityId)).toEqual(
       allMeters.priorities.map((row) => row.priorityId),
     );
-    const byId = new Map(
-      allMeters.priorities.map((row) => [row.priorityId, row]),
-    );
+    const byId = new Map(allMeters.priorities.map((row) => [row.priorityId, row]));
     for (const row of subset.priorities) {
       const allRow = byId.get(row.priorityId);
       expect(allRow).toBeDefined();

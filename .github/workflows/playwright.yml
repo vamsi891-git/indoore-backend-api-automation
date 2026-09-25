@@ -1,5 +1,14 @@
 name: Playwright API Tests
 
+# How runs are selected
+# - push to main/master → static + smoke + all modules (full framework)
+# - pull_request        → static + smoke only (fast feedback)
+# - schedule (nightly)  → smoke + all modules
+# - Actions → Run workflow:
+#     Smoke          → @smoke only
+#     Module         → one module from the dropdown
+#     Full framework → smoke + every module
+
 on:
   push:
     branches: [main, master]
@@ -9,14 +18,53 @@ on:
     - cron: "30 18 * * *"
   workflow_dispatch:
     inputs:
-      run_modules:
-        description: After smoke, run module matrix
+      run_mode:
+        description: What to run
         required: true
-        default: true
-        type: boolean
+        type: choice
+        default: all
+        options:
+          - smoke
+          - module
+          - all
+      module:
+        description: Module name (only when What to run = module)
+        required: true
+        type: choice
+        default: dashboard
+        options:
+          - alarms-and-events
+          - asset-management
+          - audit-logs
+          - auth
+          - billing
+          - collection-report
+          - commericial-analysis
+          - consumers
+          - consumption
+          - data-validation
+          - dashboard
+          - dtrs
+          - dtr-load
+          - energy-audits
+          - feeder
+          - hes-commands
+          - master-data
+          - meter-replacement
+          - mis-dashboard
+          - modules-permissions
+          - notifications
+          - overall-dashboard
+          - reports
+          - revenue-protection
+          - role-permissions
+          - technical-analysis
+          - users-admin
+          - users-profile-image
+          - utils-lookup
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}-${{ github.event.inputs.run_mode || 'auto' }}-${{ github.event.inputs.module || 'none' }}
   cancel-in-progress: true
 
 permissions:
@@ -50,9 +98,91 @@ env:
   DB_ARCHIVE_NAME: ${{ secrets.DB_ARCHIVE_NAME || 'mdms_indore_archive' }}
 
 jobs:
+  plan:
+    name: Plan run
+    runs-on: ubuntu-latest
+    outputs:
+      run_static: ${{ steps.decide.outputs.run_static }}
+      run_smoke: ${{ steps.decide.outputs.run_smoke }}
+      run_modules: ${{ steps.decide.outputs.run_modules }}
+      modules_json: ${{ steps.decide.outputs.modules_json }}
+      run_allure: ${{ steps.decide.outputs.run_allure }}
+    steps:
+      - name: Decide what to run
+        id: decide
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          RUN_MODE: ${{ github.event.inputs.run_mode || '' }}
+          MODULE: ${{ github.event.inputs.module || '' }}
+        run: |
+          ALL_MODULES='["alarms-and-events","asset-management","audit-logs","auth","billing","collection-report","commericial-analysis","consumers","consumption","data-validation","dashboard","dtrs","dtr-load","energy-audits","feeder","hes-commands","master-data","meter-replacement","mis-dashboard","modules-permissions","notifications","overall-dashboard","reports","revenue-protection","role-permissions","technical-analysis","users-admin","users-profile-image","utils-lookup"]'
+
+          run_static=false
+          run_smoke=false
+          run_modules=false
+          run_allure=false
+          modules_json='[]'
+
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            run_static=true
+            run_smoke=true
+          elif [ "$EVENT_NAME" = "push" ]; then
+            # Push to main/master → full framework
+            run_static=true
+            run_smoke=true
+            run_modules=true
+            run_allure=true
+            modules_json="$ALL_MODULES"
+          elif [ "$EVENT_NAME" = "schedule" ]; then
+            run_smoke=true
+            run_modules=true
+            run_allure=true
+            modules_json="$ALL_MODULES"
+          elif [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            case "$RUN_MODE" in
+              smoke)
+                run_smoke=true
+                run_allure=true
+                ;;
+              module)
+                if [ -z "$MODULE" ]; then
+                  echo "::error::module input is required when run_mode=module"
+                  exit 1
+                fi
+                run_modules=true
+                run_allure=true
+                modules_json=$(printf '["%s"]' "$MODULE")
+                ;;
+              all)
+                run_smoke=true
+                run_modules=true
+                run_allure=true
+                modules_json="$ALL_MODULES"
+                ;;
+              *)
+                echo "::error::Unknown run_mode: $RUN_MODE"
+                exit 1
+                ;;
+            esac
+          fi
+
+          {
+            echo "run_static=$run_static"
+            echo "run_smoke=$run_smoke"
+            echo "run_modules=$run_modules"
+            echo "run_allure=$run_allure"
+            echo "modules_json=$modules_json"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Event=$EVENT_NAME ref=$REF mode=${RUN_MODE:-auto}"
+          echo "static=$run_static smoke=$run_smoke modules=$run_modules allure=$run_allure"
+          echo "modules_json=$modules_json"
+
   static:
     name: Static (tsc · lint · unit)
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    needs: plan
+    if: needs.plan.outputs.run_static == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -79,12 +209,8 @@ jobs:
 
   smoke:
     name: Smoke (@smoke)
-    # PR/push: smoke only. Nightly + manual: smoke then optional module matrix.
-    if: >-
-      github.event_name == 'push' ||
-      github.event_name == 'pull_request' ||
-      github.event_name == 'schedule' ||
-      github.event_name == 'workflow_dispatch'
+    needs: plan
+    if: needs.plan.outputs.run_smoke == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -119,8 +245,6 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
-      # Per-job session only: smoke logs in once (or restores smoke's own warm token).
-      # Do not share this cache with module jobs — each module logs in on its own start.
       - name: Cache auth session (smoke)
         uses: actions/cache@v4
         with:
@@ -150,50 +274,35 @@ jobs:
 
   modules:
     name: Module ${{ matrix.module }}
-    needs: smoke
-    if: >-
-      (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
-      (github.event_name != 'workflow_dispatch' ||
-      github.event.inputs.run_modules == 'true')
+    needs: [plan, smoke]
+    # Smoke is optional for single-module manual runs; skip the smoke dependency when smoke was not planned.
+    if: |
+      always() &&
+      needs.plan.outputs.run_modules == 'true' &&
+      (needs.plan.outputs.run_smoke != 'true' || needs.smoke.result == 'success')
     runs-on: ubuntu-latest
     timeout-minutes: 120
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 1
       matrix:
-        module:
-          - alarms-and-events
-          - asset-management
-          - audit-logs
-          - auth
-          - billing
-          - collection-report
-          - commericial-analysis
-          - consumers
-          - consumption
-          - data-validation
-          - dashboard
-          - dtrs
-          - dtr-load
-          - energy-audits
-          - feeder
-          - hes-commands
-          - master-data
-          - meter-replacement
-          - mis-dashboard
-          - modules-permissions
-          - notifications
-          - overall-dashboard
-          - reports
-          - revenue-protection
-          - role-permissions
-          - technical-analysis
-          - users-admin
-          - users-profile-image
-          - utils-lookup
+        module: ${{ fromJson(needs.plan.outputs.modules_json) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Validate repository secrets
+        run: |
+          missing=""
+          [ -z "$BASE_URL" ] && missing="$missing BASE_URL"
+          [ -z "$PASSWORD" ] && missing="$missing PASSWORD"
+          if [ -z "$EMAIL" ] && [ -z "$USERNAME" ]; then
+            missing="$missing EMAIL (or USERNAME)"
+          fi
+          if [ -n "$missing" ]; then
+            echo "::error title=Missing GitHub Actions secrets::Configure:$missing"
+            exit 1
+          fi
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -210,8 +319,6 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
-      # One login per module job (global.setup), then TokenManager reuses for that suite.
-      # Cache key includes matrix.module so dashboard ≠ consumers ≠ … sessions.
       - name: Cache auth session (${{ matrix.module }})
         uses: actions/cache@v4
         with:
@@ -238,10 +345,12 @@ jobs:
 
   allure:
     name: Aggregate Allure
-    needs: [smoke, modules]
-    if: >-
+    needs: [plan, smoke, modules]
+    if: |
       always() &&
-      (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+      needs.plan.outputs.run_allure == 'true' &&
+      (needs.plan.outputs.run_smoke != 'true' || needs.smoke.result != 'cancelled') &&
+      (needs.plan.outputs.run_modules != 'true' || needs.modules.result != 'cancelled')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -308,10 +417,10 @@ jobs:
   send-report-email:
     name: Email Allure report link
     runs-on: ubuntu-latest
-    needs: allure
-    if: >-
+    needs: [plan, allure]
+    if: |
       always() &&
-      (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+      needs.plan.outputs.run_allure == 'true'
     env:
       REPORT_MAIL_TO: vamsibst@gmail.com
     steps:

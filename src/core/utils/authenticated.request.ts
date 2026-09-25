@@ -169,15 +169,21 @@ async function requestWithAutoRefresh(
   let response = await runRequest(token);
 
   if (response.status() === 401) {
-    LoggerEngine.info(`${method} ${resolvedUrl} received 401; starting a new session`);
-    token = await TokenManager.handleUnauthorized(token);
-    response = await executeWithToken(request, method, resolvedUrl, normalizedOptions, token);
-    if (response.status() === 401) {
-      // Fresh login still rejected (device-limit / revoked JWT). Drop cache so the
-      // next call does not keep hammering with the same dead token.
-      TokenManager.discardStoredSession();
+    LoggerEngine.info(`${method} ${resolvedUrl} received 401; recovering session (refresh first)`);
+    try {
+      token = await TokenManager.handleUnauthorized(token);
+      response = await executeWithToken(request, method, resolvedUrl, normalizedOptions, token);
+    } catch (error) {
       LoggerEngine.warn(
-        `${method} ${resolvedUrl} still 401 after re-login; discarded cached session`,
+        `${method} ${resolvedUrl} 401 recovery failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      // Return the original 401 so the test asserts auth failure instead of starting
+      // another captcha login storm.
+      return response;
+    }
+    if (response.status() === 401) {
+      LoggerEngine.warn(
+        `${method} ${resolvedUrl} still 401 after recovery; keeping session for cooldown (no discard storm)`,
       );
     }
   }
