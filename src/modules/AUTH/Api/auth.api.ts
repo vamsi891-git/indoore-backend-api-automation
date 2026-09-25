@@ -1,6 +1,6 @@
 import { APIRequestContext } from "@playwright/test";
 import { ApiCallResult } from "../../../core/models/api-result.model";
-import { AuthPaths } from "../Data/auth.data";
+import { AuthPaths, AuthTestData } from "../Data/auth.data";
 import { AuthMapper } from "../Mapper/auth.mapper";
 import { generateTotp, getTotpSecret } from "../../../core/utils/totp.util";
 import { solveCaptchaSvg, warmupCaptchaOcr } from "../../../core/utils/captcha-ocr.util";
@@ -38,7 +38,7 @@ export class AuthenticationApi {
   }
 
   async getLoginCaptcha(): Promise<{ captchaId: string; captcha: string } | undefined> {
-    await warmupCaptchaOcr();
+    const passkey = AuthTestData.loginTesterPasskey;
     const rawResponse = await this.request.get(AuthPaths.captcha, {
       headers: { Accept: "application/json" },
     });
@@ -58,11 +58,17 @@ export class AuthenticationApi {
     }
     const nested = responseBody.data ?? responseBody;
     const captchaId = (nested.captchaId ?? "").trim();
-    const plaintext = (nested.text ?? "").trim();
-    const svg = (nested.svg ?? "").trim();
     if (!captchaId) {
       throw new Error("CAPTCHA GET did not include captchaId");
     }
+    // Tester passkey is sent as the captcha text — never OCR when set.
+    if (passkey) {
+      console.error("Login CAPTCHA: using LOGIN_TESTER_PASSKEY as captcha text (OCR skipped)");
+      return { captchaId, captcha: passkey };
+    }
+    await warmupCaptchaOcr();
+    const plaintext = (nested.text ?? "").trim();
+    const svg = (nested.svg ?? "").trim();
     if (plaintext) {
       console.error(`Login CAPTCHA (api-text): ${plaintext}`);
       return { captchaId, captcha: plaintext };
@@ -80,19 +86,15 @@ export class AuthenticationApi {
     password: string,
     csrfToken: string,
     captcha?: { captchaId: string; captcha: string },
-    passkey?: string,
   ): Promise<ApiCallResult> {
     const start = Date.now();
-    const key = (passkey ?? "").trim();
     const rawResponse = await this.request.post(AuthPaths.login, {
       headers: this.buildCsrfHeaders(csrfToken),
-      data: key
-        ? { email, password, passkey: key }
-        : {
-            email,
-            password,
-            ...(captcha ? { captchaId: captcha.captchaId, captcha: captcha.captcha } : {}),
-          },
+      data: {
+        email,
+        password,
+        ...(captcha ? { captchaId: captcha.captchaId, captcha: captcha.captcha } : {}),
+      },
     });
     const responseBody = await rawResponse.json();
     return {
@@ -159,10 +161,9 @@ export class AuthenticationApi {
   async loginUntilSession(email: string, password: string): Promise<EstablishedAuthSession> {
     await this.getLoginPreflight();
     let csrfToken = await AuthMapper.resolveCsrfToken(this.request, {});
-    const passkey = (process.env.LOGIN_TESTER_PASSKEY ?? "").trim().replace(/^['"]|['"]$/g, "");
-    const captcha = passkey ? undefined : await this.getLoginCaptcha();
+    const captcha = await this.getLoginCaptcha();
 
-    const login = await this.postLogin(email, password, csrfToken, captcha, passkey || undefined);
+    const login = await this.postLogin(email, password, csrfToken, captcha);
     if (login.rawResponse.status() !== 200) {
       throw new Error(
         `Login failed with status ${login.rawResponse.status()}: ${JSON.stringify(login.responseBody)}`,

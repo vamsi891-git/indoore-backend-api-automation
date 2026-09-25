@@ -224,6 +224,11 @@ export class AuthApi {
       if (!captchaId?.trim()) {
         throw new Error("Login CAPTCHA GET did not include captchaId");
       }
+      const testerPasskey = AuthApi.normalizeTesterPasskey(env.LOGIN_TESTER_PASSKEY);
+      if (testerPasskey) {
+        console.error("Login CAPTCHA: using LOGIN_TESTER_PASSKEY as captcha text (OCR skipped)");
+        return { captchaId, captcha: testerPasskey };
+      }
       if (text?.trim()) {
         const captcha = text.trim();
         this.printCaptchaAnswer(captcha, "api-text");
@@ -689,130 +694,10 @@ export class AuthApi {
     try {
       const startTime = Date.now();
       const csrfToken = await this.fetchCsrf(apiContext);
-
-      if (passkey) {
-        console.error("Login: using LOGIN_TESTER_PASSKEY (captcha OCR skipped)");
-        let loginResponse: Awaited<ReturnType<typeof apiContext.post>> | undefined;
-        let loginRaw = "";
-        let loginPathUsed = this.path(this.loginPath);
-
-        for (const loginPath of this.candidatePaths(this.loginPath)) {
-          loginPathUsed = loginPath;
-          loginResponse = await apiContext.post(loginPath, {
-            headers: this.buildAuthHeaders(csrfToken),
-            data: { email, password, passkey },
-          });
-          loginRaw = await loginResponse.text();
-          if (!this.isRouteNotFound(loginResponse.status())) {
-            if (
-              loginPath === this.loginPath.slice("/indore".length) ||
-              loginPath === "/auth/login"
-            ) {
-              enableStripIndorePrefix();
-            }
-            break;
-          }
-          LoggerEngine.info(`Login POST ${loginPath} returned 404; trying next path`);
-        }
-
-        if (!loginResponse) {
-          throw new Error("Login failed: no login path was attempted");
-        }
-
-        if (this.retriableAuthStatuses.has(loginResponse.status())) {
-          const retryAfter = loginResponse.headers()["retry-after"];
-          const suffix = retryAfter ? ` retry-after=${retryAfter}` : "";
-          const err = new Error(
-            `Login failed with status ${loginResponse.status()} - ${loginRaw.slice(0, 300)}${suffix}`,
-          );
-          if (loginResponse.status() === 429 || /TOO_MANY_REQUESTS/i.test(loginRaw)) {
-            throw this.rateLimitLockoutError(
-              new Error(`${err.message}${retryAfter ? "" : " retry-after=600"}`),
-            );
-          }
-          throw err;
-        }
-
-        let loginBody: {
-          data?: TwoFactorBody & { accessToken?: string; expiresIn?: number };
-          error?: { code?: string; message?: string };
-        };
-        try {
-          loginBody = JSON.parse(loginRaw) as typeof loginBody;
-        } catch {
-          throw new Error(
-            `Login failed with status ${loginResponse.status()} - ${loginRaw.slice(0, 300)}`,
-          );
-        }
-
-        LoggerEngine.api({
-          method: "POST",
-          url: loginPathUsed,
-          status: loginResponse.status(),
-          responseTimeMs: Date.now() - startTime,
-          attempt: 1,
-        });
-
-        if (!loginResponse.ok()) {
-          const loginError = new Error(
-            `Login failed with status ${loginResponse.status()} - ${JSON.stringify(loginBody)}`,
-          );
-          if (loginResponse.status() === 429 || /TOO_MANY_REQUESTS/i.test(loginRaw)) {
-            throw this.rateLimitLockoutError(loginError);
-          }
-          const invalidPasskey =
-            loginResponse.status() === 401 &&
-            /INVALID_LOGIN_PASSKEY/i.test(JSON.stringify(loginBody));
-          if (invalidPasskey) {
-            console.error(
-              `LOGIN_TESTER_PASSKEY was rejected by the API (INVALID_LOGIN_PASSKEY, length=${passkey.length}). ` +
-                `GitHub secret / .env value must match the API server LOGIN_TESTER_PASSKEY exactly. ` +
-                `Falling back to captcha OCR for this run.`,
-            );
-            LoggerEngine.info("LOGIN_TESTER_PASSKEY rejected — falling back to captcha OCR");
-            // Fall through to captcha path below (do not throw).
-          } else {
-            throw new Error(
-              `Cold login failed with LOGIN_TESTER_PASSKEY (email/password/passkey). ${loginError.message}`,
-            );
-          }
-        } else {
-          if (loginBody.data?.accessToken) {
-            return this.toLoginResponse(apiContext, loginBody);
-          }
-
-          let nextBody = loginBody.data as TwoFactorBody;
-          const headers = loginResponse.headers();
-
-          for (let step = 0; step < 8; step += 1) {
-            if (nextBody?.accessToken) {
-              return this.toLoginResponse(apiContext, { data: nextBody });
-            }
-
-            if (nextBody?.requires2FA) {
-              nextBody = await this.completeTwoFactor(apiContext, nextBody, headers);
-              continue;
-            }
-
-            if (nextBody?.requiresDeviceSelection) {
-              nextBody = await this.completeDeviceSelection(
-                apiContext,
-                nextBody as DeviceSelectionBody,
-                headers,
-              );
-              continue;
-            }
-
-            throw new Error(
-              `Login succeeded but no access token was returned - ${JSON.stringify({ data: nextBody })}`,
-            );
-          }
-
-          throw new Error("Login did not return an access token after 2FA/device steps");
-        }
+      // Passkey = fixed captcha text with a fresh captchaId. No OCR.
+      if (!passkey) {
+        await warmupCaptchaOcr();
       }
-
-      await warmupCaptchaOcr();
 
       let loginResponse: Awaited<ReturnType<typeof apiContext.post>> | undefined;
       let loginRaw = "";
@@ -822,12 +707,9 @@ export class AuthApi {
         error?: { code?: string; message?: string };
       } = {};
       let lastCaptchaGuess = "";
+      const maxCaptchaAttempts = passkey ? 1 : this.captchaOcrMaxAttempts;
 
-      for (
-        let captchaAttempt = 1;
-        captchaAttempt <= this.captchaOcrMaxAttempts;
-        captchaAttempt += 1
-      ) {
+      for (let captchaAttempt = 1; captchaAttempt <= maxCaptchaAttempts; captchaAttempt += 1) {
         let loginCaptcha: { captchaId: string; captcha: string } | null = null;
         try {
           loginCaptcha = await this.fetchLoginCaptcha(apiContext, csrfToken);
@@ -838,15 +720,15 @@ export class AuthApi {
             throw captchaError instanceof Error ? captchaError : new Error(message);
           }
           console.error(
-            `Login CAPTCHA OCR failed (${captchaAttempt}/${this.captchaOcrMaxAttempts}) — ${message}`,
+            `Login CAPTCHA failed (${captchaAttempt}/${maxCaptchaAttempts}) — ${message}`,
           );
-          if (/CAPTCHA OCR/i.test(message) && captchaAttempt < this.captchaOcrMaxAttempts) {
+          if (!passkey && /CAPTCHA OCR/i.test(message) && captchaAttempt < maxCaptchaAttempts) {
             await new Promise((resolve) => setTimeout(resolve, 500));
             continue;
           }
           throw captchaError instanceof Error ? captchaError : new Error(message);
         }
-        lastCaptchaGuess = loginCaptcha?.captcha ?? "";
+        lastCaptchaGuess = passkey ? "(LOGIN_TESTER_PASSKEY)" : (loginCaptcha?.captcha ?? "");
 
         loginResponse = undefined;
         loginRaw = "";
@@ -917,17 +799,8 @@ export class AuthApi {
         const invalidCaptcha =
           loginResponse.status() === 401 && /INVALID_CAPTCHA/i.test(JSON.stringify(loginBody));
 
-        LoggerEngine.debug(
-          `CAPTCHA attempt ${captchaAttempt}/${this.captchaOcrMaxAttempts} guess=${lastCaptchaGuess || "(none)"} result=${
-            invalidCaptcha
-              ? "INVALID_CAPTCHA"
-              : loginResponse.ok()
-                ? "ok"
-                : `status ${loginResponse.status()}`
-          }`,
-        );
         console.error(
-          `Login CAPTCHA (${captchaAttempt}/${this.captchaOcrMaxAttempts}): ${lastCaptchaGuess || "(none)"} → ${
+          `Login CAPTCHA (${captchaAttempt}/${maxCaptchaAttempts}): ${lastCaptchaGuess || "(none)"} → ${
             invalidCaptcha
               ? "INVALID_CAPTCHA"
               : loginResponse.ok()
@@ -936,8 +809,7 @@ export class AuthApi {
           }`,
         );
 
-        if (invalidCaptcha && captchaAttempt < this.captchaOcrMaxAttempts) {
-          // New captchaId on the next loop — do not re-POST the same guess.
+        if (invalidCaptcha && !passkey && captchaAttempt < maxCaptchaAttempts) {
           await new Promise((resolve) => setTimeout(resolve, 700));
           continue;
         }
@@ -948,10 +820,9 @@ export class AuthApi {
           );
           if (invalidCaptcha) {
             throw new Error(
-              `Cold login CAPTCHA failed after ${this.captchaOcrMaxAttempts} fresh captcha(s). ` +
-                `Last guess was "${lastCaptchaGuess || "(none)"}". ` +
-                `Once login succeeds, playwright/.auth is reused so captcha is skipped for the rest of the suite. ` +
-                loginError.message,
+              passkey
+                ? `Cold login failed: LOGIN_TESTER_PASSKEY as captcha text was rejected. ${loginError.message}`
+                : `Cold login CAPTCHA failed after ${maxCaptchaAttempts} fresh captcha(s). Last guess was "${lastCaptchaGuess || "(none)"}". ${loginError.message}`,
             );
           }
           if (this.isCaptchaRequired(loginError)) {

@@ -70,7 +70,7 @@ export const EnvSchema = z
     EMAIL: optionalString,
     USERNAME: optionalString,
     PASSWORD: requiredString,
-    /** When set, login POSTs { email, password, passkey } and skips captcha OCR. */
+    /** When set, login uses captchaId + this value as captcha text (skips OCR). */
     LOGIN_TESTER_PASSKEY: optionalString,
 
     TOTP_SECRET: optionalString,
